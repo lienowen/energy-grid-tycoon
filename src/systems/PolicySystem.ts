@@ -21,8 +21,8 @@ export interface PolicyCheck {
 
 export class PolicySystem {
   static canActivate(state: GameState, policy: PolicyConfig): PolicyCheck {
-    if (state.activePolicyId === policy.id) return { ok: false, reason: '该政策正在执行' };
-    if (state.money < policy.activationCost) return { ok: false, reason: '政策预算不足' };
+    if (state.activePolicyId === policy.id) return { ok: false, reason: '这个施政方向正在执行' };
+    if (state.money < policy.activationCost) return { ok: false, reason: '市政资金还不够' };
     return { ok: true };
   }
 
