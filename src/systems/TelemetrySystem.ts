@@ -1,20 +1,9 @@
 import type { GameState } from '../core/GameState';
+import type { TelemetrySnapshot } from '../core/SaveSchema';
 import type { EconomyResult } from './EconomySystem';
 import type { PowerResult } from './PowerSystem';
 
-export interface TelemetryPoint {
-  day: number;
-  hour: number;
-  money: number;
-  demand: number;
-  supply: number;
-  satisfaction: number;
-  pollution: number;
-  storageEnergy: number;
-  researchPoints: number;
-  profit: number;
-  shortage: number;
-}
+export type TelemetryPoint = TelemetrySnapshot;
 
 export class TelemetrySystem {
   private readonly points: TelemetryPoint[];
