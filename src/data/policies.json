@@ -1,32 +1,32 @@
 [
   {
     "id": "resident_subsidy",
-    "name": "居民电价补贴",
-    "description": "牺牲部分售电收入，提高满意度并刺激用电需求。",
+    "name": "优先照顾居民",
+    "description": "降低居民电费，让大家更满意，但市政府收入会减少。",
     "assetId": "policy_resident",
     "activationCost": 480,
     "effects": { "priceMultiplier": 0.82, "demandMultiplier": 1.05, "satisfactionDeltaPerHour": 0.35 }
   },
   {
     "id": "industrial_priority",
-    "name": "工业优先供能",
-    "description": "提高收益和研发效率，但居民满意度承压。",
+    "name": "优先发展工业",
+    "description": "工厂会带来更多收入和发展点，但居民可能觉得自己被忽视。",
     "assetId": "policy_industry",
     "activationCost": 650,
     "effects": { "priceMultiplier": 1.16, "demandMultiplier": 1.12, "satisfactionDeltaPerHour": -0.18, "researchMultiplier": 1.08 }
   },
   {
     "id": "green_mandate",
-    "name": "绿色能源法令",
-    "description": "严格排放控制带来更低污染和更快研发，维护成本略升。",
+    "name": "优先改善空气",
+    "description": "严格减少废气，让空气更干净，但设施日常开支会略微增加。",
     "assetId": "policy_green",
     "activationCost": 820,
     "effects": { "pollutionMultiplier": 0.62, "maintenanceMultiplier": 1.07, "researchMultiplier": 1.15 }
   },
   {
     "id": "efficiency_campaign",
-    "name": "全民节能行动",
-    "description": "降低全城需求并小幅提高满意度。",
+    "name": "号召全城节约用电",
+    "description": "居民和商店少浪费一些电，城市压力会变小，满意度也会提高。",
     "assetId": "policy_efficiency",
     "activationCost": 720,
     "effects": { "demandMultiplier": 0.88, "maintenanceMultiplier": 1.03, "satisfactionDeltaPerHour": 0.12 }
