@@ -27,7 +27,7 @@ export class BuildingFactory {
     if (snapshot) {
       building.enabled = snapshot.enabled;
       building.level = Math.min(building.getMaxLevel(), Math.max(1, Math.floor(snapshot.level ?? 1)));
-      building.setStoredEnergy(snapshot.storedEnergy);
+      building.storedEnergy = Math.max(0, snapshot.storedEnergy);
     }
 
     return building;
