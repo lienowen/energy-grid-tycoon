@@ -1,4 +1,5 @@
-import { BuildingBase, BuildingConfig, BuildingSnapshot } from './BuildingBase';
+import type { BuildingSnapshot } from '../core/SaveSchema';
+import { BuildingBase, BuildingConfig } from './BuildingBase';
 
 export class BuildingFactory {
   static create(config: BuildingConfig, snapshot?: BuildingSnapshot): BuildingBase {
