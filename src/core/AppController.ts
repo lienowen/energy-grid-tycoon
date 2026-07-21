@@ -90,7 +90,7 @@ export class AppController {
     if (!resume) SaveManager.clearGame();
 
     this.dashboard = new MayorDashboard(this.root, {
-      onBuild: (configId, plotId) => this.game?.build(configId, plotId) ?? { ok: false, reason: '城市还没有准备好' },
+      onBuild: (configId: string, plotId?: string) => this.game?.build(configId, plotId) ?? { ok: false, reason: '城市还没有准备好' },
       onUpgrade: (instanceId) => this.game?.upgrade(instanceId) ?? { ok: false, reason: '城市还没有准备好' },
       onToggleBuilding: (instanceId) => this.game?.toggleBuilding(instanceId) ?? { ok: false, reason: '城市还没有准备好' },
       onResearch: (technologyId) => this.game?.research(technologyId) ?? { ok: false, reason: '城市还没有准备好' },
