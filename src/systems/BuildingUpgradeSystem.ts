@@ -22,7 +22,6 @@ export class BuildingUpgradeSystem {
     const quote = this.quote(building);
     if (!quote.available) return quote;
     building.level = quote.nextLevel ?? building.level;
-    building.setStoredEnergy(building.storedEnergy);
     return quote;
   }
 }
