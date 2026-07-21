@@ -1,4 +1,6 @@
 import { BuildingConfig } from '../buildings/BuildingBase';
+import { AssetManager } from '../resources/AssetManager';
+import { LevelAssetPlanner } from '../resources/LevelAssetPlanner';
 import { EventConfig } from '../systems/EventSystem';
 import { LevelConfig } from '../systems/LevelLoader';
 import { LevelProgressionSystem } from '../systems/LevelProgressionSystem';
@@ -6,6 +8,7 @@ import { PolicyConfig } from '../systems/PolicySystem';
 import { TechnologyConfig } from '../systems/ResearchSystem';
 import { Dashboard } from '../ui/Dashboard';
 import { LevelSelect } from '../ui/LevelSelect';
+import { LoadingScreen } from '../ui/LoadingScreen';
 import { GameManager, GameViewModel } from './GameManager';
 import { SaveManager } from './SaveManager';
 
@@ -15,6 +18,7 @@ export class AppController {
   private currentLevelId?: string;
   private lastAutoSaveDay = 0;
   private completionRecorded = false;
+  private loadGeneration = 0;
 
   constructor(
     private readonly root: HTMLElement,
@@ -31,6 +35,7 @@ export class AppController {
   }
 
   private showCampaign(): void {
+    this.loadGeneration += 1;
     this.game?.destroy();
     this.game = undefined;
     this.dashboard = undefined;
@@ -48,19 +53,34 @@ export class AppController {
     }));
 
     new LevelSelect(this.root, {
-      onStart: (levelId) => this.startLevel(levelId, false),
-      onContinue: (levelId) => this.startLevel(levelId, true)
+      onStart: (levelId) => { void this.startLevel(levelId, false); },
+      onContinue: (levelId) => { void this.startLevel(levelId, true); }
     }).render(items);
   }
 
-  private startLevel(levelId: string, resume: boolean): void {
+  private async startLevel(levelId: string, resume: boolean): Promise<void> {
     const level = this.levels.find((item) => item.id === levelId);
     if (!level) return;
 
+    const generation = ++this.loadGeneration;
     this.game?.destroy();
+    this.game = undefined;
+    this.dashboard = undefined;
     this.currentLevelId = level.id;
     this.lastAutoSaveDay = 0;
     this.completionRecorded = false;
+
+    LoadingScreen.render(this.root, `正在进入${level.name}`, '加载本关建筑、科技、政策、事件和城市背景。');
+    const assetReport = await AssetManager.preload(LevelAssetPlanner.resolve(level, {
+      buildings: this.buildings,
+      events: this.events,
+      technologies: this.technologies,
+      policies: this.policies
+    }));
+    if (generation !== this.loadGeneration) return;
+    if (assetReport.failed.length > 0) {
+      console.warn('Level assets failed to preload:', assetReport.failed);
+    }
 
     const save = resume ? SaveManager.loadGame() : undefined;
     const compatibleSave = save?.levelId === level.id ? save : undefined;
@@ -115,14 +135,14 @@ export class AppController {
   private loadCurrentSave(): { ok: boolean; message: string } {
     const save = SaveManager.loadGame();
     if (!save) return { ok: false, message: '没有找到可读取的存档' };
-    this.startLevel(save.levelId, true);
+    void this.startLevel(save.levelId, true);
     return { ok: true, message: '存档已读取' };
   }
 
   private retryCurrentLevel(): void {
     if (!this.currentLevelId) return;
     SaveManager.clearGame();
-    this.startLevel(this.currentLevelId, false);
+    void this.startLevel(this.currentLevelId, false);
   }
 
   private startNextLevel(): void {
@@ -130,7 +150,7 @@ export class AppController {
     const current = this.levels.find((level) => level.id === this.currentLevelId);
     if (!current) return;
     const next = LevelProgressionSystem.getNextLevel(current, this.levels);
-    if (next) this.startLevel(next.id, false);
+    if (next) void this.startLevel(next.id, false);
     else this.showCampaign();
   }
 }
