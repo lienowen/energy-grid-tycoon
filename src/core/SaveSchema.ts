@@ -4,6 +4,7 @@ export interface BuildingSnapshot {
   enabled: boolean;
   storedEnergy: number;
   level: number;
+  placementId?: string;
 }
 
 export interface ActiveEventSnapshot {
