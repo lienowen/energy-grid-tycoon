@@ -1,6 +1,5 @@
-import { BuildingSnapshot } from '../buildings/BuildingBase';
-import { GameState } from './GameState';
-import { ActiveEventSnapshot } from '../systems/EventSystem';
+import type { GameState } from './GameState';
+import type { ActiveEventSnapshot, BuildingSnapshot } from './SaveSchema';
 
 const SAVE_KEY = 'energy-grid-tycoon:save:v1';
 const PROFILE_KEY = 'energy-grid-tycoon:profile:v1';
