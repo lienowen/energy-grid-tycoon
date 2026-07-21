@@ -34,6 +34,13 @@ const formatMoney = (value: number): string =>
 
 const formatSigned = (value: number): string => `${value >= 0 ? '+' : ''}${value.toFixed(0)}`;
 
+const escapeAttribute = (value: string): string => value
+  .replaceAll('&', '&amp;')
+  .replaceAll('"', '&quot;')
+  .replaceAll("'", '&#39;')
+  .replaceAll('<', '&lt;')
+  .replaceAll('>', '&gt;');
+
 export class Dashboard {
   private notice = '';
   private lastView?: GameViewModel;
@@ -70,12 +77,16 @@ export class Dashboard {
           ? `充电 ${formatNumber(lastStorage.charged)} MWh`
           : '待机'
       : '待机';
+    const backgroundId = level.presentation?.backgroundAssetId;
+    const background = backgroundId ? this.assetUrl(backgroundId) : '';
+    const accent = level.presentation?.accent ?? '#4ad7ff';
+    const scenarioStyle = `--scenario-accent:${escapeAttribute(accent)};${background ? `--scenario-background:url('${escapeAttribute(background)}');` : ''}`;
 
     this.root.innerHTML = `
-      <main class="game-shell">
+      <main class="game-shell scenario-shell" style="${scenarioStyle}">
         <header class="topbar">
           <div class="brand">
-            <span class="brand-mark">${AssetManager.get('brand_logo')}</span>
+            <span class="brand-mark">${this.asset('brand_logo', 'Energy Grid Tycoon', 'brand-image')}</span>
             <div>
               <h1>ENERGY GRID TYCOON</h1>
               <p>${level.name} · 第 ${state.day} 天 ${String(Math.floor(state.hour)).padStart(2, '0')}:00</p>
@@ -116,12 +127,12 @@ export class Dashboard {
                 <h2>城市能源调度图</h2>
               </div>
               <div class="grid-status ${state.supplyRatio >= 0.98 ? 'stable' : 'unstable'}">
-                ${AssetManager.get(state.supplyRatio >= 0.98 ? 'status_stable' : 'status_warning')}
+                ${this.asset(state.supplyRatio >= 0.98 ? 'status_stable' : 'status_warning', '电网状态', 'status-image')}
                 ${state.supplyRatio >= 0.98 ? '电网稳定' : '存在缺电'}
               </div>
             </div>
 
-            <div class="city-map">
+            <div class="city-map scenario-city-map">
               <div class="city-core">
                 <span>🏙️</span>
                 <strong>${level.name}</strong>
@@ -136,7 +147,7 @@ export class Dashboard {
                 <div><i style="width:${Math.round(storageRatio * 100)}%"></i></div>
               </div>
               <div class="policy-telemetry">
-                <span>${activePolicy ? AssetManager.get(activePolicy.assetId) : '⚖️'} 城市政策</span>
+                <span>${activePolicy ? this.asset(activePolicy.assetId, activePolicy.name, 'telemetry-image') : '⚖️'} 城市政策</span>
                 <strong>${activePolicy?.name ?? '市场常态'}</strong>
               </div>
               <div class="building-fleet">
@@ -146,7 +157,7 @@ export class Dashboard {
 
             ${activeEvent ? `
               <div class="event-banner">
-                <span class="event-icon">${AssetManager.get(`event_${activeEvent.config.id}`)}</span>
+                <span class="event-icon">${this.asset(`event_${activeEvent.config.id}`, activeEvent.config.name, 'event-image')}</span>
                 <div>
                   <strong>${activeEvent.config.name}</strong>
                   <p>${activeEvent.config.description} · 剩余 ${Math.ceil(activeEvent.remainingHours)} 小时</p>
@@ -196,12 +207,13 @@ export class Dashboard {
   }
 
   private buildTab(view: GameViewModel, buildingCounts: Map<string, number>): string {
-    const { state, availableBuildings } = view;
+    const { state, availableBuildings, level } = view;
+    const priceRange = level.rules.powerPriceRange;
     return `
       <label class="price-control">
         <span><strong>居民电价</strong><em>${state.powerPrice.toFixed(2)} 元/kWh</em></span>
-        <input id="price-slider" type="range" min="0.15" max="1.2" step="0.01" value="${state.powerPrice}" ${state.completed || state.failed ? 'disabled' : ''}/>
-        <small>高电价提高收入，但会持续降低满意度。</small>
+        <input id="price-slider" type="range" min="${priceRange.min}" max="${priceRange.max}" step="0.01" value="${state.powerPrice}" ${state.completed || state.failed ? 'disabled' : ''}/>
+        <small>本关允许区间 ${priceRange.min.toFixed(2)}–${priceRange.max.toFixed(2)} 元/kWh；高电价提高收入，但会持续降低满意度。</small>
       </label>
       <div class="section-caption"><strong>可建设资产</strong><span>${availableBuildings.length} 种</span></div>
       <div class="build-list">
@@ -244,7 +256,7 @@ export class Dashboard {
 
     return `
       <article class="tech-card ${complete ? 'complete' : ''}">
-        <span class="tech-icon">${AssetManager.get(technology.assetId)}</span>
+        <span class="tech-icon">${this.asset(technology.assetId, technology.name, 'tech-image')}</span>
         <div class="tech-copy">
           <strong>${technology.name}</strong>
           <small>${technology.description}</small>
@@ -260,7 +272,7 @@ export class Dashboard {
   private policyTab(view: GameViewModel): string {
     return `
       <div class="active-policy-card">
-        <span>${view.activePolicy ? AssetManager.get(view.activePolicy.assetId) : '⚖️'}</span>
+        <span>${view.activePolicy ? this.asset(view.activePolicy.assetId, view.activePolicy.name, 'policy-image') : '⚖️'}</span>
         <div><small>当前政策</small><strong>${view.activePolicy?.name ?? '市场常态'}</strong></div>
         ${view.activePolicy ? '<button data-policy="">取消政策</button>' : ''}
       </div>
@@ -275,7 +287,7 @@ export class Dashboard {
     const disabled = active || view.state.money < policy.activationCost || view.state.completed || view.state.failed;
     return `
       <article class="policy-card ${active ? 'active' : ''}">
-        <span class="policy-icon">${AssetManager.get(policy.assetId)}</span>
+        <span class="policy-icon">${this.asset(policy.assetId, policy.name, 'policy-image')}</span>
         <div>
           <strong>${policy.name}</strong>
           <small>${policy.description}</small>
@@ -302,7 +314,7 @@ export class Dashboard {
 
     return `
       <article class="fleet-card ${building.enabled ? '' : 'offline'}">
-        <span class="fleet-icon">${AssetManager.get(building.config.assetId)}</span>
+        <span class="fleet-icon">${this.asset(building.config.assetId, building.config.name, 'fleet-image')}</span>
         <div class="fleet-copy">
           <strong>${building.config.name} <em>Lv.${building.level}</em></strong>
           <small>${output} · 维护 ${formatMoney(building.getMaintenance())}</small>
@@ -407,21 +419,22 @@ export class Dashboard {
       <div class="goal-card ${state.completed ? 'completed' : state.failed ? 'failed' : ''}">
         <div class="goal-copy">
           <span>当前目标</span>
-          <strong>${this.getGoalLabel(view)}</strong>
+          <strong>${view.level.rules.objective.label}</strong>
         </div>
         <div class="progress-track"><i style="width:${Math.round(goalProgress * 100)}%"></i></div>
-        <small>${state.completed ? '任务完成，新的城市已经解锁。' : state.failed ? '城市运营失败，请重新规划。' : `完成度 ${Math.round(goalProgress * 100)}%`}</small>
+        <small>${state.completed ? '任务完成，配置指定的后续城市已经解锁。' : state.failed ? view.level.rules.failure.label : `完成度 ${Math.round(goalProgress * 100)}%`}</small>
       </div>
     `;
   }
 
-  private getGoalLabel(view: GameViewModel): string {
-    const { level } = view;
-    return level.goal.type === 'money'
-      ? `资金达到 ${formatMoney(level.goal.target)}`
-      : level.goal.type === 'satisfaction'
-        ? `满意度达到 ${level.goal.target}% 并坚持到第 3 天`
-        : `人口达到 ${formatNumber(level.goal.target)}`;
+  private asset(assetId: string, alt: string, className = 'asset-image'): string {
+    const value = this.assetUrl(assetId);
+    if (!value || !value.startsWith('/assets/')) return value || '◆';
+    return `<img class="asset-image ${className}" src="${escapeAttribute(value)}" alt="${escapeAttribute(alt)}" loading="lazy" draggable="false" />`;
+  }
+
+  private assetUrl(assetId: string): string {
+    return AssetManager.get(assetId, '');
   }
 
   private metric(title: string, value: string, detail: string, tone: string): string {
@@ -429,7 +442,7 @@ export class Dashboard {
   }
 
   private buildingNode(config: BuildingConfig, count: number): string {
-    return `<div class="building-node"><span>${AssetManager.get(config.assetId)}</span><strong>${config.name}</strong><small>× ${count}</small></div>`;
+    return `<div class="building-node"><span>${this.asset(config.assetId, config.name, 'node-image')}</span><strong>${config.name}</strong><small>× ${count}</small></div>`;
   }
 
   private buildCard(config: BuildingConfig, count: number, money: number, gameEnded: boolean): string {
@@ -440,7 +453,7 @@ export class Dashboard {
 
     return `
       <button class="build-card" data-build="${config.id}" ${disabled ? 'disabled' : ''}>
-        <span class="build-icon">${AssetManager.get(config.assetId)}</span>
+        <span class="build-icon">${this.asset(config.assetId, config.name, 'build-image')}</span>
         <span class="build-copy"><strong>${config.name}</strong><small>${config.description}</small><em>${output} · 维护 ${formatMoney(config.maintenance)}</em></span>
         <span class="build-price">${formatMoney(config.cost)}<small>已有 ${count}</small></span>
       </button>
@@ -452,10 +465,10 @@ export class Dashboard {
     return `
       <div class="result-backdrop">
         <section class="result-dialog ${completed ? 'success' : 'failure'}">
-          <span class="result-icon">${completed ? '🏆' : '⚠️'}</span>
+          <span class="result-icon">${completed ? '🏆' : this.asset('status_warning', '运营失败', 'result-status-image')}</span>
           <span class="eyebrow">${completed ? 'CITY SECURED' : 'GRID COLLAPSED'}</span>
           <h2>${completed ? '城市运营成功' : '城市运营失败'}</h2>
-          <p>${completed ? `你稳定了${view.level.name}的能源系统，下一座城市已经开放。` : '资金、满意度或人口触及失败线。调整建设、科技与政策后再次挑战。'}</p>
+          <p>${completed ? `你完成了“${view.level.rules.objective.label}”，战役进度已经更新。` : view.level.rules.failure.label}</p>
           <div class="result-stats">
             <span>第 ${view.state.day} 天</span>
             <span>评分 ${formatNumber(view.state.score)}</span>
@@ -465,7 +478,7 @@ export class Dashboard {
           <div class="result-actions">
             <button class="secondary-action" data-result="menu">城市列表</button>
             <button class="secondary-action" data-result="retry">重新挑战</button>
-            ${completed ? '<button class="primary-action" data-result="next">进入下一城</button>' : ''}
+            ${completed && view.level.progression.nextLevelId ? '<button class="primary-action" data-result="next">进入下一城</button>' : ''}
           </div>
         </section>
       </div>
