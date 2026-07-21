@@ -35,6 +35,8 @@ const scenarioOperators = new Set<ScenarioOperator>(['gte', 'lte', 'eq']);
 const mutableFields = new Set<RuleMutableField>([
   'money', 'population', 'satisfaction', 'pollution', 'researchPoints'
 ]);
+const worldThemes = new Set(['residential', 'industrial', 'green']);
+const worldDepths = new Set(['far', 'mid', 'near']);
 
 const validateConditionGroup = (prefix: string, group: ScenarioConditionGroup, errors: string[]): void => {
   if (!group || !Array.isArray(group.conditions) || group.conditions.length === 0) {
@@ -78,6 +80,36 @@ const validateRule = (
   }
   if (rule.type === 'behavior' && !behaviorIds.has(rule.behavior)) {
     errors.push(`${prefix} references unknown behavior: ${rule.behavior}`);
+  }
+};
+
+const validateWorldPresentation = (level: LevelConfig, errors: string[]): void => {
+  const world = level.presentation?.world;
+  if (!world) return;
+  const prefix = `Level ${level.id} world`;
+  if (!worldThemes.has(world.theme)) errors.push(`${prefix} has unknown theme: ${world.theme}`);
+  if (!Array.isArray(world.slots) || world.slots.length < level.catalog.buildings.length) {
+    errors.push(`${prefix} must provide at least one slot per available building`);
+    return;
+  }
+
+  const points = world.city ? [world.city, ...world.slots] : world.slots;
+  for (const [index, point] of points.entries()) {
+    if (!Number.isFinite(point.x) || point.x < 0 || point.x > 100) {
+      errors.push(`${prefix} point ${index} has invalid x`);
+    }
+    if (!Number.isFinite(point.y) || point.y < 0 || point.y > 100) {
+      errors.push(`${prefix} point ${index} has invalid y`);
+    }
+  }
+
+  for (const [index, slot] of world.slots.entries()) {
+    if (slot.scale !== undefined && (!Number.isFinite(slot.scale) || slot.scale < 0.5 || slot.scale > 1.5)) {
+      errors.push(`${prefix} slot ${index} has invalid scale`);
+    }
+    if (slot.depth !== undefined && !worldDepths.has(slot.depth)) {
+      errors.push(`${prefix} slot ${index} has invalid depth`);
+    }
   }
 };
 
@@ -174,6 +206,7 @@ export class GameConfigValidator {
       if (level.presentation?.backgroundAssetId && !catalogs.assetIds.has(level.presentation.backgroundAssetId)) {
         errors.push(`${prefix} references unknown background asset: ${level.presentation.backgroundAssetId}`);
       }
+      validateWorldPresentation(level, errors);
       for (const id of level.initial.buildings) {
         if (!level.catalog.buildings.includes(id)) errors.push(`${prefix} starts with unavailable building: ${id}`);
       }
