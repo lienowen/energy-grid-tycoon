@@ -1,6 +1,8 @@
 import { BuildingConfig } from '../buildings/BuildingBase';
 import { EventConfig } from '../systems/EventSystem';
 import { LevelConfig } from '../systems/LevelLoader';
+import { PolicyConfig } from '../systems/PolicySystem';
+import { TechnologyConfig } from '../systems/ResearchSystem';
 import { Dashboard } from '../ui/Dashboard';
 import { LevelSelect } from '../ui/LevelSelect';
 import { GameManager, GameViewModel } from './GameManager';
@@ -17,7 +19,9 @@ export class AppController {
     private readonly root: HTMLElement,
     private readonly levels: LevelConfig[],
     private readonly buildings: BuildingConfig[],
-    private readonly events: EventConfig[]
+    private readonly events: EventConfig[],
+    private readonly technologies: TechnologyConfig[],
+    private readonly policies: PolicyConfig[]
   ) {}
 
   start(): void {
@@ -38,7 +42,8 @@ export class AppController {
       level,
       unlocked: index === 0 || completed.has(this.levels[index - 1]?.id ?? ''),
       completed: completed.has(level.id),
-      hasSave: save?.levelId === level.id
+      hasSave: save?.levelId === level.id,
+      bestScore: profile.bestScoreByLevel[level.id] ?? 0
     }));
 
     new LevelSelect(this.root, {
@@ -62,6 +67,10 @@ export class AppController {
 
     this.dashboard = new Dashboard(this.root, {
       onBuild: (configId) => this.game?.build(configId) ?? { ok: false, reason: '游戏尚未启动' },
+      onUpgrade: (instanceId) => this.game?.upgrade(instanceId) ?? { ok: false, reason: '游戏尚未启动' },
+      onToggleBuilding: (instanceId) => this.game?.toggleBuilding(instanceId) ?? { ok: false, reason: '游戏尚未启动' },
+      onResearch: (technologyId) => this.game?.research(technologyId) ?? { ok: false, reason: '游戏尚未启动' },
+      onPolicy: (policyId) => this.game?.setPolicy(policyId) ?? { ok: false, reason: '游戏尚未启动' },
       onSpeedChange: (speed) => this.game?.setSpeed(speed),
       onPriceChange: (price) => this.game?.setPowerPrice(price),
       onSave: () => this.saveCurrentGame(),
@@ -75,6 +84,8 @@ export class AppController {
       level,
       this.buildings,
       this.events,
+      this.technologies,
+      this.policies,
       (view) => this.handleView(view),
       compatibleSave
     );
@@ -83,7 +94,7 @@ export class AppController {
 
   private handleView(view: GameViewModel): void {
     if (view.state.completed && !this.completionRecorded) {
-      SaveManager.markCompleted(view.level.id);
+      SaveManager.markCompleted(view.level.id, view.state.score);
       SaveManager.clearGame();
       this.completionRecorded = true;
     } else if (!view.state.completed && !view.state.failed && view.state.day > this.lastAutoSaveDay) {
