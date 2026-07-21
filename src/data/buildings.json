@@ -1,0 +1,16 @@
+[
+  {
+    "id": "solar_basic",
+    "type": "solar",
+    "power": 200,
+    "cost": 500,
+    "maintenance": 5
+  },
+  {
+    "id": "battery_basic",
+    "type": "battery",
+    "power": 0,
+    "cost": 800,
+    "maintenance": 8
+  }
+]
