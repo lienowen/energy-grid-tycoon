@@ -1,127 +1,166 @@
-import type { BuildingConfig } from '../../buildings/BuildingBase';
+import type { BuildingBase, BuildingConfig } from '../../buildings/BuildingBase';
+import type { CityPlotConfig } from '../../core/CityMapConfig';
 import type { GameViewModel } from '../../core/GameManager';
-import type { LevelWorldSlotConfig } from '../../systems/LevelLoader';
+import { CityMapSystem } from '../../systems/CityMapSystem';
+import { LevelLoader } from '../../systems/LevelLoader';
 
 export type AssetRenderer = (assetId: string, alt: string, className?: string) => string;
 
 export interface WorldSceneRenderInput {
   view: GameViewModel;
-  buildingCounts: ReadonlyMap<string, number>;
   asset: AssetRenderer;
+  selectedBuildingId?: string;
 }
-
-const defaultSlots: LevelWorldSlotConfig[] = [
-  { x: 14, y: 31, scale: 0.92, depth: 'far' },
-  { x: 78, y: 27, scale: 0.94, depth: 'far' },
-  { x: 12, y: 65, scale: 1.04, depth: 'near' },
-  { x: 79, y: 66, scale: 1.05, depth: 'near' },
-  { x: 31, y: 76, scale: 1, depth: 'near' },
-  { x: 62, y: 78, scale: 1, depth: 'near' },
-  { x: 47, y: 24, scale: 0.9, depth: 'far' }
-];
 
 const clampPercent = (value: number): number => Math.min(100, Math.max(0, value));
 
-const buildingOutput = (config: BuildingConfig): string => config.category === 'storage'
-  ? `可存 ${Math.round(config.capacity ?? 0)} MWh`
-  : `可供 ${Math.round(config.power)} MW`;
+const zoneLabel = (plot: CityPlotConfig): string => plot.label ?? ({
+  neighborhood: '社区用地',
+  industrial: '产业用地',
+  coastal: '沿海用地',
+  outskirts: '城郊用地',
+  utility: '市政用地'
+}[plot.zone]);
 
-const sceneSlot = (slots: readonly LevelWorldSlotConfig[], index: number): LevelWorldSlotConfig =>
-  slots[index] ?? defaultSlots[index % defaultSlots.length] ?? { x: 50, y: 50 };
+const facilityAbility = (building: BuildingBase): string => building.config.category === 'storage'
+  ? `备用电 ${Math.round(building.storedEnergy)} / ${Math.round(building.getStorageCapacity())}`
+  : `供电 ${Math.round(building.getPowerOutput())} MW`;
 
-export const renderWorldScene = ({ view, buildingCounts, asset }: WorldSceneRenderInput): string => {
-  const { state, level, availableBuildings, activeEvent, activePolicy, lastStorage } = view;
+const selectedAbility = (config: BuildingConfig): string => config.category === 'storage'
+  ? `可存 ${Math.round(config.capacity ?? 0)} 份电`
+  : `增加 ${Math.round(config.power)} MW 供电`;
+
+export const renderWorldScene = ({
+  view,
+  asset,
+  selectedBuildingId
+}: WorldSceneRenderInput): string => {
+  const { state, level, activeEvent, activePolicy, lastStorage } = view;
   const presentation = level.presentation?.world;
-  const slots = presentation?.slots?.length ? presentation.slots : defaultSlots;
+  const plots = LevelLoader.getWorldPlots(level);
   const cityX = clampPercent(presentation?.city?.x ?? 50);
   const cityY = clampPercent(presentation?.city?.y ?? 51);
   const theme = presentation?.theme ?? 'residential';
-  const supplyPercent = Math.round(Math.min(1, state.supplyRatio) * 100);
+  const selected = selectedBuildingId
+    ? view.availableBuildings.find((building) => building.id === selectedBuildingId)
+    : undefined;
   const storagePercent = state.storageCapacity > 0
     ? Math.round(Math.min(1, state.storageEnergy / state.storageCapacity) * 100)
     : 0;
   const storageFlow = lastStorage?.discharged
-    ? `正在支援居民用电 · ${Math.round(lastStorage.discharged)} MWh`
+    ? '正在支援晚高峰'
     : lastStorage?.charged
-      ? `正在储存多余电力 · ${Math.round(lastStorage.charged)} MWh`
-      : state.storageCapacity > 0 ? '备用电力正在待命' : '城市还没有备用电力';
+      ? '正在保存多余电力'
+      : state.storageCapacity > 0 ? '备用电随时待命' : '还没有备用电设施';
 
-  const lines = availableBuildings.map((config, index) => {
-    const slot = sceneSlot(slots, index);
-    const count = buildingCounts.get(config.id) ?? 0;
-    return `<line class="world-grid-line ${count > 0 ? 'energized' : ''}" x1="${clampPercent(slot.x)}" y1="${clampPercent(slot.y)}" x2="${cityX}" y2="${cityY}" />`;
+  const lines = plots.map((plot) => {
+    const occupied = view.buildings.some((building) => building.placementId === plot.id);
+    return occupied
+      ? `<line class="world-grid-line energized" x1="${clampPercent(plot.x)}" y1="${clampPercent(plot.y)}" x2="${cityX}" y2="${cityY}" />`
+      : '';
   }).join('');
 
-  const nodes = availableBuildings.map((config, index) => {
-    const slot = sceneSlot(slots, index);
-    const count = buildingCounts.get(config.id) ?? 0;
-    const depth = slot.depth ?? 'mid';
-    const scale = slot.scale ?? 1;
-    const action = count > 0 ? 'data-panel="fleet"' : `data-build="${config.id}"`;
-    const status = count > 0 ? `已有 ${count} 座` : '点这里开工';
+  const plotNodes = plots.map((plot) => {
+    const occupant = view.buildings.find((building) => building.placementId === plot.id);
+    const check = selected
+      ? CityMapSystem.canPlace(selected, plot, view.buildings)
+      : undefined;
+    const canPlace = Boolean(selected && check?.ok);
+    const blocked = Boolean(selected && !check?.ok);
+    const classes = [
+      'city-plot',
+      occupant ? 'occupied' : 'empty',
+      canPlace ? 'available' : '',
+      blocked ? 'blocked' : '',
+      plot.locked ? 'locked' : '',
+      `zone-${plot.zone}`,
+      `depth-${plot.depth ?? 'mid'}`
+    ].filter(Boolean).join(' ');
+    const action = occupant
+      ? `data-panel="fleet" data-focus-building="${occupant.instanceId}"`
+      : canPlace
+        ? `data-place-plot="${plot.id}"`
+        : '';
+    const art = occupant
+      ? asset(occupant.config.assetId, occupant.config.name, 'city-plot-building-image')
+      : selected
+        ? asset(selected.assetId, selected.name, 'city-plot-ghost-image')
+        : '<span class="city-plot-marker"><i></i></span>';
+    const title = occupant ? occupant.config.name : canPlace ? `建设${selected?.name ?? ''}` : zoneLabel(plot);
+    const detail = occupant
+      ? `${facilityAbility(occupant)} · ${occupant.enabled ? '运行中' : '已关闭'}`
+      : canPlace
+        ? `${selectedAbility(selected as BuildingConfig)} · 点击落地`
+        : blocked
+          ? check?.reason ?? '不适合这个项目'
+          : '先在下方选择一个项目';
 
     return `
       <button
-        class="world-building ${count > 0 ? 'occupied' : 'empty'} depth-${depth}"
-        style="--world-x:${clampPercent(slot.x)}%;--world-y:${clampPercent(slot.y)}%;--world-scale:${scale};"
+        class="${classes}"
+        style="--plot-x:${clampPercent(plot.x)}%;--plot-y:${clampPercent(plot.y)}%;--plot-scale:${plot.scale ?? 1};"
         ${action}
-        aria-label="${count > 0 ? `查看${config.name}` : `建设${config.name}`}"
+        ${plot.locked ? 'disabled' : ''}
+        aria-label="${title}"
       >
-        <span class="world-building-glow"></span>
-        <span class="world-building-art">${asset(config.assetId, config.name, 'world-building-image')}</span>
-        <span class="world-building-copy">
-          <strong>${config.name}</strong>
-          <small>${buildingOutput(config)} · ${status}</small>
-        </span>
+        <span class="city-plot-ground"></span>
+        <span class="city-plot-art">${art}</span>
+        <span class="city-plot-copy"><strong>${title}</strong><small>${detail}</small></span>
       </button>
     `;
   }).join('');
 
   return `
-    <section class="world-scene theme-${theme}" aria-label="${level.name}城市全景">
+    <section class="world-scene theme-${theme} ${selected ? 'placing-facility' : ''}" aria-label="${level.name}城市地图">
       <div class="world-sky-glow"></div>
       <div class="world-haze"></div>
+      <div class="city-road road-a"></div>
+      <div class="city-road road-b"></div>
+      <div class="city-road road-c"></div>
       <svg class="world-grid-network" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${lines}</svg>
 
       <div class="city-heart" style="--city-x:${cityX}%;--city-y:${cityY}%;">
         <div class="city-heart-radar" style="--supply-angle:${Math.min(360, state.supplyRatio * 360)}deg"></div>
         <div class="city-silhouette" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
         <strong>${level.name}</strong>
-        <span>${state.population.toLocaleString('zh-CN')} 位居民 · ${supplyPercent}% 街区亮灯</span>
+        <span>${state.population.toLocaleString('zh-CN')} 位居民 · ${Math.round(Math.min(1, state.supplyRatio) * 100)}% 街区亮灯</span>
       </div>
 
-      ${nodes}
+      ${plotNodes}
+
+      ${selected ? `
+        <aside class="placement-order">
+          <span>${asset(selected.assetId, selected.name, 'placement-order-image')}</span>
+          <div><small>正在选择建设位置</small><strong>${selected.name}</strong><p>地图上发亮的地块可以建设；点击地块确认。</p></div>
+          <button data-cancel-build="true">取消</button>
+        </aside>
+      ` : ''}
 
       <aside class="world-mission-card">
-        <span class="world-label">你的市长承诺</span>
+        <span class="world-label">本城目标</span>
         <strong>${level.rules.objective.label}</strong>
         <div class="world-progress"><i style="width:${Math.round(view.goalProgress * 100)}%"></i></div>
-        <small>已经完成 ${Math.round(view.goalProgress * 100)}%</small>
+        <small>完成 ${Math.round(view.goalProgress * 100)}%</small>
       </aside>
 
       <aside class="world-storage-orb ${lastStorage?.discharged ? 'discharging' : lastStorage?.charged ? 'charging' : ''}">
-        <span>${storagePercent}%</span>
-        <strong>${storageFlow}</strong>
+        <span>${storagePercent}%</span><strong>${storageFlow}</strong>
       </aside>
 
       <aside class="world-policy-badge">
         ${activePolicy ? asset(activePolicy.assetId, activePolicy.name, 'world-policy-image') : '<span class="world-policy-neutral">◇</span>'}
-        <div><small>当前施政方向</small><strong>${activePolicy?.name ?? '暂未选择'}</strong></div>
+        <div><small>城市方向</small><strong>${activePolicy?.name ?? '平稳发展'}</strong></div>
       </aside>
 
       ${activeEvent ? `
         <aside class="world-event-card active">
           ${asset(`event_${activeEvent.config.id}`, activeEvent.config.name, 'world-event-image')}
-          <div>
-            <span>市民来报</span>
-            <strong>${activeEvent.config.name}</strong>
-            <small>${activeEvent.config.description} · 预计还会持续 ${Math.ceil(activeEvent.remainingHours)} 小时</small>
-          </div>
+          <div><span>城市里发生了新情况</span><strong>${activeEvent.config.name}</strong><small>${activeEvent.config.description} · 还会持续 ${Math.ceil(activeEvent.remainingHours)} 小时</small></div>
         </aside>
       ` : `
         <aside class="world-event-card quiet">
           <span class="world-event-pulse"></span>
-          <div><span>市民生活</span><strong>目前一切平稳</strong><small>市政团队会及时告诉你新的情况</small></div>
+          <div><span>城市情况</span><strong>一切正常</strong><small>继续观察居民用电和城市资金</small></div>
         </aside>
       `}
     </section>
