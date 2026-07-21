@@ -18,6 +18,10 @@ export class BuildingManager {
     return true;
   }
 
+  find(instanceId: string): BuildingBase | undefined {
+    return this.buildings.find((building) => building.instanceId === instanceId);
+  }
+
   getBuildings(): readonly BuildingBase[] {
     return this.buildings;
   }
@@ -45,8 +49,11 @@ export class BuildingManager {
     return this.getStorageBuildings().reduce((sum, building) => sum + building.storedEnergy, 0);
   }
 
-  getTotalStorageCapacity(): number {
-    return this.getStorageBuildings().reduce((sum, building) => sum + building.getStorageCapacity(), 0);
+  getTotalStorageCapacity(capacityMultiplier = 1): number {
+    return this.getStorageBuildings().reduce(
+      (sum, building) => sum + building.getStorageCapacity(capacityMultiplier),
+      0
+    );
   }
 
   countByConfigId(configId: string): number {
