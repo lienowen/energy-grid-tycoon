@@ -1,3 +1,4 @@
+import type { CityPlotZone } from '../core/CityMapConfig';
 import type { BuildingSnapshot } from '../core/SaveSchema';
 
 export type BuildingCategory = 'generation' | 'storage' | 'grid';
@@ -16,6 +17,7 @@ export interface BuildingConfig {
   efficiency?: number;
   pollution: number;
   description: string;
+  placementZones?: CityPlotZone[];
   specialLogic?: string;
   requiredTechnologyId?: string;
   maxLevel?: number;
@@ -31,10 +33,15 @@ export class BuildingBase {
   enabled = true;
   storedEnergy = 0;
   level = 1;
+  placementId?: string;
 
   constructor(config: BuildingConfig, instanceId: string = crypto.randomUUID()) {
     this.config = config;
     this.instanceId = instanceId;
+  }
+
+  place(plotId: string): void {
+    this.placementId = plotId;
   }
 
   getMaxLevel(): number {
@@ -87,7 +94,8 @@ export class BuildingBase {
       configId: this.config.id,
       enabled: this.enabled,
       storedEnergy: this.storedEnergy,
-      level: this.level
+      level: this.level,
+      placementId: this.placementId
     };
   }
 
