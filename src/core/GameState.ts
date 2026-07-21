@@ -20,6 +20,12 @@ export interface GameState {
   storageEnergy: number;
   storageCapacity: number;
   storageFlow: number;
+  researchPoints: number;
+  unlockedTechnologyIds: string[];
+  activePolicyId?: string;
+  totalRevenue: number;
+  totalEnergyServed: number;
+  totalShortage: number;
   activeEventId?: string;
   completed: boolean;
   failed: boolean;
@@ -32,6 +38,8 @@ export interface InitialStateInput {
   population: number;
   baseDemand: number;
   powerPrice: number;
+  researchPoints?: number;
+  unlockedTechnologyIds?: string[];
 }
 
 export const createInitialState = (input: InitialStateInput): GameState => ({
@@ -54,6 +62,11 @@ export const createInitialState = (input: InitialStateInput): GameState => ({
   storageEnergy: 0,
   storageCapacity: 0,
   storageFlow: 0,
+  researchPoints: Math.max(0, input.researchPoints ?? 0),
+  unlockedTechnologyIds: [...new Set(input.unlockedTechnologyIds ?? [])],
+  totalRevenue: 0,
+  totalEnergyServed: 0,
+  totalShortage: 0,
   completed: false,
   failed: false
 });
