@@ -17,6 +17,9 @@ export interface GameState {
   satisfaction: number;
   pollution: number;
   score: number;
+  storageEnergy: number;
+  storageCapacity: number;
+  storageFlow: number;
   activeEventId?: string;
   completed: boolean;
   failed: boolean;
@@ -48,6 +51,9 @@ export const createInitialState = (input: InitialStateInput): GameState => ({
   satisfaction: 82,
   pollution: 0,
   score: 0,
+  storageEnergy: 0,
+  storageCapacity: 0,
+  storageFlow: 0,
   completed: false,
   failed: false
 });
