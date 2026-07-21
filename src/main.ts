@@ -20,6 +20,13 @@ import { LoadingScreen } from './ui/LoadingScreen';
 const root = document.querySelector<HTMLElement>('#app');
 if (!root) throw new Error('Application root #app was not found');
 
+document.addEventListener('error', (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLImageElement) || !target.classList.contains('asset-image')) return;
+  target.classList.add('asset-load-failed');
+  target.parentElement?.classList.add('asset-fallback');
+}, true);
+
 const bootstrap = async (): Promise<void> => {
   LoadingScreen.render(root, '正在启动城市电网', '校验配置并预加载公共界面素材。');
   AssetManager.load(assetCatalogData as unknown as AssetCatalog);
