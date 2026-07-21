@@ -1,6 +1,7 @@
 import { BuildingConfig } from '../buildings/BuildingBase';
 import { EventConfig } from '../systems/EventSystem';
 import { LevelConfig } from '../systems/LevelLoader';
+import { LevelProgressionSystem } from '../systems/LevelProgressionSystem';
 import { PolicyConfig } from '../systems/PolicySystem';
 import { TechnologyConfig } from '../systems/ResearchSystem';
 import { Dashboard } from '../ui/Dashboard';
@@ -38,9 +39,9 @@ export class AppController {
     const profile = SaveManager.loadProfile();
     const save = SaveManager.loadGame();
     const completed = new Set(profile.completedLevelIds);
-    const items = this.levels.map((level, index) => ({
+    const items = this.levels.map((level) => ({
       level,
-      unlocked: index === 0 || completed.has(this.levels[index - 1]?.id ?? ''),
+      unlocked: LevelProgressionSystem.isUnlocked(level, completed),
       completed: completed.has(level.id),
       hasSave: save?.levelId === level.id,
       bestScore: profile.bestScoreByLevel[level.id] ?? 0
@@ -126,8 +127,9 @@ export class AppController {
 
   private startNextLevel(): void {
     if (!this.currentLevelId) return;
-    const currentIndex = this.levels.findIndex((level) => level.id === this.currentLevelId);
-    const next = this.levels[currentIndex + 1];
+    const current = this.levels.find((level) => level.id === this.currentLevelId);
+    if (!current) return;
+    const next = LevelProgressionSystem.getNextLevel(current, this.levels);
     if (next) this.startLevel(next.id, false);
     else this.showCampaign();
   }
