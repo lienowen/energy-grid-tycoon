@@ -38,6 +38,7 @@ export interface InitialStateInput {
   population: number;
   baseDemand: number;
   powerPrice: number;
+  satisfaction?: number;
   researchPoints?: number;
   unlockedTechnologyIds?: string[];
 }
@@ -56,7 +57,7 @@ export const createInitialState = (input: InitialStateInput): GameState => ({
   supplyRatio: 0,
   energySold: 0,
   powerPrice: input.powerPrice,
-  satisfaction: 82,
+  satisfaction: Math.min(100, Math.max(0, input.satisfaction ?? 82)),
   pollution: 0,
   score: 0,
   storageEnergy: 0,
