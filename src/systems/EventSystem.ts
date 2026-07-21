@@ -1,3 +1,4 @@
+import type { RandomSource } from '../core/DeterministicRandom';
 import type { ActiveEventSnapshot } from '../core/SaveSchema';
 
 export interface EventEffects {
@@ -32,6 +33,8 @@ const neutralEffects: EventEffects = {
 
 export class EventSystem {
   private active?: ActiveEvent;
+
+  constructor(private readonly random: RandomSource) {}
 
   getActive(): ActiveEvent | undefined {
     return this.active;
@@ -68,13 +71,13 @@ export class EventSystem {
   }
 
   maybeTrigger(poolIds: string[], catalog: EventConfig[], chance = 0.08): ActiveEvent | undefined {
-    if (this.active || Math.random() > chance) return this.active;
+    if (this.active || this.random.next() > chance) return this.active;
 
     const pool = catalog.filter((event) => poolIds.includes(event.id));
     const totalWeight = pool.reduce((sum, event) => sum + event.weight, 0);
     if (totalWeight <= 0) return undefined;
 
-    let roll = Math.random() * totalWeight;
+    let roll = this.random.next() * totalWeight;
     for (const event of pool) {
       roll -= event.weight;
       if (roll <= 0) {
