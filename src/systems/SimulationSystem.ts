@@ -22,6 +22,7 @@ export class SimulationSystem {
   ): SimulationResult {
     const peakCurve = 0.82 + 0.28 * Math.max(0, Math.sin(((state.hour - 7) / 24) * Math.PI * 2));
     const demand = state.baseDemand * peakCurve * effects.demandMultiplier;
+    const gridLossRate = 0.04;
 
     const generationSupply = buildings.getTotalPower((building) =>
       SpecialLogicSystem.getOutputMultiplier(building, {
@@ -30,9 +31,10 @@ export class SimulationSystem {
       })
     );
 
+    const requiredGrossSupply = demand / (1 - gridLossRate);
     const storage = StorageSystem.balance(
       generationSupply,
-      demand,
+      requiredGrossSupply,
       buildings.getBuildings(),
       tickHours
     );
@@ -40,7 +42,7 @@ export class SimulationSystem {
     const power = PowerSystem.calculate({
       supply: storage.gridSupply,
       demand,
-      gridLossRate: 0.04
+      gridLossRate
     });
 
     const economy = EconomySystem.calculate({
