@@ -20,6 +20,11 @@ export interface ActiveEvent {
   remainingHours: number;
 }
 
+export interface ActiveEventSnapshot {
+  eventId: string;
+  remainingHours: number;
+}
+
 const neutralEffects: EventEffects = {
   demandMultiplier: 1,
   outputMultiplier: 1,
@@ -37,6 +42,26 @@ export class EventSystem {
 
   getEffects(): EventEffects {
     return this.active?.config.effects ?? neutralEffects;
+  }
+
+  getSnapshot(): ActiveEventSnapshot | undefined {
+    if (!this.active) return undefined;
+    return {
+      eventId: this.active.config.id,
+      remainingHours: this.active.remainingHours
+    };
+  }
+
+  restore(snapshot: ActiveEventSnapshot | undefined, catalog: EventConfig[]): void {
+    if (!snapshot) {
+      this.active = undefined;
+      return;
+    }
+
+    const config = catalog.find((event) => event.id === snapshot.eventId);
+    this.active = config
+      ? { config, remainingHours: Math.max(0, snapshot.remainingHours) }
+      : undefined;
   }
 
   advance(hours: number): void {
