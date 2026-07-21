@@ -1,12 +1,14 @@
 import './styles.css';
+import './asset-presentation.css';
 import buildingData from './data/buildings.json';
 import eventData from './data/events.json';
 import levelData from './data/levels.json';
 import policyData from './data/policies.json';
 import technologyData from './data/technologies.json';
-import assetData from './resources/assets.json';
+import assetData from './resources/assets.generated.json';
 import type { BuildingConfig } from './buildings/BuildingBase';
 import { AppController } from './core/AppController';
+import { GameConfigValidator } from './core/GameConfigValidator';
 import { AssetManager } from './resources/AssetManager';
 import type { AssetManifest } from './resources/AssetManager';
 import type { EventConfig } from './systems/EventSystem';
@@ -25,6 +27,6 @@ const events = eventData as unknown as EventConfig[];
 const technologies = technologyData as unknown as TechnologyConfig[];
 const policies = policyData as unknown as PolicyConfig[];
 
-if (levels.length === 0) throw new Error('No level configuration is available');
+GameConfigValidator.assertValid({ levels, buildings, events, technologies, policies });
 
 new AppController(root, levels, buildings, events, technologies, policies).start();
