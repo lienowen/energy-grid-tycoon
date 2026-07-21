@@ -22,6 +22,10 @@ export interface LevelConfig {
   eventPool: string[];
   goal: LevelGoal;
   failMoney: number;
+  startingResearchPoints?: number;
+  startingTechnologies?: string[];
+  availableTechnologies?: string[];
+  availablePolicies?: string[];
 }
 
 export interface LoadedLevel {
@@ -51,7 +55,9 @@ export class LevelLoader {
       money: level.startingMoney,
       population: level.population,
       baseDemand: level.baseDemand,
-      powerPrice: level.powerPrice
+      powerPrice: level.powerPrice,
+      researchPoints: level.startingResearchPoints,
+      unlockedTechnologyIds: level.startingTechnologies
     });
 
     state.storageEnergy = buildings.getTotalStoredEnergy();
@@ -68,18 +74,22 @@ export class LevelLoader {
   ): LoadedLevel {
     const catalog = this.createCatalog(buildingConfigs);
     const buildings = BuildingManager.restore(snapshots, catalog);
+    const defaults = createInitialState({
+      levelId: level.id,
+      cityName: level.name,
+      money: level.startingMoney,
+      population: level.population,
+      baseDemand: level.baseDemand,
+      powerPrice: level.powerPrice,
+      researchPoints: level.startingResearchPoints,
+      unlockedTechnologyIds: level.startingTechnologies
+    });
     const state: GameState = {
-      ...createInitialState({
-        levelId: level.id,
-        cityName: level.name,
-        money: level.startingMoney,
-        population: level.population,
-        baseDemand: level.baseDemand,
-        powerPrice: level.powerPrice
-      }),
+      ...defaults,
       ...savedState,
       levelId: level.id,
       cityName: level.name,
+      unlockedTechnologyIds: [...new Set(savedState.unlockedTechnologyIds ?? defaults.unlockedTechnologyIds)],
       storageEnergy: buildings.getTotalStoredEnergy(),
       storageCapacity: buildings.getTotalStorageCapacity()
     };
