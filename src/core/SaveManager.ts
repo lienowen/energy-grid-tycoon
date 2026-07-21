@@ -30,6 +30,20 @@ const defaultProfile = (): PlayerProfile => ({
   bestScoreByLevel: {}
 });
 
+const migrateBuildingSnapshot = (item: Partial<BuildingSnapshot>): BuildingSnapshot => {
+  const snapshot: BuildingSnapshot = {
+    instanceId: String(item.instanceId),
+    configId: String(item.configId),
+    enabled: item.enabled !== false,
+    storedEnergy: Math.max(0, Number(item.storedEnergy ?? 0)),
+    level: Math.max(1, Math.floor(Number(item.level ?? 1)))
+  };
+  if (typeof item.placementId === 'string' && item.placementId) {
+    snapshot.placementId = item.placementId;
+  }
+  return snapshot;
+};
+
 export class SaveManager {
   static saveGame(save: GameSave): boolean {
     try {
@@ -62,16 +76,7 @@ export class SaveManager {
       } as GameState;
       const buildings = (parsed.buildings as Array<Partial<BuildingSnapshot>>)
         .filter((item) => Boolean(item.instanceId && item.configId))
-        .map((item) => ({
-          instanceId: String(item.instanceId),
-          configId: String(item.configId),
-          enabled: item.enabled !== false,
-          storedEnergy: Math.max(0, Number(item.storedEnergy ?? 0)),
-          level: Math.max(1, Math.floor(Number(item.level ?? 1))),
-          placementId: typeof item.placementId === 'string' && item.placementId
-            ? item.placementId
-            : undefined
-        }));
+        .map(migrateBuildingSnapshot);
 
       return {
         version: 2,
