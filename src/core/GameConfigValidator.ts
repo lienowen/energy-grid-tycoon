@@ -37,6 +37,8 @@ const mutableFields = new Set<RuleMutableField>([
 ]);
 const worldThemes = new Set(['residential', 'industrial', 'green']);
 const worldDepths = new Set(['far', 'mid', 'near']);
+const plotZones = new Set(['neighborhood', 'industrial', 'coastal', 'outskirts', 'utility']);
+const facilityCategories = new Set(['generation', 'storage', 'grid']);
 
 const validateConditionGroup = (prefix: string, group: ScenarioConditionGroup, errors: string[]): void => {
   if (!group || !Array.isArray(group.conditions) || group.conditions.length === 0) {
@@ -83,27 +85,94 @@ const validateRule = (
   }
 };
 
-const validateWorldPresentation = (level: LevelConfig, errors: string[]): void => {
+const validatePoint = (
+  prefix: string,
+  point: { x: number; y: number },
+  errors: string[]
+): void => {
+  if (!Number.isFinite(point.x) || point.x < 0 || point.x > 100) {
+    errors.push(`${prefix} has invalid x`);
+  }
+  if (!Number.isFinite(point.y) || point.y < 0 || point.y > 100) {
+    errors.push(`${prefix} has invalid y`);
+  }
+};
+
+const validateWorldPresentation = (
+  level: LevelConfig,
+  buildingById: ReadonlyMap<string, BuildingConfig>,
+  errors: string[]
+): void => {
   const world = level.presentation?.world;
   if (!world) return;
   const prefix = `Level ${level.id} world`;
   if (!worldThemes.has(world.theme)) errors.push(`${prefix} has unknown theme: ${world.theme}`);
-  if (!Array.isArray(world.slots) || world.slots.length < level.catalog.buildings.length) {
-    errors.push(`${prefix} must provide at least one slot per available building`);
+  if (world.city) validatePoint(`${prefix} city`, world.city, errors);
+
+  if (world.plots?.length) {
+    const plotIds = new Set<string>();
+    for (const [index, plot] of world.plots.entries()) {
+      const plotPrefix = `${prefix} plot ${plot.id || index}`;
+      if (!plot.id) errors.push(`${plotPrefix} is missing an id`);
+      if (plotIds.has(plot.id)) errors.push(`${prefix} has duplicate plot id: ${plot.id}`);
+      plotIds.add(plot.id);
+      validatePoint(plotPrefix, plot, errors);
+      if (!plotZones.has(plot.zone)) errors.push(`${plotPrefix} has unknown zone: ${plot.zone}`);
+      if (!Array.isArray(plot.accepts) || plot.accepts.length === 0) {
+        errors.push(`${plotPrefix} accepts no facility categories`);
+      } else {
+        for (const category of plot.accepts) {
+          if (!facilityCategories.has(category)) errors.push(`${plotPrefix} accepts unknown category: ${category}`);
+        }
+      }
+      if (plot.scale !== undefined && (!Number.isFinite(plot.scale) || plot.scale < 0.5 || plot.scale > 1.5)) {
+        errors.push(`${plotPrefix} has invalid scale`);
+      }
+      if (plot.depth !== undefined && !worldDepths.has(plot.depth)) {
+        errors.push(`${plotPrefix} has invalid depth`);
+      }
+    }
+
+    if (world.plots.length <= level.initial.buildings.length) {
+      errors.push(`${prefix} needs at least one empty plot after starting facilities are placed`);
+    }
+
+    const placementPlots = new Set<string>();
+    const usedBuildingCounts = new Map<string, number>();
+    const startingCounts = new Map<string, number>();
+    for (const buildingId of level.initial.buildings) {
+      startingCounts.set(buildingId, (startingCounts.get(buildingId) ?? 0) + 1);
+    }
+
+    for (const placement of level.initial.placements ?? []) {
+      if (!plotIds.has(placement.plotId)) errors.push(`${prefix} placement references unknown plot: ${placement.plotId}`);
+      if (placementPlots.has(placement.plotId)) errors.push(`${prefix} places multiple facilities on plot: ${placement.plotId}`);
+      placementPlots.add(placement.plotId);
+      const used = (usedBuildingCounts.get(placement.buildingId) ?? 0) + 1;
+      usedBuildingCounts.set(placement.buildingId, used);
+      if (used > (startingCounts.get(placement.buildingId) ?? 0)) {
+        errors.push(`${prefix} placement uses unavailable starting facility: ${placement.buildingId}`);
+      }
+      const building = buildingById.get(placement.buildingId);
+      const plot = world.plots.find((item) => item.id === placement.plotId);
+      if (building && plot) {
+        if (!plot.accepts.includes(building.category)) {
+          errors.push(`${prefix} places ${building.id} on a plot that rejects ${building.category}`);
+        }
+        if (building.placementZones?.length && !building.placementZones.includes(plot.zone)) {
+          errors.push(`${prefix} places ${building.id} in unsupported zone: ${plot.zone}`);
+        }
+      }
+    }
     return;
   }
 
-  const points = world.city ? [world.city, ...world.slots] : world.slots;
-  for (const [index, point] of points.entries()) {
-    if (!Number.isFinite(point.x) || point.x < 0 || point.x > 100) {
-      errors.push(`${prefix} point ${index} has invalid x`);
-    }
-    if (!Number.isFinite(point.y) || point.y < 0 || point.y > 100) {
-      errors.push(`${prefix} point ${index} has invalid y`);
-    }
+  if (!Array.isArray(world.slots) || world.slots.length < level.catalog.buildings.length) {
+    errors.push(`${prefix} must provide plots or at least one legacy slot per available building`);
+    return;
   }
-
   for (const [index, slot] of world.slots.entries()) {
+    validatePoint(`${prefix} legacy slot ${index}`, slot, errors);
     if (slot.scale !== undefined && (!Number.isFinite(slot.scale) || slot.scale < 0.5 || slot.scale > 1.5)) {
       errors.push(`${prefix} slot ${index} has invalid scale`);
     }
@@ -117,6 +186,7 @@ export class GameConfigValidator {
   static assertValid(catalogs: GameCatalogs): void {
     const errors: string[] = [];
     const buildingIds = new Set(catalogs.buildings.map((item) => item.id));
+    const buildingById = new Map(catalogs.buildings.map((item) => [item.id, item]));
     const eventIds = new Set(catalogs.events.map((item) => item.id));
     const technologyIds = new Set(catalogs.technologies.map((item) => item.id));
     const policyIds = new Set(catalogs.policies.map((item) => item.id));
@@ -143,6 +213,9 @@ export class GameConfigValidator {
       if (!catalogs.assetIds.has(building.assetId)) errors.push(`Building ${building.id} references unknown asset: ${building.assetId}`);
       if (building.requiredTechnologyId && !technologyIds.has(building.requiredTechnologyId)) {
         errors.push(`Building ${building.id} references unknown technology: ${building.requiredTechnologyId}`);
+      }
+      for (const zone of building.placementZones ?? []) {
+        if (!plotZones.has(zone)) errors.push(`Building ${building.id} references unknown placement zone: ${zone}`);
       }
     }
     for (const technology of catalogs.technologies) {
@@ -206,7 +279,7 @@ export class GameConfigValidator {
       if (level.presentation?.backgroundAssetId && !catalogs.assetIds.has(level.presentation.backgroundAssetId)) {
         errors.push(`${prefix} references unknown background asset: ${level.presentation.backgroundAssetId}`);
       }
-      validateWorldPresentation(level, errors);
+      validateWorldPresentation(level, buildingById, errors);
       for (const id of level.initial.buildings) {
         if (!level.catalog.buildings.includes(id)) errors.push(`${prefix} starts with unavailable building: ${id}`);
       }
