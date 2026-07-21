@@ -1,5 +1,6 @@
 import './styles.css';
 import './asset-presentation.css';
+import './mayor-game.css';
 import buildingData from './data/buildings.json';
 import eventData from './data/events.json';
 import levelData from './data/levels.json';
@@ -28,7 +29,7 @@ document.addEventListener('error', (event) => {
 }, true);
 
 const bootstrap = async (): Promise<void> => {
-  LoadingScreen.render(root, '正在启动城市电网', '校验配置并预加载公共界面素材。');
+  LoadingScreen.render(root, '市政团队正在集合', '正在准备城市地图和居民资料。');
   AssetManager.load(assetCatalogData as unknown as AssetCatalog);
 
   const levels = levelData as unknown as LevelConfig[];
@@ -47,14 +48,10 @@ const bootstrap = async (): Promise<void> => {
   });
 
   const bootAssets = await AssetManager.preloadGroup('boot');
-  if (bootAssets.failed.length > 0) {
-    console.warn('Boot assets failed to preload:', bootAssets.failed);
-  }
+  if (bootAssets.failed.length > 0) console.warn('Boot assets failed to preload:', bootAssets.failed);
 
   const gridPattern = AssetManager.get('ui_grid_pattern', '');
-  if (gridPattern) {
-    document.documentElement.style.setProperty('--ui-grid-pattern', `url("${gridPattern}")`);
-  }
+  if (gridPattern) document.documentElement.style.setProperty('--ui-grid-pattern', `url("${gridPattern}")`);
 
   new AppController(root, levels, buildings, events, technologies, policies).start();
 };
