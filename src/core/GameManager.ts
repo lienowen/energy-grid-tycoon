@@ -1,5 +1,6 @@
 import { BuildingConfig } from '../buildings/BuildingBase';
 import { BuildingFactory } from '../buildings/BuildingFactory';
+import { RuleEngine } from '../rules/RuleEngine';
 import { BuildingUpgradeSystem, type UpgradeQuote } from '../systems/BuildingUpgradeSystem';
 import { EconomyResult } from '../systems/EconomySystem';
 import { ActiveEvent, EventConfig, EventSystem } from '../systems/EventSystem';
@@ -15,6 +16,9 @@ import {
 import { SimulationSystem } from '../systems/SimulationSystem';
 import { StorageResult } from '../systems/StorageSystem';
 import { TelemetryPoint, TelemetrySystem } from '../systems/TelemetrySystem';
+import { DeterministicRandom } from './DeterministicRandom';
+import { DomainEventBus } from './DomainEventBus';
+import type { GameDomainEventMap } from './GameDomainEvents';
 import { GameSpeed, GameState } from './GameState';
 import { GameSave } from './SaveManager';
 
@@ -47,12 +51,15 @@ export class GameManager {
   private readonly events: EventConfig[];
   private readonly technologies: TechnologyConfig[];
   private readonly policies: PolicyConfig[];
-  private readonly eventSystem = new EventSystem();
+  private readonly random: DeterministicRandom;
+  private readonly eventSystem: EventSystem;
+  private readonly ruleEngine: RuleEngine;
   private readonly telemetry: TelemetrySystem;
   private timer?: number;
   private lastPower?: PowerResult;
   private lastEconomy?: EconomyResult;
   private lastStorage?: StorageResult;
+  private gridOverloaded = false;
 
   constructor(
     level: LevelConfig,
@@ -61,7 +68,8 @@ export class GameManager {
     technologyConfigs: TechnologyConfig[],
     policyConfigs: PolicyConfig[],
     private readonly onChange: (view: GameViewModel) => void,
-    save?: GameSave
+    save?: GameSave,
+    private readonly domainEvents: DomainEventBus<GameDomainEventMap> = new DomainEventBus<GameDomainEventMap>()
   ) {
     this.session = save?.levelId === level.id
       ? LevelLoader.restore(level, buildingConfigs, save.state, save.buildings)
@@ -69,8 +77,12 @@ export class GameManager {
     this.events = eventConfigs;
     this.technologies = technologyConfigs;
     this.policies = policyConfigs;
+    this.random = new DeterministicRandom(this.session.state.randomState);
+    this.eventSystem = new EventSystem(this.random);
+    this.ruleEngine = new RuleEngine(level.rules.components);
     this.eventSystem.restore(save?.activeEvent, eventConfigs);
     this.telemetry = new TelemetrySystem(save?.telemetry ?? []);
+    this.gridOverloaded = this.session.state.supplyRatio < 0.9;
     this.refreshStorageState();
   }
 
@@ -121,8 +133,13 @@ export class GameManager {
     if (state.money < config.cost) return { ok: false, reason: '资金不足' };
 
     state.money -= config.cost;
-    this.session.buildings.add(BuildingFactory.create(config));
+    const building = BuildingFactory.create(config);
+    this.session.buildings.add(building);
     this.refreshStorageState();
+    this.domainEvents.emit('building.completed', {
+      configId: config.id,
+      instanceId: building.instanceId
+    });
     this.emit();
     return { ok: true };
   }
@@ -140,6 +157,7 @@ export class GameManager {
     state.money -= quote.cost;
     BuildingUpgradeSystem.upgrade(building);
     this.refreshStorageState();
+    this.domainEvents.emit('building.upgraded', { instanceId, level: building.level });
     this.emit();
     return { ok: true };
   }
@@ -151,6 +169,7 @@ export class GameManager {
     if (!building) return { ok: false, reason: '没有找到该建筑' };
     building.enabled = !building.enabled;
     this.refreshStorageState();
+    this.domainEvents.emit('building.toggled', { instanceId, enabled: building.enabled });
     this.emit();
     return { ok: true };
   }
@@ -166,6 +185,7 @@ export class GameManager {
     state.researchPoints -= technology.cost;
     state.unlockedTechnologyIds = [...state.unlockedTechnologyIds, technology.id];
     this.refreshStorageState();
+    this.domainEvents.emit('technology.researched', { technologyId });
     this.emit();
     return { ok: true };
   }
@@ -175,6 +195,7 @@ export class GameManager {
     if (state.completed || state.failed) return { ok: false, reason: '本局已经结束' };
     if (!policyId) {
       state.activePolicyId = undefined;
+      this.domainEvents.emit('policy.changed', { policyId: undefined });
       this.emit();
       return { ok: true };
     }
@@ -187,11 +208,13 @@ export class GameManager {
     state.money -= policy.activationCost;
     state.activePolicyId = policy.id;
     this.refreshStorageState();
+    this.domainEvents.emit('policy.changed', { policyId: policy.id });
     this.emit();
     return { ok: true };
   }
 
   createSave(): GameSave {
+    this.session.state.randomState = this.random.getState();
     return {
       version: 2,
       savedAt: new Date().toISOString(),
@@ -210,13 +233,32 @@ export class GameManager {
     const state = this.session.state;
     if (state.speed === 0 || state.completed || state.failed) return;
 
+    const previousEventId = this.eventSystem.getActive()?.config.id;
     this.eventSystem.advance(state.speed);
     this.eventSystem.maybeTrigger(
       this.session.config.catalog.events,
       this.events,
       this.session.config.rules.eventTriggerChance
     );
-    const modifiers = this.getSimulationModifiers();
+    const activeEvent = this.eventSystem.getActive();
+    const activeEventId = activeEvent?.config.id;
+    if (previousEventId && previousEventId !== activeEventId) {
+      this.domainEvents.emit('event.ended', { eventId: previousEventId });
+    }
+    if (activeEvent && previousEventId !== activeEventId) {
+      this.domainEvents.emit('event.started', {
+        eventId: activeEvent.config.id,
+        durationHours: activeEvent.config.durationHours
+      });
+    }
+
+    const ruleResult = this.ruleEngine.evaluate({ state, deltaHours: state.speed });
+    this.ruleEngine.applyStateDeltas(state, ruleResult.stateDeltas);
+    for (const signal of ruleResult.signals) {
+      this.domainEvents.emit('rule.triggered', signal);
+    }
+
+    const modifiers = this.getSimulationModifiers(ruleResult.modifiers);
     const result = SimulationSystem.tick(
       state,
       this.session.buildings,
@@ -230,13 +272,35 @@ export class GameManager {
       modifiers
     );
 
+    const wasCompleted = state.completed;
+    const wasFailed = state.failed;
     Object.assign(state, result.state, {
-      activeEventId: this.eventSystem.getActive()?.config.id
+      randomState: this.random.getState(),
+      activeEventId
     });
 
     state.completed = GoalSystem.isCompleted(state, this.session.config);
     state.failed = !state.completed && GoalSystem.isFailed(state, this.session.config);
     if (state.completed || state.failed) state.speed = 0;
+
+    const overloaded = state.supplyRatio < 0.9;
+    if (overloaded && !this.gridOverloaded) {
+      this.domainEvents.emit('grid.overloaded', {
+        supplyRatio: state.supplyRatio,
+        supply: state.powerSupply,
+        demand: state.powerDemand
+      });
+    } else if (!overloaded && this.gridOverloaded) {
+      this.domainEvents.emit('grid.stabilized', { supplyRatio: state.supplyRatio });
+    }
+    this.gridOverloaded = overloaded;
+
+    if (state.completed && !wasCompleted) {
+      this.domainEvents.emit('scenario.completed', { levelId: state.levelId, score: state.score });
+    }
+    if (state.failed && !wasFailed) {
+      this.domainEvents.emit('scenario.failed', { levelId: state.levelId });
+    }
 
     this.lastPower = result.power;
     this.lastEconomy = result.economy;
@@ -257,9 +321,10 @@ export class GameManager {
       .filter((item): item is PolicyConfig => Boolean(item));
   }
 
-  private getSimulationModifiers(): SimulationModifiers {
+  private getSimulationModifiers(ruleModifiers?: Partial<SimulationModifiers>): SimulationModifiers {
     return mergeSimulationModifiers(
       this.session.config.rules.simulationModifiers,
+      ruleModifiers,
       ResearchSystem.getModifiers(
         this.session.state.unlockedTechnologyIds,
         this.technologies
@@ -269,7 +334,11 @@ export class GameManager {
   }
 
   private refreshStorageState(): void {
-    const modifiers = this.getSimulationModifiers();
+    const ruleModifiers = this.ruleEngine.evaluate({
+      state: this.session.state,
+      deltaHours: 0
+    }).modifiers;
+    const modifiers = this.getSimulationModifiers(ruleModifiers);
     for (const building of this.session.buildings.getStorageBuildings()) {
       building.setStoredEnergy(building.storedEnergy, modifiers.storageCapacityMultiplier);
     }
@@ -288,7 +357,11 @@ export class GameManager {
       .filter((item) => !item.requiredTechnologyId || unlocked.has(item.requiredTechnologyId));
     const technologies = this.getAvailableTechnologies();
     const policies = this.getAvailablePolicies();
-    const modifiers = this.getSimulationModifiers();
+    const ruleModifiers = this.ruleEngine.evaluate({
+      state: this.session.state,
+      deltaHours: 1
+    }).modifiers;
+    const modifiers = this.getSimulationModifiers(ruleModifiers);
     const upgradeQuotes = Object.fromEntries(
       this.session.buildings.getBuildings().map((building) => [
         building.instanceId,
