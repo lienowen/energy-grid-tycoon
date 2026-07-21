@@ -35,16 +35,16 @@ export class LevelSelect {
     const totalBestScore = items.reduce((sum, item) => sum + item.bestScore, 0);
 
     this.root.innerHTML = `
-      <main class="campaign-shell">
+      <main class="campaign-shell mayor-campaign">
         <header class="campaign-hero">
           <div>
-            <span class="eyebrow">ENERGY GRID TYCOON</span>
-            <h1>城市能源战役</h1>
-            <p>建设电源、调配储能、升级设施、研发科技并制定政策，守住每一座城市。</p>
+            <span class="eyebrow">MAYOR APPOINTMENT</span>
+            <h1>选择你要接手的城市</h1>
+            <p>听取居民的需要，安排城市建设，在资金、生活和环境之间做出市长决定。</p>
           </div>
           <div class="campaign-summary">
-            <span>完成城市 <strong>${completedCount}/${items.length}</strong></span>
-            <span>累计最佳评分 <strong>${formatNumber(totalBestScore)}</strong></span>
+            <span>兑现承诺 <strong>${completedCount}/${items.length}</strong></span>
+            <span>市民累计评价 <strong>${formatNumber(totalBestScore)}</strong></span>
           </div>
         </header>
 
@@ -53,8 +53,8 @@ export class LevelSelect {
         </section>
 
         <footer class="campaign-footer">
-          <span>关卡目标、失败线、解锁关系与数值规则全部来自配置</span>
-          <span>素材：全局资源清单 · 场景按配置选择</span>
+          <span>每座城市都有不同的居民、产业和环境问题</span>
+          <span>市政秘书会在治理过程中告诉你下一步可以做什么</span>
         </footer>
       </main>
     `;
@@ -79,20 +79,20 @@ export class LevelSelect {
       <article class="campaign-card scenario-card ${unlocked ? '' : 'locked'} ${completed ? 'completed' : ''}" style="${style}">
         <div class="campaign-index">${String(index + 1).padStart(2, '0')}</div>
         <div class="campaign-copy">
-          <span>${completed ? '已完成' : unlocked ? '可进入' : '未解锁'}</span>
+          <span>${completed ? '承诺已兑现' : unlocked ? '等待市长接手' : '尚未开放'}</span>
           <h2>${level.name}</h2>
           <p>${level.description}</p>
         </div>
         <dl class="campaign-stats">
-          <div><dt>人口</dt><dd>${formatNumber(level.initial.population)}</dd></div>
-          <div><dt>需求</dt><dd>${formatNumber(level.initial.baseDemand)} MW</dd></div>
-          <div><dt>目标</dt><dd>${level.rules.objective.label}</dd></div>
-          <div><dt>最佳评分</dt><dd>${bestScore > 0 ? formatNumber(bestScore) : '—'}</dd></div>
+          <div><dt>居民</dt><dd>${formatNumber(level.initial.population)} 人</dd></div>
+          <div><dt>用电压力</dt><dd>${formatNumber(level.initial.baseDemand)} MW</dd></div>
+          <div><dt>市长承诺</dt><dd>${level.rules.objective.label}</dd></div>
+          <div><dt>最好评价</dt><dd>${bestScore > 0 ? formatNumber(bestScore) : '—'}</dd></div>
         </dl>
         <div class="campaign-actions">
-          ${hasSave && unlocked ? `<button class="secondary-action" data-continue="${level.id}">继续存档</button>` : ''}
+          ${hasSave && unlocked ? `<button class="secondary-action" data-continue="${level.id}">继续治理</button>` : ''}
           <button class="primary-action" data-start="${level.id}" ${unlocked ? '' : 'disabled'}>
-            ${completed ? '重新挑战' : unlocked ? '开始运营' : '解锁条件未满足'}
+            ${completed ? '再次治理' : unlocked ? '接手这座城市' : '先完成前一座城市'}
           </button>
         </div>
       </article>
