@@ -1,7 +1,8 @@
-import { BuildingConfig, BuildingSnapshot } from '../buildings/BuildingBase';
+import { BuildingConfig } from '../buildings/BuildingBase';
 import { BuildingFactory } from '../buildings/BuildingFactory';
 import { BuildingManager } from '../buildings/BuildingManager';
 import { createInitialState, GameState } from '../core/GameState';
+import type { BuildingSnapshot } from '../core/SaveSchema';
 
 export interface LevelGoal {
   type: 'money' | 'satisfaction' | 'population';
