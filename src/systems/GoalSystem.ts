@@ -20,12 +20,13 @@ export class GoalSystem {
   }
 
   static getProgress(state: GameState, level: LevelConfig): number {
-    const value = level.goal.type === 'money'
-      ? state.money
-      : level.goal.type === 'satisfaction'
-        ? state.satisfaction
-        : state.population;
+    if (level.goal.type === 'satisfaction') {
+      const satisfactionProgress = state.satisfaction / Math.max(level.goal.target, 1);
+      const survivalProgress = state.day / 3;
+      return Math.min(1, Math.max(0, Math.min(satisfactionProgress, survivalProgress)));
+    }
 
+    const value = level.goal.type === 'money' ? state.money : state.population;
     return Math.min(1, Math.max(0, value / Math.max(level.goal.target, 1)));
   }
 }
