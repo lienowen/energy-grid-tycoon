@@ -4,6 +4,10 @@ import { SpecialLogicSystem } from '../gameplay/SpecialLogicSystem';
 import { EconomyResult, EconomySystem } from './EconomySystem';
 import { EventEffects } from './EventSystem';
 import { PowerResult, PowerSystem } from './PowerSystem';
+import {
+  neutralSimulationModifiers,
+  type SimulationModifiers
+} from './SimulationModifiers';
 import { StorageResult, StorageSystem } from './StorageSystem';
 
 export interface SimulationResult {
@@ -18,17 +22,18 @@ export class SimulationSystem {
     state: GameState,
     buildings: BuildingManager,
     effects: EventEffects,
-    tickHours = 1
+    tickHours = 1,
+    modifiers: SimulationModifiers = neutralSimulationModifiers()
   ): SimulationResult {
     const peakCurve = 0.82 + 0.28 * Math.max(0, Math.sin(((state.hour - 7) / 24) * Math.PI * 2));
-    const demand = state.baseDemand * peakCurve * effects.demandMultiplier;
+    const demand = state.baseDemand * peakCurve * effects.demandMultiplier * modifiers.demandMultiplier;
     const gridLossRate = 0.04;
 
     const generationSupply = buildings.getTotalPower((building) =>
       SpecialLogicSystem.getOutputMultiplier(building, {
         hour: state.hour,
         eventOutputMultiplier: effects.outputMultiplier
-      })
+      }) * modifiers.generationMultiplier
     );
 
     const requiredGrossSupply = demand / (1 - gridLossRate);
@@ -36,7 +41,12 @@ export class SimulationSystem {
       generationSupply,
       requiredGrossSupply,
       buildings.getBuildings(),
-      tickHours
+      tickHours,
+      {
+        capacityMultiplier: modifiers.storageCapacityMultiplier,
+        rateMultiplier: modifiers.storageRateMultiplier,
+        efficiencyBonus: modifiers.storageEfficiencyBonus
+      }
     );
 
     const power = PowerSystem.calculate({
@@ -47,8 +57,10 @@ export class SimulationSystem {
 
     const economy = EconomySystem.calculate({
       energySold: power.energyServed,
-      pricePerUnit: state.powerPrice * effects.priceMultiplier,
-      operationCost: buildings.getTotalMaintenance() * (effects.maintenanceMultiplier ?? 1),
+      pricePerUnit: state.powerPrice * effects.priceMultiplier * modifiers.priceMultiplier,
+      operationCost: buildings.getTotalMaintenance()
+        * (effects.maintenanceMultiplier ?? 1)
+        * modifiers.maintenanceMultiplier,
       tickHours
     });
 
@@ -58,12 +70,22 @@ export class SimulationSystem {
       : -Math.min(4 * tickHours, power.shortage / Math.max(demand, 1) * 8 * tickHours);
     const satisfaction = Math.min(
       100,
-      Math.max(0, state.satisfaction + satisfactionDelta + effects.satisfactionDelta * tickHours + pricePressure)
+      Math.max(
+        0,
+        state.satisfaction
+          + satisfactionDelta
+          + effects.satisfactionDelta * tickHours
+          + modifiers.satisfactionDeltaPerHour * tickHours
+          + pricePressure
+      )
     );
     const populationGrowth = satisfaction >= 75
       ? Math.ceil(state.population * 0.0008 * tickHours)
       : -Math.ceil(state.population * 0.0005 * tickHours);
-    const pollution = Math.min(100, Math.max(0, buildings.getTotalPollution() * 1.4));
+    const pollution = Math.min(
+      100,
+      Math.max(0, buildings.getTotalPollution() * 1.4 * modifiers.pollutionMultiplier)
+    );
 
     let hour = state.hour + tickHours;
     let day = state.day;
@@ -87,7 +109,10 @@ export class SimulationSystem {
       score: Math.max(0, state.score + economy.profit * 0.1 + satisfaction * 0.2),
       storageEnergy: storage.storedEnergy,
       storageCapacity: storage.capacity,
-      storageFlow: storage.flow
+      storageFlow: storage.flow,
+      totalRevenue: state.totalRevenue + economy.revenue,
+      totalEnergyServed: state.totalEnergyServed + power.energyServed * tickHours,
+      totalShortage: state.totalShortage + power.shortage * tickHours
     };
 
     return { state: nextState, power, economy, storage };
