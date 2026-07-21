@@ -25,14 +25,14 @@ export interface ResearchCheck {
 export class ResearchSystem {
   static canUnlock(state: GameState, technology: TechnologyConfig): ResearchCheck {
     if (state.unlockedTechnologyIds.includes(technology.id)) {
-      return { ok: false, reason: '该技术已经完成' };
+      return { ok: false, reason: '这项城市升级已经完成' };
     }
 
     const missing = technology.prerequisites.filter(
       (technologyId) => !state.unlockedTechnologyIds.includes(technologyId)
     );
-    if (missing.length > 0) return { ok: false, reason: '前置技术尚未完成' };
-    if (state.researchPoints < technology.cost) return { ok: false, reason: '研发点不足' };
+    if (missing.length > 0) return { ok: false, reason: '先完成前面的城市升级' };
+    if (state.researchPoints < technology.cost) return { ok: false, reason: '发展点还不够' };
     return { ok: true };
   }
 
