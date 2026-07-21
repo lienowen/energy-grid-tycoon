@@ -77,7 +77,10 @@ export class GameManager {
   start(): void {
     if (this.timer !== undefined) return;
     this.emit();
-    this.timer = window.setInterval(() => this.tick(), 1000);
+    this.timer = window.setInterval(
+      () => this.tick(),
+      this.session.config.rules.tickIntervalMs
+    );
   }
 
   destroy(): void {
@@ -93,7 +96,8 @@ export class GameManager {
 
   setPowerPrice(price: number): void {
     if (this.session.state.completed || this.session.state.failed) return;
-    this.session.state.powerPrice = Math.min(1.2, Math.max(0.15, price));
+    const range = this.session.config.rules.powerPriceRange;
+    this.session.state.powerPrice = Math.min(range.max, Math.max(range.min, price));
     this.emit();
   }
 
@@ -102,7 +106,7 @@ export class GameManager {
     if (state.completed || state.failed) return { ok: false, reason: '本局已经结束' };
 
     const level = this.session.config;
-    if (!level.availableBuildings.includes(configId)) {
+    if (!level.catalog.buildings.includes(configId)) {
       return { ok: false, reason: '该建筑不属于当前城市规划' };
     }
 
@@ -207,7 +211,11 @@ export class GameManager {
     if (state.speed === 0 || state.completed || state.failed) return;
 
     this.eventSystem.advance(state.speed);
-    this.eventSystem.maybeTrigger(this.session.config.eventPool, this.events, 0.1);
+    this.eventSystem.maybeTrigger(
+      this.session.config.catalog.events,
+      this.events,
+      this.session.config.rules.eventTriggerChance
+    );
     const modifiers = this.getSimulationModifiers();
     const result = SimulationSystem.tick(
       state,
@@ -227,7 +235,7 @@ export class GameManager {
     });
 
     state.completed = GoalSystem.isCompleted(state, this.session.config);
-    state.failed = GoalSystem.isFailed(state, this.session.config);
+    state.failed = !state.completed && GoalSystem.isFailed(state, this.session.config);
     if (state.completed || state.failed) state.speed = 0;
 
     this.lastPower = result.power;
@@ -238,25 +246,20 @@ export class GameManager {
   }
 
   private getAvailableTechnologies(): TechnologyConfig[] {
-    const allowed = this.session.config.availableTechnologies;
-    return allowed
-      ? allowed
-        .map((id) => this.technologies.find((item) => item.id === id))
-        .filter((item): item is TechnologyConfig => Boolean(item))
-      : [...this.technologies];
+    return this.session.config.catalog.technologies
+      .map((id) => this.technologies.find((item) => item.id === id))
+      .filter((item): item is TechnologyConfig => Boolean(item));
   }
 
   private getAvailablePolicies(): PolicyConfig[] {
-    const allowed = this.session.config.availablePolicies;
-    return allowed
-      ? allowed
-        .map((id) => this.policies.find((item) => item.id === id))
-        .filter((item): item is PolicyConfig => Boolean(item))
-      : [...this.policies];
+    return this.session.config.catalog.policies
+      .map((id) => this.policies.find((item) => item.id === id))
+      .filter((item): item is PolicyConfig => Boolean(item));
   }
 
   private getSimulationModifiers(): SimulationModifiers {
     return mergeSimulationModifiers(
+      this.session.config.rules.simulationModifiers,
       ResearchSystem.getModifiers(
         this.session.state.unlockedTechnologyIds,
         this.technologies
@@ -279,7 +282,7 @@ export class GameManager {
   private emit(): void {
     const level = this.session.config;
     const unlocked = new Set(this.session.state.unlockedTechnologyIds);
-    const availableBuildings = level.availableBuildings
+    const availableBuildings = level.catalog.buildings
       .map((id) => this.session.buildingCatalog.get(id))
       .filter((item): item is BuildingConfig => Boolean(item))
       .filter((item) => !item.requiredTechnologyId || unlocked.has(item.requiredTechnologyId));
