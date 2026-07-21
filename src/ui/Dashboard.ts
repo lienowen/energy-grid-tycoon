@@ -1,12 +1,17 @@
 import { BuildingConfig } from '../buildings/BuildingBase';
+import { GameManager, GameViewModel } from '../core/GameManager';
 import { GameSpeed } from '../core/GameState';
-import { GameViewModel } from '../core/GameManager';
 import { AssetManager } from '../resources/AssetManager';
 
 export interface DashboardActions {
   onBuild: (configId: string) => { ok: boolean; reason?: string };
   onSpeedChange: (speed: GameSpeed) => void;
   onPriceChange: (price: number) => void;
+  onSave: () => { ok: boolean; message: string };
+  onLoad: () => { ok: boolean; message: string };
+  onMenu: () => void;
+  onRetry: () => void;
+  onNext: () => void;
 }
 
 const formatNumber = (value: number): string =>
@@ -17,6 +22,7 @@ const formatMoney = (value: number): string =>
 
 export class Dashboard {
   private notice = '';
+  private lastView?: GameViewModel;
 
   constructor(
     private readonly root: HTMLElement,
@@ -24,17 +30,22 @@ export class Dashboard {
   ) {}
 
   render(view: GameViewModel): void {
-    const { state, level, availableBuildings, buildings, activeEvent, lastEconomy, goalProgress } = view;
+    this.lastView = view;
+    const { state, level, availableBuildings, buildings, activeEvent, lastEconomy, lastStorage, goalProgress } = view;
     const buildingCounts = new Map<string, number>();
     for (const building of buildings) {
       buildingCounts.set(building.config.id, (buildingCounts.get(building.config.id) ?? 0) + 1);
     }
 
-    const goalLabel = level.goal.type === 'money'
-      ? `资金达到 ${formatMoney(level.goal.target)}`
-      : level.goal.type === 'satisfaction'
-        ? `满意度达到 ${level.goal.target}% 并坚持到第 3 天`
-        : `人口达到 ${formatNumber(level.goal.target)}`;
+    const goalLabel = this.getGoalLabel(view);
+    const storageRatio = state.storageCapacity > 0 ? state.storageEnergy / state.storageCapacity : 0;
+    const storageFlow = lastStorage
+      ? lastStorage.discharged > 0
+        ? `放电 ${formatNumber(lastStorage.discharged)} MWh`
+        : lastStorage.charged > 0
+          ? `充电 ${formatNumber(lastStorage.charged)} MWh`
+          : '待机'
+      : '待机';
 
     this.root.innerHTML = `
       <main class="game-shell">
@@ -46,18 +57,26 @@ export class Dashboard {
               <p>${level.name} · 第 ${state.day} 天 ${String(Math.floor(state.hour)).padStart(2, '0')}:00</p>
             </div>
           </div>
-          <div class="speed-controls" aria-label="游戏速度">
-            ${([0, 1, 2, 4] as GameSpeed[]).map((speed) => `
-              <button class="speed-button ${state.speed === speed ? 'active' : ''}" data-speed="${speed}">
-                ${speed === 0 ? '暂停' : `${speed}×`}
-              </button>
-            `).join('')}
+          <div class="topbar-actions">
+            <div class="session-actions">
+              <button data-session="save">保存</button>
+              <button data-session="load">读取</button>
+              <button data-session="menu">城市列表</button>
+            </div>
+            <div class="speed-controls" aria-label="游戏速度">
+              ${([0, 1, 2, 4] as GameSpeed[]).map((speed) => `
+                <button class="speed-button ${state.speed === speed ? 'active' : ''}" data-speed="${speed}">
+                  ${speed === 0 ? '暂停' : `${speed}×`}
+                </button>
+              `).join('')}
+            </div>
           </div>
         </header>
 
         <section class="status-grid">
           ${this.metric('资金', formatMoney(state.money), lastEconomy ? `${lastEconomy.profit >= 0 ? '+' : ''}${formatMoney(lastEconomy.profit)}/tick` : '等待结算', 'money')}
           ${this.metric('供电', `${Math.round(state.supplyRatio * 100)}%`, `${formatNumber(state.powerSupply)} / ${formatNumber(state.powerDemand)} MW`, state.supplyRatio >= 0.98 ? 'good' : 'danger')}
+          ${this.metric('储能', `${Math.round(storageRatio * 100)}%`, `${formatNumber(state.storageEnergy)} / ${formatNumber(state.storageCapacity)} MWh · ${storageFlow}`, storageRatio >= 0.2 ? 'good' : 'warning')}
           ${this.metric('人口', formatNumber(state.population), `满意度 ${state.satisfaction.toFixed(1)}%`, state.satisfaction >= 70 ? 'good' : 'danger')}
           ${this.metric('污染', `${state.pollution.toFixed(0)}%`, `评分 ${formatNumber(state.score)}`, state.pollution <= 25 ? 'good' : 'warning')}
         </section>
@@ -84,6 +103,11 @@ export class Dashboard {
               <div class="power-ring" style="--supply:${Math.min(state.supplyRatio, 1) * 360}deg">
                 <div><strong>${Math.round(Math.min(state.supplyRatio, 1) * 100)}%</strong><span>供电率</span></div>
               </div>
+              <div class="storage-telemetry">
+                <span>🔋 储能调度</span>
+                <strong>${storageFlow}</strong>
+                <div><i style="width:${Math.round(storageRatio * 100)}%"></i></div>
+              </div>
               <div class="building-fleet">
                 ${availableBuildings.map((config) => this.buildingNode(config, buildingCounts.get(config.id) ?? 0)).join('')}
               </div>
@@ -97,7 +121,7 @@ export class Dashboard {
                   <p>${activeEvent.config.description} · 剩余 ${Math.ceil(activeEvent.remainingHours)} 小时</p>
                 </div>
               </div>
-            ` : '<div class="event-banner quiet"><span>📡</span><div><strong>城市运行平稳</strong><p>调度中心正在监测负荷和天气。</p></div></div>'}
+            ` : '<div class="event-banner quiet"><span>📡</span><div><strong>城市运行平稳</strong><p>调度中心正在监测负荷、天气与储能状态。</p></div></div>'}
           </div>
 
           <aside class="control-panel panel">
@@ -106,12 +130,12 @@ export class Dashboard {
 
             <label class="price-control">
               <span><strong>居民电价</strong><em>${state.powerPrice.toFixed(2)} 元/kWh</em></span>
-              <input id="price-slider" type="range" min="0.15" max="1.2" step="0.01" value="${state.powerPrice}" />
-              <small>高电价提高收入，但长期会影响满意度。</small>
+              <input id="price-slider" type="range" min="0.15" max="1.2" step="0.01" value="${state.powerPrice}" ${state.completed || state.failed ? 'disabled' : ''}/>
+              <small>高电价提高收入，但会持续降低满意度。</small>
             </label>
 
             <div class="build-list">
-              ${availableBuildings.map((config) => this.buildCard(config, buildingCounts.get(config.id) ?? 0, state.money)).join('')}
+              ${availableBuildings.map((config) => this.buildCard(config, buildingCounts.get(config.id) ?? 0, state.money, state.completed || state.failed)).join('')}
             </div>
 
             <div class="goal-card ${state.completed ? 'completed' : state.failed ? 'failed' : ''}">
@@ -120,16 +144,27 @@ export class Dashboard {
                 <strong>${goalLabel}</strong>
               </div>
               <div class="progress-track"><i style="width:${Math.round(goalProgress * 100)}%"></i></div>
-              <small>${state.completed ? '任务完成，城市进入稳定发展阶段。' : state.failed ? '城市运营失败，请重新规划。' : `完成度 ${Math.round(goalProgress * 100)}%`}</small>
+              <small>${state.completed ? '任务完成，新的城市已经解锁。' : state.failed ? '城市运营失败，请重新规划。' : `完成度 ${Math.round(goalProgress * 100)}%`}</small>
             </div>
 
             ${this.notice ? `<div class="toast">${this.notice}</div>` : ''}
           </aside>
         </section>
+
+        ${state.completed || state.failed ? this.resultOverlay(view) : ''}
       </main>
     `;
 
     this.bindEvents();
+  }
+
+  private getGoalLabel(view: GameViewModel): string {
+    const { level } = view;
+    return level.goal.type === 'money'
+      ? `资金达到 ${formatMoney(level.goal.target)}`
+      : level.goal.type === 'satisfaction'
+        ? `满意度达到 ${level.goal.target}% 并坚持到第 3 天`
+        : `人口达到 ${formatNumber(level.goal.target)}`;
   }
 
   private metric(title: string, value: string, detail: string, tone: string): string {
@@ -140,15 +175,52 @@ export class Dashboard {
     return `<div class="building-node"><span>${AssetManager.get(config.assetId)}</span><strong>${config.name}</strong><small>× ${count}</small></div>`;
   }
 
-  private buildCard(config: BuildingConfig, count: number, money: number): string {
-    const disabled = money < config.cost;
+  private buildCard(config: BuildingConfig, count: number, money: number, gameEnded: boolean): string {
+    const disabled = money < config.cost || gameEnded;
+    const output = config.category === 'storage'
+      ? `${formatNumber(config.capacity ?? 0)} MWh · ${Math.round((config.efficiency ?? 0.9) * 100)}%效率`
+      : `${formatNumber(config.power)} MW`;
+
     return `
       <button class="build-card" data-build="${config.id}" ${disabled ? 'disabled' : ''}>
         <span class="build-icon">${AssetManager.get(config.assetId)}</span>
-        <span class="build-copy"><strong>${config.name}</strong><small>${config.description}</small><em>${formatNumber(config.power)} MW · 维护 ${formatMoney(config.maintenance)}</em></span>
+        <span class="build-copy"><strong>${config.name}</strong><small>${config.description}</small><em>${output} · 维护 ${formatMoney(config.maintenance)}</em></span>
         <span class="build-price">${formatMoney(config.cost)}<small>已有 ${count}</small></span>
       </button>
     `;
+  }
+
+  private resultOverlay(view: GameViewModel): string {
+    const completed = view.state.completed;
+    return `
+      <div class="result-backdrop">
+        <section class="result-dialog ${completed ? 'success' : 'failure'}">
+          <span class="result-icon">${completed ? '🏆' : '⚠️'}</span>
+          <span class="eyebrow">${completed ? 'CITY SECURED' : 'GRID COLLAPSED'}</span>
+          <h2>${completed ? '城市运营成功' : '城市运营失败'}</h2>
+          <p>${completed ? `你稳定了${view.level.name}的能源系统，下一座城市已经开放。` : '资金、满意度或人口触及失败线。调整建设顺序与电价后再次挑战。'}</p>
+          <div class="result-stats">
+            <span>第 ${view.state.day} 天</span>
+            <span>评分 ${formatNumber(view.state.score)}</span>
+            <span>资金 ${formatMoney(view.state.money)}</span>
+          </div>
+          <div class="result-actions">
+            <button class="secondary-action" data-result="menu">城市列表</button>
+            <button class="secondary-action" data-result="retry">重新挑战</button>
+            ${completed ? '<button class="primary-action" data-result="next">进入下一城</button>' : ''}
+          </div>
+        </section>
+      </div>
+    `;
+  }
+
+  private showNotice(message: string): void {
+    this.notice = message;
+    if (this.lastView) this.render(this.lastView);
+    window.setTimeout(() => {
+      this.notice = '';
+      if (this.lastView) this.render(this.lastView);
+    }, 1800);
   }
 
   private bindEvents(): void {
@@ -159,12 +231,31 @@ export class Dashboard {
     this.root.querySelectorAll<HTMLButtonElement>('[data-build]').forEach((button) => {
       button.addEventListener('click', () => {
         const result = this.actions.onBuild(button.dataset.build ?? '');
-        this.notice = result.ok ? '建设指令已下达' : result.reason ?? '建设失败';
-        window.setTimeout(() => { this.notice = ''; }, 1800);
+        this.showNotice(result.ok ? '建设指令已下达' : result.reason ?? '建设失败');
+      });
+    });
+
+    this.root.querySelectorAll<HTMLButtonElement>('[data-session]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const action = button.dataset.session;
+        if (action === 'save') this.showNotice(this.actions.onSave().message);
+        if (action === 'load') {
+          const result = this.actions.onLoad();
+          if (!result.ok) this.showNotice(result.message);
+        }
+        if (action === 'menu') this.actions.onMenu();
+      });
+    });
+
+    this.root.querySelectorAll<HTMLButtonElement>('[data-result]').forEach((button) => {
+      button.addEventListener('click', () => {
+        if (button.dataset.result === 'menu') this.actions.onMenu();
+        if (button.dataset.result === 'retry') this.actions.onRetry();
+        if (button.dataset.result === 'next') this.actions.onNext();
       });
     });
 
     const price = this.root.querySelector<HTMLInputElement>('#price-slider');
-    price?.addEventListener('input', () => this.actions.onPriceChange(Number(price.value)));
+    price?.addEventListener('change', () => this.actions.onPriceChange(Number(price.value)));
   }
 }
