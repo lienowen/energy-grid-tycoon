@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { BuildingFactory } from '../buildings/BuildingFactory';
 import type { BuildingConfig } from '../buildings/BuildingBase';
+import { BuildingFactory } from '../buildings/BuildingFactory';
 import type { CityPlotConfig } from '../core/CityMapConfig';
 import { CityMapSystem } from './CityMapSystem';
 
@@ -63,7 +63,7 @@ describe('CityMapSystem', () => {
     expect(CityMapSystem.canPlace(solar, neighborhood, [existing]).ok).toBe(false);
   });
 
-  it('assigns configured starting facilities and fills remaining legacy gaps', () => {
+  it('assigns configured starting facilities and fills remaining gaps', () => {
     const first = BuildingFactory.create(solar);
     const second = BuildingFactory.create(battery);
 
@@ -75,5 +75,21 @@ describe('CityMapSystem', () => {
 
     expect(first.placementId).toBe(neighborhood.id);
     expect(second.placementId).toBe(utility.id);
+  });
+
+  it('keeps the chosen plot when a facility is saved and restored', () => {
+    const placed = BuildingFactory.create(solar);
+    placed.place(neighborhood.id);
+
+    const restored = BuildingFactory.create(solar, placed.toSnapshot());
+
+    expect(restored.placementId).toBe(neighborhood.id);
+    expect(restored.toSnapshot()).toEqual(placed.toSnapshot());
+  });
+
+  it('keeps legacy snapshots free of empty placement fields', () => {
+    const building = BuildingFactory.create(solar);
+
+    expect(building.toSnapshot()).not.toHaveProperty('placementId');
   });
 });
