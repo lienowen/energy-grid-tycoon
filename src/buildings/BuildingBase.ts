@@ -17,6 +17,12 @@ export interface BuildingConfig {
   pollution: number;
   description: string;
   specialLogic?: string;
+  requiredTechnologyId?: string;
+  maxLevel?: number;
+  upgradeCostFactor?: number;
+  upgradePowerBonus?: number;
+  upgradeMaintenanceBonus?: number;
+  upgradeCapacityBonus?: number;
 }
 
 export class BuildingBase {
@@ -24,43 +30,55 @@ export class BuildingBase {
   readonly config: BuildingConfig;
   enabled = true;
   storedEnergy = 0;
+  level = 1;
 
   constructor(config: BuildingConfig, instanceId: string = crypto.randomUUID()) {
     this.config = config;
     this.instanceId = instanceId;
   }
 
+  getMaxLevel(): number {
+    return Math.max(1, Math.floor(this.config.maxLevel ?? 3));
+  }
+
   getPowerOutput(outputMultiplier = 1): number {
     if (!this.enabled || this.config.category !== 'generation') return 0;
-    return Math.max(0, this.config.power * outputMultiplier);
+    return Math.max(0, this.config.power * this.getPowerLevelMultiplier() * outputMultiplier);
   }
 
   getMaintenance(): number {
-    return this.enabled ? this.config.maintenance : 0;
+    if (!this.enabled) return 0;
+    const bonus = Math.max(0, this.config.upgradeMaintenanceBonus ?? 0.12);
+    return this.config.maintenance * (1 + (this.level - 1) * bonus);
   }
 
   getPollution(): number {
     return this.enabled ? this.config.pollution : 0;
   }
 
-  getStorageCapacity(): number {
-    return this.config.category === 'storage' ? Math.max(0, this.config.capacity ?? 0) : 0;
+  getStorageCapacity(capacityMultiplier = 1): number {
+    if (this.config.category !== 'storage') return 0;
+    const bonus = Math.max(0, this.config.upgradeCapacityBonus ?? 0.28);
+    const levelMultiplier = 1 + (this.level - 1) * bonus;
+    return Math.max(0, (this.config.capacity ?? 0) * levelMultiplier * capacityMultiplier);
   }
 
-  getChargeRate(): number {
-    return this.config.category === 'storage' ? Math.max(0, this.config.chargeRate ?? this.config.power) : 0;
+  getChargeRate(rateMultiplier = 1): number {
+    if (this.config.category !== 'storage') return 0;
+    return Math.max(0, (this.config.chargeRate ?? this.config.power) * this.getPowerLevelMultiplier() * rateMultiplier);
   }
 
-  getDischargeRate(): number {
-    return this.config.category === 'storage' ? Math.max(0, this.config.dischargeRate ?? this.config.power) : 0;
+  getDischargeRate(rateMultiplier = 1): number {
+    if (this.config.category !== 'storage') return 0;
+    return Math.max(0, (this.config.dischargeRate ?? this.config.power) * this.getPowerLevelMultiplier() * rateMultiplier);
   }
 
-  getStorageEfficiency(): number {
-    return Math.min(1, Math.max(0.01, this.config.efficiency ?? 0.9));
+  getStorageEfficiency(efficiencyBonus = 0): number {
+    return Math.min(0.99, Math.max(0.01, (this.config.efficiency ?? 0.9) + efficiencyBonus));
   }
 
-  setStoredEnergy(value: number): void {
-    this.storedEnergy = Math.min(this.getStorageCapacity(), Math.max(0, value));
+  setStoredEnergy(value: number, capacityMultiplier = 1): void {
+    this.storedEnergy = Math.min(this.getStorageCapacity(capacityMultiplier), Math.max(0, value));
   }
 
   toSnapshot(): BuildingSnapshot {
@@ -68,7 +86,13 @@ export class BuildingBase {
       instanceId: this.instanceId,
       configId: this.config.id,
       enabled: this.enabled,
-      storedEnergy: this.storedEnergy
+      storedEnergy: this.storedEnergy,
+      level: this.level
     };
+  }
+
+  private getPowerLevelMultiplier(): number {
+    const bonus = Math.max(0, this.config.upgradePowerBonus ?? 0.22);
+    return 1 + (this.level - 1) * bonus;
   }
 }
