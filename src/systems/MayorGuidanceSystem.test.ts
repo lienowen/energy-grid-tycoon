@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { BuildingConfig } from '../buildings/BuildingBase';
-import { createInitialState } from '../core/GameState';
+import { createInitialState, type GameState } from '../core/GameState';
 import { MayorGuidanceSystem, type MayorGuidanceContext } from './MayorGuidanceSystem';
 import type { TechnologyConfig } from './ResearchSystem';
 
@@ -39,7 +39,7 @@ const upgrade: TechnologyConfig = {
   effects: { generationMultiplier: 1.05 }
 };
 
-const context = (): MayorGuidanceContext => {
+const context = (statePatch: Partial<GameState> = {}): MayorGuidanceContext => {
   const state = createInitialState({
     levelId: 'mayor-test',
     cityName: '测试城',
@@ -50,7 +50,7 @@ const context = (): MayorGuidanceContext => {
     satisfaction: 80,
     researchPoints: 0
   });
-  state.supplyRatio = 1;
+  Object.assign(state, { supplyRatio: 1 }, statePatch);
   return {
     state,
     buildings: [],
@@ -63,10 +63,7 @@ const context = (): MayorGuidanceContext => {
 
 describe('MayorGuidanceSystem', () => {
   it('guides the mayor to add power when residents face outages', () => {
-    const value = context();
-    value.state.supplyRatio = 0.72;
-
-    const guide = MayorGuidanceSystem.evaluate(value);
+    const guide = MayorGuidanceSystem.evaluate(context({ supplyRatio: 0.72 }));
 
     expect(guide.headline).toContain('停电');
     expect(guide.action).toEqual({ type: 'build', buildingId: generator.id });
@@ -80,22 +77,14 @@ describe('MayorGuidanceSystem', () => {
   });
 
   it('opens city upgrades when enough development points are available', () => {
-    const value = context();
-    value.state.storageCapacity = 600;
-    value.state.researchPoints = 25;
-
-    const guide = MayorGuidanceSystem.evaluate(value);
+    const guide = MayorGuidanceSystem.evaluate(context({ storageCapacity: 600, researchPoints: 25 }));
 
     expect(guide.message).toContain(upgrade.name);
     expect(guide.action).toEqual({ type: 'openPanel', panel: 'research' });
   });
 
   it('asks for a governing direction after the city becomes stable', () => {
-    const value = context();
-    value.state.storageCapacity = 600;
-    value.state.day = 2;
-
-    const guide = MayorGuidanceSystem.evaluate(value);
+    const guide = MayorGuidanceSystem.evaluate(context({ storageCapacity: 600, day: 2 }));
 
     expect(guide.headline).toContain('施政方向');
     expect(guide.action).toEqual({ type: 'openPanel', panel: 'policy' });
