@@ -17,7 +17,12 @@
       "satisfaction": 82,
       "researchPoints": 12,
       "technologies": [],
-      "buildings": ["solar_basic", "solar_basic", "wind_basic"]
+      "buildings": ["solar_basic", "solar_basic", "wind_basic"],
+      "placements": [
+        { "buildingId": "solar_basic", "plotId": "sunrise-neighborhood" },
+        { "buildingId": "solar_basic", "plotId": "south-outskirts" },
+        { "buildingId": "wind_basic", "plotId": "east-coast" }
+      ]
     },
     "catalog": {
       "buildings": ["solar_basic", "wind_basic", "gas_basic", "battery_basic", "battery_utility"],
@@ -50,18 +55,18 @@
         }
       ],
       "objective": {
-        "label": "市政资金达到 ¥9,000，并完成 1 项城市升级",
+        "label": "城市资金达到 ¥9,000，并完成 1 项城市发展",
         "mode": "all",
         "conditions": [
-          { "metric": "money", "operator": "gte", "target": 9000, "label": "市政资金达到 ¥9,000" },
-          { "metric": "unlockedTechnologies", "operator": "gte", "target": 1, "label": "完成 1 项城市升级" }
+          { "metric": "money", "operator": "gte", "target": 9000, "label": "城市资金达到 ¥9,000" },
+          { "metric": "unlockedTechnologies", "operator": "gte", "target": 1, "label": "完成 1 项城市发展" }
         ]
       },
       "failure": {
-        "label": "市政资金跌破 -¥1,500、居民满意降至 5% 或城市人口归零。",
+        "label": "城市资金跌破 -¥1,500、居民满意降至 5% 或城市人口归零。",
         "mode": "any",
         "conditions": [
-          { "metric": "money", "operator": "lte", "target": -1500, "label": "市政资金耗尽" },
+          { "metric": "money", "operator": "lte", "target": -1500, "label": "城市资金耗尽" },
           { "metric": "satisfaction", "operator": "lte", "target": 5, "label": "居民失去信心" },
           { "metric": "population", "operator": "lte", "target": 0, "label": "城市人口归零" }
         ]
@@ -70,16 +75,19 @@
     "presentation": {
       "backgroundAssetId": "background_campaign_city",
       "accent": "#4ad7ff",
-      "briefing": ["先让所有街区稳定亮灯", "把白天多余的电留到晚上", "完成第一次城市升级"],
+      "briefing": ["先让所有街区稳定亮灯", "把白天多余的电留到晚上", "完成第一次城市发展"],
       "world": {
         "theme": "residential",
         "city": { "x": 50, "y": 51 },
-        "slots": [
-          { "x": 16, "y": 31, "scale": 0.92, "depth": "far" },
-          { "x": 79, "y": 30, "scale": 0.94, "depth": "far" },
-          { "x": 14, "y": 68, "scale": 1.04, "depth": "near" },
-          { "x": 80, "y": 68, "scale": 1.05, "depth": "near" },
-          { "x": 49, "y": 79, "scale": 1.02, "depth": "near" }
+        "plots": [
+          { "id": "sunrise-neighborhood", "x": 17, "y": 31, "zone": "neighborhood", "accepts": ["generation", "storage"], "scale": 0.92, "depth": "far", "label": "晨光社区" },
+          { "id": "north-outskirts", "x": 38, "y": 22, "zone": "outskirts", "accepts": ["generation"], "scale": 0.9, "depth": "far", "label": "北部高地" },
+          { "id": "east-coast", "x": 80, "y": 29, "zone": "coastal", "accepts": ["generation"], "scale": 0.95, "depth": "far", "label": "东部海岸" },
+          { "id": "west-industry", "x": 13, "y": 66, "zone": "industrial", "accepts": ["generation", "storage"], "scale": 1.04, "depth": "near", "label": "西部产业区" },
+          { "id": "south-neighborhood", "x": 34, "y": 78, "zone": "neighborhood", "accepts": ["generation", "storage"], "scale": 1.02, "depth": "near", "label": "南部社区" },
+          { "id": "central-utility", "x": 63, "y": 78, "zone": "utility", "accepts": ["generation", "storage", "grid"], "scale": 1.02, "depth": "near", "label": "城市公共区" },
+          { "id": "east-industry", "x": 84, "y": 67, "zone": "industrial", "accepts": ["generation", "storage"], "scale": 1.05, "depth": "near", "label": "东部产业区" },
+          { "id": "south-outskirts", "x": 52, "y": 24, "zone": "outskirts", "accepts": ["generation"], "scale": 0.9, "depth": "far", "label": "南部高地" }
         ]
       }
     }
@@ -102,7 +110,13 @@
       "satisfaction": 78,
       "researchPoints": 24,
       "technologies": ["solar_forecasting"],
-      "buildings": ["solar_basic", "wind_basic", "gas_basic", "battery_basic"]
+      "buildings": ["solar_basic", "wind_basic", "gas_basic", "battery_basic"],
+      "placements": [
+        { "buildingId": "solar_basic", "plotId": "factory-roofs" },
+        { "buildingId": "wind_basic", "plotId": "harbor-wind" },
+        { "buildingId": "gas_basic", "plotId": "west-plant" },
+        { "buildingId": "battery_basic", "plotId": "central-utility" }
+      ]
     },
     "catalog": {
       "buildings": ["solar_basic", "wind_basic", "gas_basic", "battery_basic", "battery_utility", "wind_offshore"],
@@ -162,18 +176,18 @@
         }
       ],
       "objective": {
-        "label": "居民满意达到 92%，并治理到第 3 天",
+        "label": "居民满意达到 92%，并坚持到第 3 天",
         "mode": "all",
         "conditions": [
           { "metric": "satisfaction", "operator": "gte", "target": 92, "label": "居民满意达到 92%" },
-          { "metric": "day", "operator": "gte", "target": 3, "label": "治理到第 3 天" }
+          { "metric": "day", "operator": "gte", "target": 3, "label": "坚持到第 3 天" }
         ]
       },
       "failure": {
-        "label": "市政资金跌破 -¥2,500、居民满意降至 5% 或长期停电失控。",
+        "label": "城市资金跌破 -¥2,500、居民满意降至 5% 或长期停电失控。",
         "mode": "any",
         "conditions": [
-          { "metric": "money", "operator": "lte", "target": -2500, "label": "市政资金耗尽" },
+          { "metric": "money", "operator": "lte", "target": -2500, "label": "城市资金耗尽" },
           { "metric": "satisfaction", "operator": "lte", "target": 5, "label": "居民失去信心" },
           { "metric": "totalShortage", "operator": "gte", "target": 18000, "label": "长期停电失控" }
         ]
@@ -182,17 +196,20 @@
     "presentation": {
       "backgroundAssetId": "background_campaign_city",
       "accent": "#ff9b54",
-      "briefing": ["先保证工厂和居民都有电", "把白天多余的电留到夜间", "选择你要优先照顾的城市方向"],
+      "briefing": ["先保证工厂和居民都有电", "把白天多余的电留到夜间", "选择城市的发展方向"],
       "world": {
         "theme": "industrial",
         "city": { "x": 56, "y": 52 },
-        "slots": [
-          { "x": 11, "y": 27, "scale": 0.9, "depth": "far" },
-          { "x": 38, "y": 22, "scale": 0.9, "depth": "far" },
-          { "x": 82, "y": 29, "scale": 1, "depth": "mid" },
-          { "x": 13, "y": 68, "scale": 1.06, "depth": "near" },
-          { "x": 48, "y": 79, "scale": 1.04, "depth": "near" },
-          { "x": 84, "y": 70, "scale": 1.08, "depth": "near" }
+        "plots": [
+          { "id": "factory-roofs", "x": 12, "y": 28, "zone": "industrial", "accepts": ["generation", "storage"], "scale": 0.9, "depth": "far", "label": "老厂房屋顶" },
+          { "id": "north-yard", "x": 38, "y": 22, "zone": "industrial", "accepts": ["generation", "storage"], "scale": 0.9, "depth": "far", "label": "北部厂区" },
+          { "id": "harbor-wind", "x": 83, "y": 29, "zone": "coastal", "accepts": ["generation"], "scale": 1, "depth": "mid", "label": "港口风区" },
+          { "id": "west-plant", "x": 13, "y": 68, "zone": "industrial", "accepts": ["generation", "storage"], "scale": 1.06, "depth": "near", "label": "西部厂区" },
+          { "id": "central-utility", "x": 47, "y": 79, "zone": "utility", "accepts": ["generation", "storage", "grid"], "scale": 1.04, "depth": "near", "label": "公共设施区" },
+          { "id": "east-yard", "x": 84, "y": 70, "zone": "industrial", "accepts": ["generation", "storage"], "scale": 1.08, "depth": "near", "label": "东部厂区" },
+          { "id": "workers-home", "x": 29, "y": 53, "zone": "neighborhood", "accepts": ["generation", "storage"], "scale": 0.95, "depth": "mid", "label": "工人社区" },
+          { "id": "outer-grid", "x": 68, "y": 20, "zone": "outskirts", "accepts": ["generation"], "scale": 0.9, "depth": "far", "label": "城外空地" },
+          { "id": "deep-harbor", "x": 92, "y": 48, "zone": "coastal", "accepts": ["generation"], "scale": 1, "depth": "mid", "label": "外海平台" }
         ]
       }
     }
@@ -214,7 +231,13 @@
       "satisfaction": 80,
       "researchPoints": 42,
       "technologies": ["solar_forecasting", "storage_chemistry"],
-      "buildings": ["solar_basic", "solar_basic", "wind_basic", "battery_utility"]
+      "buildings": ["solar_basic", "solar_basic", "wind_basic", "battery_utility"],
+      "placements": [
+        { "buildingId": "solar_basic", "plotId": "garden-district" },
+        { "buildingId": "solar_basic", "plotId": "south-hills" },
+        { "buildingId": "wind_basic", "plotId": "green-coast" },
+        { "buildingId": "battery_utility", "plotId": "central-utility" }
+      ]
     },
     "catalog": {
       "buildings": ["solar_basic", "wind_basic", "gas_basic", "battery_basic", "battery_utility", "wind_offshore", "nuclear_advanced"],
@@ -256,8 +279,8 @@
           "when": {
             "mode": "all",
             "conditions": [
-              { "metric": "pollution", "operator": "lte", "target": 28, "label": "空气压力不高于 28%" },
-              { "metric": "supplyRatio", "operator": "gte", "target": 0.98, "label": "至少 98% 街区正常亮灯" }
+              { "metric": "pollution", "operator": "lte", "target": 28, "label": "环境压力不高于 28%" },
+              { "metric": "supplyRatio", "operator": "gte", "target": 0.98, "label": "至少 98% 街区正常用电" }
             ]
           },
           "modifiers": { "researchMultiplier": 1.08, "satisfactionDeltaPerHour": 0.03 }
@@ -276,38 +299,40 @@
         }
       ],
       "objective": {
-        "label": "居民达到 16,000，同时让空气压力保持在 28% 以下",
+        "label": "居民达到 16,000，同时让环境压力保持在 28% 以下",
         "mode": "all",
         "conditions": [
           { "metric": "population", "operator": "gte", "target": 16000, "label": "居民达到 16,000" },
-          { "metric": "pollution", "operator": "lte", "target": 28, "label": "空气压力不高于 28%" }
+          { "metric": "pollution", "operator": "lte", "target": 28, "label": "环境压力不高于 28%" }
         ]
       },
       "failure": {
-        "label": "市政资金跌破 -¥3,500、居民满意降至 8% 或空气压力达到 85%。",
+        "label": "城市资金跌破 -¥3,500、居民满意降至 8% 或环境压力达到 85%。",
         "mode": "any",
         "conditions": [
-          { "metric": "money", "operator": "lte", "target": -3500, "label": "市政资金耗尽" },
+          { "metric": "money", "operator": "lte", "target": -3500, "label": "城市资金耗尽" },
           { "metric": "satisfaction", "operator": "lte", "target": 8, "label": "居民失去信心" },
-          { "metric": "pollution", "operator": "gte", "target": 85, "label": "空气严重恶化" }
+          { "metric": "pollution", "operator": "gte", "target": 85, "label": "环境严重恶化" }
         ]
       }
     },
     "presentation": {
       "backgroundAssetId": "background_campaign_city",
       "accent": "#5ce1a3",
-      "briefing": ["多建干净的供电设施", "解锁更可靠的大型项目", "城市增长时也要守住空气质量"],
+      "briefing": ["多建干净的供电设施", "解锁更可靠的大型项目", "城市增长时也要守住环境质量"],
       "world": {
         "theme": "green",
         "city": { "x": 49, "y": 48 },
-        "slots": [
-          { "x": 14, "y": 29, "scale": 0.9, "depth": "far" },
-          { "x": 78, "y": 25, "scale": 0.95, "depth": "far" },
-          { "x": 10, "y": 63, "scale": 1, "depth": "mid" },
-          { "x": 86, "y": 61, "scale": 1.04, "depth": "mid" },
-          { "x": 27, "y": 79, "scale": 1.06, "depth": "near" },
-          { "x": 58, "y": 79, "scale": 1.08, "depth": "near" },
-          { "x": 84, "y": 80, "scale": 1.12, "depth": "near" }
+        "plots": [
+          { "id": "garden-district", "x": 14, "y": 29, "zone": "neighborhood", "accepts": ["generation", "storage"], "scale": 0.9, "depth": "far", "label": "花园社区" },
+          { "id": "green-coast", "x": 79, "y": 25, "zone": "coastal", "accepts": ["generation"], "scale": 0.95, "depth": "far", "label": "绿色海岸" },
+          { "id": "west-park", "x": 10, "y": 63, "zone": "neighborhood", "accepts": ["generation", "storage"], "scale": 1, "depth": "mid", "label": "西部公园" },
+          { "id": "east-industry", "x": 86, "y": 61, "zone": "industrial", "accepts": ["generation", "storage"], "scale": 1.04, "depth": "mid", "label": "清洁产业区" },
+          { "id": "south-hills", "x": 27, "y": 79, "zone": "outskirts", "accepts": ["generation"], "scale": 1.06, "depth": "near", "label": "南部丘陵" },
+          { "id": "central-utility", "x": 58, "y": 79, "zone": "utility", "accepts": ["generation", "storage", "grid"], "scale": 1.08, "depth": "near", "label": "城市能源中心" },
+          { "id": "east-coast", "x": 85, "y": 80, "zone": "coastal", "accepts": ["generation"], "scale": 1.12, "depth": "near", "label": "东部海岸" },
+          { "id": "north-utility", "x": 48, "y": 20, "zone": "utility", "accepts": ["generation", "storage", "grid"], "scale": 0.9, "depth": "far", "label": "北部能源区" },
+          { "id": "outer-reserve", "x": 70, "y": 45, "zone": "outskirts", "accepts": ["generation"], "scale": 0.94, "depth": "mid", "label": "城外预留地" }
         ]
       }
     }
