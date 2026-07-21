@@ -1,0 +1,87 @@
+.asset-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, .28));
+  user-select: none;
+  pointer-events: none;
+}
+
+.brand-image { width: 42px; height: 42px; }
+.status-image { width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-right: 6px; }
+.telemetry-image { width: 20px; height: 20px; display: inline-block; vertical-align: middle; }
+.event-image { width: 44px; height: 44px; }
+.node-image { width: 38px; height: 38px; }
+.build-image { width: 42px; height: 42px; }
+.tech-image, .policy-image, .fleet-image { width: 46px; height: 46px; }
+.result-status-image { width: 70px; height: 70px; }
+
+.scenario-shell {
+  --scenario-accent: #4ad7ff;
+}
+
+.scenario-shell .eyebrow,
+.scenario-shell .build-price,
+.scenario-shell .price-control em {
+  color: var(--scenario-accent);
+}
+
+.scenario-city-map {
+  background-image:
+    linear-gradient(rgba(4, 14, 24, .56), rgba(4, 14, 24, .88)),
+    var(--scenario-background),
+    url('/assets/ui/grid-pattern.png');
+  background-position: center, center, center;
+  background-size: cover, cover, 512px 512px;
+}
+
+.scenario-card {
+  --scenario-accent: #4ad7ff;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.scenario-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: var(--scenario-background);
+  background-position: center;
+  background-size: cover;
+  opacity: .18;
+  transform: scale(1.04);
+}
+
+.scenario-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(145deg, rgba(7, 21, 34, .72), rgba(7, 21, 34, .97));
+  border-top: 2px solid color-mix(in srgb, var(--scenario-accent) 65%, transparent);
+  pointer-events: none;
+}
+
+.scenario-card.completed::after {
+  border-top-color: rgba(92, 225, 163, .72);
+}
+
+.brand-mark,
+.build-icon,
+.tech-icon,
+.policy-icon,
+.fleet-icon,
+.event-icon,
+.building-node > span {
+  display: grid;
+  place-items: center;
+}
+
+@media (max-width: 620px) {
+  .brand-image { width: 36px; height: 36px; }
+  .tech-image, .policy-image, .fleet-image { width: 40px; height: 40px; }
+  .scenario-city-map { background-position: center; }
+}
