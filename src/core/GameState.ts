@@ -26,6 +26,7 @@ export interface GameState {
   totalRevenue: number;
   totalEnergyServed: number;
   totalShortage: number;
+  randomState: number;
   activeEventId?: string;
   completed: boolean;
   failed: boolean;
@@ -41,7 +42,13 @@ export interface InitialStateInput {
   satisfaction?: number;
   researchPoints?: number;
   unlockedTechnologyIds?: string[];
+  randomSeed?: number;
 }
+
+const normalizeRandomState = (seed: number | undefined): number => {
+  const value = Math.floor(seed ?? 1) >>> 0;
+  return value === 0 ? 1 : value;
+};
 
 export const createInitialState = (input: InitialStateInput): GameState => ({
   levelId: input.levelId,
@@ -68,6 +75,7 @@ export const createInitialState = (input: InitialStateInput): GameState => ({
   totalRevenue: 0,
   totalEnergyServed: 0,
   totalShortage: 0,
+  randomState: normalizeRandomState(input.randomSeed),
   completed: false,
   failed: false
 });
