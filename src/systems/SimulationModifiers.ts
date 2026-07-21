@@ -11,6 +11,9 @@ export interface SimulationModifiers {
   researchMultiplier: number;
 }
 
+export type SimulationModifierEffects = Partial<SimulationModifiers>
+  & Record<string, number | undefined>;
+
 export const neutralSimulationModifiers = (): SimulationModifiers => ({
   generationMultiplier: 1,
   demandMultiplier: 1,
