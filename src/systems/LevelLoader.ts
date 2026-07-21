@@ -151,7 +151,6 @@ export class LevelLoader {
       ...savedState,
       levelId: level.id,
       cityName: level.name,
-      randomSeed: savedState.randomSeed ?? defaults.randomSeed,
       randomState: savedState.randomState ?? defaults.randomState,
       unlockedTechnologyIds: [...new Set(savedState.unlockedTechnologyIds ?? defaults.unlockedTechnologyIds)],
       storageEnergy: buildings.getTotalStoredEnergy(),
