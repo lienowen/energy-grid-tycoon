@@ -1,4 +1,4 @@
-import { BuildingConfig } from '../buildings/BuildingBase';
+import { BuildingConfig, BuildingSnapshot } from '../buildings/BuildingBase';
 import { BuildingFactory } from '../buildings/BuildingFactory';
 import { BuildingManager } from '../buildings/BuildingManager';
 import { createInitialState, GameState } from '../core/GameState';
@@ -35,7 +35,7 @@ export class LevelLoader {
     level: LevelConfig,
     buildingConfigs: BuildingConfig[]
   ): LoadedLevel {
-    const catalog = new Map(buildingConfigs.map((config) => [config.id, config]));
+    const catalog = this.createCatalog(buildingConfigs);
     const buildings = new BuildingManager();
 
     for (const buildingId of level.startingBuildings) {
@@ -44,9 +44,31 @@ export class LevelLoader {
       buildings.add(BuildingFactory.create(config));
     }
 
-    return {
-      config: level,
-      state: createInitialState({
+    const state = createInitialState({
+      levelId: level.id,
+      cityName: level.name,
+      money: level.startingMoney,
+      population: level.population,
+      baseDemand: level.baseDemand,
+      powerPrice: level.powerPrice
+    });
+
+    state.storageEnergy = buildings.getTotalStoredEnergy();
+    state.storageCapacity = buildings.getTotalStorageCapacity();
+
+    return { config: level, state, buildings, buildingCatalog: catalog };
+  }
+
+  static restore(
+    level: LevelConfig,
+    buildingConfigs: BuildingConfig[],
+    savedState: GameState,
+    snapshots: BuildingSnapshot[]
+  ): LoadedLevel {
+    const catalog = this.createCatalog(buildingConfigs);
+    const buildings = BuildingManager.restore(snapshots, catalog);
+    const state: GameState = {
+      ...createInitialState({
         levelId: level.id,
         cityName: level.name,
         money: level.startingMoney,
@@ -54,8 +76,17 @@ export class LevelLoader {
         baseDemand: level.baseDemand,
         powerPrice: level.powerPrice
       }),
-      buildings,
-      buildingCatalog: catalog
+      ...savedState,
+      levelId: level.id,
+      cityName: level.name,
+      storageEnergy: buildings.getTotalStoredEnergy(),
+      storageCapacity: buildings.getTotalStorageCapacity()
     };
+
+    return { config: level, state, buildings, buildingCatalog: catalog };
+  }
+
+  private static createCatalog(buildingConfigs: BuildingConfig[]): Map<string, BuildingConfig> {
+    return new Map(buildingConfigs.map((config) => [config.id, config]));
   }
 }
