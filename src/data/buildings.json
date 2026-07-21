@@ -43,8 +43,27 @@
     "maintenance": 8,
     "power": 0,
     "capacity": 900,
+    "chargeRate": 260,
+    "dischargeRate": 300,
+    "efficiency": 0.88,
     "pollution": 0,
-    "description": "吸收富余电力，在短缺时释放。",
+    "description": "吸收富余电力，在短缺时自动释放。",
+    "specialLogic": "grid_storage"
+  },
+  {
+    "id": "battery_utility",
+    "name": "电网级储能中心",
+    "category": "storage",
+    "assetId": "building_battery",
+    "cost": 2450,
+    "maintenance": 16,
+    "power": 0,
+    "capacity": 2400,
+    "chargeRate": 620,
+    "dischargeRate": 700,
+    "efficiency": 0.93,
+    "pollution": 0,
+    "description": "高效率大容量储能，适合工业与都会负荷。",
     "specialLogic": "grid_storage"
   }
 ]
