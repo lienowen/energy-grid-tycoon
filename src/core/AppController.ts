@@ -8,13 +8,13 @@ import { PolicyConfig } from '../systems/PolicySystem';
 import { TechnologyConfig } from '../systems/ResearchSystem';
 import { LevelSelect } from '../ui/LevelSelect';
 import { LoadingScreen } from '../ui/LoadingScreen';
-import { WorldDashboard } from '../ui/WorldDashboard';
+import { MayorDashboard } from '../ui/MayorDashboard';
 import { GameManager, GameViewModel } from './GameManager';
 import { SaveManager } from './SaveManager';
 
 export class AppController {
   private game?: GameManager;
-  private dashboard?: WorldDashboard;
+  private dashboard?: MayorDashboard;
   private currentLevelId?: string;
   private lastAutoSaveDay = 0;
   private completionRecorded = false;
@@ -75,7 +75,7 @@ export class AppController {
     this.lastAutoSaveDay = 0;
     this.completionRecorded = false;
 
-    LoadingScreen.render(this.root, `正在进入${level.name}`, '加载本关城市世界、能源资产、科技、政策和事件。');
+    LoadingScreen.render(this.root, `正在前往${level.name}`, '市政团队正在准备城市地图、居民情况和可建设项目。');
     const assetReport = await AssetManager.preload(LevelAssetPlanner.resolve(level, {
       buildings: this.buildings,
       events: this.events,
@@ -83,20 +83,18 @@ export class AppController {
       policies: this.policies
     }));
     if (generation !== this.loadGeneration) return;
-    if (assetReport.failed.length > 0) {
-      console.warn('Level assets failed to preload:', assetReport.failed);
-    }
+    if (assetReport.failed.length > 0) console.warn('Level assets failed to preload:', assetReport.failed);
 
     const save = resume ? SaveManager.loadGame() : undefined;
     const compatibleSave = save?.levelId === level.id ? save : undefined;
     if (!resume) SaveManager.clearGame();
 
-    this.dashboard = new WorldDashboard(this.root, {
-      onBuild: (configId) => this.game?.build(configId) ?? { ok: false, reason: '游戏尚未启动' },
-      onUpgrade: (instanceId) => this.game?.upgrade(instanceId) ?? { ok: false, reason: '游戏尚未启动' },
-      onToggleBuilding: (instanceId) => this.game?.toggleBuilding(instanceId) ?? { ok: false, reason: '游戏尚未启动' },
-      onResearch: (technologyId) => this.game?.research(technologyId) ?? { ok: false, reason: '游戏尚未启动' },
-      onPolicy: (policyId) => this.game?.setPolicy(policyId) ?? { ok: false, reason: '游戏尚未启动' },
+    this.dashboard = new MayorDashboard(this.root, {
+      onBuild: (configId) => this.game?.build(configId) ?? { ok: false, reason: '城市还没有准备好' },
+      onUpgrade: (instanceId) => this.game?.upgrade(instanceId) ?? { ok: false, reason: '城市还没有准备好' },
+      onToggleBuilding: (instanceId) => this.game?.toggleBuilding(instanceId) ?? { ok: false, reason: '城市还没有准备好' },
+      onResearch: (technologyId) => this.game?.research(technologyId) ?? { ok: false, reason: '城市还没有准备好' },
+      onPolicy: (policyId) => this.game?.setPolicy(policyId) ?? { ok: false, reason: '城市还没有准备好' },
       onSpeedChange: (speed) => this.game?.setSpeed(speed),
       onPriceChange: (price) => this.game?.setPowerPrice(price),
       onSave: () => this.saveCurrentGame(),
@@ -127,21 +125,20 @@ export class AppController {
       this.saveCurrentGame();
       this.lastAutoSaveDay = view.state.day;
     }
-
     this.dashboard?.render(view);
   }
 
   private saveCurrentGame(): { ok: boolean; message: string } {
     if (!this.game) return { ok: false, message: '当前没有可保存的城市' };
     const ok = SaveManager.saveGame(this.game.createSave());
-    return { ok, message: ok ? '城市进度已保存' : '浏览器阻止了本地存档' };
+    return { ok, message: ok ? '今天的市长工作已经保存' : '浏览器阻止了本地保存' };
   }
 
   private loadCurrentSave(): { ok: boolean; message: string } {
     const save = SaveManager.loadGame();
-    if (!save) return { ok: false, message: '没有找到可读取的存档' };
+    if (!save) return { ok: false, message: '没有找到之前保存的城市进度' };
     void this.startLevel(save.levelId, true);
-    return { ok: true, message: '存档已读取' };
+    return { ok: true, message: '正在回到上次保存的位置' };
   }
 
   private retryCurrentLevel(): void {
