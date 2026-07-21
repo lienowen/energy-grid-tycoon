@@ -1,3 +1,5 @@
+import type { ActiveEventSnapshot } from '../core/SaveSchema';
+
 export interface EventEffects {
   demandMultiplier: number;
   outputMultiplier: number;
@@ -17,11 +19,6 @@ export interface EventConfig {
 
 export interface ActiveEvent {
   config: EventConfig;
-  remainingHours: number;
-}
-
-export interface ActiveEventSnapshot {
-  eventId: string;
   remainingHours: number;
 }
 
