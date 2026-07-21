@@ -1,4 +1,5 @@
-import { BuildingBase, BuildingConfig, BuildingSnapshot } from './BuildingBase';
+import type { BuildingSnapshot } from '../core/SaveSchema';
+import { BuildingBase, BuildingConfig } from './BuildingBase';
 import { BuildingFactory } from './BuildingFactory';
 
 export type OutputResolver = (building: BuildingBase) => number;
