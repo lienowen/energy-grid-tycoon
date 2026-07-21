@@ -7,8 +7,9 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  quality:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,5 +19,9 @@ jobs:
           node-version: 22
       - name: Install
         run: npm install --no-audit --no-fund
-      - name: Build
+      - name: Validate content and assets
+        run: npm run check:content
+      - name: Unit tests
+        run: npm test
+      - name: Typecheck and production build
         run: npm run build
