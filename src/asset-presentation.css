@@ -8,6 +8,14 @@
   pointer-events: none;
 }
 
+.asset-image.asset-load-failed { display: none; }
+.asset-fallback::after {
+  content: '◆';
+  color: var(--scenario-accent, #4ad7ff);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
 .brand-image { width: 42px; height: 42px; }
 .status-image { width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-right: 6px; }
 .telemetry-image { width: 20px; height: 20px; display: inline-block; vertical-align: middle; }
@@ -31,7 +39,7 @@
   background-image:
     linear-gradient(rgba(4, 14, 24, .56), rgba(4, 14, 24, .88)),
     var(--scenario-background),
-    url('/assets/ui/grid-pattern.png');
+    var(--ui-grid-pattern, none);
   background-position: center, center, center;
   background-size: cover, cover, 512px 512px;
 }
@@ -80,8 +88,64 @@
   place-items: center;
 }
 
+.loading-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(74, 215, 255, .18), transparent 34%),
+    #06101d;
+  color: #eaf4ff;
+}
+
+.loading-card {
+  width: min(520px, 100%);
+  padding: 42px;
+  border: 1px solid rgba(74, 215, 255, .22);
+  border-radius: 28px;
+  background: rgba(10, 31, 47, .92);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, .38);
+  text-align: center;
+}
+
+.loading-card h1 { margin: 10px 0; font-size: clamp(1.8rem, 6vw, 2.8rem); }
+.loading-card p { margin: 0; color: #8ea8bd; line-height: 1.7; }
+.loading-card button { margin-top: 24px; }
+
+.loading-mark {
+  height: 42px;
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  gap: 7px;
+  margin-bottom: 18px;
+}
+
+.loading-mark i {
+  display: block;
+  width: 8px;
+  border-radius: 999px;
+  background: #4ad7ff;
+  animation: grid-charge .9s ease-in-out infinite alternate;
+}
+.loading-mark i:nth-child(1) { height: 18px; }
+.loading-mark i:nth-child(2) { height: 34px; animation-delay: .15s; }
+.loading-mark i:nth-child(3) { height: 25px; animation-delay: .3s; }
+.error-shell .loading-card { border-color: rgba(255, 116, 133, .42); }
+
+@keyframes grid-charge {
+  from { opacity: .35; transform: scaleY(.72); }
+  to { opacity: 1; transform: scaleY(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-mark i { animation: none; }
+}
+
 @media (max-width: 620px) {
   .brand-image { width: 36px; height: 36px; }
   .tech-image, .policy-image, .fleet-image { width: 40px; height: 40px; }
   .scenario-city-map { background-position: center; }
+  .loading-card { padding: 30px 22px; }
 }
