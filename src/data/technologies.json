@@ -1,8 +1,8 @@
 [
   {
     "id": "solar_forecasting",
-    "name": "光照预测算法",
-    "description": "通过天气和负荷预测提高可再生能源利用率。",
+    "name": "提前看懂天气",
+    "description": "让城市更早知道阳光和用电变化，减少电力浪费。",
     "assetId": "tech_solar",
     "cost": 28,
     "prerequisites": [],
@@ -10,8 +10,8 @@
   },
   {
     "id": "storage_chemistry",
-    "name": "新型储能化学",
-    "description": "提升储能容量与往返效率。",
+    "name": "更耐用的城市电池",
+    "description": "备用电站能存更多电，存取时浪费更少。",
     "assetId": "tech_storage",
     "cost": 46,
     "prerequisites": ["solar_forecasting"],
@@ -20,8 +20,8 @@
   },
   {
     "id": "smart_dispatch",
-    "name": "智能电网调度",
-    "description": "减少维护浪费并提高储能充放电速度。",
+    "name": "全城自动分配电力",
+    "description": "哪里缺电就优先送到哪里，同时减少设施的日常浪费。",
     "assetId": "tech_grid",
     "cost": 68,
     "prerequisites": ["storage_chemistry"],
@@ -29,8 +29,8 @@
   },
   {
     "id": "clean_combustion",
-    "name": "清洁燃烧控制",
-    "description": "大幅降低燃气机组污染排放。",
+    "name": "更干净的燃气发电",
+    "description": "让燃气电站冒出更少废气，改善城市空气。",
     "assetId": "tech_clean",
     "cost": 58,
     "prerequisites": ["solar_forecasting"],
@@ -38,8 +38,8 @@
   },
   {
     "id": "offshore_engineering",
-    "name": "海上风电工程",
-    "description": "解锁高功率海上风电集群。",
+    "name": "建设海上风电区",
+    "description": "允许城市在海上建设大型风力发电项目。",
     "assetId": "tech_offshore",
     "cost": 92,
     "prerequisites": ["smart_dispatch"],
@@ -48,8 +48,8 @@
   },
   {
     "id": "advanced_reactors",
-    "name": "先进反应堆",
-    "description": "解锁高稳定、高造价的先进核能机组。",
+    "name": "建设先进核能电站",
+    "description": "允许城市建设全天稳定供电的大型核能项目。",
     "assetId": "tech_nuclear",
     "cost": 155,
     "prerequisites": ["smart_dispatch", "clean_combustion"],
