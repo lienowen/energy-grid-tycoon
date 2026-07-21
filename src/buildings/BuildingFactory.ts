@@ -17,6 +17,7 @@ export class BuildingFactory {
       dischargeRate: Math.max(0, config.dischargeRate ?? config.power),
       efficiency: Math.min(1, Math.max(0.01, config.efficiency ?? 0.9)),
       pollution: Math.max(0, config.pollution),
+      placementZones: config.placementZones ? [...new Set(config.placementZones)] : undefined,
       maxLevel: Math.max(1, Math.floor(config.maxLevel ?? 3)),
       upgradeCostFactor: Math.max(1.1, config.upgradeCostFactor ?? 1.65),
       upgradePowerBonus: Math.max(0, config.upgradePowerBonus ?? 0.22),
@@ -28,6 +29,7 @@ export class BuildingFactory {
       building.enabled = snapshot.enabled;
       building.level = Math.min(building.getMaxLevel(), Math.max(1, Math.floor(snapshot.level ?? 1)));
       building.storedEnergy = Math.max(0, snapshot.storedEnergy);
+      if (snapshot.placementId) building.place(snapshot.placementId);
     }
 
     return building;
