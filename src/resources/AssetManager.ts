@@ -1,5 +1,6 @@
 export type AssetKind = 'image' | 'audio' | 'font' | 'spritesheet';
 export type AssetPreloadGroup = 'boot' | 'level' | 'lazy';
+export type AssetLoadStatus = 'idle' | 'loaded' | 'failed';
 
 export interface AssetEntry {
   id: string;
@@ -19,6 +20,13 @@ export interface AssetCatalog {
   entries: AssetEntry[];
 }
 
+export interface AssetPreloadReport {
+  requested: string[];
+  loaded: string[];
+  failed: string[];
+  skipped: string[];
+}
+
 export type LegacyAssetManifest = Record<string, string>;
 export type AssetManifest = AssetCatalog | LegacyAssetManifest;
 
@@ -27,6 +35,7 @@ const isCatalog = (manifest: AssetManifest): manifest is AssetCatalog =>
 
 export class AssetManager {
   private static assets = new Map<string, AssetEntry>();
+  private static statuses = new Map<string, AssetLoadStatus>();
 
   static load(manifest: AssetManifest): void {
     const entries = isCatalog(manifest)
@@ -39,10 +48,12 @@ export class AssetManager {
         preload: 'lazy'
       }));
     this.assets = new Map(entries.map((entry) => [entry.id, { ...entry }]));
+    this.statuses = new Map(entries.map((entry) => [entry.id, 'idle']));
   }
 
   static register(entry: AssetEntry): void {
     this.assets.set(entry.id, { ...entry });
+    this.statuses.set(entry.id, 'idle');
   }
 
   static get(id: string, fallback = '◆'): string {
@@ -54,6 +65,10 @@ export class AssetManager {
     return entry ? { ...entry, tags: entry.tags ? [...entry.tags] : undefined } : undefined;
   }
 
+  static getStatus(id: string): AssetLoadStatus | undefined {
+    return this.statuses.get(id);
+  }
+
   static has(id: string): boolean {
     return this.assets.has(id);
   }
@@ -62,27 +77,54 @@ export class AssetManager {
     return [...this.assets.keys()];
   }
 
-  static async preloadGroup(group: AssetPreloadGroup): Promise<void> {
+  static async preloadGroup(group: AssetPreloadGroup): Promise<AssetPreloadReport> {
     const ids = [...this.assets.values()]
       .filter((entry) => entry.preload === group)
       .map((entry) => entry.id);
-    await this.preload(ids);
+    return this.preload(ids);
   }
 
-  static async preload(ids: readonly string[]): Promise<void> {
-    if (typeof Image === 'undefined') return;
-    const uniqueEntries = [...new Set(ids)]
-      .map((id) => this.assets.get(id))
-      .filter((entry): entry is AssetEntry => Boolean(entry));
+  static async preload(ids: readonly string[]): Promise<AssetPreloadReport> {
+    const requested = [...new Set(ids)];
+    const loaded: string[] = [];
+    const failed: string[] = [];
+    const skipped: string[] = [];
 
-    await Promise.all(uniqueEntries.map((entry) => {
-      if (entry.kind !== 'image' && entry.kind !== 'spritesheet') return Promise.resolve();
-      return new Promise<void>((resolve) => {
+    await Promise.all(requested.map(async (id) => {
+      const entry = this.assets.get(id);
+      if (!entry) {
+        failed.push(id);
+        return;
+      }
+      if (this.statuses.get(id) === 'loaded') {
+        loaded.push(id);
+        return;
+      }
+      if (entry.kind !== 'image' && entry.kind !== 'spritesheet') {
+        skipped.push(id);
+        return;
+      }
+      if (typeof Image === 'undefined') {
+        skipped.push(id);
+        return;
+      }
+
+      await new Promise<void>((resolve) => {
         const image = new Image();
-        image.onload = () => resolve();
-        image.onerror = () => resolve();
+        image.onload = () => {
+          this.statuses.set(id, 'loaded');
+          loaded.push(id);
+          resolve();
+        };
+        image.onerror = () => {
+          this.statuses.set(id, 'failed');
+          failed.push(id);
+          resolve();
+        };
         image.src = entry.src;
       });
     }));
+
+    return { requested, loaded, failed, skipped };
   }
 }
