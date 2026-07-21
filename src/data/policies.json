@@ -1,0 +1,34 @@
+[
+  {
+    "id": "resident_subsidy",
+    "name": "居民电价补贴",
+    "description": "牺牲部分售电收入，提高满意度并刺激用电需求。",
+    "assetId": "policy_resident",
+    "activationCost": 480,
+    "effects": { "priceMultiplier": 0.82, "demandMultiplier": 1.05, "satisfactionDeltaPerHour": 0.35 }
+  },
+  {
+    "id": "industrial_priority",
+    "name": "工业优先供能",
+    "description": "提高收益和研发效率，但居民满意度承压。",
+    "assetId": "policy_industry",
+    "activationCost": 650,
+    "effects": { "priceMultiplier": 1.16, "demandMultiplier": 1.12, "satisfactionDeltaPerHour": -0.18, "researchMultiplier": 1.08 }
+  },
+  {
+    "id": "green_mandate",
+    "name": "绿色能源法令",
+    "description": "严格排放控制带来更低污染和更快研发，维护成本略升。",
+    "assetId": "policy_green",
+    "activationCost": 820,
+    "effects": { "pollutionMultiplier": 0.62, "maintenanceMultiplier": 1.07, "researchMultiplier": 1.15 }
+  },
+  {
+    "id": "efficiency_campaign",
+    "name": "全民节能行动",
+    "description": "降低全城需求并小幅提高满意度。",
+    "assetId": "policy_efficiency",
+    "activationCost": 720,
+    "effects": { "demandMultiplier": 0.88, "maintenanceMultiplier": 1.03, "satisfactionDeltaPerHour": 0.12 }
+  }
+]
