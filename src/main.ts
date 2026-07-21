@@ -1,6 +1,7 @@
 import './styles.css';
 import './asset-presentation.css';
 import './mayor-game.css';
+import './player-city.css';
 import buildingData from './data/buildings.json';
 import eventData from './data/events.json';
 import levelData from './data/levels.json';
@@ -29,7 +30,7 @@ document.addEventListener('error', (event) => {
 }, true);
 
 const bootstrap = async (): Promise<void> => {
-  LoadingScreen.render(root, '市政团队正在集合', '正在准备城市地图和居民资料。');
+  LoadingScreen.render(root, '正在打开城市地图', '准备可建设用地和城市设施。');
   AssetManager.load(assetCatalogData as unknown as AssetCatalog);
 
   const levels = levelData as unknown as LevelConfig[];
