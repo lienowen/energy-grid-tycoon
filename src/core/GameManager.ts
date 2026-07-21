@@ -1,12 +1,14 @@
 import { BuildingConfig } from '../buildings/BuildingBase';
 import { BuildingFactory } from '../buildings/BuildingFactory';
-import { GameSpeed, GameState } from './GameState';
 import { EconomyResult } from '../systems/EconomySystem';
 import { ActiveEvent, EventConfig, EventSystem } from '../systems/EventSystem';
 import { GoalSystem } from '../systems/GoalSystem';
 import { LevelConfig, LevelLoader, LoadedLevel } from '../systems/LevelLoader';
 import { PowerResult } from '../systems/PowerSystem';
 import { SimulationSystem } from '../systems/SimulationSystem';
+import { StorageResult } from '../systems/StorageSystem';
+import { GameSpeed, GameState } from './GameState';
+import { GameSave } from './SaveManager';
 
 export interface GameViewModel {
   state: GameState;
@@ -16,6 +18,7 @@ export interface GameViewModel {
   activeEvent?: ActiveEvent;
   lastPower?: PowerResult;
   lastEconomy?: EconomyResult;
+  lastStorage?: StorageResult;
   goalProgress: number;
 }
 
@@ -26,15 +29,20 @@ export class GameManager {
   private timer?: number;
   private lastPower?: PowerResult;
   private lastEconomy?: EconomyResult;
+  private lastStorage?: StorageResult;
 
   constructor(
     level: LevelConfig,
     buildingConfigs: BuildingConfig[],
     eventConfigs: EventConfig[],
-    private readonly onChange: (view: GameViewModel) => void
+    private readonly onChange: (view: GameViewModel) => void,
+    save?: GameSave
   ) {
-    this.session = LevelLoader.load(level, buildingConfigs);
+    this.session = save?.levelId === level.id
+      ? LevelLoader.restore(level, buildingConfigs, save.state, save.buildings)
+      : LevelLoader.load(level, buildingConfigs);
     this.events = eventConfigs;
+    this.eventSystem.restore(save?.activeEvent, eventConfigs);
   }
 
   start(): void {
@@ -49,16 +57,21 @@ export class GameManager {
   }
 
   setSpeed(speed: GameSpeed): void {
+    if (this.session.state.completed || this.session.state.failed) return;
     this.session.state.speed = speed;
     this.emit();
   }
 
   setPowerPrice(price: number): void {
+    if (this.session.state.completed || this.session.state.failed) return;
     this.session.state.powerPrice = Math.min(1.2, Math.max(0.15, price));
     this.emit();
   }
 
   build(configId: string): { ok: boolean; reason?: string } {
+    const state = this.session.state;
+    if (state.completed || state.failed) return { ok: false, reason: '本局已经结束' };
+
     const level = this.session.config;
     if (!level.availableBuildings.includes(configId)) {
       return { ok: false, reason: '该建筑尚未解锁' };
@@ -66,12 +79,25 @@ export class GameManager {
 
     const config = this.session.buildingCatalog.get(configId);
     if (!config) return { ok: false, reason: '建筑配置不存在' };
-    if (this.session.state.money < config.cost) return { ok: false, reason: '资金不足' };
+    if (state.money < config.cost) return { ok: false, reason: '资金不足' };
 
-    this.session.state.money -= config.cost;
+    state.money -= config.cost;
     this.session.buildings.add(BuildingFactory.create(config));
+    state.storageCapacity = this.session.buildings.getTotalStorageCapacity();
+    state.storageEnergy = this.session.buildings.getTotalStoredEnergy();
     this.emit();
     return { ok: true };
+  }
+
+  createSave(): GameSave {
+    return {
+      version: 1,
+      savedAt: new Date().toISOString(),
+      levelId: this.session.config.id,
+      state: { ...this.session.state },
+      buildings: this.session.buildings.toSnapshots(),
+      activeEvent: this.eventSystem.getSnapshot()
+    };
   }
 
   private tick(): void {
@@ -94,8 +120,11 @@ export class GameManager {
 
     state.completed = GoalSystem.isCompleted(state, this.session.config);
     state.failed = GoalSystem.isFailed(state, this.session.config);
+    if (state.completed || state.failed) state.speed = 0;
+
     this.lastPower = result.power;
     this.lastEconomy = result.economy;
+    this.lastStorage = result.storage;
     this.emit();
   }
 
@@ -113,6 +142,7 @@ export class GameManager {
       activeEvent: this.eventSystem.getActive(),
       lastPower: this.lastPower,
       lastEconomy: this.lastEconomy,
+      lastStorage: this.lastStorage,
       goalProgress: GoalSystem.getProgress(this.session.state, level)
     });
   }
