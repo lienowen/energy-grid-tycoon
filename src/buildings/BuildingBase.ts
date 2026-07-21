@@ -1,3 +1,5 @@
+import type { BuildingSnapshot } from '../core/SaveSchema';
+
 export type BuildingCategory = 'generation' | 'storage' | 'grid';
 
 export interface BuildingConfig {
@@ -15,13 +17,6 @@ export interface BuildingConfig {
   pollution: number;
   description: string;
   specialLogic?: string;
-}
-
-export interface BuildingSnapshot {
-  instanceId: string;
-  configId: string;
-  enabled: boolean;
-  storedEnergy: number;
 }
 
 export class BuildingBase {
