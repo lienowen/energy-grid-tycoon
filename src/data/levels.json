@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "name": "First City",
+    "city": {
+      "population": 5000,
+      "powerDemand": 1000
+    },
+    "buildings": [
+      "solar_basic"
+    ]
+  }
+]
