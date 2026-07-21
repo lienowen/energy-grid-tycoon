@@ -1,0 +1,56 @@
+export type GeneratedAssetId =
+  | 'brand_logo'
+  | 'building_solar'
+  | 'building_wind'
+  | 'building_gas'
+  | 'building_battery'
+  | 'building_battery_utility'
+  | 'building_offshore'
+  | 'building_nuclear'
+  | 'tech_solar'
+  | 'tech_storage'
+  | 'tech_grid'
+  | 'tech_clean'
+  | 'tech_offshore'
+  | 'tech_nuclear'
+  | 'policy_resident'
+  | 'policy_industry'
+  | 'policy_green'
+  | 'policy_efficiency'
+  | 'event_heat_wave'
+  | 'event_cloud_cover'
+  | 'event_industrial_surge'
+  | 'event_fuel_spike'
+  | 'status_stable'
+  | 'status_warning'
+  | 'background_campaign_city'
+  | 'ui_grid_pattern';
+
+export const generatedAssets: Record<GeneratedAssetId, string> = {
+  "brand_logo": "/assets/brand/logo-mark.png",
+  "building_solar": "/assets/buildings/solar_basic.png",
+  "building_wind": "/assets/buildings/wind_basic.png",
+  "building_gas": "/assets/buildings/gas_basic.png",
+  "building_battery": "/assets/buildings/battery_basic.png",
+  "building_battery_utility": "/assets/buildings/battery_utility.png",
+  "building_offshore": "/assets/buildings/wind_offshore.png",
+  "building_nuclear": "/assets/buildings/nuclear_advanced.png",
+  "tech_solar": "/assets/technologies/solar_forecasting.png",
+  "tech_storage": "/assets/technologies/storage_chemistry.png",
+  "tech_grid": "/assets/technologies/smart_dispatch.png",
+  "tech_clean": "/assets/technologies/clean_combustion.png",
+  "tech_offshore": "/assets/technologies/offshore_engineering.png",
+  "tech_nuclear": "/assets/technologies/advanced_reactors.png",
+  "policy_resident": "/assets/policies/resident_support.png",
+  "policy_industry": "/assets/policies/industry_priority.png",
+  "policy_green": "/assets/policies/green_transition.png",
+  "policy_efficiency": "/assets/policies/efficiency_drive.png",
+  "event_heat_wave": "/assets/events/heat_wave.png",
+  "event_cloud_cover": "/assets/events/cloud_cover.png",
+  "event_industrial_surge": "/assets/events/industrial_surge.png",
+  "event_fuel_spike": "/assets/events/fuel_spike.png",
+  "status_stable": "/assets/status/stable.png",
+  "status_warning": "/assets/status/warning.png",
+  "background_campaign_city": "/assets/backgrounds/campaign-city.png",
+  "ui_grid_pattern": "/assets/ui/grid-pattern.png"
+};
