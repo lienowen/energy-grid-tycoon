@@ -6,15 +6,15 @@ import { LevelConfig } from '../systems/LevelLoader';
 import { LevelProgressionSystem } from '../systems/LevelProgressionSystem';
 import { PolicyConfig } from '../systems/PolicySystem';
 import { TechnologyConfig } from '../systems/ResearchSystem';
-import { Dashboard } from '../ui/Dashboard';
 import { LevelSelect } from '../ui/LevelSelect';
 import { LoadingScreen } from '../ui/LoadingScreen';
+import { WorldDashboard } from '../ui/WorldDashboard';
 import { GameManager, GameViewModel } from './GameManager';
 import { SaveManager } from './SaveManager';
 
 export class AppController {
   private game?: GameManager;
-  private dashboard?: Dashboard;
+  private dashboard?: WorldDashboard;
   private currentLevelId?: string;
   private lastAutoSaveDay = 0;
   private completionRecorded = false;
@@ -31,11 +31,15 @@ export class AppController {
 
   start(): void {
     this.showCampaign();
-    window.addEventListener('beforeunload', () => this.game?.destroy());
+    window.addEventListener('beforeunload', () => {
+      this.dashboard?.destroy();
+      this.game?.destroy();
+    });
   }
 
   private showCampaign(): void {
     this.loadGeneration += 1;
+    this.dashboard?.destroy();
     this.game?.destroy();
     this.game = undefined;
     this.dashboard = undefined;
@@ -63,6 +67,7 @@ export class AppController {
     if (!level) return;
 
     const generation = ++this.loadGeneration;
+    this.dashboard?.destroy();
     this.game?.destroy();
     this.game = undefined;
     this.dashboard = undefined;
@@ -70,7 +75,7 @@ export class AppController {
     this.lastAutoSaveDay = 0;
     this.completionRecorded = false;
 
-    LoadingScreen.render(this.root, `正在进入${level.name}`, '加载本关建筑、科技、政策、事件和城市背景。');
+    LoadingScreen.render(this.root, `正在进入${level.name}`, '加载本关城市世界、能源资产、科技、政策和事件。');
     const assetReport = await AssetManager.preload(LevelAssetPlanner.resolve(level, {
       buildings: this.buildings,
       events: this.events,
@@ -86,7 +91,7 @@ export class AppController {
     const compatibleSave = save?.levelId === level.id ? save : undefined;
     if (!resume) SaveManager.clearGame();
 
-    this.dashboard = new Dashboard(this.root, {
+    this.dashboard = new WorldDashboard(this.root, {
       onBuild: (configId) => this.game?.build(configId) ?? { ok: false, reason: '游戏尚未启动' },
       onUpgrade: (instanceId) => this.game?.upgrade(instanceId) ?? { ok: false, reason: '游戏尚未启动' },
       onToggleBuilding: (instanceId) => this.game?.toggleBuilding(instanceId) ?? { ok: false, reason: '游戏尚未启动' },
