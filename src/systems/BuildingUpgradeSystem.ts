@@ -10,7 +10,7 @@ export interface UpgradeQuote {
 export class BuildingUpgradeSystem {
   static quote(building: BuildingBase): UpgradeQuote {
     if (building.level >= building.getMaxLevel()) {
-      return { available: false, cost: 0, reason: '建筑已达到最高等级' };
+      return { available: false, cost: 0, reason: '这座设施已经扩建到最大规模' };
     }
 
     const baseFactor = Math.max(1.1, building.config.upgradeCostFactor ?? 1.65);
