@@ -3,6 +3,7 @@ import { BuildingFactory } from '../buildings/BuildingFactory';
 import { BuildingManager } from '../buildings/BuildingManager';
 import { createInitialState, GameState } from '../core/GameState';
 import type { BuildingSnapshot } from '../core/SaveSchema';
+import type { RuleComponentConfig } from '../rules/RuleTypes';
 import type { ScenarioConditionGroup } from './ScenarioConditionSystem';
 import type { SimulationModifiers } from './SimulationModifiers';
 
@@ -33,6 +34,8 @@ export interface LevelFailureConfig extends ScenarioConditionGroup {
 }
 
 export interface LevelRulesConfig {
+  schemaVersion: 1;
+  seed: number;
   tickIntervalMs: number;
   eventTriggerChance: number;
   powerPriceRange: {
@@ -40,6 +43,7 @@ export interface LevelRulesConfig {
     max: number;
   };
   simulationModifiers?: Partial<SimulationModifiers>;
+  components: RuleComponentConfig[];
   objective: LevelObjectiveConfig;
   failure: LevelFailureConfig;
 }
@@ -57,6 +61,7 @@ export interface LevelPresentationConfig {
 }
 
 export interface LevelConfig {
+  schemaVersion: 1;
   id: string;
   name: string;
   description: string;
@@ -97,7 +102,8 @@ export class LevelLoader {
       powerPrice: level.initial.powerPrice,
       satisfaction: level.initial.satisfaction,
       researchPoints: level.initial.researchPoints,
-      unlockedTechnologyIds: level.initial.technologies
+      unlockedTechnologyIds: level.initial.technologies,
+      randomSeed: level.rules.seed
     });
 
     state.storageEnergy = buildings.getTotalStoredEnergy();
@@ -123,13 +129,15 @@ export class LevelLoader {
       powerPrice: level.initial.powerPrice,
       satisfaction: level.initial.satisfaction,
       researchPoints: level.initial.researchPoints,
-      unlockedTechnologyIds: level.initial.technologies
+      unlockedTechnologyIds: level.initial.technologies,
+      randomSeed: level.rules.seed
     });
     const state: GameState = {
       ...defaults,
       ...savedState,
       levelId: level.id,
       cityName: level.name,
+      randomState: savedState.randomState || defaults.randomState,
       unlockedTechnologyIds: [...new Set(savedState.unlockedTechnologyIds ?? defaults.unlockedTechnologyIds)],
       storageEnergy: buildings.getTotalStoredEnergy(),
       storageCapacity: buildings.getTotalStorageCapacity()
