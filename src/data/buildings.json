@@ -1,16 +1,50 @@
 [
   {
     "id": "solar_basic",
-    "type": "solar",
-    "power": 200,
-    "cost": 500,
-    "maintenance": 5
+    "name": "社区光伏阵列",
+    "category": "generation",
+    "assetId": "building_solar",
+    "cost": 700,
+    "maintenance": 4,
+    "power": 180,
+    "pollution": 0,
+    "description": "清洁、稳定，但单位占地发电量较低。",
+    "specialLogic": "solar_daylight"
+  },
+  {
+    "id": "wind_basic",
+    "name": "城市风电机组",
+    "category": "generation",
+    "assetId": "building_wind",
+    "cost": 950,
+    "maintenance": 7,
+    "power": 260,
+    "pollution": 0,
+    "description": "夜间仍可发电，输出会受天气影响。",
+    "specialLogic": "wind_weather"
+  },
+  {
+    "id": "gas_basic",
+    "name": "燃气调峰电站",
+    "category": "generation",
+    "assetId": "building_gas",
+    "cost": 1300,
+    "maintenance": 20,
+    "power": 520,
+    "pollution": 8,
+    "description": "高成本高输出，适合应对突发高峰。"
   },
   {
     "id": "battery_basic",
-    "type": "battery",
+    "name": "城市储能站",
+    "category": "storage",
+    "assetId": "building_battery",
+    "cost": 1100,
+    "maintenance": 8,
     "power": 0,
-    "cost": 800,
-    "maintenance": 8
+    "capacity": 900,
+    "pollution": 0,
+    "description": "吸收富余电力，在短缺时释放。",
+    "specialLogic": "grid_storage"
   }
 ]
