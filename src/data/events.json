@@ -1,32 +1,32 @@
 [
   {
     "id": "heat_wave",
-    "name": "极端高温",
-    "description": "空调用电激增，城市需求短时上升。",
+    "name": "连续高温",
+    "description": "家家户户都开空调，全城用电突然增加。",
     "durationHours": 8,
     "weight": 3,
     "effects": { "demandMultiplier": 1.32, "outputMultiplier": 1, "priceMultiplier": 1.08, "satisfactionDelta": -1 }
   },
   {
     "id": "cloud_cover",
-    "name": "持续阴云",
-    "description": "光伏输出下降，但居民需求略有回落。",
+    "name": "连续阴天",
+    "description": "太阳能发电减少，不过居民用电也会稍微下降。",
     "durationHours": 6,
     "weight": 2,
     "effects": { "demandMultiplier": 0.96, "outputMultiplier": 0.72, "priceMultiplier": 1, "satisfactionDelta": 0 }
   },
   {
     "id": "industrial_surge",
-    "name": "工业订单潮",
-    "description": "工业区满负荷生产，需求和电价同步上涨。",
+    "name": "工厂订单大增",
+    "description": "工厂加班生产，会使用更多电，也会带来更多收入。",
     "durationHours": 10,
     "weight": 2,
     "effects": { "demandMultiplier": 1.24, "outputMultiplier": 1, "priceMultiplier": 1.16, "satisfactionDelta": 1 }
   },
   {
     "id": "fuel_spike",
-    "name": "燃料价格上涨",
-    "description": "火电与燃气机组维护成本上升。",
+    "name": "燃气变贵了",
+    "description": "燃气发电站的日常花费会明显增加。",
     "durationHours": 12,
     "weight": 1,
     "effects": { "demandMultiplier": 1, "outputMultiplier": 1, "priceMultiplier": 1.03, "maintenanceMultiplier": 1.45, "satisfactionDelta": 0 }
