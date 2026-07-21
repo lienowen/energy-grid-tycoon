@@ -1,7 +1,7 @@
 import type { DomainEventUnion } from './DomainEventBus';
 
 export interface GameDomainEventMap {
-  'building.completed': { configId: string; instanceId: string };
+  'building.completed': { configId: string; instanceId: string; plotId?: string };
   'building.upgraded': { instanceId: string; level: number };
   'building.toggled': { instanceId: string; enabled: boolean };
   'technology.researched': { technologyId: string };
