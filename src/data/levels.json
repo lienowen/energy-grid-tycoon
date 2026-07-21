@@ -1,5 +1,6 @@
 [
   {
+    "schemaVersion": 1,
     "id": "city-01",
     "name": "曙光新城",
     "description": "用有限预算建立第一套稳定供电网络，并完成基础能源研发。",
@@ -25,10 +26,29 @@
       "policies": ["resident_subsidy", "efficiency_campaign"]
     },
     "rules": {
+      "schemaVersion": 1,
+      "seed": 11001,
       "tickIntervalMs": 1000,
       "eventTriggerChance": 0.08,
       "powerPriceRange": { "min": 0.18, "max": 0.82 },
       "simulationModifiers": { "generationMultiplier": 1.03 },
+      "components": [
+        {
+          "id": "residential_growth",
+          "version": 1,
+          "type": "demandGrowth",
+          "ratePerDay": 0.012,
+          "maxMultiplier": 1.12
+        },
+        {
+          "id": "evening_peak",
+          "version": 1,
+          "type": "timeWindowModifier",
+          "startHour": 17,
+          "endHour": 22,
+          "modifiers": { "demandMultiplier": 1.08 }
+        }
+      ],
       "objective": {
         "label": "资金达到 ¥9,000，并完成至少 1 项技术",
         "mode": "all",
@@ -54,6 +74,7 @@
     }
   },
   {
+    "schemaVersion": 1,
     "id": "city-02",
     "name": "工业走廊",
     "description": "在工业需求快速增长时，用调峰、政策和储能保持城市满意度。",
@@ -79,6 +100,8 @@
       "policies": ["resident_subsidy", "industrial_priority", "green_mandate", "efficiency_campaign"]
     },
     "rules": {
+      "schemaVersion": 1,
+      "seed": 22002,
       "tickIntervalMs": 1000,
       "eventTriggerChance": 0.12,
       "powerPriceRange": { "min": 0.24, "max": 1.05 },
@@ -87,6 +110,46 @@
         "maintenanceMultiplier": 1.05,
         "researchMultiplier": 1.08
       },
+      "components": [
+        {
+          "id": "industrial_growth",
+          "version": 1,
+          "type": "demandGrowth",
+          "ratePerDay": 0.025,
+          "maxMultiplier": 1.3
+        },
+        {
+          "id": "factory_shift",
+          "version": 1,
+          "type": "timeWindowModifier",
+          "startHour": 8,
+          "endHour": 20,
+          "modifiers": { "demandMultiplier": 1.12, "priceMultiplier": 1.04 }
+        },
+        {
+          "id": "blackout_protocol",
+          "version": 1,
+          "type": "behavior",
+          "behavior": "rolling_blackout",
+          "params": {
+            "threshold": 0.93,
+            "demandReliefMultiplier": 0.96,
+            "satisfactionPenaltyPerHour": -0.22
+          }
+        },
+        {
+          "id": "shortage_confidence_loss",
+          "version": 1,
+          "type": "conditionalAction",
+          "when": {
+            "mode": "all",
+            "conditions": [
+              { "metric": "totalShortage", "operator": "gte", "target": 9000, "label": "累计缺电超过 9,000 MWh" }
+            ]
+          },
+          "action": { "type": "adjustState", "field": "satisfaction", "amountPerHour": -0.12 }
+        }
+      ],
       "objective": {
         "label": "满意度达到 92%，并坚持运营到第 3 天",
         "mode": "all",
@@ -112,6 +175,7 @@
     }
   },
   {
+    "schemaVersion": 1,
     "id": "city-03",
     "name": "绿色都会",
     "description": "用科技树与先进机组控制污染，服务一座高速成长的城市。",
@@ -136,6 +200,8 @@
       "policies": ["resident_subsidy", "industrial_priority", "green_mandate", "efficiency_campaign"]
     },
     "rules": {
+      "schemaVersion": 1,
+      "seed": 33003,
       "tickIntervalMs": 900,
       "eventTriggerChance": 0.14,
       "powerPriceRange": { "min": 0.28, "max": 1.2 },
@@ -144,6 +210,48 @@
         "pollutionMultiplier": 0.92,
         "storageCapacityMultiplier": 1.1
       },
+      "components": [
+        {
+          "id": "metropolitan_growth",
+          "version": 1,
+          "type": "demandGrowth",
+          "ratePerDay": 0.02,
+          "maxMultiplier": 1.25
+        },
+        {
+          "id": "evening_transit_peak",
+          "version": 1,
+          "type": "timeWindowModifier",
+          "startHour": 18,
+          "endHour": 23,
+          "modifiers": { "demandMultiplier": 1.1 }
+        },
+        {
+          "id": "clean_grid_reward",
+          "version": 1,
+          "type": "conditionalModifier",
+          "when": {
+            "mode": "all",
+            "conditions": [
+              { "metric": "pollution", "operator": "lte", "target": 28, "label": "污染不高于 28%" },
+              { "metric": "supplyRatio", "operator": "gte", "target": 0.98, "label": "供电率不低于 98%" }
+            ]
+          },
+          "modifiers": { "researchMultiplier": 1.08, "satisfactionDeltaPerHour": 0.03 }
+        },
+        {
+          "id": "green_momentum",
+          "version": 1,
+          "type": "behavior",
+          "behavior": "clean_energy_momentum",
+          "params": {
+            "maxPollution": 28,
+            "minSupplyRatio": 0.98,
+            "researchMultiplier": 1.08,
+            "satisfactionBonusPerHour": 0.03
+          }
+        }
+      ],
       "objective": {
         "label": "人口达到 16,000，同时将污染控制在 28% 以下",
         "mode": "all",
