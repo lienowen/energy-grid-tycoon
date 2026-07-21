@@ -8,6 +8,7 @@ export interface GameState {
   speed: GameSpeed;
   money: number;
   population: number;
+  baseDemand: number;
   powerDemand: number;
   powerSupply: number;
   supplyRatio: number;
@@ -38,6 +39,7 @@ export const createInitialState = (input: InitialStateInput): GameState => ({
   speed: 1,
   money: input.money,
   population: input.population,
+  baseDemand: input.baseDemand,
   powerDemand: input.baseDemand,
   powerSupply: 0,
   supplyRatio: 0,
