@@ -54,10 +54,24 @@ export interface LevelProgressionConfig {
   nextLevelId?: string;
 }
 
+export interface LevelWorldSlotConfig {
+  x: number;
+  y: number;
+  scale?: number;
+  depth?: 'far' | 'mid' | 'near';
+}
+
+export interface LevelWorldPresentationConfig {
+  theme: 'residential' | 'industrial' | 'green';
+  city?: { x: number; y: number };
+  slots: LevelWorldSlotConfig[];
+}
+
 export interface LevelPresentationConfig {
   backgroundAssetId?: string;
   accent?: string;
   briefing?: string[];
+  world?: LevelWorldPresentationConfig;
 }
 
 export interface LevelConfig {
@@ -137,7 +151,8 @@ export class LevelLoader {
       ...savedState,
       levelId: level.id,
       cityName: level.name,
-      randomState: savedState.randomState || defaults.randomState,
+      randomSeed: savedState.randomSeed ?? defaults.randomSeed,
+      randomState: savedState.randomState ?? defaults.randomState,
       unlockedTechnologyIds: [...new Set(savedState.unlockedTechnologyIds ?? defaults.unlockedTechnologyIds)],
       storageEnergy: buildings.getTotalStoredEnergy(),
       storageCapacity: buildings.getTotalStorageCapacity()
