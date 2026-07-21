@@ -1,5 +1,7 @@
 import { BuildingBase } from './BuildingBase';
 
+export type OutputResolver = (building: BuildingBase) => number;
+
 export class BuildingManager {
   private readonly buildings: BuildingBase[] = [];
 
@@ -18,9 +20,9 @@ export class BuildingManager {
     return this.buildings;
   }
 
-  getTotalPower(outputMultiplier = 1): number {
+  getTotalPower(resolveMultiplier: OutputResolver = () => 1): number {
     return this.buildings.reduce(
-      (sum, building) => sum + building.getPowerOutput(outputMultiplier),
+      (sum, building) => sum + building.getPowerOutput(resolveMultiplier(building)),
       0
     );
   }
