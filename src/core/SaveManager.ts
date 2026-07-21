@@ -67,7 +67,10 @@ export class SaveManager {
           configId: String(item.configId),
           enabled: item.enabled !== false,
           storedEnergy: Math.max(0, Number(item.storedEnergy ?? 0)),
-          level: Math.max(1, Math.floor(Number(item.level ?? 1)))
+          level: Math.max(1, Math.floor(Number(item.level ?? 1))),
+          placementId: typeof item.placementId === 'string' && item.placementId
+            ? item.placementId
+            : undefined
         }));
 
       return {
