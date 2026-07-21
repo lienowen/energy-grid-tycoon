@@ -1,6 +1,7 @@
 import type { GameState } from '../core/GameState';
 import {
   neutralSimulationModifiers,
+  type SimulationModifierEffects,
   type SimulationModifiers
 } from './SimulationModifiers';
 
@@ -10,7 +11,7 @@ export interface PolicyConfig {
   description: string;
   assetId: string;
   activationCost: number;
-  effects: Partial<SimulationModifiers>;
+  effects: SimulationModifierEffects;
 }
 
 export interface PolicyCheck {
