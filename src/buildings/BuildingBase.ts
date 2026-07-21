@@ -89,14 +89,15 @@ export class BuildingBase {
   }
 
   toSnapshot(): BuildingSnapshot {
-    return {
+    const snapshot: BuildingSnapshot = {
       instanceId: this.instanceId,
       configId: this.config.id,
       enabled: this.enabled,
       storedEnergy: this.storedEnergy,
-      level: this.level,
-      placementId: this.placementId
+      level: this.level
     };
+    if (this.placementId) snapshot.placementId = this.placementId;
+    return snapshot;
   }
 
   private getPowerLevelMultiplier(): number {
