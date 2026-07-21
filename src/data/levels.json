@@ -16,13 +16,13 @@
   {
     "id": "city-02",
     "name": "工业走廊",
-    "description": "在工业需求快速增长时保持城市满意度。",
+    "description": "在工业需求快速增长时，用调峰与储能保持城市满意度。",
     "startingMoney": 7800,
     "population": 8200,
     "baseDemand": 1450,
     "powerPrice": 0.46,
-    "availableBuildings": ["solar_basic", "wind_basic", "gas_basic", "battery_basic"],
-    "startingBuildings": ["solar_basic", "wind_basic", "gas_basic"],
+    "availableBuildings": ["solar_basic", "wind_basic", "gas_basic", "battery_basic", "battery_utility"],
+    "startingBuildings": ["solar_basic", "wind_basic", "gas_basic", "battery_basic"],
     "eventPool": ["industrial_surge", "fuel_spike"],
     "goal": { "type": "satisfaction", "target": 92 },
     "failMoney": -2500
@@ -30,13 +30,13 @@
   {
     "id": "city-03",
     "name": "绿色都会",
-    "description": "在控制污染的同时服务一座高速成长的城市。",
+    "description": "控制污染并用大容量储能服务一座高速成长的城市。",
     "startingMoney": 10500,
     "population": 12800,
     "baseDemand": 2200,
     "powerPrice": 0.51,
-    "availableBuildings": ["solar_basic", "wind_basic", "gas_basic", "battery_basic"],
-    "startingBuildings": ["solar_basic", "solar_basic", "wind_basic", "battery_basic"],
+    "availableBuildings": ["solar_basic", "wind_basic", "gas_basic", "battery_basic", "battery_utility"],
+    "startingBuildings": ["solar_basic", "solar_basic", "wind_basic", "battery_utility"],
     "eventPool": ["heat_wave", "cloud_cover", "industrial_surge"],
     "goal": { "type": "population", "target": 16000 },
     "failMoney": -3500
