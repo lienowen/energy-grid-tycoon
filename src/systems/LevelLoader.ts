@@ -3,29 +3,68 @@ import { BuildingFactory } from '../buildings/BuildingFactory';
 import { BuildingManager } from '../buildings/BuildingManager';
 import { createInitialState, GameState } from '../core/GameState';
 import type { BuildingSnapshot } from '../core/SaveSchema';
+import type { ScenarioConditionGroup } from './ScenarioConditionSystem';
+import type { SimulationModifiers } from './SimulationModifiers';
 
-export interface LevelGoal {
-  type: 'money' | 'satisfaction' | 'population';
-  target: number;
+export interface LevelInitialConfig {
+  money: number;
+  population: number;
+  baseDemand: number;
+  powerPrice: number;
+  satisfaction: number;
+  researchPoints: number;
+  technologies: string[];
+  buildings: string[];
+}
+
+export interface LevelCatalogConfig {
+  buildings: string[];
+  events: string[];
+  technologies: string[];
+  policies: string[];
+}
+
+export interface LevelObjectiveConfig extends ScenarioConditionGroup {
+  label: string;
+}
+
+export interface LevelFailureConfig extends ScenarioConditionGroup {
+  label: string;
+}
+
+export interface LevelRulesConfig {
+  tickIntervalMs: number;
+  eventTriggerChance: number;
+  powerPriceRange: {
+    min: number;
+    max: number;
+  };
+  simulationModifiers?: Partial<SimulationModifiers>;
+  objective: LevelObjectiveConfig;
+  failure: LevelFailureConfig;
+}
+
+export interface LevelProgressionConfig {
+  requirementMode: 'all' | 'any';
+  requiresCompletedLevelIds: string[];
+  nextLevelId?: string;
+}
+
+export interface LevelPresentationConfig {
+  backgroundAssetId?: string;
+  accent?: string;
+  briefing?: string[];
 }
 
 export interface LevelConfig {
   id: string;
   name: string;
   description: string;
-  startingMoney: number;
-  population: number;
-  baseDemand: number;
-  powerPrice: number;
-  availableBuildings: string[];
-  startingBuildings: string[];
-  eventPool: string[];
-  goal: LevelGoal;
-  failMoney: number;
-  startingResearchPoints?: number;
-  startingTechnologies?: string[];
-  availableTechnologies?: string[];
-  availablePolicies?: string[];
+  progression: LevelProgressionConfig;
+  initial: LevelInitialConfig;
+  catalog: LevelCatalogConfig;
+  rules: LevelRulesConfig;
+  presentation?: LevelPresentationConfig;
 }
 
 export interface LoadedLevel {
@@ -43,7 +82,7 @@ export class LevelLoader {
     const catalog = this.createCatalog(buildingConfigs);
     const buildings = new BuildingManager();
 
-    for (const buildingId of level.startingBuildings) {
+    for (const buildingId of level.initial.buildings) {
       const config = catalog.get(buildingId);
       if (!config) throw new Error(`Unknown starting building: ${buildingId}`);
       buildings.add(BuildingFactory.create(config));
@@ -52,12 +91,13 @@ export class LevelLoader {
     const state = createInitialState({
       levelId: level.id,
       cityName: level.name,
-      money: level.startingMoney,
-      population: level.population,
-      baseDemand: level.baseDemand,
-      powerPrice: level.powerPrice,
-      researchPoints: level.startingResearchPoints,
-      unlockedTechnologyIds: level.startingTechnologies
+      money: level.initial.money,
+      population: level.initial.population,
+      baseDemand: level.initial.baseDemand,
+      powerPrice: level.initial.powerPrice,
+      satisfaction: level.initial.satisfaction,
+      researchPoints: level.initial.researchPoints,
+      unlockedTechnologyIds: level.initial.technologies
     });
 
     state.storageEnergy = buildings.getTotalStoredEnergy();
@@ -77,12 +117,13 @@ export class LevelLoader {
     const defaults = createInitialState({
       levelId: level.id,
       cityName: level.name,
-      money: level.startingMoney,
-      population: level.population,
-      baseDemand: level.baseDemand,
-      powerPrice: level.powerPrice,
-      researchPoints: level.startingResearchPoints,
-      unlockedTechnologyIds: level.startingTechnologies
+      money: level.initial.money,
+      population: level.initial.population,
+      baseDemand: level.initial.baseDemand,
+      powerPrice: level.initial.powerPrice,
+      satisfaction: level.initial.satisfaction,
+      researchPoints: level.initial.researchPoints,
+      unlockedTechnologyIds: level.initial.technologies
     });
     const state: GameState = {
       ...defaults,
