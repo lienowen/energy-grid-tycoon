@@ -16,7 +16,7 @@
     "cost": 46,
     "prerequisites": ["solar_forecasting"],
     "effects": { "storageCapacityMultiplier": 1.25, "storageEfficiencyBonus": 0.04 },
-    "unlockBuildings": ["battery_flow"]
+    "unlockBuildings": ["battery_utility"]
   },
   {
     "id": "smart_dispatch",
