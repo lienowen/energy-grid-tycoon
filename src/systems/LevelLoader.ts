@@ -1,9 +1,11 @@
 import { BuildingConfig } from '../buildings/BuildingBase';
 import { BuildingFactory } from '../buildings/BuildingFactory';
 import { BuildingManager } from '../buildings/BuildingManager';
+import type { CityPlotConfig, InitialCityPlacementConfig } from '../core/CityMapConfig';
 import { createInitialState, GameState } from '../core/GameState';
 import type { BuildingSnapshot } from '../core/SaveSchema';
 import type { RuleComponentConfig } from '../rules/RuleTypes';
+import { CityMapSystem } from './CityMapSystem';
 import type { ScenarioConditionGroup } from './ScenarioConditionSystem';
 import type { SimulationModifiers } from './SimulationModifiers';
 
@@ -16,6 +18,7 @@ export interface LevelInitialConfig {
   researchPoints: number;
   technologies: string[];
   buildings: string[];
+  placements?: InitialCityPlacementConfig[];
 }
 
 export interface LevelCatalogConfig {
@@ -64,7 +67,8 @@ export interface LevelWorldSlotConfig {
 export interface LevelWorldPresentationConfig {
   theme: 'residential' | 'industrial' | 'green';
   city?: { x: number; y: number };
-  slots: LevelWorldSlotConfig[];
+  plots?: CityPlotConfig[];
+  slots?: LevelWorldSlotConfig[];
 }
 
 export interface LevelPresentationConfig {
@@ -93,7 +97,24 @@ export interface LoadedLevel {
   buildingCatalog: Map<string, BuildingConfig>;
 }
 
+const legacyPlots = (level: LevelConfig): CityPlotConfig[] => (
+  level.presentation?.world?.slots ?? []
+).map((slot, index) => ({
+  id: `legacy-plot-${index + 1}`,
+  x: slot.x,
+  y: slot.y,
+  scale: slot.scale,
+  depth: slot.depth,
+  zone: 'utility',
+  accepts: ['generation', 'storage', 'grid']
+}));
+
 export class LevelLoader {
+  static getWorldPlots(level: LevelConfig): readonly CityPlotConfig[] {
+    const configured = level.presentation?.world?.plots;
+    return configured?.length ? configured : legacyPlots(level);
+  }
+
   static load(
     level: LevelConfig,
     buildingConfigs: BuildingConfig[]
@@ -106,6 +127,12 @@ export class LevelLoader {
       if (!config) throw new Error(`Unknown starting building: ${buildingId}`);
       buildings.add(BuildingFactory.create(config));
     }
+
+    CityMapSystem.assignStartingBuildings(
+      buildings.getBuildings(),
+      this.getWorldPlots(level),
+      level.initial.placements
+    );
 
     const state = createInitialState({
       levelId: level.id,
@@ -134,6 +161,12 @@ export class LevelLoader {
   ): LoadedLevel {
     const catalog = this.createCatalog(buildingConfigs);
     const buildings = BuildingManager.restore(snapshots, catalog);
+    CityMapSystem.assignStartingBuildings(
+      buildings.getBuildings(),
+      this.getWorldPlots(level),
+      level.initial.placements
+    );
+
     const defaults = createInitialState({
       levelId: level.id,
       cityName: level.name,
