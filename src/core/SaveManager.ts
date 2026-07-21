@@ -48,8 +48,10 @@ export class SaveManager {
       if (!parsed.levelId || !parsed.state || !Array.isArray(parsed.buildings)) return undefined;
 
       const stateInput = parsed.state as Partial<GameState>;
+      const migratedRandomState = Math.floor(Number(stateInput.randomState ?? 1)) >>> 0;
       const state = {
         ...stateInput,
+        randomState: migratedRandomState || 1,
         researchPoints: Math.max(0, stateInput.researchPoints ?? 0),
         unlockedTechnologyIds: Array.isArray(stateInput.unlockedTechnologyIds)
           ? [...new Set(stateInput.unlockedTechnologyIds)]
