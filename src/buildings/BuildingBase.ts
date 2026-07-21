@@ -25,7 +25,7 @@ export class BuildingBase {
   enabled = true;
   storedEnergy = 0;
 
-  constructor(config: BuildingConfig, instanceId = crypto.randomUUID()) {
+  constructor(config: BuildingConfig, instanceId: string = crypto.randomUUID()) {
     this.config = config;
     this.instanceId = instanceId;
   }
