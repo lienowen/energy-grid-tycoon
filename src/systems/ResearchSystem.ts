@@ -2,6 +2,7 @@ import type { GameState } from '../core/GameState';
 import {
   mergeSimulationModifiers,
   neutralSimulationModifiers,
+  type SimulationModifierEffects,
   type SimulationModifiers
 } from './SimulationModifiers';
 
@@ -13,7 +14,7 @@ export interface TechnologyConfig {
   cost: number;
   prerequisites: string[];
   unlockBuildings?: string[];
-  effects: Partial<SimulationModifiers>;
+  effects: SimulationModifierEffects;
 }
 
 export interface ResearchCheck {
