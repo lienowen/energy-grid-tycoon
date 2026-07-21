@@ -2,6 +2,7 @@ import { BuildingConfig } from '../buildings/BuildingBase';
 import { BuildingFactory } from '../buildings/BuildingFactory';
 import { RuleEngine } from '../rules/RuleEngine';
 import { BuildingUpgradeSystem, type UpgradeQuote } from '../systems/BuildingUpgradeSystem';
+import { CityMapSystem } from '../systems/CityMapSystem';
 import { EconomyResult } from '../systems/EconomySystem';
 import { ActiveEvent, EventConfig, EventSystem } from '../systems/EventSystem';
 import { GoalSystem } from '../systems/GoalSystem';
@@ -113,32 +114,45 @@ export class GameManager {
     this.emit();
   }
 
-  build(configId: string): GameActionResult {
+  build(configId: string, plotId?: string): GameActionResult {
     const state = this.session.state;
     if (state.completed || state.failed) return { ok: false, reason: '本局已经结束' };
 
     const level = this.session.config;
     if (!level.catalog.buildings.includes(configId)) {
-      return { ok: false, reason: '该建筑不属于当前城市规划' };
+      return { ok: false, reason: '该设施不属于当前城市规划' };
     }
 
     const config = this.session.buildingCatalog.get(configId);
-    if (!config) return { ok: false, reason: '建筑配置不存在' };
+    if (!config) return { ok: false, reason: '设施配置不存在' };
     if (
       config.requiredTechnologyId
       && !state.unlockedTechnologyIds.includes(config.requiredTechnologyId)
     ) {
-      return { ok: false, reason: '需要先完成对应科技研发' };
+      return { ok: false, reason: '需要先完成对应城市升级' };
     }
-    if (state.money < config.cost) return { ok: false, reason: '资金不足' };
+    if (state.money < config.cost) return { ok: false, reason: '市政资金不足' };
+
+    const plots = LevelLoader.getWorldPlots(level);
+    if (plots.length > 0) {
+      if (!plotId) return { ok: false, reason: '请先在城市地图上选择一块空地' };
+      const placement = CityMapSystem.canPlace(
+        config,
+        CityMapSystem.getPlot(plots, plotId),
+        this.session.buildings.getBuildings()
+      );
+      if (!placement.ok) return placement;
+    }
 
     state.money -= config.cost;
     const building = BuildingFactory.create(config);
+    if (plotId) building.place(plotId);
     this.session.buildings.add(building);
     this.refreshStorageState();
     this.domainEvents.emit('building.completed', {
       configId: config.id,
-      instanceId: building.instanceId
+      instanceId: building.instanceId,
+      plotId
     });
     this.emit();
     return { ok: true };
@@ -148,11 +162,11 @@ export class GameManager {
     const state = this.session.state;
     if (state.completed || state.failed) return { ok: false, reason: '本局已经结束' };
     const building = this.session.buildings.find(instanceId);
-    if (!building) return { ok: false, reason: '没有找到该建筑' };
+    if (!building) return { ok: false, reason: '没有找到该设施' };
 
     const quote = BuildingUpgradeSystem.quote(building);
     if (!quote.available) return { ok: false, reason: quote.reason };
-    if (state.money < quote.cost) return { ok: false, reason: '升级资金不足' };
+    if (state.money < quote.cost) return { ok: false, reason: '扩建资金不足' };
 
     state.money -= quote.cost;
     BuildingUpgradeSystem.upgrade(building);
@@ -166,7 +180,7 @@ export class GameManager {
     const state = this.session.state;
     if (state.completed || state.failed) return { ok: false, reason: '本局已经结束' };
     const building = this.session.buildings.find(instanceId);
-    if (!building) return { ok: false, reason: '没有找到该建筑' };
+    if (!building) return { ok: false, reason: '没有找到该设施' };
     building.enabled = !building.enabled;
     this.refreshStorageState();
     this.domainEvents.emit('building.toggled', { instanceId, enabled: building.enabled });
@@ -178,7 +192,7 @@ export class GameManager {
     const state = this.session.state;
     if (state.completed || state.failed) return { ok: false, reason: '本局已经结束' };
     const technology = this.getAvailableTechnologies().find((item) => item.id === technologyId);
-    if (!technology) return { ok: false, reason: '该技术不在当前研发计划中' };
+    if (!technology) return { ok: false, reason: '该升级不在当前城市计划中' };
 
     const check = ResearchSystem.canUnlock(state, technology);
     if (!check.ok) return check;
@@ -201,7 +215,7 @@ export class GameManager {
     }
 
     const policy = this.getAvailablePolicies().find((item) => item.id === policyId);
-    if (!policy) return { ok: false, reason: '该政策在当前城市不可用' };
+    if (!policy) return { ok: false, reason: '该施政方向在当前城市不可用' };
     const check = PolicySystem.canActivate(state, policy);
     if (!check.ok) return check;
 
