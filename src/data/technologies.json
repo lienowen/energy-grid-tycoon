@@ -1,0 +1,59 @@
+[
+  {
+    "id": "solar_forecasting",
+    "name": "光照预测算法",
+    "description": "通过天气和负荷预测提高可再生能源利用率。",
+    "assetId": "tech_solar",
+    "cost": 28,
+    "prerequisites": [],
+    "effects": { "generationMultiplier": 1.08 }
+  },
+  {
+    "id": "storage_chemistry",
+    "name": "新型储能化学",
+    "description": "提升储能容量与往返效率。",
+    "assetId": "tech_storage",
+    "cost": 46,
+    "prerequisites": ["solar_forecasting"],
+    "effects": { "storageCapacityMultiplier": 1.25, "storageEfficiencyBonus": 0.04 },
+    "unlockBuildings": ["battery_flow"]
+  },
+  {
+    "id": "smart_dispatch",
+    "name": "智能电网调度",
+    "description": "减少维护浪费并提高储能充放电速度。",
+    "assetId": "tech_grid",
+    "cost": 68,
+    "prerequisites": ["storage_chemistry"],
+    "effects": { "maintenanceMultiplier": 0.9, "storageRateMultiplier": 1.2 }
+  },
+  {
+    "id": "clean_combustion",
+    "name": "清洁燃烧控制",
+    "description": "大幅降低燃气机组污染排放。",
+    "assetId": "tech_clean",
+    "cost": 58,
+    "prerequisites": ["solar_forecasting"],
+    "effects": { "pollutionMultiplier": 0.7 }
+  },
+  {
+    "id": "offshore_engineering",
+    "name": "海上风电工程",
+    "description": "解锁高功率海上风电集群。",
+    "assetId": "tech_offshore",
+    "cost": 92,
+    "prerequisites": ["smart_dispatch"],
+    "effects": { "generationMultiplier": 1.06 },
+    "unlockBuildings": ["wind_offshore"]
+  },
+  {
+    "id": "advanced_reactors",
+    "name": "先进反应堆",
+    "description": "解锁高稳定、高造价的先进核能机组。",
+    "assetId": "tech_nuclear",
+    "cost": 155,
+    "prerequisites": ["smart_dispatch", "clean_combustion"],
+    "effects": { "researchMultiplier": 1.18 },
+    "unlockBuildings": ["nuclear_advanced"]
+  }
+]
