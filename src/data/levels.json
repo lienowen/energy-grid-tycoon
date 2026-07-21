@@ -3,7 +3,7 @@
     "schemaVersion": 1,
     "id": "city-01",
     "name": "曙光新城",
-    "description": "用有限预算建立第一套稳定供电网络，并完成基础能源研发。",
+    "description": "用有限预算让所有街区稳定亮灯，并完成第一次城市升级。",
     "progression": {
       "requirementMode": "all",
       "requiresCompletedLevelIds": [],
@@ -50,19 +50,19 @@
         }
       ],
       "objective": {
-        "label": "资金达到 ¥9,000，并完成至少 1 项技术",
+        "label": "市政资金达到 ¥9,000，并完成 1 项城市升级",
         "mode": "all",
         "conditions": [
-          { "metric": "money", "operator": "gte", "target": 9000, "label": "资金达到 ¥9,000" },
-          { "metric": "unlockedTechnologies", "operator": "gte", "target": 1, "label": "完成 1 项技术" }
+          { "metric": "money", "operator": "gte", "target": 9000, "label": "市政资金达到 ¥9,000" },
+          { "metric": "unlockedTechnologies", "operator": "gte", "target": 1, "label": "完成 1 项城市升级" }
         ]
       },
       "failure": {
-        "label": "资金跌破 -¥1,500、满意度降至 5% 或人口归零。",
+        "label": "市政资金跌破 -¥1,500、居民满意降至 5% 或城市人口归零。",
         "mode": "any",
         "conditions": [
-          { "metric": "money", "operator": "lte", "target": -1500, "label": "资金破产" },
-          { "metric": "satisfaction", "operator": "lte", "target": 5, "label": "满意度崩溃" },
+          { "metric": "money", "operator": "lte", "target": -1500, "label": "市政资金耗尽" },
+          { "metric": "satisfaction", "operator": "lte", "target": 5, "label": "居民失去信心" },
           { "metric": "population", "operator": "lte", "target": 0, "label": "城市人口归零" }
         ]
       }
@@ -70,7 +70,7 @@
     "presentation": {
       "backgroundAssetId": "background_campaign_city",
       "accent": "#4ad7ff",
-      "briefing": ["优先建立稳定供电", "利用富余电力积累资金", "完成第一项能源科技"],
+      "briefing": ["先让所有街区稳定亮灯", "把白天多余的电留到晚上", "完成第一次城市升级"],
       "world": {
         "theme": "residential",
         "city": { "x": 50, "y": 51 },
@@ -88,7 +88,7 @@
     "schemaVersion": 1,
     "id": "city-02",
     "name": "工业走廊",
-    "description": "在工业需求快速增长时，用调峰、政策和储能保持城市满意度。",
+    "description": "工厂订单快速增加时，保证居民有电，并把生活满意度带上去。",
     "progression": {
       "requirementMode": "all",
       "requiresCompletedLevelIds": ["city-01"],
@@ -155,34 +155,34 @@
           "when": {
             "mode": "all",
             "conditions": [
-              { "metric": "totalShortage", "operator": "gte", "target": 9000, "label": "累计缺电超过 9,000 MWh" }
+              { "metric": "totalShortage", "operator": "gte", "target": 9000, "label": "长期有太多居民用不上电" }
             ]
           },
           "action": { "type": "adjustState", "field": "satisfaction", "amountPerHour": -0.12 }
         }
       ],
       "objective": {
-        "label": "满意度达到 92%，并坚持运营到第 3 天",
+        "label": "居民满意达到 92%，并治理到第 3 天",
         "mode": "all",
         "conditions": [
-          { "metric": "satisfaction", "operator": "gte", "target": 92, "label": "满意度达到 92%" },
-          { "metric": "day", "operator": "gte", "target": 3, "label": "运营到第 3 天" }
+          { "metric": "satisfaction", "operator": "gte", "target": 92, "label": "居民满意达到 92%" },
+          { "metric": "day", "operator": "gte", "target": 3, "label": "治理到第 3 天" }
         ]
       },
       "failure": {
-        "label": "资金跌破 -¥2,500、满意度降至 5% 或累计缺电超过 18,000 MWh。",
+        "label": "市政资金跌破 -¥2,500、居民满意降至 5% 或长期停电失控。",
         "mode": "any",
         "conditions": [
-          { "metric": "money", "operator": "lte", "target": -2500, "label": "资金破产" },
-          { "metric": "satisfaction", "operator": "lte", "target": 5, "label": "满意度崩溃" },
-          { "metric": "totalShortage", "operator": "gte", "target": 18000, "label": "累计缺电失控" }
+          { "metric": "money", "operator": "lte", "target": -2500, "label": "市政资金耗尽" },
+          { "metric": "satisfaction", "operator": "lte", "target": 5, "label": "居民失去信心" },
+          { "metric": "totalShortage", "operator": "gte", "target": 18000, "label": "长期停电失控" }
         ]
       }
     },
     "presentation": {
       "backgroundAssetId": "background_campaign_city",
       "accent": "#ff9b54",
-      "briefing": ["准备应对工业需求冲击", "用储能削峰填谷", "政策选择会重塑经济模型"],
+      "briefing": ["先保证工厂和居民都有电", "把白天多余的电留到夜间", "选择你要优先照顾的城市方向"],
       "world": {
         "theme": "industrial",
         "city": { "x": 56, "y": 52 },
@@ -201,7 +201,7 @@
     "schemaVersion": 1,
     "id": "city-03",
     "name": "绿色都会",
-    "description": "用科技树与先进机组控制污染，服务一座高速成长的城市。",
+    "description": "让城市继续增长，同时让空气保持干净，并建设更可靠的大型项目。",
     "progression": {
       "requirementMode": "all",
       "requiresCompletedLevelIds": ["city-02"]
@@ -256,8 +256,8 @@
           "when": {
             "mode": "all",
             "conditions": [
-              { "metric": "pollution", "operator": "lte", "target": 28, "label": "污染不高于 28%" },
-              { "metric": "supplyRatio", "operator": "gte", "target": 0.98, "label": "供电率不低于 98%" }
+              { "metric": "pollution", "operator": "lte", "target": 28, "label": "空气压力不高于 28%" },
+              { "metric": "supplyRatio", "operator": "gte", "target": 0.98, "label": "至少 98% 街区正常亮灯" }
             ]
           },
           "modifiers": { "researchMultiplier": 1.08, "satisfactionDeltaPerHour": 0.03 }
@@ -276,27 +276,27 @@
         }
       ],
       "objective": {
-        "label": "人口达到 16,000，同时将污染控制在 28% 以下",
+        "label": "居民达到 16,000，同时让空气压力保持在 28% 以下",
         "mode": "all",
         "conditions": [
-          { "metric": "population", "operator": "gte", "target": 16000, "label": "人口达到 16,000" },
-          { "metric": "pollution", "operator": "lte", "target": 28, "label": "污染不高于 28%" }
+          { "metric": "population", "operator": "gte", "target": 16000, "label": "居民达到 16,000" },
+          { "metric": "pollution", "operator": "lte", "target": 28, "label": "空气压力不高于 28%" }
         ]
       },
       "failure": {
-        "label": "资金跌破 -¥3,500、满意度降至 8% 或污染达到 85%。",
+        "label": "市政资金跌破 -¥3,500、居民满意降至 8% 或空气压力达到 85%。",
         "mode": "any",
         "conditions": [
-          { "metric": "money", "operator": "lte", "target": -3500, "label": "资金破产" },
-          { "metric": "satisfaction", "operator": "lte", "target": 8, "label": "满意度崩溃" },
-          { "metric": "pollution", "operator": "gte", "target": 85, "label": "污染失控" }
+          { "metric": "money", "operator": "lte", "target": -3500, "label": "市政资金耗尽" },
+          { "metric": "satisfaction", "operator": "lte", "target": 8, "label": "居民失去信心" },
+          { "metric": "pollution", "operator": "gte", "target": 85, "label": "空气严重恶化" }
         ]
       }
     },
     "presentation": {
       "backgroundAssetId": "background_campaign_city",
       "accent": "#5ce1a3",
-      "briefing": ["扩大清洁能源占比", "研发先进反应堆与海上风电", "增长与排放必须同步管理"],
+      "briefing": ["多建干净的供电设施", "解锁更可靠的大型项目", "城市增长时也要守住空气质量"],
       "world": {
         "theme": "green",
         "city": { "x": 49, "y": 48 },
