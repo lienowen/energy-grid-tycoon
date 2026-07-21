@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "budgetBytes": 20000000,
+  "entries": [
+    { "id": "brand_logo", "kind": "image", "src": "/assets/brand/logo-mark.png", "version": 1, "preload": "boot", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["brand", "ui"] },
+    { "id": "building_solar", "kind": "image", "src": "/assets/buildings/solar_basic.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["building", "generation"] },
+    { "id": "building_wind", "kind": "image", "src": "/assets/buildings/wind_basic.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["building", "generation"] },
+    { "id": "building_gas", "kind": "image", "src": "/assets/buildings/gas_basic.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["building", "generation"] },
+    { "id": "building_battery", "kind": "image", "src": "/assets/buildings/battery_basic.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["building", "storage"] },
+    { "id": "building_battery_utility", "kind": "image", "src": "/assets/buildings/battery_utility.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["building", "storage"] },
+    { "id": "building_offshore", "kind": "image", "src": "/assets/buildings/wind_offshore.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["building", "generation", "advanced"] },
+    { "id": "building_nuclear", "kind": "image", "src": "/assets/buildings/nuclear_advanced.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["building", "generation", "advanced"] },
+    { "id": "tech_solar", "kind": "image", "src": "/assets/technologies/solar_forecasting.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["technology"] },
+    { "id": "tech_storage", "kind": "image", "src": "/assets/technologies/storage_chemistry.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["technology"] },
+    { "id": "tech_grid", "kind": "image", "src": "/assets/technologies/smart_dispatch.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["technology"] },
+    { "id": "tech_clean", "kind": "image", "src": "/assets/technologies/clean_combustion.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["technology"] },
+    { "id": "tech_offshore", "kind": "image", "src": "/assets/technologies/offshore_engineering.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["technology"] },
+    { "id": "tech_nuclear", "kind": "image", "src": "/assets/technologies/advanced_reactors.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["technology"] },
+    { "id": "policy_resident", "kind": "image", "src": "/assets/policies/resident_support.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["policy"] },
+    { "id": "policy_industry", "kind": "image", "src": "/assets/policies/industry_priority.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["policy"] },
+    { "id": "policy_green", "kind": "image", "src": "/assets/policies/green_transition.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["policy"] },
+    { "id": "policy_efficiency", "kind": "image", "src": "/assets/policies/efficiency_drive.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["policy"] },
+    { "id": "event_heat_wave", "kind": "image", "src": "/assets/events/heat_wave.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["event"] },
+    { "id": "event_cloud_cover", "kind": "image", "src": "/assets/events/cloud_cover.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["event"] },
+    { "id": "event_industrial_surge", "kind": "image", "src": "/assets/events/industrial_surge.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["event"] },
+    { "id": "event_fuel_spike", "kind": "image", "src": "/assets/events/fuel_spike.png", "version": 1, "preload": "level", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["event"] },
+    { "id": "status_stable", "kind": "image", "src": "/assets/status/stable.png", "version": 1, "preload": "boot", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["status", "ui"] },
+    { "id": "status_warning", "kind": "image", "src": "/assets/status/warning.png", "version": 1, "preload": "boot", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["status", "ui"] },
+    { "id": "background_campaign_city", "kind": "image", "src": "/assets/backgrounds/campaign-city.png", "version": 1, "preload": "boot", "width": 1920, "height": 1080, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["background", "campaign"] },
+    { "id": "ui_grid_pattern", "kind": "image", "src": "/assets/ui/grid-pattern.png", "version": 1, "preload": "boot", "width": 1024, "height": 1024, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["ui", "texture"] }
+  ]
+}
