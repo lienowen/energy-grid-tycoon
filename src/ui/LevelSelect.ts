@@ -1,3 +1,4 @@
+import { AssetManager } from '../resources/AssetManager';
 import { LevelConfig } from '../systems/LevelLoader';
 
 export interface LevelSelectItem {
@@ -15,6 +16,13 @@ export interface LevelSelectActions {
 
 const formatNumber = (value: number): string =>
   new Intl.NumberFormat('zh-CN', { maximumFractionDigits: 0 }).format(value);
+
+const escapeAttribute = (value: string): string => value
+  .replaceAll('&', '&amp;')
+  .replaceAll('"', '&quot;')
+  .replaceAll("'", '&#39;')
+  .replaceAll('<', '&lt;')
+  .replaceAll('>', '&gt;');
 
 export class LevelSelect {
   constructor(
@@ -45,8 +53,8 @@ export class LevelSelect {
         </section>
 
         <footer class="campaign-footer">
-          <span>存档保存在当前浏览器，并自动兼容旧版本进度</span>
-          <span>架构：数据关卡 · 公共系统 · 独立玩法</span>
+          <span>关卡目标、失败线、解锁关系与数值规则全部来自配置</span>
+          <span>素材：全局资源清单 · 场景按配置选择</span>
         </footer>
       </main>
     `;
@@ -62,14 +70,13 @@ export class LevelSelect {
 
   private card(item: LevelSelectItem, index: number): string {
     const { level, unlocked, completed, hasSave, bestScore } = item;
-    const goal = level.goal.type === 'money'
-      ? `资金达到 ¥${formatNumber(level.goal.target)}`
-      : level.goal.type === 'satisfaction'
-        ? `满意度达到 ${level.goal.target}%`
-        : `人口达到 ${formatNumber(level.goal.target)}`;
+    const backgroundId = level.presentation?.backgroundAssetId;
+    const background = backgroundId ? AssetManager.get(backgroundId, '') : '';
+    const accent = level.presentation?.accent ?? '#4ad7ff';
+    const style = `--scenario-accent:${escapeAttribute(accent)};${background ? `--scenario-background:url('${escapeAttribute(background)}');` : ''}`;
 
     return `
-      <article class="campaign-card ${unlocked ? '' : 'locked'} ${completed ? 'completed' : ''}">
+      <article class="campaign-card scenario-card ${unlocked ? '' : 'locked'} ${completed ? 'completed' : ''}" style="${style}">
         <div class="campaign-index">${String(index + 1).padStart(2, '0')}</div>
         <div class="campaign-copy">
           <span>${completed ? '已完成' : unlocked ? '可进入' : '未解锁'}</span>
@@ -77,15 +84,15 @@ export class LevelSelect {
           <p>${level.description}</p>
         </div>
         <dl class="campaign-stats">
-          <div><dt>人口</dt><dd>${formatNumber(level.population)}</dd></div>
-          <div><dt>需求</dt><dd>${formatNumber(level.baseDemand)} MW</dd></div>
-          <div><dt>目标</dt><dd>${goal}</dd></div>
+          <div><dt>人口</dt><dd>${formatNumber(level.initial.population)}</dd></div>
+          <div><dt>需求</dt><dd>${formatNumber(level.initial.baseDemand)} MW</dd></div>
+          <div><dt>目标</dt><dd>${level.rules.objective.label}</dd></div>
           <div><dt>最佳评分</dt><dd>${bestScore > 0 ? formatNumber(bestScore) : '—'}</dd></div>
         </dl>
         <div class="campaign-actions">
           ${hasSave && unlocked ? `<button class="secondary-action" data-continue="${level.id}">继续存档</button>` : ''}
           <button class="primary-action" data-start="${level.id}" ${unlocked ? '' : 'disabled'}>
-            ${completed ? '重新挑战' : unlocked ? '开始运营' : '完成上一城市后解锁'}
+            ${completed ? '重新挑战' : unlocked ? '开始运营' : '解锁条件未满足'}
           </button>
         </div>
       </article>
