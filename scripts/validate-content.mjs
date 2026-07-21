@@ -129,6 +129,73 @@ for (const assetId of ids) {
   if (!referencedAssetIds.has(assetId)) warnings.push(`Asset is currently unreferenced: ${assetId}`);
 }
 
+const buildingById = new Map(buildings.map((building) => [building.id, building]));
+const validZones = new Set(['neighborhood', 'industrial', 'coastal', 'outskirts', 'utility']);
+const validCategories = new Set(['generation', 'storage', 'grid']);
+for (const building of buildings) {
+  for (const zone of building.placementZones ?? []) {
+    if (!validZones.has(zone)) errors.push(`Building ${building.id} uses unknown city zone: ${zone}`);
+  }
+}
+
+for (const level of levels) {
+  const prefix = `Level ${level.id}`;
+  const plots = level.presentation?.world?.plots;
+  if (!Array.isArray(plots) || plots.length === 0) {
+    errors.push(`${prefix} must define playable world plots.`);
+    continue;
+  }
+
+  const plotIds = new Set();
+  for (const plot of plots) {
+    if (!plot.id || typeof plot.id !== 'string') errors.push(`${prefix} contains a plot without an id.`);
+    if (plotIds.has(plot.id)) errors.push(`${prefix} contains duplicate plot id: ${plot.id}`);
+    plotIds.add(plot.id);
+    if (!validZones.has(plot.zone)) errors.push(`${prefix} plot ${plot.id} has unknown zone: ${plot.zone}`);
+    if (!Array.isArray(plot.accepts) || plot.accepts.length === 0) {
+      errors.push(`${prefix} plot ${plot.id} accepts no facility category.`);
+    } else {
+      for (const category of plot.accepts) {
+        if (!validCategories.has(category)) errors.push(`${prefix} plot ${plot.id} accepts unknown category: ${category}`);
+      }
+    }
+    if (!Number.isFinite(plot.x) || plot.x < 0 || plot.x > 100) errors.push(`${prefix} plot ${plot.id} has invalid x.`);
+    if (!Number.isFinite(plot.y) || plot.y < 0 || plot.y > 100) errors.push(`${prefix} plot ${plot.id} has invalid y.`);
+  }
+
+  if (plots.length <= level.initial.buildings.length) {
+    errors.push(`${prefix} has no empty land for player expansion.`);
+  }
+
+  const startingCounts = new Map();
+  for (const buildingId of level.initial.buildings) {
+    startingCounts.set(buildingId, (startingCounts.get(buildingId) ?? 0) + 1);
+  }
+  const placedCounts = new Map();
+  const occupied = new Set();
+  for (const placement of level.initial.placements ?? []) {
+    if (!plotIds.has(placement.plotId)) errors.push(`${prefix} places a facility on unknown plot: ${placement.plotId}`);
+    if (occupied.has(placement.plotId)) errors.push(`${prefix} places multiple facilities on plot: ${placement.plotId}`);
+    occupied.add(placement.plotId);
+
+    const placed = (placedCounts.get(placement.buildingId) ?? 0) + 1;
+    placedCounts.set(placement.buildingId, placed);
+    if (placed > (startingCounts.get(placement.buildingId) ?? 0)) {
+      errors.push(`${prefix} places more ${placement.buildingId} facilities than it starts with.`);
+    }
+
+    const building = buildingById.get(placement.buildingId);
+    const plot = plots.find((item) => item.id === placement.plotId);
+    if (!building || !plot) continue;
+    if (!plot.accepts.includes(building.category)) {
+      errors.push(`${prefix} plot ${plot.id} rejects facility category ${building.category}.`);
+    }
+    if (building.placementZones?.length && !building.placementZones.includes(plot.zone)) {
+      errors.push(`${prefix} places ${building.id} in unsupported zone ${plot.zone}.`);
+    }
+  }
+}
+
 const sourceRoot = path.join(root, 'src');
 for (const absolutePath of await listFiles(sourceRoot)) {
   const relativePath = path.relative(sourceRoot, absolutePath).replaceAll(path.sep, '/');
@@ -151,5 +218,5 @@ if (errors.length > 0) {
   for (const error of errors) console.error(`- ${error}`);
   process.exitCode = 1;
 } else {
-  console.log('Content and asset validation passed.');
+  console.log('Content, city map, and asset validation passed.');
 }
