@@ -75,7 +75,7 @@ export class AppController {
     this.lastAutoSaveDay = 0;
     this.completionRecorded = false;
 
-    LoadingScreen.render(this.root, `正在前往${level.name}`, '市政团队正在准备城市地图、居民情况和可建设项目。');
+    LoadingScreen.render(this.root, `正在前往${level.name}`, '正在铺开城市地图和可建设用地。');
     const assetReport = await AssetManager.preload(LevelAssetPlanner.resolve(level, {
       buildings: this.buildings,
       events: this.events,
@@ -90,7 +90,7 @@ export class AppController {
     if (!resume) SaveManager.clearGame();
 
     this.dashboard = new MayorDashboard(this.root, {
-      onBuild: (configId) => this.game?.build(configId) ?? { ok: false, reason: '城市还没有准备好' },
+      onBuild: (configId, plotId) => this.game?.build(configId, plotId) ?? { ok: false, reason: '城市还没有准备好' },
       onUpgrade: (instanceId) => this.game?.upgrade(instanceId) ?? { ok: false, reason: '城市还没有准备好' },
       onToggleBuilding: (instanceId) => this.game?.toggleBuilding(instanceId) ?? { ok: false, reason: '城市还没有准备好' },
       onResearch: (technologyId) => this.game?.research(technologyId) ?? { ok: false, reason: '城市还没有准备好' },
@@ -131,7 +131,7 @@ export class AppController {
   private saveCurrentGame(): { ok: boolean; message: string } {
     if (!this.game) return { ok: false, message: '当前没有可保存的城市' };
     const ok = SaveManager.saveGame(this.game.createSave());
-    return { ok, message: ok ? '今天的市长工作已经保存' : '浏览器阻止了本地保存' };
+    return { ok, message: ok ? '城市进度已经保存' : '浏览器阻止了本地保存' };
   }
 
   private loadCurrentSave(): { ok: boolean; message: string } {
