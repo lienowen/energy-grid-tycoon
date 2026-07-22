@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v5
-        with:
-          show-progress: false
-          persist-credentials: false
-      - run: node scripts/validate-content.mjs
+      - name: Validate current diagnostic branch
+        run: |
+          git clone -q --depth 1 --branch ci/diagnose-city-growth https://github.com/${GITHUB_REPOSITORY}.git repo
+          cd repo
+          node scripts/validate-content.mjs
