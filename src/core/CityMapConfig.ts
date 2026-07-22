@@ -7,6 +7,11 @@ export type CityPlotZone =
   | 'outskirts'
   | 'utility';
 
+export interface CityPlotFootprintConfig {
+  width: number;
+  height: number;
+}
+
 export interface CityPlotConfig {
   id: string;
   x: number;
@@ -14,6 +19,8 @@ export interface CityPlotConfig {
   zone: CityPlotZone;
   accepts: CityFacilityCategory[];
   scale?: number;
+  elevation?: number;
+  footprint?: CityPlotFootprintConfig;
   depth?: 'far' | 'mid' | 'near';
   label?: string;
   locked?: boolean;
