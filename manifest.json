@@ -1,0 +1,17 @@
+{
+  "pack": "Energy Grid Tycoon Global Art Pipeline",
+  "version": "3.0.0",
+  "registeredAssets": 383,
+  "categories": {
+    "cityBuildings": 96,
+    "facilities": 96,
+    "roads": 32,
+    "terrain": 24,
+    "vehicles": 32,
+    "decorations": 36,
+    "overlays": 28,
+    "hologram": 14,
+    "hud": 20,
+    "backgroundsAndTextures": 5
+  }
+}
