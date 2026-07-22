@@ -9,7 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Print content validation errors
-        run: node scripts/validate-content.mjs
+      - uses: actions/checkout@v5
+        with:
+          show-progress: false
+          persist-credentials: false
+      - run: node scripts/validate-content.mjs
