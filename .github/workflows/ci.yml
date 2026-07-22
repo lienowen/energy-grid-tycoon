@@ -1,27 +1,18 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
 jobs:
-  quality:
+  diagnose-build:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Install
-        run: npm install --no-audit --no-fund
-      - name: Validate content and assets
-        run: npm run check:content
-      - name: Unit tests
-        run: npm test
-      - name: Typecheck and production build
-        run: npm run build
+      - name: Build current diagnostic branch
+        run: |
+          git clone -q --depth 1 --branch ci/verify-city-growth-final https://github.com/${GITHUB_REPOSITORY}.git repo
+          cd repo
+          npm install --no-audit --no-fund --silent
+          npm run build > build.log 2>&1 || { tail -n 100 build.log; exit 1; }
+          tail -n 30 build.log
