@@ -22,6 +22,11 @@ interface PointerState extends ScreenPoint {
 const clamp = (value: number, min: number, max: number): number =>
   Math.min(max, Math.max(min, value));
 
+const midpoint = (left: ScreenPoint, right: ScreenPoint): ScreenPoint => ({
+  x: (left.x + right.x) / 2,
+  y: (left.y + right.y) / 2
+});
+
 export class HologramSandbox {
   private readonly canvas = document.createElement('canvas');
   private readonly renderer = new HologramCanvasRenderer();
@@ -40,7 +45,10 @@ export class HologramSandbox {
   private initializedFacilities = false;
   private dragging = false;
   private pinchDistance?: number;
+  private pinchMidpoint?: ScreenPoint;
   private pinchStartZoom = 1;
+  private velocityX = 0;
+  private velocityY = 0;
 
   constructor(
     private readonly container: HTMLElement,
@@ -54,6 +62,7 @@ export class HologramSandbox {
     this.context = context;
     this.canvas.className = 'hologram-sandbox-canvas';
     this.canvas.tabIndex = 0;
+    this.canvas.style.touchAction = 'none';
     this.canvas.setAttribute('role', 'application');
     this.canvas.setAttribute('aria-label', '可拖动、缩放并建设设施的城市全息沙盘');
     this.container.replaceChildren(this.canvas);
@@ -64,6 +73,7 @@ export class HologramSandbox {
     this.canvas.addEventListener('pointercancel', this.handlePointerUp);
     this.canvas.addEventListener('wheel', this.handleWheel, { passive: false });
     this.canvas.addEventListener('dblclick', this.handleDoubleClick);
+    this.canvas.addEventListener('keydown', this.handleKeyDown);
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(this.container);
     this.resize();
@@ -81,6 +91,7 @@ export class HologramSandbox {
     this.canvas.removeEventListener('pointercancel', this.handlePointerUp);
     this.canvas.removeEventListener('wheel', this.handleWheel);
     this.canvas.removeEventListener('dblclick', this.handleDoubleClick);
+    this.canvas.removeEventListener('keydown', this.handleKeyDown);
     this.pointers.clear();
     this.container.replaceChildren();
     this.mounted = false;
@@ -111,6 +122,8 @@ export class HologramSandbox {
     this.camera.zoom = this.state.camera.startZoom;
     this.camera.offsetX = this.state.camera.startOffsetX;
     this.camera.offsetY = this.state.camera.startOffsetY;
+    this.velocityX = 0;
+    this.velocityY = 0;
   }
 
   zoomBy(factor: number): void {
@@ -137,6 +150,7 @@ export class HologramSandbox {
 
   private readonly renderFrame = (now: number): void => {
     if (!this.mounted) return;
+    this.applyInertia();
     if (this.context && this.state) {
       this.hits = this.renderer.render({
         context: this.context,
@@ -154,6 +168,15 @@ export class HologramSandbox {
     }
     this.frameId = requestAnimationFrame(this.renderFrame);
   };
+
+  private applyInertia(): void {
+    if (this.pointers.size > 0 || Math.abs(this.velocityX) + Math.abs(this.velocityY) < 0.08) return;
+    this.camera.offsetX += this.velocityX;
+    this.camera.offsetY += this.velocityY;
+    this.velocityX *= 0.9;
+    this.velocityY *= 0.9;
+    this.constrainCamera();
+  }
 
   private resolveImage(assetId: string): HTMLImageElement | undefined {
     const existing = this.images.get(assetId);
@@ -189,6 +212,7 @@ export class HologramSandbox {
 
   private readonly handlePointerDown = (event: PointerEvent): void => {
     const point = this.getCanvasPoint(event);
+    this.canvas.focus({ preventScroll: true });
     this.canvas.setPointerCapture(event.pointerId);
     this.pointers.set(event.pointerId, {
       ...point,
@@ -196,16 +220,20 @@ export class HologramSandbox {
       startY: point.y
     });
     this.dragging = false;
-    if (this.pointers.size === 2) {
-      const pointers = [...this.pointers.values()];
-      const first = pointers[0];
-      const second = pointers[1];
-      if (first && second) {
-        this.pinchDistance = distanceBetween(first, second);
-        this.pinchStartZoom = this.camera.zoom;
-      }
-    }
+    this.velocityX = 0;
+    this.velocityY = 0;
+    if (this.pointers.size === 2) this.beginPinch();
   };
+
+  private beginPinch(): void {
+    const pointers = [...this.pointers.values()];
+    const first = pointers[0];
+    const second = pointers[1];
+    if (!first || !second) return;
+    this.pinchDistance = distanceBetween(first, second);
+    this.pinchMidpoint = midpoint(first, second);
+    this.pinchStartZoom = this.camera.zoom;
+  }
 
   private readonly handlePointerMove = (event: PointerEvent): void => {
     const point = this.getCanvasPoint(event);
@@ -226,15 +254,26 @@ export class HologramSandbox {
       const second = pointers[1];
       if (first && second && this.pinchDistance && this.pinchDistance > 0) {
         const distance = distanceBetween(first, second);
+        const nextMidpoint = midpoint(first, second);
+        if (this.pinchMidpoint) {
+          this.camera.offsetX += nextMidpoint.x - this.pinchMidpoint.x;
+          this.camera.offsetY += nextMidpoint.y - this.pinchMidpoint.y;
+        }
+        this.pinchMidpoint = nextMidpoint;
         this.camera.zoom = clamp(
           this.pinchStartZoom * distance / this.pinchDistance,
           this.state.camera.minZoom,
           this.state.camera.maxZoom
         );
+        this.constrainCamera();
       }
     } else {
-      this.camera.offsetX += point.x - previous.x;
-      this.camera.offsetY += point.y - previous.y;
+      const deltaX = point.x - previous.x;
+      const deltaY = point.y - previous.y;
+      this.camera.offsetX += deltaX;
+      this.camera.offsetY += deltaY;
+      this.velocityX = this.velocityX * 0.35 + deltaX * 0.65;
+      this.velocityY = this.velocityY * 0.35 + deltaY * 0.65;
       this.constrainCamera();
     }
     this.canvas.style.cursor = 'grabbing';
@@ -245,10 +284,16 @@ export class HologramSandbox {
     const pointer = this.pointers.get(event.pointerId);
     const wasClick = Boolean(pointer && !this.dragging && this.pointers.size === 1);
     this.pointers.delete(event.pointerId);
-    if (this.pointers.size < 2) this.pinchDistance = undefined;
+    if (this.pointers.size < 2) {
+      this.pinchDistance = undefined;
+      this.pinchMidpoint = undefined;
+    }
+    if (this.pointers.size === 1) this.beginPinch();
     if (this.pointers.size === 0) this.dragging = false;
 
     if (wasClick) {
+      this.velocityX = 0;
+      this.velocityY = 0;
       const hit = this.findHit(point);
       if (hit?.enabled) {
         if (hit.kind === 'plot') this.actions.onPlotClick(hit.id);
@@ -261,6 +306,8 @@ export class HologramSandbox {
   private readonly handleWheel = (event: WheelEvent): void => {
     if (!this.state) return;
     event.preventDefault();
+    this.velocityX = 0;
+    this.velocityY = 0;
     const before = this.camera.zoom;
     const factor = Math.exp(-event.deltaY * 0.0012);
     this.camera.zoom = clamp(
@@ -279,10 +326,29 @@ export class HologramSandbox {
 
   private readonly handleDoubleClick = (): void => this.focusHome();
 
+  private readonly handleKeyDown = (event: KeyboardEvent): void => {
+    if (!this.state) return;
+    const pan = event.shiftKey ? 48 : 24;
+    if (event.key === 'ArrowLeft' || event.key.toLowerCase() === 'a') this.camera.offsetX += pan;
+    else if (event.key === 'ArrowRight' || event.key.toLowerCase() === 'd') this.camera.offsetX -= pan;
+    else if (event.key === 'ArrowUp' || event.key.toLowerCase() === 'w') this.camera.offsetY += pan;
+    else if (event.key === 'ArrowDown' || event.key.toLowerCase() === 's') this.camera.offsetY -= pan;
+    else if (event.key === '+' || event.key === '=') this.zoomBy(1.12);
+    else if (event.key === '-' || event.key === '_') this.zoomBy(0.89);
+    else if (event.key === '0' || event.key === 'Home') this.focusHome();
+    else return;
+    event.preventDefault();
+    this.constrainCamera();
+  };
+
   private constrainCamera(): void {
     const maxX = this.viewport.width * 0.34;
     const maxY = this.viewport.height * 0.28;
+    const beforeX = this.camera.offsetX;
+    const beforeY = this.camera.offsetY;
     this.camera.offsetX = clamp(this.camera.offsetX, -maxX, maxX);
     this.camera.offsetY = clamp(this.camera.offsetY, -maxY, maxY);
+    if (this.camera.offsetX !== beforeX) this.velocityX *= 0.35;
+    if (this.camera.offsetY !== beforeY) this.velocityY *= 0.35;
   }
 }
