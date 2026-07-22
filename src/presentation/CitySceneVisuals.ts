@@ -75,8 +75,8 @@ export const makeDistricts = (
   plots: readonly CityPlotConfig[],
   supplyRatio: number,
   theme: CityVisualTheme,
-  hour: number,
-  demandRatio: number
+  hour = 12,
+  demandRatio = 1
 ): DistrictSceneState[] => {
   const zones = [...new Set(plots.map((plot) => plot.zone))];
   const priority = zonePriority(theme).filter((zone) => zones.includes(zone));
