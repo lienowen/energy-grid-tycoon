@@ -64,11 +64,20 @@ export interface LevelWorldSlotConfig {
   depth?: 'far' | 'mid' | 'near';
 }
 
+export interface LevelSandboxPresentationConfig {
+  startZoom?: number;
+  minZoom?: number;
+  maxZoom?: number;
+  startOffsetX?: number;
+  startOffsetY?: number;
+}
+
 export interface LevelWorldPresentationConfig {
   theme: 'residential' | 'industrial' | 'green';
-  city?: { x: number; y: number };
+  city?: { x: number; y: number; elevation?: number };
   plots?: CityPlotConfig[];
   slots?: LevelWorldSlotConfig[];
+  sandbox?: LevelSandboxPresentationConfig;
 }
 
 export interface LevelPresentationConfig {
