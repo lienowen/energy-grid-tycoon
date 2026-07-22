@@ -21,6 +21,8 @@ export interface DistrictSceneState extends ScenePoint {
   radiusX: number;
   radiusZ: number;
   powerRatio: number;
+  demandIntensity: number;
+  populationShare: number;
 }
 
 export interface FacilitySceneState extends ScenePoint {
@@ -80,6 +82,31 @@ export interface AmbientBlockSceneState extends ScenePoint {
   powerRatio: number;
 }
 
+export interface ExpansionSiteSceneState extends ScenePoint {
+  id: string;
+  zone: CityPlotZone;
+  progress: number;
+  scale: number;
+  label: string;
+}
+
+export type CitizenFeedbackTone = 'positive' | 'neutral' | 'warning' | 'danger';
+
+export interface CitizenFeedbackSceneState extends ScenePoint {
+  id: string;
+  districtId: CityPlotZone;
+  message: string;
+  tone: CitizenFeedbackTone;
+  priority: number;
+  phase: number;
+}
+
+export interface CityGrowthSceneState {
+  stage: 1 | 2 | 3 | 4;
+  progress: number;
+  label: string;
+}
+
 export interface CityScenePlacementState {
   buildingId: string;
   buildingName: string;
@@ -99,15 +126,19 @@ export interface CitySceneState {
   satisfaction: number;
   pollutionRatio: number;
   supplyRatio: number;
+  demandRatio: number;
   blackoutIntensity: number;
   trafficDensity: number;
   city: ScenePoint;
   camera: HologramCameraConfig;
+  growth: CityGrowthSceneState;
   districts: DistrictSceneState[];
   plots: PlotSceneState[];
   facilities: FacilitySceneState[];
   links: EnergyLinkSceneState[];
   roads: RoadSceneState[];
   ambientBlocks: AmbientBlockSceneState[];
+  expansionSites: ExpansionSiteSceneState[];
+  citizenFeedback: CitizenFeedbackSceneState[];
   placement?: CityScenePlacementState;
 }
