@@ -12,6 +12,7 @@ import assetCatalogData from './resources/asset-catalog.json';
 import type { BuildingConfig } from './buildings/BuildingBase';
 import { AppController } from './core/AppController';
 import { GameConfigValidator } from './core/GameConfigValidator';
+import { HologramConfigValidator } from './core/HologramConfigValidator';
 import { AssetManager } from './resources/AssetManager';
 import type { AssetCatalog } from './resources/AssetManager';
 import type { EventConfig } from './systems/EventSystem';
@@ -48,6 +49,7 @@ const bootstrap = async (): Promise<void> => {
     policies,
     assetIds: new Set(AssetManager.ids())
   });
+  HologramConfigValidator.assertValid(levels);
 
   const bootAssets = await AssetManager.preloadGroup('boot');
   if (bootAssets.failed.length > 0) console.warn('Boot assets failed to preload:', bootAssets.failed);
