@@ -51,9 +51,13 @@ export const pointInPolygon = (point: ScreenPoint, polygon: readonly ScreenPoint
     const currentPoint = polygon[index];
     const previousPoint = polygon[previous];
     if (!currentPoint || !previousPoint) continue;
+    const denominator = previousPoint.y - currentPoint.y;
+    const safeDenominator = Math.abs(denominator) < 0.00001
+      ? (denominator < 0 ? -0.00001 : 0.00001)
+      : denominator;
     const intersects = (currentPoint.y > point.y) !== (previousPoint.y > point.y)
       && point.x < (previousPoint.x - currentPoint.x) * (point.y - currentPoint.y)
-        / Math.max(0.00001, previousPoint.y - currentPoint.y) + currentPoint.x;
+        / safeDenominator + currentPoint.x;
     if (intersects) inside = !inside;
   }
   return inside;
