@@ -4,6 +4,11 @@ import type { GameViewModel } from '../core/GameManager';
 import { CityMapSystem } from '../systems/CityMapSystem';
 import { LevelLoader } from '../systems/LevelLoader';
 import {
+  calculateCityGrowth,
+  makeCitizenFeedback,
+  makeExpansionSites
+} from './CityFeedbackVisuals';
+import {
   makeAmbientBlocks,
   makeDistricts,
   makeRoads,
@@ -20,10 +25,14 @@ import type {
 export type {
   AmbientBlockKind,
   AmbientBlockSceneState,
+  CitizenFeedbackSceneState,
+  CitizenFeedbackTone,
+  CityGrowthSceneState,
   CityScenePlacementState,
   CitySceneState,
   DistrictSceneState,
   EnergyLinkSceneState,
+  ExpansionSiteSceneState,
   FacilitySceneState,
   HologramCameraConfig,
   PlotSceneState,
@@ -141,18 +150,41 @@ export class CitySceneMapper {
     city.elevation = 1.4;
 
     const supplyRatio = clamp(view.state.supplyRatio, 0, 1);
+    const demandRatio = clamp(
+      view.state.powerDemand / Math.max(1, view.state.baseDemand),
+      0.25,
+      2
+    );
     const theme = view.level.presentation?.world?.theme ?? 'residential';
+    const growth = calculateCityGrowth({
+      initialPopulation: view.level.initial.population,
+      population: view.state.population,
+      day: view.state.day
+    });
     const facilities = mapFacilities(view, plots);
     const scenePlots = mapPlots(view, plots, facilities, selected);
-    const districts = makeDistricts(plots, supplyRatio, theme);
+    const districts = makeDistricts(
+      plots,
+      supplyRatio,
+      theme,
+      view.state.hour,
+      demandRatio
+    );
     const roads = makeRoads(
       view.level.id,
       plots,
       city,
       view.state.population,
-      supplyRatio
+      supplyRatio,
+      growth.progress
     );
-    const ambientBlocks = makeAmbientBlocks(view.level.id, plots, districts, theme);
+    const ambientBlocks = makeAmbientBlocks(
+      view.level.id,
+      plots,
+      districts,
+      theme,
+      growth.progress
+    );
     const trafficDensity = clamp(
       view.state.population / 18000 * (0.45 + supplyRatio * 0.75),
       0.08,
@@ -179,16 +211,29 @@ export class CitySceneMapper {
       satisfaction: view.state.satisfaction,
       pollutionRatio: clamp(view.state.pollution / 100, 0, 1),
       supplyRatio,
+      demandRatio,
       blackoutIntensity: clamp((0.97 - supplyRatio) / 0.55, 0, 1),
       trafficDensity,
       city,
       camera: getCamera(view),
+      growth,
       districts,
       plots: scenePlots,
       facilities,
       links: mapLinks(facilities, city, supplyRatio),
       roads,
       ambientBlocks,
+      expansionSites: makeExpansionSites(view.level.id, plots, growth),
+      citizenFeedback: makeCitizenFeedback({
+        levelId: view.level.id,
+        day: view.state.day,
+        hour: view.state.hour,
+        satisfaction: view.state.satisfaction,
+        pollutionRatio: clamp(view.state.pollution / 100, 0, 1),
+        supplyRatio,
+        demandRatio,
+        districts
+      }),
       placement
     };
     const backgroundAssetId = view.level.presentation?.backgroundAssetId;
