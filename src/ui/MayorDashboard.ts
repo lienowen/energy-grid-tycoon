@@ -1,6 +1,7 @@
-import type { BuildingBase, BuildingConfig } from '../buildings/BuildingBase';
+import type { BuildingBase } from '../buildings/BuildingBase';
 import type { GameActionResult, GameViewModel } from '../core/GameManager';
 import type { GameSpeed } from '../core/GameState';
+import { CitySceneMapper } from '../presentation/CitySceneMapper';
 import { AssetManager } from '../resources/AssetManager';
 import {
   MayorGuidanceSystem,
@@ -9,7 +10,7 @@ import {
 } from '../systems/MayorGuidanceSystem';
 import type { PolicyConfig } from '../systems/PolicySystem';
 import type { TechnologyConfig } from '../systems/ResearchSystem';
-import { renderWorldScene } from './world/WorldSceneRenderer';
+import { HologramSandbox } from './world/HologramSandbox';
 
 export interface MayorDashboardActions {
   onBuild: (configId: string, plotId?: string) => GameActionResult;
@@ -27,6 +28,7 @@ export interface MayorDashboardActions {
 }
 
 type MayorPanel = MayorGuidePanel | 'system' | 'none';
+type HudRegion = 'top' | 'mission' | 'guide' | 'tools' | 'build' | 'drawer' | 'toast' | 'result';
 
 const panelLabels: Record<Exclude<MayorPanel, 'none'>, string> = {
   market: '居民用电',
@@ -61,6 +63,8 @@ export class MayorDashboard {
   private selectedBuildingId?: string;
   private focusedBuildingId?: string;
   private noticeTimer?: number;
+  private sandbox?: HologramSandbox;
+  private shellMounted = false;
   private active = true;
 
   constructor(
@@ -71,6 +75,8 @@ export class MayorDashboard {
   destroy(): void {
     this.active = false;
     this.lastView = undefined;
+    this.sandbox?.destroy();
+    this.sandbox = undefined;
     if (this.noticeTimer !== undefined) window.clearTimeout(this.noticeTimer);
   }
 
@@ -83,69 +89,115 @@ export class MayorDashboard {
     ) {
       this.selectedBuildingId = undefined;
     }
+    if (!this.shellMounted) this.mountShell();
+
+    const main = this.root.querySelector<HTMLElement>('.hologram-game');
+    if (main) main.style.setProperty('--scenario-accent', view.level.presentation?.accent ?? '#4ad7ff');
 
     const counts = new Map<string, number>();
     for (const building of view.buildings) {
       counts.set(building.config.id, (counts.get(building.config.id) ?? 0) + 1);
     }
 
-    const backgroundId = view.level.presentation?.backgroundAssetId;
-    const background = backgroundId ? AssetManager.get(backgroundId, '') : '';
-    const accent = view.level.presentation?.accent ?? '#4ad7ff';
-    const style = [
-      `--scenario-accent:${escapeAttribute(accent)}`,
-      background ? `--world-background:url('${escapeAttribute(background)}')` : ''
-    ].filter(Boolean).join(';');
+    this.setRegion('top', this.renderTopBar(view));
+    this.setRegion('mission', this.renderMission(view));
+    this.setRegion('guide', this.renderGuidance(view));
+    this.setRegion('tools', this.renderToolRail(view));
+    this.setRegion('build', this.renderBuildDock(view, counts));
+    this.setRegion('drawer', this.activePanel === 'none' ? '' : this.renderDrawer(view));
+    this.setRegion('toast', this.notice ? `<div class="mayor-toast hologram-toast">${this.notice}</div>` : '');
+    this.setRegion('result', view.state.completed || view.state.failed ? this.renderResult(view) : '');
 
+    this.sandbox?.setState(CitySceneMapper.map(view, this.selectedBuildingId));
+    this.bindEvents();
+  }
+
+  private mountShell(): void {
     this.root.innerHTML = `
-      <main class="mayor-game player-city-game" style="${style}">
-        ${this.renderTopBar(view)}
-        <div class="mayor-world">
-          ${renderWorldScene({
-            view,
-            asset: (id, alt, className) => this.asset(id, alt, className),
-            selectedBuildingId: this.selectedBuildingId
-          })}
-          ${this.renderGuidance(view)}
-          ${this.renderMenuRail(view)}
-          ${this.renderBuildBar(view, counts)}
-          ${this.activePanel !== 'none' ? this.renderDrawer(view) : ''}
-          ${this.notice ? `<div class="mayor-toast">${this.notice}</div>` : ''}
-        </div>
-        ${view.state.completed || view.state.failed ? this.renderResult(view) : ''}
+      <main class="mayor-game hologram-game">
+        <div class="hologram-room-backdrop" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div data-hud-region="top"></div>
+        <section class="hologram-stage">
+          <div class="hologram-table-shell" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+          <div class="hologram-canvas-host" data-hologram-canvas></div>
+          <div data-hud-region="mission"></div>
+          <div data-hud-region="guide"></div>
+          <div data-hud-region="tools"></div>
+          <div data-hud-region="build"></div>
+          <div data-hud-region="drawer"></div>
+          <div data-hud-region="toast"></div>
+        </section>
+        <div data-hud-region="result"></div>
       </main>
     `;
+    const host = this.root.querySelector<HTMLElement>('[data-hologram-canvas]');
+    if (!host) throw new Error('Hologram sandbox host was not created');
+    this.sandbox = new HologramSandbox(host, {
+      onPlotClick: (plotId) => this.placeSelectedBuilding(plotId),
+      onFacilityClick: (instanceId) => {
+        this.focusedBuildingId = instanceId;
+        this.openPanel('fleet');
+      }
+    });
+    this.sandbox.mount();
+    this.shellMounted = true;
+  }
 
-    this.bindEvents();
+  private setRegion(region: HudRegion, html: string): void {
+    const element = this.root.querySelector<HTMLElement>(`[data-hud-region="${region}"]`);
+    if (element) element.innerHTML = html;
   }
 
   private renderTopBar(view: GameViewModel): string {
     const { state, level, lastEconomy } = view;
     const time = `${String(Math.floor(state.hour)).padStart(2, '0')}:00`;
     const lights = Math.round(Math.min(1, state.supplyRatio) * 100);
+    const airLabel = state.pollution <= 28 ? '良好' : state.pollution < 65 ? '注意' : '很差';
     return `
-      <header class="mayor-topbar">
-        <div class="mayor-city-name">
-          <span>${this.asset('brand_logo', level.name, 'mayor-brand-image')}</span>
-          <div><strong>${level.name}</strong><small>第 ${state.day} 天 · ${time}</small></div>
+      <header class="hologram-topbar">
+        <div class="hologram-city-identity">
+          <span>${this.asset('brand_logo', level.name, 'hologram-brand-image')}</span>
+          <div><strong>${level.name}</strong><small>市长：你</small></div>
         </div>
-        <div class="mayor-vitals">
-          <div><small>城市资金</small><strong>${formatMoney(state.money)}</strong><span>${lastEconomy ? `${lastEconomy.profit >= 0 ? '刚刚赚到' : '刚刚花掉'} ${formatMoney(Math.abs(lastEconomy.profit))}` : '城市正在开始运转'}</span></div>
-          <div class="${lights >= 98 ? 'good' : lights >= 90 ? 'warn' : 'danger'}"><small>正常用电</small><strong>${lights}%</strong><span>${lights >= 98 ? '所有街区都有电' : '有街区正在缺电'}</span></div>
-          <div><small>居民</small><strong>${formatNumber(state.population)}</strong><span>${state.satisfaction.toFixed(0)}% 感到满意</span></div>
-          <div class="${state.pollution <= 28 ? 'good' : state.pollution >= 65 ? 'danger' : 'warn'}"><small>环境压力</small><strong>${state.pollution.toFixed(0)}%</strong><span>${state.researchPoints.toFixed(1)} 发展点</span></div>
+        <div class="hologram-vitals">
+          <div><i class="money"></i><span><small>资金</small><strong>${formatMoney(state.money)}</strong><em>${lastEconomy ? `${lastEconomy.profit >= 0 ? '+' : '-'}${formatMoney(Math.abs(lastEconomy.profit))}` : '城市启动中'}</em></span></div>
+          <div class="${lights >= 98 ? 'good' : lights >= 90 ? 'warn' : 'danger'}"><i class="lights"></i><span><small>城市亮灯</small><strong>${lights}%</strong><em>${lights >= 98 ? '全城正常' : '有街区缺电'}</em></span></div>
+          <div class="${state.satisfaction >= 75 ? 'good' : state.satisfaction >= 45 ? 'warn' : 'danger'}"><i class="mood"></i><span><small>居民心情</small><strong>${state.satisfaction.toFixed(0)}%</strong><em>${formatNumber(state.population)} 位居民</em></span></div>
+          <div class="${state.pollution <= 28 ? 'good' : state.pollution >= 65 ? 'danger' : 'warn'}"><i class="air"></i><span><small>空气情况</small><strong>${airLabel}</strong><em>压力 ${state.pollution.toFixed(0)}%</em></span></div>
+          <div class="hologram-time"><span><small>第 ${state.day} 天</small><strong>${time}</strong></span></div>
         </div>
-        <div class="mayor-clock" aria-label="时间速度">
+        <div class="hologram-speed" aria-label="游戏速度">
           ${([0, 1, 2, 4] as GameSpeed[]).map((speed) => `
-            <button data-speed="${speed}" class="${state.speed === speed ? 'active' : ''}">${speed === 0 ? '暂停' : `${speed}×`}</button>
+            <button data-speed="${speed}" class="${state.speed === speed ? 'active' : ''}">${speed === 0 ? 'Ⅱ' : `${speed}×`}</button>
           `).join('')}
         </div>
       </header>
     `;
   }
 
+  private renderMission(view: GameViewModel): string {
+    const progress = Math.round(view.goalProgress * 100);
+    return `
+      <aside class="hologram-mission-card">
+        <span>★</span>
+        <div><small>本城目标</small><strong>${view.level.rules.objective.label}</strong></div>
+        <div class="hologram-progress"><i style="width:${progress}%"></i></div>
+        <em>${progress}%</em>
+      </aside>
+    `;
+  }
+
   private renderGuidance(view: GameViewModel): string {
-    if (this.selectedBuildingId) return '';
+    if (this.selectedBuildingId) {
+      const selected = view.availableBuildings.find((building) => building.id === this.selectedBuildingId);
+      return `
+        <aside class="hologram-secretary placement">
+          <div class="secretary-avatar"><i></i><span>规划助手</span></div>
+          <div><small>正在安排建设</small><strong>${selected?.name ?? '城市设施'}</strong><p>拖动沙盘寻找位置，发亮地块可以建设。点击地块确认。</p></div>
+          <button data-cancel-build="true">取消</button>
+        </aside>
+      `;
+    }
     const guide = MayorGuidanceSystem.evaluate({
       state: view.state,
       buildings: view.buildings,
@@ -156,13 +208,9 @@ export class MayorDashboard {
       goalProgress: view.goalProgress
     });
     return `
-      <aside class="mayor-guide ${guide.tone} player-next-step">
-        <span class="mayor-guide-person"><i></i><b>下一步</b></span>
-        <div class="mayor-guide-copy">
-          <strong>${guide.headline}</strong>
-          <p>${guide.message}</p>
-          <small>${guide.consequence}</small>
-        </div>
+      <aside class="hologram-secretary ${guide.tone}">
+        <div class="secretary-avatar"><i></i><span>市政秘书</span></div>
+        <div><small>下一步建议</small><strong>${guide.headline}</strong><p>${guide.message}</p><em>${guide.consequence}</em></div>
         <button ${this.guideActionAttributes(guide.action)}>${guide.actionLabel}</button>
       </aside>
     `;
@@ -174,37 +222,43 @@ export class MayorDashboard {
     return 'data-speed="1"';
   }
 
-  private renderMenuRail(view: GameViewModel): string {
-    const items: Array<[Exclude<MayorPanel, 'none'>, string]> = [
-      ['market', '用电'],
-      ['research', `发展 ${view.state.unlockedTechnologyIds.length}/${view.technologies.length}`],
-      ['policy', '方向'],
-      ['fleet', `设施 ${view.buildings.length}`],
-      ['analytics', '城市'],
-      ['system', '设置']
+  private renderToolRail(view: GameViewModel): string {
+    const items: Array<[Exclude<MayorPanel, 'none'>, string, string]> = [
+      ['market', '用电', '⌁'],
+      ['research', `发展 ${view.state.unlockedTechnologyIds.length}/${view.technologies.length}`, '↑'],
+      ['policy', '方向', '◇'],
+      ['fleet', `设施 ${view.buildings.length}`, '▦'],
+      ['analytics', '城市', '▥'],
+      ['system', '设置', '⚙']
     ];
-    return `<nav class="mayor-menu-rail player-tool-rail" aria-label="城市工具">${items.map(([panel, label]) => `
-      <button data-panel="${panel}" class="${this.activePanel === panel ? 'active' : ''}"><i></i><span>${label}</span></button>
-    `).join('')}</nav>`;
+    return `
+      <nav class="hologram-tool-rail" aria-label="城市工具">
+        <button data-camera-home="true" title="回到城市全景"><i>◎</i><span>视角</span></button>
+        <button data-camera-zoom="in" title="放大沙盘"><i>＋</i><span>放大</span></button>
+        <button data-camera-zoom="out" title="缩小沙盘"><i>－</i><span>缩小</span></button>
+        ${items.map(([panel, label, icon]) => `
+          <button data-panel="${panel}" class="${this.activePanel === panel ? 'active' : ''}"><i>${icon}</i><span>${label}</span></button>
+        `).join('')}
+      </nav>
+    `;
   }
 
-  private renderBuildBar(view: GameViewModel, counts: ReadonlyMap<string, number>): string {
+  private renderBuildDock(view: GameViewModel, counts: ReadonlyMap<string, number>): string {
     const ended = view.state.completed || view.state.failed;
     return `
-      <section class="mayor-build-bar player-build-bar">
-        <div class="mayor-build-title"><strong>选择建设项目</strong><small>${this.selectedBuildingId ? '再点击地图上发亮的地块' : '选中项目后放到城市里'}</small></div>
-        <div class="mayor-build-options">
+      <section class="hologram-build-dock">
+        <header><strong>建设设施</strong><small>${this.selectedBuildingId ? '点击沙盘中发亮的位置' : '先选择一个项目'}</small></header>
+        <div class="hologram-build-options">
           ${view.availableBuildings.map((config) => {
             const disabled = ended || view.state.money < config.cost;
+            const selected = this.selectedBuildingId === config.id;
             const ability = config.category === 'storage'
               ? `保存 ${formatNumber(config.capacity ?? 0)} 份电`
               : `增加 ${formatNumber(config.power)} MW`;
-            const selected = this.selectedBuildingId === config.id;
             return `
               <button data-select-build="${config.id}" class="${selected ? 'selected' : ''}" ${disabled ? 'disabled' : ''}>
-                <span>${this.asset(config.assetId, config.name, 'mayor-build-image')}</span>
-                <div><strong>${config.name}</strong><small>${ability} · 已有 ${counts.get(config.id) ?? 0}</small></div>
-                <em>${formatMoney(config.cost)}</em>
+                <span>${this.asset(config.assetId, config.name, 'hologram-build-image')}</span>
+                <div><strong>${config.name}</strong><small>${ability} · 已有 ${counts.get(config.id) ?? 0}</small><em>${formatMoney(config.cost)}</em></div>
               </button>
             `;
           }).join('')}
@@ -217,7 +271,7 @@ export class MayorDashboard {
     const panel = this.activePanel as Exclude<MayorPanel, 'none'>;
     return `
       <div class="mayor-drawer-shade" data-panel-close="true"></div>
-      <aside class="mayor-drawer">
+      <aside class="mayor-drawer hologram-drawer">
         <header><div><small>城市工具</small><strong>${panelLabels[panel]}</strong></div><button data-panel-close="true">×</button></header>
         <div class="mayor-drawer-body">${this.renderDrawerBody(view)}</div>
       </aside>
@@ -420,14 +474,21 @@ export class MayorDashboard {
 
   private selectBuilding(buildingId?: string): void {
     this.activePanel = 'none';
+    this.focusedBuildingId = undefined;
     this.selectedBuildingId = this.selectedBuildingId === buildingId ? undefined : buildingId;
     if (this.lastView) this.render(this.lastView);
+  }
+
+  private placeSelectedBuilding(plotId: string): void {
+    if (!this.selectedBuildingId) return;
+    const result = this.actions.onBuild(this.selectedBuildingId, plotId);
+    if (result.ok) this.selectedBuildingId = undefined;
+    this.showNotice(result.ok ? '设施正在从沙盘中升起' : result.reason ?? '这里不能建设');
   }
 
   private bindEvents(): void {
     this.root.querySelectorAll<HTMLButtonElement>('[data-panel]').forEach((button) => button.addEventListener('click', () => {
       const panel = button.dataset.panel as MayorPanel;
-      this.focusedBuildingId = button.dataset.focusBuilding;
       this.openPanel(this.activePanel === panel ? 'none' : panel);
     }));
     this.root.querySelectorAll<HTMLElement>('[data-panel-close]').forEach((element) => element.addEventListener('click', () => this.openPanel('none')));
@@ -435,12 +496,8 @@ export class MayorDashboard {
     this.root.querySelectorAll<HTMLButtonElement>('[data-guide-build]').forEach((button) => button.addEventListener('click', () => this.selectBuilding(button.dataset.guideBuild)));
     this.root.querySelectorAll<HTMLButtonElement>('[data-select-build]').forEach((button) => button.addEventListener('click', () => this.selectBuilding(button.dataset.selectBuild)));
     this.root.querySelectorAll<HTMLButtonElement>('[data-cancel-build]').forEach((button) => button.addEventListener('click', () => this.selectBuilding(undefined)));
-    this.root.querySelectorAll<HTMLButtonElement>('[data-place-plot]').forEach((button) => button.addEventListener('click', () => {
-      if (!this.selectedBuildingId) return;
-      const result = this.actions.onBuild(this.selectedBuildingId, button.dataset.placePlot);
-      if (result.ok) this.selectedBuildingId = undefined;
-      this.showNotice(result.ok ? '设施已经出现在城市里' : result.reason ?? '这里不能建设');
-    }));
+    this.root.querySelectorAll<HTMLButtonElement>('[data-camera-home]').forEach((button) => button.addEventListener('click', () => this.sandbox?.focusHome()));
+    this.root.querySelectorAll<HTMLButtonElement>('[data-camera-zoom]').forEach((button) => button.addEventListener('click', () => this.sandbox?.zoomBy(button.dataset.cameraZoom === 'in' ? 1.16 : 0.86)));
     this.root.querySelectorAll<HTMLButtonElement>('[data-speed]').forEach((button) => button.addEventListener('click', () => this.actions.onSpeedChange(Number(button.dataset.speed) as GameSpeed)));
     this.root.querySelectorAll<HTMLButtonElement>('[data-research]').forEach((button) => button.addEventListener('click', () => {
       const result = this.actions.onResearch(button.dataset.research ?? '');
