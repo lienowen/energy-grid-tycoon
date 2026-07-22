@@ -1,0 +1,113 @@
+import type { BuildingConfig } from '../buildings/BuildingBase';
+import type { CityPlotZone } from '../core/CityMapConfig';
+
+export interface HologramCameraConfig {
+  startZoom: number;
+  minZoom: number;
+  maxZoom: number;
+  startOffsetX: number;
+  startOffsetY: number;
+}
+
+export interface ScenePoint {
+  x: number;
+  z: number;
+  elevation: number;
+}
+
+export interface DistrictSceneState extends ScenePoint {
+  id: CityPlotZone;
+  label: string;
+  radiusX: number;
+  radiusZ: number;
+  powerRatio: number;
+}
+
+export interface FacilitySceneState extends ScenePoint {
+  instanceId: string;
+  configId: string;
+  plotId: string;
+  name: string;
+  assetId: string;
+  category: BuildingConfig['category'];
+  enabled: boolean;
+  level: number;
+  scale: number;
+  output: number;
+  storageRatio: number;
+}
+
+export interface PlotSceneState extends ScenePoint {
+  id: string;
+  zone: CityPlotZone;
+  label: string;
+  scale: number;
+  locked: boolean;
+  occupied: boolean;
+  available: boolean;
+  blocked: boolean;
+  blockedReason?: string;
+  facilityId?: string;
+}
+
+export interface EnergyLinkSceneState {
+  id: string;
+  from: ScenePoint;
+  to: ScenePoint;
+  active: boolean;
+  intensity: number;
+}
+
+export interface RoadSceneState {
+  id: string;
+  points: ScenePoint[];
+  laneCount: 1 | 2;
+  traffic: number;
+  powered: boolean;
+}
+
+export type AmbientBlockKind = 'residential' | 'industrial' | 'utility' | 'park';
+
+export interface AmbientBlockSceneState extends ScenePoint {
+  id: string;
+  zone: CityPlotZone;
+  kind: AmbientBlockKind;
+  width: number;
+  depth: number;
+  height: number;
+  floors: number;
+  lightSeed: number;
+  powerRatio: number;
+}
+
+export interface CityScenePlacementState {
+  buildingId: string;
+  buildingName: string;
+  assetId: string;
+  validPlotIds: string[];
+}
+
+export interface CitySceneState {
+  levelId: string;
+  cityName: string;
+  theme: 'residential' | 'industrial' | 'green';
+  accent: string;
+  backgroundAssetId?: string;
+  day: number;
+  hour: number;
+  population: number;
+  satisfaction: number;
+  pollutionRatio: number;
+  supplyRatio: number;
+  blackoutIntensity: number;
+  trafficDensity: number;
+  city: ScenePoint;
+  camera: HologramCameraConfig;
+  districts: DistrictSceneState[];
+  plots: PlotSceneState[];
+  facilities: FacilitySceneState[];
+  links: EnergyLinkSceneState[];
+  roads: RoadSceneState[];
+  ambientBlocks: AmbientBlockSceneState[];
+  placement?: CityScenePlacementState;
+}
