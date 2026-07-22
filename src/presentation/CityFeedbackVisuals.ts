@@ -112,7 +112,9 @@ const feedbackForState = (input: CitizenFeedbackInput): Array<{
   const districts = [...input.districts];
   if (districts.length === 0) return [];
   const weakest = [...districts].sort((left, right) => left.powerRatio - right.powerRatio)[0] ?? districts[0];
-  const busiest = [...districts].sort((left, right) => right.demandIntensity - left.demandIntensity)[0] ?? districts[0];
+  const busiest = [...districts].sort(
+    (left, right) => (right.demandIntensity ?? 0) - (left.demandIntensity ?? 0)
+  )[0] ?? districts[0];
   const residential = districts.find((district) => district.id === 'neighborhood') ?? busiest;
   const industrial = districts.find((district) => district.id === 'industrial') ?? busiest;
   const messages: Array<{
