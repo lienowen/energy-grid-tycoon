@@ -1,8 +1,6 @@
 import type {
   CitizenFeedbackSceneState,
-  DistrictSceneState,
-  ExpansionSiteSceneState,
-  FacilitySceneState
+  ExpansionSiteSceneState
 } from '../../presentation/CitySceneTypes';
 import {
   getDiamondPoints,
@@ -51,9 +49,10 @@ export class CityFeedbackRenderer {
   private drawDemandHeat(input: HologramRenderInput): void {
     const { context, viewport, camera, state, now } = input;
     for (const district of state.districts) {
+      const demandIntensity = district.demandIntensity ?? 0;
       const pressure = clamp01(
-        district.demandIntensity * 0.66
-        + Math.max(0, district.demandIntensity - district.powerRatio) * 0.72
+        demandIntensity * 0.66
+        + Math.max(0, demandIntensity - district.powerRatio) * 0.72
       );
       if (pressure < 0.38) continue;
       const points = getDiamondPoints(
@@ -86,9 +85,9 @@ export class CityFeedbackRenderer {
   }
 
   private drawExpansionSites(input: HologramRenderInput): void {
-    const { context, viewport, camera, state, now } = input;
+    const { context, state, now } = input;
     const accent = parseHex(state.accent);
-    for (const site of state.expansionSites) {
+    for (const site of state.expansionSites ?? []) {
       this.drawExpansionSite(context, site, input, accent, now);
     }
   }
@@ -191,12 +190,12 @@ export class CityFeedbackRenderer {
   }
 
   private drawCitizenFeedback(input: HologramRenderInput): void {
-    const { context, viewport, camera, state, now } = input;
-    for (const feedback of state.citizenFeedback) {
+    const { state, now } = input;
+    for (const feedback of state.citizenFeedback ?? []) {
       const cycle = (now / 6200 + feedback.phase) % 1;
       const fade = cycle < 0.12 ? cycle / 0.12 : cycle > 0.84 ? (1 - cycle) / 0.16 : 1;
       if (fade <= 0.04) continue;
-      this.drawCitizenBubble(context, feedback, input, fade);
+      this.drawCitizenBubble(input.context, feedback, input, fade);
     }
   }
 
@@ -238,6 +237,7 @@ export class CityFeedbackRenderer {
 
   private drawGrowthBadge(input: HologramRenderInput): void {
     const { context, viewport, state } = input;
+    const growth = state.growth ?? { stage: 1 as const, progress: 0, label: '城市起步' };
     const accent = parseHex(state.accent);
     const width = 154;
     const x = 18;
@@ -252,11 +252,11 @@ export class CityFeedbackRenderer {
     context.fillStyle = '#eaf8ff';
     context.font = '700 11px system-ui, sans-serif';
     context.textAlign = 'left';
-    context.fillText(state.growth.label, x + 12, y + 14);
+    context.fillText(growth.label, x + 12, y + 14);
     context.fillStyle = 'rgba(112, 149, 167, .45)';
     context.fillRect(x + 12, y + 22, width - 24, 4);
     context.fillStyle = rgba(accent, 0.9);
-    context.fillRect(x + 12, y + 22, (width - 24) * state.growth.progress, 4);
+    context.fillRect(x + 12, y + 22, (width - 24) * growth.progress, 4);
     context.restore();
   }
 }
