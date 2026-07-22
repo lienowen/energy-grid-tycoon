@@ -32,6 +32,7 @@ export interface HologramRenderInput {
 }
 
 type Rgb = readonly [number, number, number];
+type CanvasFill = string | CanvasGradient | CanvasPattern;
 
 const zoneColors: Record<PlotSceneState['zone'], Rgb> = {
   neighborhood: [64, 196, 255],
@@ -68,9 +69,9 @@ const drawExtrudedDiamond = (
   context: CanvasRenderingContext2D,
   points: readonly ScreenPoint[],
   depth: number,
-  topFill: string,
-  sideFill: string,
-  stroke: string,
+  topFill: CanvasFill,
+  sideFill: CanvasFill,
+  stroke: CanvasFill,
   lineWidth = 1
 ): void => {
   const left = points[0];
@@ -95,7 +96,6 @@ const drawExtrudedDiamond = (
   context.lineTo(front.x, front.y + depth);
   context.closePath();
   context.fill();
-
   tracePolygon(context, points);
   context.fillStyle = topFill;
   context.fill();
@@ -113,13 +113,13 @@ const drawTextChip = (
   accent: Rgb,
   offsetY: number
 ): void => {
-  const width = Math.max(118, Math.min(210, Math.max(title.length * 13, detail.length * 8) + 26));
+  const width = Math.max(118, Math.min(220, Math.max(title.length * 13, detail.length * 8) + 28));
   const height = 43;
   const x = center.x - width / 2;
   const y = center.y + offsetY;
   context.save();
-  context.fillStyle = 'rgba(2, 16, 28, .88)';
-  context.strokeStyle = rgba(accent, 0.55);
+  context.fillStyle = 'rgba(2, 16, 28, .9)';
+  context.strokeStyle = rgba(accent, 0.58);
   context.lineWidth = 1;
   context.beginPath();
   context.roundRect(x, y, width, height, 10);
@@ -129,7 +129,7 @@ const drawTextChip = (
   context.font = '700 12px system-ui, sans-serif';
   context.textAlign = 'center';
   context.fillText(title, center.x, y + 17, width - 16);
-  context.fillStyle = 'rgba(191, 220, 235, .78)';
+  context.fillStyle = 'rgba(191, 220, 235, .8)';
   context.font = '10px system-ui, sans-serif';
   context.fillText(detail, center.x, y + 33, width - 16);
   context.restore();
@@ -161,7 +161,7 @@ export class HologramCanvasRenderer {
     const night = hour < 6 || hour >= 19;
     const gradient = context.createRadialGradient(
       viewport.width * 0.5,
-      viewport.height * 0.42,
+      viewport.height * 0.4,
       20,
       viewport.width * 0.5,
       viewport.height * 0.45,
@@ -176,10 +176,10 @@ export class HologramCanvasRenderer {
     context.save();
     context.strokeStyle = rgba(accent, 0.07);
     context.lineWidth = 1;
-    const horizon = viewport.height * 0.26;
+    const horizon = viewport.height * 0.24;
     for (let row = 0; row < 12; row += 1) {
       const progress = row / 11;
-      const y = horizon + Math.pow(progress, 1.7) * viewport.height * 0.8;
+      const y = horizon + Math.pow(progress, 1.7) * viewport.height * 0.82;
       context.beginPath();
       context.moveTo(0, y);
       context.lineTo(viewport.width, y);
@@ -210,28 +210,19 @@ export class HologramCanvasRenderer {
     now: number
   ): void {
     const points = getDiamondPoints({ x: 0, z: 0, elevation: -1.8 }, 60, 44, camera, viewport);
-    context.save();
-    context.shadowColor = rgba(accent, 0.7);
-    context.shadowBlur = 30;
-    const top = context.createLinearGradient(0, viewport.height * 0.25, 0, viewport.height * 0.85);
+    const top = context.createLinearGradient(0, viewport.height * 0.24, 0, viewport.height * 0.86);
     top.addColorStop(0, 'rgba(11, 52, 67, .92)');
     top.addColorStop(0.48, 'rgba(5, 31, 43, .95)');
     top.addColorStop(1, 'rgba(2, 20, 31, .98)');
-    drawExtrudedDiamond(
-      context,
-      points,
-      24 * camera.zoom,
-      top,
-      'rgba(2, 13, 23, .98)',
-      rgba(accent, 0.82),
-      2
-    );
+    context.save();
+    context.shadowColor = rgba(accent, 0.7);
+    context.shadowBlur = 30;
+    drawExtrudedDiamond(context, points, 24 * camera.zoom, top, 'rgba(2, 13, 23, .98)', rgba(accent, 0.82), 2);
     context.restore();
 
-    const pulse = 0.5 + Math.sin(now / 850) * 0.12;
     context.save();
     tracePolygon(context, points);
-    context.strokeStyle = rgba(accent, pulse);
+    context.strokeStyle = rgba(accent, 0.48 + Math.sin(now / 850) * 0.12);
     context.lineWidth = 4;
     context.setLineDash([20, 14]);
     context.lineDashOffset = -now / 80;
@@ -253,19 +244,18 @@ export class HologramCanvasRenderer {
   ): void {
     const color = zoneColors[district.id];
     const points = getDiamondPoints(district, district.radiusX, district.radiusZ, camera, viewport);
-    const powered = district.powerRatio;
     drawExtrudedDiamond(
       context,
       points,
       Math.max(5, 8 * camera.zoom),
-      rgba(color, 0.08 + powered * 0.12),
+      rgba(color, 0.08 + district.powerRatio * 0.12),
       'rgba(2, 15, 24, .7)',
-      rgba(color, 0.18 + powered * 0.26),
+      rgba(color, 0.18 + district.powerRatio * 0.26),
       1
     );
     const center = projectWorldPoint(district, camera, viewport);
     context.save();
-    context.fillStyle = rgba(color, 0.55 + powered * 0.35);
+    context.fillStyle = rgba(color, 0.55 + district.powerRatio * 0.35);
     context.font = '700 10px system-ui, sans-serif';
     context.textAlign = 'center';
     context.fillText(district.label, center.x, center.y + 5);
@@ -278,6 +268,7 @@ export class HologramCanvasRenderer {
     state.links.forEach((link, index) => {
       const from = projectWorldPoint(link.from, camera, viewport);
       const to = projectWorldPoint(link.to, camera, viewport);
+      const control = { x: (from.x + to.x) / 2, y: Math.min(from.y, to.y) - 18 * camera.zoom };
       context.save();
       context.lineCap = 'round';
       context.strokeStyle = link.active ? rgba(accent, 0.24 + link.intensity * 0.34) : 'rgba(88, 112, 126, .12)';
@@ -286,15 +277,13 @@ export class HologramCanvasRenderer {
       context.lineDashOffset = link.active ? -now / 55 : 0;
       context.beginPath();
       context.moveTo(from.x, from.y);
-      const controlX = (from.x + to.x) / 2;
-      const controlY = Math.min(from.y, to.y) - 18 * camera.zoom;
-      context.quadraticCurveTo(controlX, controlY, to.x, to.y);
+      context.quadraticCurveTo(control.x, control.y, to.x, to.y);
       context.stroke();
       if (link.active) {
         const t = (now / 1800 + index * 0.23) % 1;
-        const oneMinus = 1 - t;
-        const x = oneMinus * oneMinus * from.x + 2 * oneMinus * t * controlX + t * t * to.x;
-        const y = oneMinus * oneMinus * from.y + 2 * oneMinus * t * controlY + t * t * to.y;
+        const inverse = 1 - t;
+        const x = inverse * inverse * from.x + 2 * inverse * t * control.x + t * t * to.x;
+        const y = inverse * inverse * from.y + 2 * inverse * t * control.y + t * t * to.y;
         context.shadowColor = rgba(accent, 0.9);
         context.shadowBlur = 12;
         context.fillStyle = rgba(accent, 0.95);
@@ -311,8 +300,6 @@ export class HologramCanvasRenderer {
     const center = projectWorldPoint(state.city, camera, viewport);
     const accent = parseHex(state.accent);
     const night = state.hour < 6 || state.hour >= 19;
-    const radiusX = 74 * camera.zoom;
-    const radiusY = 29 * camera.zoom;
     context.save();
     context.translate(center.x, center.y);
     context.strokeStyle = rgba(accent, 0.55);
@@ -320,7 +307,7 @@ export class HologramCanvasRenderer {
     context.setLineDash([10, 8]);
     context.lineDashOffset = -now / 70;
     context.beginPath();
-    context.ellipse(0, 8, radiusX, radiusY, 0, 0, Math.PI * 2);
+    context.ellipse(0, 8, 74 * camera.zoom, 29 * camera.zoom, 0, 0, Math.PI * 2);
     context.stroke();
     context.fillStyle = rgba(accent, 0.06);
     context.fill();
@@ -341,7 +328,6 @@ export class HologramCanvasRenderer {
       facade.addColorStop(1, 'rgba(6, 31, 45, .96)');
       context.fillStyle = facade;
       context.strokeStyle = rgba(accent, 0.85);
-      context.lineWidth = 1;
       context.fillRect(x, y, width, height);
       context.strokeRect(x, y, width, height);
       context.fillStyle = night ? 'rgba(255, 221, 115, .9)' : rgba(accent, 0.56);
@@ -352,7 +338,6 @@ export class HologramCanvasRenderer {
       }
     }
     context.restore();
-
     drawTextChip(
       context,
       center,
@@ -364,15 +349,9 @@ export class HologramCanvasRenderer {
   }
 
   private drawPlotsAndFacilities(input: HologramRenderInput): HologramHitRegion[] {
-    const { state } = input;
-    const plots = [...state.plots].sort((left, right) => left.x + left.z - right.x - right.z);
-    const facilities = new Map(state.facilities.map((facility) => [facility.plotId, facility]));
-    const hits: HologramHitRegion[] = [];
-    for (const plot of plots) {
-      const facility = facilities.get(plot.id);
-      hits.push(this.drawPlot(input, plot, facility));
-    }
-    return hits;
+    const plots = [...input.state.plots].sort((left, right) => left.x + left.z - right.x - right.z);
+    const facilities = new Map(input.state.facilities.map((facility) => [facility.plotId, facility]));
+    return plots.map((plot) => this.drawPlot(input, plot, facilities.get(plot.id)));
   }
 
   private drawPlot(
@@ -380,73 +359,93 @@ export class HologramCanvasRenderer {
     plot: PlotSceneState,
     facility?: FacilitySceneState
   ): HologramHitRegion {
-    const { context, viewport, camera, now, hovered, constructionStartedAt, resolveImage } = input;
+    const { context, viewport, camera, now, hovered } = input;
     const color = zoneColors[plot.zone];
-    const radiusX = 5.5 * plot.scale;
-    const radiusZ = 4.3 * plot.scale;
-    const points = getDiamondPoints(plot, radiusX, radiusZ, camera, viewport);
-    const isHovered = hovered?.id === (facility?.instanceId ?? plot.id);
+    const points = getDiamondPoints(plot, 5.5 * plot.scale, 4.3 * plot.scale, camera, viewport);
+    const hitId = facility?.instanceId ?? plot.id;
+    const isHovered = hovered?.id === hitId;
     const pulse = 0.5 + Math.sin(now / 240) * 0.28;
-    const topAlpha = plot.available ? 0.2 + pulse * 0.16 : plot.occupied ? 0.16 : 0.07;
-    const strokeAlpha = plot.available ? 0.75 + pulse * 0.2 : plot.blocked ? 0.12 : isHovered ? 0.9 : 0.34;
     drawExtrudedDiamond(
       context,
       points,
       Math.max(4, 6 * camera.zoom),
-      plot.blocked ? 'rgba(25, 30, 35, .24)' : rgba(color, topAlpha),
+      plot.blocked ? 'rgba(25, 30, 35, .24)' : rgba(color, plot.available ? 0.2 + pulse * 0.16 : plot.occupied ? 0.16 : 0.07),
       'rgba(1, 12, 20, .78)',
-      plot.blocked ? 'rgba(91, 108, 119, .18)' : rgba(color, strokeAlpha),
+      plot.blocked ? 'rgba(91, 108, 119, .18)' : rgba(color, plot.available ? 0.75 + pulse * 0.2 : isHovered ? 0.9 : 0.34),
       plot.available || isHovered ? 2 : 1
     );
 
     const center = projectWorldPoint(plot, camera, viewport);
-    if (plot.available) {
-      context.save();
-      context.strokeStyle = rgba(color, pulse);
-      context.lineWidth = 2;
-      context.beginPath();
-      context.arc(center.x, center.y - 5, (20 + pulse * 7) * camera.zoom, 0, Math.PI * 2);
-      context.stroke();
-      context.fillStyle = '#e9fbff';
-      context.font = `700 ${Math.max(11, 13 * camera.zoom)}px system-ui, sans-serif`;
-      context.textAlign = 'center';
-      context.fillText('+', center.x, center.y + 1);
-      if (isHovered) drawTextChip(context, center, plot.label, '点击这里开始建设', color, 17 * camera.zoom);
-    } else if (facility) {
-      const startedAt = constructionStartedAt.get(facility.instanceId);
-      const progress = startedAt === undefined ? 1 : easeOutCubic((now - startedAt) / 850);
-      const image = resolveImage(facility.assetId);
-      const size = clamp(76 * facility.scale * camera.zoom, 48, 132);
-      const rise = (1 - progress) * 42;
-      context.save();
-      context.globalAlpha = facility.enabled ? progress : progress * 0.45;
-      context.shadowColor = rgba(color, facility.enabled ? 0.75 : 0.2);
-      context.shadowBlur = facility.enabled ? 20 : 6;
-      context.fillStyle = 'rgba(0, 0, 0, .34)';
-      context.beginPath();
-      context.ellipse(center.x, center.y + 4, size * 0.35, size * 0.12, 0, 0, Math.PI * 2);
-      context.fill();
-      if (image?.complete && image.naturalWidth > 0) {
-        context.drawImage(image, center.x - size / 2, center.y - size * 0.88 - rise, size, size);
-      } else {
-        this.drawFacilityFallback(context, center, size, color, facility, rise);
-      }
-      context.restore();
-      this.drawFacilityEffects(input, facility, center, size, progress);
-      if (isHovered) {
-        const detail = facility.category === 'storage'
-          ? `备用电 ${Math.round(facility.storageRatio * 100)}% · ${facility.enabled ? '运行中' : '已关闭'}`
-          : `供电 ${Math.round(facility.output)} MW · ${facility.enabled ? '运行中' : '已关闭'}`;
-        drawTextChip(context, center, `${facility.name} · ${facility.level}级`, detail, color, 15 * camera.zoom);
-      }
-    }
+    if (plot.available) this.drawAvailablePlot(context, center, color, camera, pulse, isHovered, plot.label);
+    if (facility) this.drawFacility(input, facility, center, color, isHovered);
 
     return {
       kind: facility ? 'facility' : 'plot',
-      id: facility?.instanceId ?? plot.id,
+      id: hitId,
       polygon: points,
       enabled: facility ? true : plot.available
     };
+  }
+
+  private drawAvailablePlot(
+    context: CanvasRenderingContext2D,
+    center: ScreenPoint,
+    color: Rgb,
+    camera: SandboxCameraState,
+    pulse: number,
+    hovered: boolean,
+    label: string
+  ): void {
+    context.save();
+    context.strokeStyle = rgba(color, pulse);
+    context.lineWidth = 2;
+    context.beginPath();
+    context.arc(center.x, center.y - 5, (20 + pulse * 7) * camera.zoom, 0, Math.PI * 2);
+    context.stroke();
+    context.fillStyle = '#e9fbff';
+    context.font = `700 ${Math.max(11, 13 * camera.zoom)}px system-ui, sans-serif`;
+    context.textAlign = 'center';
+    context.fillText('+', center.x, center.y + 1);
+    context.restore();
+    if (hovered) drawTextChip(context, center, label, '点击这里开始建设', color, 17 * camera.zoom);
+  }
+
+  private drawFacility(
+    input: HologramRenderInput,
+    facility: FacilitySceneState,
+    center: ScreenPoint,
+    color: Rgb,
+    hovered: boolean
+  ): void {
+    const { context, camera, now, constructionStartedAt, resolveImage } = input;
+    const startedAt = constructionStartedAt.get(facility.instanceId);
+    const progress = startedAt === undefined ? 1 : easeOutCubic((now - startedAt) / 850);
+    const size = clamp(76 * facility.scale * camera.zoom, 48, 132);
+    const rise = (1 - progress) * 42;
+    const image = resolveImage(facility.assetId);
+
+    context.save();
+    context.globalAlpha = facility.enabled ? progress : progress * 0.45;
+    context.shadowColor = rgba(color, facility.enabled ? 0.75 : 0.2);
+    context.shadowBlur = facility.enabled ? 20 : 6;
+    context.fillStyle = 'rgba(0, 0, 0, .34)';
+    context.beginPath();
+    context.ellipse(center.x, center.y + 4, size * 0.35, size * 0.12, 0, 0, Math.PI * 2);
+    context.fill();
+    if (image?.complete && image.naturalWidth > 0) {
+      context.drawImage(image, center.x - size / 2, center.y - size * 0.88 - rise, size, size);
+    } else {
+      this.drawFacilityFallback(context, center, size, color, facility, rise);
+    }
+    context.restore();
+    this.drawFacilityEffects(input, facility, center, size, progress);
+
+    if (hovered) {
+      const detail = facility.category === 'storage'
+        ? `备用电 ${Math.round(facility.storageRatio * 100)}% · ${facility.enabled ? '运行中' : '已关闭'}`
+        : `供电 ${Math.round(facility.output)} MW · ${facility.enabled ? '运行中' : '已关闭'}`;
+      drawTextChip(context, center, `${facility.name} · ${facility.level}级`, detail, color, 15 * camera.zoom);
+    }
   }
 
   private drawFacilityFallback(
@@ -486,10 +485,8 @@ export class HologramCanvasRenderer {
     const { context, camera, now } = input;
     if (!facility.enabled || progress < 0.98) return;
     if (facility.configId.includes('wind')) {
-      const radius = size * 0.19;
-      const hubY = center.y - size * 0.58;
       context.save();
-      context.translate(center.x, hubY);
+      context.translate(center.x, center.y - size * 0.58);
       context.rotate(now / 850);
       context.strokeStyle = 'rgba(225, 249, 255, .85)';
       context.lineWidth = Math.max(1, camera.zoom * 1.5);
@@ -497,7 +494,7 @@ export class HologramCanvasRenderer {
         context.rotate(Math.PI * 2 / 3);
         context.beginPath();
         context.moveTo(0, 0);
-        context.lineTo(0, -radius);
+        context.lineTo(0, -size * 0.19);
         context.stroke();
       }
       context.restore();
