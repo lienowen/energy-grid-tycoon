@@ -47,7 +47,7 @@ const city = { x: 0, z: 0, elevation: 1.4 };
 
 describe('CitySceneVisuals', () => {
   it('generates the same city blocks and roads for the same level configuration', () => {
-    const districts = makeDistricts(plots, 0.82, 'residential');
+    const districts = makeDistricts(plots, 0.82, 'residential', 12, 1);
     expect(makeRoads('city-test', plots, city, 8200, 0.82)).toEqual(
       makeRoads('city-test', plots, city, 8200, 0.82)
     );
@@ -57,11 +57,12 @@ describe('CitySceneVisuals', () => {
   });
 
   it('turns supply shortage into visible district blackouts in priority order', () => {
-    const districts = makeDistricts(plots, 0.45, 'residential');
+    const districts = makeDistricts(plots, 0.45, 'residential', 20, 1.2);
     const neighborhood = districts.find((district) => district.id === 'neighborhood');
     const industrial = districts.find((district) => district.id === 'industrial');
     expect(neighborhood?.powerRatio).toBeGreaterThan(industrial?.powerRatio ?? 1);
     expect(districts.some((district) => district.powerRatio < 0.5)).toBe(true);
+    expect(neighborhood?.demandIntensity).toBeGreaterThan(0.5);
   });
 
   it('maps configured plot coordinates into the same 3/4 world coordinate system', () => {
