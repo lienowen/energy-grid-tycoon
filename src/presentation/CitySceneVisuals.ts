@@ -46,10 +46,37 @@ const zonePriority = (theme: CityVisualTheme): CityPlotZone[] => {
   return ['neighborhood', 'utility', 'outskirts', 'coastal', 'industrial'];
 };
 
+const zonePopulationWeight: Record<CityPlotZone, number> = {
+  neighborhood: 1,
+  industrial: 0.34,
+  coastal: 0.18,
+  outskirts: 0.48,
+  utility: 0.26
+};
+
+const zoneDemandCurve = (
+  zone: CityPlotZone,
+  hour: number,
+  theme: CityVisualTheme
+): number => {
+  const normalizedHour = ((hour % 24) + 24) % 24;
+  const evening = Math.exp(-Math.pow((normalizedHour - 20) / 3.2, 2));
+  const morning = Math.exp(-Math.pow((normalizedHour - 8) / 2.8, 2));
+  const workday = normalizedHour >= 7 && normalizedHour <= 19 ? 1 : 0.45;
+  const night = normalizedHour < 6 || normalizedHour >= 23 ? 0.62 : 1;
+  if (zone === 'neighborhood') return (0.58 + evening * 0.58 + morning * 0.23) * (theme === 'residential' ? 1.08 : 1);
+  if (zone === 'industrial') return (0.48 + workday * 0.58) * (theme === 'industrial' ? 1.16 : 1);
+  if (zone === 'utility') return 0.7 + workday * 0.18;
+  if (zone === 'coastal') return 0.54 + night * 0.2;
+  return 0.46 + evening * 0.25;
+};
+
 export const makeDistricts = (
   plots: readonly CityPlotConfig[],
   supplyRatio: number,
-  theme: CityVisualTheme
+  theme: CityVisualTheme,
+  hour: number,
+  demandRatio: number
 ): DistrictSceneState[] => {
   const zones = [...new Set(plots.map((plot) => plot.zone))];
   const priority = zonePriority(theme).filter((zone) => zones.includes(zone));
@@ -59,7 +86,12 @@ export const makeDistricts = (
     powerByZone.set(zone, suppliedZones);
   });
 
-  return zones.map((zone) => {
+  const rawPopulationWeights = zones.map((zone) =>
+    zonePopulationWeight[zone] * Math.max(1, plots.filter((plot) => plot.zone === zone).length)
+  );
+  const populationWeightTotal = Math.max(1, rawPopulationWeights.reduce((total, value) => total + value, 0));
+
+  return zones.map((zone, zoneIndex) => {
     const members = plots.filter((plot) => plot.zone === zone);
     const points = members.map(toScenePoint);
     const minX = Math.min(...points.map((point) => point.x));
@@ -74,7 +106,9 @@ export const makeDistricts = (
       elevation: -0.35,
       radiusX: Math.max(10, (maxX - minX) / 2 + 8),
       radiusZ: Math.max(7, (maxZ - minZ) / 2 + 5),
-      powerRatio: powerByZone.get(zone) ?? supplyRatio
+      powerRatio: powerByZone.get(zone) ?? supplyRatio,
+      demandIntensity: clamp(zoneDemandCurve(zone, hour, theme) * demandRatio / 1.4),
+      populationShare: (rawPopulationWeights[zoneIndex] ?? 0) / populationWeightTotal
     };
   });
 };
@@ -84,7 +118,8 @@ export const makeRoads = (
   plots: readonly CityPlotConfig[],
   city: ScenePoint,
   population: number,
-  supplyRatio: number
+  supplyRatio: number,
+  growthProgress = 0
 ): RoadSceneState[] => {
   const baseTraffic = clamp(population / 18000, 0.16, 1) * clamp(0.35 + supplyRatio * 0.75, 0.2, 1);
   const radialRoads = plots.map((plot, index): RoadSceneState => {
@@ -133,7 +168,34 @@ export const makeRoads = (
       });
     }
   }
-  return [...radialRoads, ...ring];
+
+  const growthRoads: RoadSceneState[] = [];
+  if (growthProgress > 0.22 && ordered.length >= 5) {
+    for (let index = 0; index < ordered.length; index += 3) {
+      const fromPlot = ordered[index];
+      const toPlot = ordered[(index + 3) % ordered.length];
+      if (!fromPlot || !toPlot) continue;
+      const from = toScenePoint(fromPlot);
+      const to = toScenePoint(toPlot);
+      const midpoint = {
+        x: (from.x + to.x) * 0.62,
+        z: (from.z + to.z) * 0.62,
+        elevation: -0.3
+      };
+      growthRoads.push({
+        id: `growth-road-${fromPlot.id}-${toPlot.id}`,
+        points: [
+          { ...from, elevation: -0.28 },
+          midpoint,
+          { ...to, elevation: -0.28 }
+        ],
+        laneCount: growthProgress > 0.68 ? 2 : 1,
+        traffic: clamp(baseTraffic * growthProgress * 0.74, 0.04, 0.78),
+        powered: supplyRatio > 0.55
+      });
+    }
+  }
+  return [...radialRoads, ...ring, ...growthRoads];
 };
 
 const blockKindForZone = (zone: CityPlotZone, variant: number): AmbientBlockKind => {
@@ -148,24 +210,29 @@ export const makeAmbientBlocks = (
   levelId: string,
   plots: readonly CityPlotConfig[],
   districts: readonly DistrictSceneState[],
-  theme: CityVisualTheme
+  theme: CityVisualTheme,
+  growthProgress = 0
 ): AmbientBlockSceneState[] => {
   const powerByZone = new Map(districts.map((district) => [district.id, district.powerRatio]));
   const themeMultiplier = theme === 'industrial' ? 1.18 : theme === 'green' ? 0.9 : 1;
   const result: AmbientBlockSceneState[] = [];
+  const expansionCount = Math.floor(clamp(growthProgress) * 2.99);
 
   plots.forEach((plot) => {
     const origin = toScenePoint(plot);
-    const count = plot.zone === 'coastal' ? 1 : plot.zone === 'neighborhood' ? 3 : 2;
+    const baseCount = plot.zone === 'coastal' ? 1 : plot.zone === 'neighborhood' ? 3 : 2;
+    const count = baseCount + (plot.zone === 'coastal' ? Math.min(1, expansionCount) : expansionCount);
     for (let index = 0; index < count; index += 1) {
       const seed = `${levelId}:${plot.id}:block:${index}`;
       const angle = seededUnit(seed, 1) * Math.PI * 2;
-      const distance = 7.5 + seededUnit(seed, 2) * 7.5;
+      const isExpansion = index >= baseCount;
+      const distance = (isExpansion ? 13 : 7.5) + seededUnit(seed, 2) * (isExpansion ? 8 : 7.5);
       const variant = seededUnit(seed, 3);
       const kind = blockKindForZone(plot.zone, variant);
       const isPark = kind === 'park';
       const heightBase = kind === 'industrial' ? 4.5 : kind === 'utility' ? 5.5 : 7;
-      const height = isPark ? 0.8 : (heightBase + seededUnit(seed, 4) * 9) * themeMultiplier;
+      const growthHeight = 1 + growthProgress * (kind === 'residential' ? 0.34 : 0.2);
+      const height = isPark ? 0.8 : (heightBase + seededUnit(seed, 4) * 9) * themeMultiplier * growthHeight;
       result.push({
         id: `${plot.id}-ambient-${index}`,
         zone: plot.zone,
