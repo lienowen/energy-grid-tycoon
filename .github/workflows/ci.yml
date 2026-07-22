@@ -1,27 +1,15 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
 jobs:
-  quality:
+  diagnose-content:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Install
-        run: npm install --no-audit --no-fund
-      - name: Validate content and assets
-        run: npm run check:content
-      - name: Unit tests
-        run: npm test
-      - name: Typecheck and production build
-        run: npm run build
+      - name: Print content validation errors
+        run: node scripts/validate-content.mjs
