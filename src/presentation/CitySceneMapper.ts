@@ -19,6 +19,9 @@ import type {
   DistrictPrefabSceneState,
   DistrictPrefabStatus,
   EnergyLinkSceneState,
+  EnergyNetworkEdgeSceneState,
+  EnergyNetworkNodeSceneState,
+  EnergyNetworkNodeStatus,
   EnvironmentPrefabSceneState,
   FacilitySceneState,
   HologramCameraConfig,
@@ -40,6 +43,10 @@ export type {
   DistrictPrefabStatus,
   DistrictSceneState,
   EnergyLinkSceneState,
+  EnergyNetworkEdgeSceneState,
+  EnergyNetworkEdgeStatus,
+  EnergyNetworkNodeSceneState,
+  EnergyNetworkNodeStatus,
   EnvironmentPrefabSceneState,
   ExpansionSiteSceneState,
   FacilitySceneState,
@@ -81,19 +88,26 @@ const getCamera = (view: GameViewModel, layout?: LevelSceneLayout): HologramCame
     minZoom: clamp(sandbox?.minZoom ?? 0.72, 0.45, 1.5),
     maxZoom: clamp(sandbox?.maxZoom ?? 1.75, 1, 3),
     startOffsetX: sandbox?.startOffsetX ?? 0,
-    startOffsetY: sandbox?.startOffsetY ?? 18
+    startOffsetY: sandbox?.startOffsetY ?? 18,
+    panLimitX: 420,
+    panLimitY: 280
   };
 };
 
+const findPlotAnchor = (layout: LevelSceneLayout | undefined, plotId: string) =>
+  layout?.plotAnchors?.find((anchor) => anchor.plotId === plotId);
+
 const mapFacilities = (
   view: GameViewModel,
-  plots: readonly CityPlotConfig[]
+  plots: readonly CityPlotConfig[],
+  layout?: LevelSceneLayout
 ): FacilitySceneState[] => view.buildings
   .filter((building): building is BuildingBase & { placementId: string } => Boolean(building.placementId))
   .map((building): FacilitySceneState | undefined => {
     const plot = plots.find((candidate) => candidate.id === building.placementId);
     if (!plot) return undefined;
-    const point = toScenePoint(plot);
+    const anchor = findPlotAnchor(layout, plot.id);
+    const point = toScenePoint(anchor ?? plot);
     return {
       ...point,
       elevation: point.elevation + 1.1,
@@ -105,7 +119,7 @@ const mapFacilities = (
       category: building.config.category,
       enabled: building.enabled,
       level: building.level,
-      scale: (plot.scale ?? 1) * (1 + (building.level - 1) * 0.06),
+      scale: (anchor?.scale ?? plot.scale ?? 1) * (1 + (building.level - 1) * 0.06),
       output: getFacilityOutput(building, view),
       storageRatio: getStorageRatio(building, view)
     };
@@ -116,18 +130,20 @@ const mapPlots = (
   view: GameViewModel,
   plots: readonly CityPlotConfig[],
   facilities: readonly FacilitySceneState[],
-  selected?: BuildingConfig
+  selected: BuildingConfig | undefined,
+  layout?: LevelSceneLayout
 ): PlotSceneState[] => plots.map((plot): PlotSceneState => {
   const occupant = facilities.find((facility) => facility.plotId === plot.id);
   const check = selected
     ? CityMapSystem.canPlace(selected, plot, view.buildings)
     : undefined;
+  const anchor = findPlotAnchor(layout, plot.id);
   return {
-    ...toScenePoint(plot),
+    ...toScenePoint(anchor ?? plot),
     id: plot.id,
     zone: plot.zone,
     label: plot.label ?? zoneLabels[plot.zone],
-    scale: plot.scale ?? 1,
+    scale: anchor?.scale ?? plot.scale ?? 1,
     locked: Boolean(plot.locked),
     occupied: Boolean(occupant),
     available: Boolean(selected && check?.ok),
@@ -208,6 +224,123 @@ const mapAuthoredRoads = (
   }));
 };
 
+const districtNodeStatus = (district: DistrictPrefabSceneState): EnergyNetworkNodeStatus => {
+  if (district.status === 'offline') return 'offline';
+  if (district.status === 'normal') return 'active';
+  return 'warning';
+};
+
+const mapEnergyNetwork = (
+  layout: LevelSceneLayout,
+  facilities: readonly FacilitySceneState[],
+  districts: readonly DistrictPrefabSceneState[],
+  supplyRatio: number,
+  demandRatio: number
+): {
+  nodes: EnergyNetworkNodeSceneState[];
+  edges: EnergyNetworkEdgeSceneState[];
+} => {
+  const pressure = demandRatio / Math.max(0.2, supplyRatio);
+  const nodes = layout.energyNetwork.nodes.map((node): EnergyNetworkNodeSceneState => {
+    const point = toScenePoint(node);
+    if (node.districtId) {
+      const district = districts.find((candidate) => candidate.id === node.districtId);
+      const status = district ? districtNodeStatus(district) : 'offline';
+      return {
+        ...point,
+        id: node.id,
+        label: node.label,
+        kind: node.kind,
+        status,
+        capacity: node.capacity,
+        loadRatio: clamp(demandRatio / Math.max(0.25, node.capacity), 0, 1.5),
+        districtId: node.districtId
+      };
+    }
+
+    const matchingFacilities = facilities.filter((facility) =>
+      Boolean(node.plotIds?.includes(facility.plotId))
+      || Boolean(node.facilityConfigIds?.includes(facility.configId))
+    );
+    if (matchingFacilities.length > 0) {
+      const activeFacilities = matchingFacilities.filter((facility) => facility.enabled);
+      const totalOutput = activeFacilities.reduce((sum, facility) => sum + facility.output, 0);
+      const status: EnergyNetworkNodeStatus = activeFacilities.length === 0
+        ? 'offline'
+        : pressure > 1.02
+          ? 'warning'
+          : 'active';
+      return {
+        ...point,
+        id: node.id,
+        label: node.label,
+        kind: node.kind,
+        status,
+        capacity: node.capacity,
+        loadRatio: clamp(totalOutput / Math.max(1, node.capacity * 620), 0, 1.5),
+        facilityId: matchingFacilities[0]?.instanceId
+      };
+    }
+
+    if (node.alwaysOperational) {
+      const status: EnergyNetworkNodeStatus = supplyRatio < 0.16
+        ? 'offline'
+        : pressure > 1.02
+          ? 'warning'
+          : 'active';
+      return {
+        ...point,
+        id: node.id,
+        label: node.label,
+        kind: node.kind,
+        status,
+        capacity: node.capacity,
+        loadRatio: clamp(pressure / node.capacity, 0, 1.5)
+      };
+    }
+
+    return {
+      ...point,
+      id: node.id,
+      label: node.label,
+      kind: node.kind,
+      status: 'planned',
+      capacity: node.capacity,
+      loadRatio: 0
+    };
+  });
+
+  const nodeById = new Map(nodes.map((node) => [node.id, node]));
+  const edges = layout.energyNetwork.edges.map((edge): EnergyNetworkEdgeSceneState => {
+    const from = nodeById.get(edge.from);
+    const to = nodeById.get(edge.to);
+    if (!from || !to) {
+      throw new Error(`Invalid authored energy edge ${edge.id}: ${edge.from} -> ${edge.to}`);
+    }
+    const loadRatio = clamp(pressure / Math.max(0.2, edge.capacity), 0, 1.6);
+    const status = from.status === 'planned' || to.status === 'planned'
+      ? 'planned'
+      : from.status === 'offline' || to.status === 'offline'
+        ? 'offline'
+        : loadRatio > 1.02
+          ? 'overload'
+          : 'normal';
+    return {
+      id: edge.id,
+      fromNodeId: edge.from,
+      toNodeId: edge.to,
+      points: edge.points?.length
+        ? edge.points.map((point) => ({ ...toScenePoint(point), elevation: 0.18 }))
+        : [from, to].map((point) => ({ x: point.x, z: point.z, elevation: 0.18 })),
+      capacity: edge.capacity,
+      loadRatio,
+      status
+    };
+  });
+
+  return { nodes, edges };
+};
+
 export class CitySceneMapper {
   static map(view: GameViewModel, selectedBuildingId?: string): CitySceneState {
     const plots = LevelLoader.getWorldPlots(view.level);
@@ -231,8 +364,8 @@ export class CitySceneMapper {
       population: view.state.population,
       day: view.state.day
     });
-    const facilities = mapFacilities(view, plots);
-    const scenePlots = mapPlots(view, plots, facilities, selected);
+    const facilities = mapFacilities(view, plots, layout);
+    const scenePlots = mapPlots(view, plots, facilities, selected, layout);
     const districts = makeDistricts(
       plots,
       supplyRatio,
@@ -240,6 +373,10 @@ export class CitySceneMapper {
       view.state.hour,
       demandRatio
     );
+    const districtPrefabs = layout ? mapDistrictPrefabs(layout, supplyRatio) : undefined;
+    const energyNetwork = layout && districtPrefabs
+      ? mapEnergyNetwork(layout, facilities, districtPrefabs, supplyRatio, demandRatio)
+      : undefined;
     const roads = layout
       ? mapAuthoredRoads(layout, view.state.population, supplyRatio)
       : makeRoads(
@@ -289,12 +426,15 @@ export class CitySceneMapper {
       blackoutIntensity: clamp((0.97 - supplyRatio) / 0.55, 0, 1),
       trafficDensity,
       city,
+      focus: layout ? toScenePoint(layout.focus) : undefined,
       camera: getCamera(view, layout),
       sceneMode: layout ? 'authored' : 'procedural',
       growth,
       districts,
-      districtPrefabs: layout ? mapDistrictPrefabs(layout, supplyRatio) : undefined,
+      districtPrefabs,
       environment: layout ? mapEnvironment(layout) : undefined,
+      networkNodes: energyNetwork?.nodes,
+      networkEdges: energyNetwork?.edges,
       plots: scenePlots,
       facilities,
       links: mapLinks(facilities, city, supplyRatio),
