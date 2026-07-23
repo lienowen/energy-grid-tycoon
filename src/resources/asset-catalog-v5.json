@@ -1,0 +1,7847 @@
+{
+  "schemaVersion": 5,
+  "entries": [
+    {
+      "id": "world_building_res_tower_a_day",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_tower_a/day.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "day"
+      ]
+    },
+    {
+      "id": "world_building_res_tower_a_night",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_tower_a/night.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "night"
+      ]
+    },
+    {
+      "id": "world_building_res_tower_a_blackout",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_tower_a/blackout.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "blackout"
+      ]
+    },
+    {
+      "id": "world_building_res_tower_a_shadow",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_tower_a/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_building_res_tower_b_day",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_tower_b/day.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "day"
+      ]
+    },
+    {
+      "id": "world_building_res_tower_b_night",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_tower_b/night.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "night"
+      ]
+    },
+    {
+      "id": "world_building_res_tower_b_blackout",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_tower_b/blackout.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "blackout"
+      ]
+    },
+    {
+      "id": "world_building_res_tower_b_shadow",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_tower_b/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_building_res_slab_a_day",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_slab_a/day.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "day"
+      ]
+    },
+    {
+      "id": "world_building_res_slab_a_night",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_slab_a/night.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "night"
+      ]
+    },
+    {
+      "id": "world_building_res_slab_a_blackout",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_slab_a/blackout.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "blackout"
+      ]
+    },
+    {
+      "id": "world_building_res_slab_a_shadow",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_slab_a/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_building_res_slab_b_day",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_slab_b/day.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "day"
+      ]
+    },
+    {
+      "id": "world_building_res_slab_b_night",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_slab_b/night.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "night"
+      ]
+    },
+    {
+      "id": "world_building_res_slab_b_blackout",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_slab_b/blackout.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "blackout"
+      ]
+    },
+    {
+      "id": "world_building_res_slab_b_shadow",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_slab_b/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_building_res_townhouse_day",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_townhouse/day.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "day"
+      ]
+    },
+    {
+      "id": "world_building_res_townhouse_night",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_townhouse/night.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "night"
+      ]
+    },
+    {
+      "id": "world_building_res_townhouse_blackout",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_townhouse/blackout.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "blackout"
+      ]
+    },
+    {
+      "id": "world_building_res_townhouse_shadow",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_townhouse/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_building_res_oldblock_day",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_oldblock/day.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "day"
+      ]
+    },
+    {
+      "id": "world_building_res_oldblock_night",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_oldblock/night.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "night"
+      ]
+    },
+    {
+      "id": "world_building_res_oldblock_blackout",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_oldblock/blackout.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "blackout"
+      ]
+    },
+    {
+      "id": "world_building_res_oldblock_shadow",
+      "kind": "image",
+      "src": "/assets/world/buildings/residential/res_oldblock/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "residential",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_building_com_mall_day",
+      "kind": "image",
+      "src": "/assets/world/buildings/commercial/com_mall/day.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "commercial",
+        "day"
+      ]
+    },
+    {
+      "id": "world_building_com_mall_night",
+      "kind": "image",
+      "src": "/assets/world/buildings/commercial/com_mall/night.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "commercial",
+        "night"
+      ]
+    },
+    {
+      "id": "world_building_com_mall_blackout",
+      "kind": "image",
+      "src": "/assets/world/buildings/commercial/com_mall/blackout.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "commercial",
+        "blackout"
+      ]
+    },
+    {
+      "id": "world_building_com_mall_shadow",
+      "kind": "image",
+      "src": "/assets/world/buildings/commercial/com_mall/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "commercial",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_building_com_office_day",
+      "kind": "image",
+      "src": "/assets/world/buildings/commercial/com_office/day.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "commercial",
+        "day"
+      ]
+    },
+    {
+      "id": "world_building_com_office_night",
+      "kind": "image",
+      "src": "/assets/world/buildings/commercial/com_office/night.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "commercial",
+        "night"
+      ]
+    },
+    {
+      "id": "world_building_com_office_blackout",
+      "kind": "image",
+      "src": "/assets/world/buildings/commercial/com_office/blackout.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "commercial",
+        "blackout"
+      ]
+    },
+    {
+      "id": "world_building_com_office_shadow",
+      "kind": "image",
+      "src": "/assets/world/buildings/commercial/com_office/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "commercial",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_building_com_landmark_day",
+      "kind": "image",
+      "src": "/assets/world/buildings/commercial/com_landmark/day.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "commercial",
+        "day"
+      ]
+    },
+    {
+      "id": "world_building_com_landmark_night",
+      "kind": "image",
+      "src": "/assets/world/buildings/commercial/com_landmark/night.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "commercial",
+        "night"
+      ]
+    },
+    {
+      "id": "world_building_com_landmark_blackout",
+      "kind": "image",
+      "src": "/assets/world/buildings/commercial/com_landmark/blackout.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "commercial",
+        "blackout"
+      ]
+    },
+    {
+      "id": "world_building_com_landmark_shadow",
+      "kind": "image",
+      "src": "/assets/world/buildings/commercial/com_landmark/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "commercial",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_building_com_strip_day",
+      "kind": "image",
+      "src": "/assets/world/buildings/commercial/com_strip/day.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "commercial",
+        "day"
+      ]
+    },
+    {
+      "id": "world_building_com_strip_night",
+      "kind": "image",
+      "src": "/assets/world/buildings/commercial/com_strip/night.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "commercial",
+        "night"
+      ]
+    },
+    {
+      "id": "world_building_com_strip_blackout",
+      "kind": "image",
+      "src": "/assets/world/buildings/commercial/com_strip/blackout.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "commercial",
+        "blackout"
+      ]
+    },
+    {
+      "id": "world_building_com_strip_shadow",
+      "kind": "image",
+      "src": "/assets/world/buildings/commercial/com_strip/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "commercial",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_building_ind_factory_day",
+      "kind": "image",
+      "src": "/assets/world/buildings/industrial/ind_factory/day.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "industrial",
+        "day"
+      ]
+    },
+    {
+      "id": "world_building_ind_factory_night",
+      "kind": "image",
+      "src": "/assets/world/buildings/industrial/ind_factory/night.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "industrial",
+        "night"
+      ]
+    },
+    {
+      "id": "world_building_ind_factory_blackout",
+      "kind": "image",
+      "src": "/assets/world/buildings/industrial/ind_factory/blackout.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "industrial",
+        "blackout"
+      ]
+    },
+    {
+      "id": "world_building_ind_factory_shadow",
+      "kind": "image",
+      "src": "/assets/world/buildings/industrial/ind_factory/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "industrial",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_building_ind_warehouse_day",
+      "kind": "image",
+      "src": "/assets/world/buildings/industrial/ind_warehouse/day.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "industrial",
+        "day"
+      ]
+    },
+    {
+      "id": "world_building_ind_warehouse_night",
+      "kind": "image",
+      "src": "/assets/world/buildings/industrial/ind_warehouse/night.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "industrial",
+        "night"
+      ]
+    },
+    {
+      "id": "world_building_ind_warehouse_blackout",
+      "kind": "image",
+      "src": "/assets/world/buildings/industrial/ind_warehouse/blackout.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "industrial",
+        "blackout"
+      ]
+    },
+    {
+      "id": "world_building_ind_warehouse_shadow",
+      "kind": "image",
+      "src": "/assets/world/buildings/industrial/ind_warehouse/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "industrial",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_building_ind_tankfarm_day",
+      "kind": "image",
+      "src": "/assets/world/buildings/industrial/ind_tankfarm/day.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "industrial",
+        "day"
+      ]
+    },
+    {
+      "id": "world_building_ind_tankfarm_night",
+      "kind": "image",
+      "src": "/assets/world/buildings/industrial/ind_tankfarm/night.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "industrial",
+        "night"
+      ]
+    },
+    {
+      "id": "world_building_ind_tankfarm_blackout",
+      "kind": "image",
+      "src": "/assets/world/buildings/industrial/ind_tankfarm/blackout.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "industrial",
+        "blackout"
+      ]
+    },
+    {
+      "id": "world_building_ind_tankfarm_shadow",
+      "kind": "image",
+      "src": "/assets/world/buildings/industrial/ind_tankfarm/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "industrial",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_building_ind_heavy_day",
+      "kind": "image",
+      "src": "/assets/world/buildings/industrial/ind_heavy/day.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "industrial",
+        "day"
+      ]
+    },
+    {
+      "id": "world_building_ind_heavy_night",
+      "kind": "image",
+      "src": "/assets/world/buildings/industrial/ind_heavy/night.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "industrial",
+        "night"
+      ]
+    },
+    {
+      "id": "world_building_ind_heavy_blackout",
+      "kind": "image",
+      "src": "/assets/world/buildings/industrial/ind_heavy/blackout.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "industrial",
+        "blackout"
+      ]
+    },
+    {
+      "id": "world_building_ind_heavy_shadow",
+      "kind": "image",
+      "src": "/assets/world/buildings/industrial/ind_heavy/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "industrial",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_building_civic_hospital_day",
+      "kind": "image",
+      "src": "/assets/world/buildings/civic/civic_hospital/day.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "civic",
+        "day"
+      ]
+    },
+    {
+      "id": "world_building_civic_hospital_night",
+      "kind": "image",
+      "src": "/assets/world/buildings/civic/civic_hospital/night.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "civic",
+        "night"
+      ]
+    },
+    {
+      "id": "world_building_civic_hospital_blackout",
+      "kind": "image",
+      "src": "/assets/world/buildings/civic/civic_hospital/blackout.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "civic",
+        "blackout"
+      ]
+    },
+    {
+      "id": "world_building_civic_hospital_shadow",
+      "kind": "image",
+      "src": "/assets/world/buildings/civic/civic_hospital/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "civic",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_building_civic_school_day",
+      "kind": "image",
+      "src": "/assets/world/buildings/civic/civic_school/day.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "civic",
+        "day"
+      ]
+    },
+    {
+      "id": "world_building_civic_school_night",
+      "kind": "image",
+      "src": "/assets/world/buildings/civic/civic_school/night.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "civic",
+        "night"
+      ]
+    },
+    {
+      "id": "world_building_civic_school_blackout",
+      "kind": "image",
+      "src": "/assets/world/buildings/civic/civic_school/blackout.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "civic",
+        "blackout"
+      ]
+    },
+    {
+      "id": "world_building_civic_school_shadow",
+      "kind": "image",
+      "src": "/assets/world/buildings/civic/civic_school/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "civic",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_building_civic_cityhall_day",
+      "kind": "image",
+      "src": "/assets/world/buildings/civic/civic_cityhall/day.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "civic",
+        "day"
+      ]
+    },
+    {
+      "id": "world_building_civic_cityhall_night",
+      "kind": "image",
+      "src": "/assets/world/buildings/civic/civic_cityhall/night.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "civic",
+        "night"
+      ]
+    },
+    {
+      "id": "world_building_civic_cityhall_blackout",
+      "kind": "image",
+      "src": "/assets/world/buildings/civic/civic_cityhall/blackout.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "civic",
+        "blackout"
+      ]
+    },
+    {
+      "id": "world_building_civic_cityhall_shadow",
+      "kind": "image",
+      "src": "/assets/world/buildings/civic/civic_cityhall/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "civic",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_building_civic_transit_day",
+      "kind": "image",
+      "src": "/assets/world/buildings/civic/civic_transit/day.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "civic",
+        "day"
+      ]
+    },
+    {
+      "id": "world_building_civic_transit_night",
+      "kind": "image",
+      "src": "/assets/world/buildings/civic/civic_transit/night.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "civic",
+        "night"
+      ]
+    },
+    {
+      "id": "world_building_civic_transit_blackout",
+      "kind": "image",
+      "src": "/assets/world/buildings/civic/civic_transit/blackout.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "civic",
+        "blackout"
+      ]
+    },
+    {
+      "id": "world_building_civic_transit_shadow",
+      "kind": "image",
+      "src": "/assets/world/buildings/civic/civic_transit/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "building",
+        "civic",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_facility_solar_idle",
+      "kind": "image",
+      "src": "/assets/world/facilities/solar/idle.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "solar",
+        "idle"
+      ]
+    },
+    {
+      "id": "world_facility_solar_active",
+      "kind": "image",
+      "src": "/assets/world/facilities/solar/active.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "solar",
+        "active"
+      ]
+    },
+    {
+      "id": "world_facility_solar_overload",
+      "kind": "image",
+      "src": "/assets/world/facilities/solar/overload.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "solar",
+        "overload"
+      ]
+    },
+    {
+      "id": "world_facility_solar_offline",
+      "kind": "image",
+      "src": "/assets/world/facilities/solar/offline.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "solar",
+        "offline"
+      ]
+    },
+    {
+      "id": "world_facility_solar_construction",
+      "kind": "image",
+      "src": "/assets/world/facilities/solar/construction.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "solar",
+        "construction"
+      ]
+    },
+    {
+      "id": "world_facility_solar_upgrade",
+      "kind": "image",
+      "src": "/assets/world/facilities/solar/upgrade.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "solar",
+        "upgrade"
+      ]
+    },
+    {
+      "id": "world_facility_solar_selected",
+      "kind": "image",
+      "src": "/assets/world/facilities/solar/selected.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "solar",
+        "selected"
+      ]
+    },
+    {
+      "id": "world_facility_solar_damaged",
+      "kind": "image",
+      "src": "/assets/world/facilities/solar/damaged.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "solar",
+        "damaged"
+      ]
+    },
+    {
+      "id": "world_facility_solar_shadow",
+      "kind": "image",
+      "src": "/assets/world/facilities/solar/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "solar",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_facility_solar_component_light",
+      "kind": "image",
+      "src": "/assets/world/facilities/solar/components/light.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "solar",
+        "component",
+        "light"
+      ]
+    },
+    {
+      "id": "world_facility_solar_component_motion",
+      "kind": "image",
+      "src": "/assets/world/facilities/solar/components/motion.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "solar",
+        "component",
+        "motion"
+      ]
+    },
+    {
+      "id": "world_facility_solar_component_effect",
+      "kind": "image",
+      "src": "/assets/world/facilities/solar/components/effect.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "solar",
+        "component",
+        "effect"
+      ]
+    },
+    {
+      "id": "world_facility_wind_idle",
+      "kind": "image",
+      "src": "/assets/world/facilities/wind/idle.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "wind",
+        "idle"
+      ]
+    },
+    {
+      "id": "world_facility_wind_active",
+      "kind": "image",
+      "src": "/assets/world/facilities/wind/active.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "wind",
+        "active"
+      ]
+    },
+    {
+      "id": "world_facility_wind_overload",
+      "kind": "image",
+      "src": "/assets/world/facilities/wind/overload.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "wind",
+        "overload"
+      ]
+    },
+    {
+      "id": "world_facility_wind_offline",
+      "kind": "image",
+      "src": "/assets/world/facilities/wind/offline.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "wind",
+        "offline"
+      ]
+    },
+    {
+      "id": "world_facility_wind_construction",
+      "kind": "image",
+      "src": "/assets/world/facilities/wind/construction.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "wind",
+        "construction"
+      ]
+    },
+    {
+      "id": "world_facility_wind_upgrade",
+      "kind": "image",
+      "src": "/assets/world/facilities/wind/upgrade.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "wind",
+        "upgrade"
+      ]
+    },
+    {
+      "id": "world_facility_wind_selected",
+      "kind": "image",
+      "src": "/assets/world/facilities/wind/selected.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "wind",
+        "selected"
+      ]
+    },
+    {
+      "id": "world_facility_wind_damaged",
+      "kind": "image",
+      "src": "/assets/world/facilities/wind/damaged.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "wind",
+        "damaged"
+      ]
+    },
+    {
+      "id": "world_facility_wind_shadow",
+      "kind": "image",
+      "src": "/assets/world/facilities/wind/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "wind",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_facility_wind_component_light",
+      "kind": "image",
+      "src": "/assets/world/facilities/wind/components/light.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "wind",
+        "component",
+        "light"
+      ]
+    },
+    {
+      "id": "world_facility_wind_component_motion",
+      "kind": "image",
+      "src": "/assets/world/facilities/wind/components/motion.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "wind",
+        "component",
+        "motion"
+      ]
+    },
+    {
+      "id": "world_facility_wind_component_effect",
+      "kind": "image",
+      "src": "/assets/world/facilities/wind/components/effect.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "wind",
+        "component",
+        "effect"
+      ]
+    },
+    {
+      "id": "world_facility_gas_idle",
+      "kind": "image",
+      "src": "/assets/world/facilities/gas/idle.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "gas",
+        "idle"
+      ]
+    },
+    {
+      "id": "world_facility_gas_active",
+      "kind": "image",
+      "src": "/assets/world/facilities/gas/active.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "gas",
+        "active"
+      ]
+    },
+    {
+      "id": "world_facility_gas_overload",
+      "kind": "image",
+      "src": "/assets/world/facilities/gas/overload.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "gas",
+        "overload"
+      ]
+    },
+    {
+      "id": "world_facility_gas_offline",
+      "kind": "image",
+      "src": "/assets/world/facilities/gas/offline.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "gas",
+        "offline"
+      ]
+    },
+    {
+      "id": "world_facility_gas_construction",
+      "kind": "image",
+      "src": "/assets/world/facilities/gas/construction.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "gas",
+        "construction"
+      ]
+    },
+    {
+      "id": "world_facility_gas_upgrade",
+      "kind": "image",
+      "src": "/assets/world/facilities/gas/upgrade.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "gas",
+        "upgrade"
+      ]
+    },
+    {
+      "id": "world_facility_gas_selected",
+      "kind": "image",
+      "src": "/assets/world/facilities/gas/selected.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "gas",
+        "selected"
+      ]
+    },
+    {
+      "id": "world_facility_gas_damaged",
+      "kind": "image",
+      "src": "/assets/world/facilities/gas/damaged.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "gas",
+        "damaged"
+      ]
+    },
+    {
+      "id": "world_facility_gas_shadow",
+      "kind": "image",
+      "src": "/assets/world/facilities/gas/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "gas",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_facility_gas_component_light",
+      "kind": "image",
+      "src": "/assets/world/facilities/gas/components/light.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "gas",
+        "component",
+        "light"
+      ]
+    },
+    {
+      "id": "world_facility_gas_component_motion",
+      "kind": "image",
+      "src": "/assets/world/facilities/gas/components/motion.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "gas",
+        "component",
+        "motion"
+      ]
+    },
+    {
+      "id": "world_facility_gas_component_effect",
+      "kind": "image",
+      "src": "/assets/world/facilities/gas/components/effect.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "gas",
+        "component",
+        "effect"
+      ]
+    },
+    {
+      "id": "world_facility_battery_idle",
+      "kind": "image",
+      "src": "/assets/world/facilities/battery/idle.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "battery",
+        "idle"
+      ]
+    },
+    {
+      "id": "world_facility_battery_active",
+      "kind": "image",
+      "src": "/assets/world/facilities/battery/active.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "battery",
+        "active"
+      ]
+    },
+    {
+      "id": "world_facility_battery_overload",
+      "kind": "image",
+      "src": "/assets/world/facilities/battery/overload.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "battery",
+        "overload"
+      ]
+    },
+    {
+      "id": "world_facility_battery_offline",
+      "kind": "image",
+      "src": "/assets/world/facilities/battery/offline.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "battery",
+        "offline"
+      ]
+    },
+    {
+      "id": "world_facility_battery_construction",
+      "kind": "image",
+      "src": "/assets/world/facilities/battery/construction.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "battery",
+        "construction"
+      ]
+    },
+    {
+      "id": "world_facility_battery_upgrade",
+      "kind": "image",
+      "src": "/assets/world/facilities/battery/upgrade.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "battery",
+        "upgrade"
+      ]
+    },
+    {
+      "id": "world_facility_battery_selected",
+      "kind": "image",
+      "src": "/assets/world/facilities/battery/selected.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "battery",
+        "selected"
+      ]
+    },
+    {
+      "id": "world_facility_battery_damaged",
+      "kind": "image",
+      "src": "/assets/world/facilities/battery/damaged.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "battery",
+        "damaged"
+      ]
+    },
+    {
+      "id": "world_facility_battery_shadow",
+      "kind": "image",
+      "src": "/assets/world/facilities/battery/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "battery",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_facility_battery_component_light",
+      "kind": "image",
+      "src": "/assets/world/facilities/battery/components/light.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "battery",
+        "component",
+        "light"
+      ]
+    },
+    {
+      "id": "world_facility_battery_component_motion",
+      "kind": "image",
+      "src": "/assets/world/facilities/battery/components/motion.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "battery",
+        "component",
+        "motion"
+      ]
+    },
+    {
+      "id": "world_facility_battery_component_effect",
+      "kind": "image",
+      "src": "/assets/world/facilities/battery/components/effect.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "battery",
+        "component",
+        "effect"
+      ]
+    },
+    {
+      "id": "world_facility_substation_idle",
+      "kind": "image",
+      "src": "/assets/world/facilities/substation/idle.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "substation",
+        "idle"
+      ]
+    },
+    {
+      "id": "world_facility_substation_active",
+      "kind": "image",
+      "src": "/assets/world/facilities/substation/active.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "substation",
+        "active"
+      ]
+    },
+    {
+      "id": "world_facility_substation_overload",
+      "kind": "image",
+      "src": "/assets/world/facilities/substation/overload.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "substation",
+        "overload"
+      ]
+    },
+    {
+      "id": "world_facility_substation_offline",
+      "kind": "image",
+      "src": "/assets/world/facilities/substation/offline.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "substation",
+        "offline"
+      ]
+    },
+    {
+      "id": "world_facility_substation_construction",
+      "kind": "image",
+      "src": "/assets/world/facilities/substation/construction.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "substation",
+        "construction"
+      ]
+    },
+    {
+      "id": "world_facility_substation_upgrade",
+      "kind": "image",
+      "src": "/assets/world/facilities/substation/upgrade.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "substation",
+        "upgrade"
+      ]
+    },
+    {
+      "id": "world_facility_substation_selected",
+      "kind": "image",
+      "src": "/assets/world/facilities/substation/selected.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "substation",
+        "selected"
+      ]
+    },
+    {
+      "id": "world_facility_substation_damaged",
+      "kind": "image",
+      "src": "/assets/world/facilities/substation/damaged.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "substation",
+        "damaged"
+      ]
+    },
+    {
+      "id": "world_facility_substation_shadow",
+      "kind": "image",
+      "src": "/assets/world/facilities/substation/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "substation",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_facility_substation_component_light",
+      "kind": "image",
+      "src": "/assets/world/facilities/substation/components/light.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "substation",
+        "component",
+        "light"
+      ]
+    },
+    {
+      "id": "world_facility_substation_component_motion",
+      "kind": "image",
+      "src": "/assets/world/facilities/substation/components/motion.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "substation",
+        "component",
+        "motion"
+      ]
+    },
+    {
+      "id": "world_facility_substation_component_effect",
+      "kind": "image",
+      "src": "/assets/world/facilities/substation/components/effect.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "substation",
+        "component",
+        "effect"
+      ]
+    },
+    {
+      "id": "world_facility_charging_hub_idle",
+      "kind": "image",
+      "src": "/assets/world/facilities/charging_hub/idle.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "charging_hub",
+        "idle"
+      ]
+    },
+    {
+      "id": "world_facility_charging_hub_active",
+      "kind": "image",
+      "src": "/assets/world/facilities/charging_hub/active.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "charging_hub",
+        "active"
+      ]
+    },
+    {
+      "id": "world_facility_charging_hub_overload",
+      "kind": "image",
+      "src": "/assets/world/facilities/charging_hub/overload.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "charging_hub",
+        "overload"
+      ]
+    },
+    {
+      "id": "world_facility_charging_hub_offline",
+      "kind": "image",
+      "src": "/assets/world/facilities/charging_hub/offline.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "charging_hub",
+        "offline"
+      ]
+    },
+    {
+      "id": "world_facility_charging_hub_construction",
+      "kind": "image",
+      "src": "/assets/world/facilities/charging_hub/construction.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "charging_hub",
+        "construction"
+      ]
+    },
+    {
+      "id": "world_facility_charging_hub_upgrade",
+      "kind": "image",
+      "src": "/assets/world/facilities/charging_hub/upgrade.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "charging_hub",
+        "upgrade"
+      ]
+    },
+    {
+      "id": "world_facility_charging_hub_selected",
+      "kind": "image",
+      "src": "/assets/world/facilities/charging_hub/selected.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "charging_hub",
+        "selected"
+      ]
+    },
+    {
+      "id": "world_facility_charging_hub_damaged",
+      "kind": "image",
+      "src": "/assets/world/facilities/charging_hub/damaged.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "charging_hub",
+        "damaged"
+      ]
+    },
+    {
+      "id": "world_facility_charging_hub_shadow",
+      "kind": "image",
+      "src": "/assets/world/facilities/charging_hub/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "charging_hub",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_facility_charging_hub_component_light",
+      "kind": "image",
+      "src": "/assets/world/facilities/charging_hub/components/light.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "charging_hub",
+        "component",
+        "light"
+      ]
+    },
+    {
+      "id": "world_facility_charging_hub_component_motion",
+      "kind": "image",
+      "src": "/assets/world/facilities/charging_hub/components/motion.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "charging_hub",
+        "component",
+        "motion"
+      ]
+    },
+    {
+      "id": "world_facility_charging_hub_component_effect",
+      "kind": "image",
+      "src": "/assets/world/facilities/charging_hub/components/effect.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "charging_hub",
+        "component",
+        "effect"
+      ]
+    },
+    {
+      "id": "world_facility_nuclear_idle",
+      "kind": "image",
+      "src": "/assets/world/facilities/nuclear/idle.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "nuclear",
+        "idle"
+      ]
+    },
+    {
+      "id": "world_facility_nuclear_active",
+      "kind": "image",
+      "src": "/assets/world/facilities/nuclear/active.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "nuclear",
+        "active"
+      ]
+    },
+    {
+      "id": "world_facility_nuclear_overload",
+      "kind": "image",
+      "src": "/assets/world/facilities/nuclear/overload.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "nuclear",
+        "overload"
+      ]
+    },
+    {
+      "id": "world_facility_nuclear_offline",
+      "kind": "image",
+      "src": "/assets/world/facilities/nuclear/offline.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "nuclear",
+        "offline"
+      ]
+    },
+    {
+      "id": "world_facility_nuclear_construction",
+      "kind": "image",
+      "src": "/assets/world/facilities/nuclear/construction.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "nuclear",
+        "construction"
+      ]
+    },
+    {
+      "id": "world_facility_nuclear_upgrade",
+      "kind": "image",
+      "src": "/assets/world/facilities/nuclear/upgrade.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "nuclear",
+        "upgrade"
+      ]
+    },
+    {
+      "id": "world_facility_nuclear_selected",
+      "kind": "image",
+      "src": "/assets/world/facilities/nuclear/selected.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "nuclear",
+        "selected"
+      ]
+    },
+    {
+      "id": "world_facility_nuclear_damaged",
+      "kind": "image",
+      "src": "/assets/world/facilities/nuclear/damaged.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "nuclear",
+        "damaged"
+      ]
+    },
+    {
+      "id": "world_facility_nuclear_shadow",
+      "kind": "image",
+      "src": "/assets/world/facilities/nuclear/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "nuclear",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_facility_nuclear_component_light",
+      "kind": "image",
+      "src": "/assets/world/facilities/nuclear/components/light.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "nuclear",
+        "component",
+        "light"
+      ]
+    },
+    {
+      "id": "world_facility_nuclear_component_motion",
+      "kind": "image",
+      "src": "/assets/world/facilities/nuclear/components/motion.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "nuclear",
+        "component",
+        "motion"
+      ]
+    },
+    {
+      "id": "world_facility_nuclear_component_effect",
+      "kind": "image",
+      "src": "/assets/world/facilities/nuclear/components/effect.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "nuclear",
+        "component",
+        "effect"
+      ]
+    },
+    {
+      "id": "world_facility_hydro_idle",
+      "kind": "image",
+      "src": "/assets/world/facilities/hydro/idle.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "hydro",
+        "idle"
+      ]
+    },
+    {
+      "id": "world_facility_hydro_active",
+      "kind": "image",
+      "src": "/assets/world/facilities/hydro/active.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "hydro",
+        "active"
+      ]
+    },
+    {
+      "id": "world_facility_hydro_overload",
+      "kind": "image",
+      "src": "/assets/world/facilities/hydro/overload.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "hydro",
+        "overload"
+      ]
+    },
+    {
+      "id": "world_facility_hydro_offline",
+      "kind": "image",
+      "src": "/assets/world/facilities/hydro/offline.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "hydro",
+        "offline"
+      ]
+    },
+    {
+      "id": "world_facility_hydro_construction",
+      "kind": "image",
+      "src": "/assets/world/facilities/hydro/construction.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "hydro",
+        "construction"
+      ]
+    },
+    {
+      "id": "world_facility_hydro_upgrade",
+      "kind": "image",
+      "src": "/assets/world/facilities/hydro/upgrade.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "hydro",
+        "upgrade"
+      ]
+    },
+    {
+      "id": "world_facility_hydro_selected",
+      "kind": "image",
+      "src": "/assets/world/facilities/hydro/selected.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "hydro",
+        "selected"
+      ]
+    },
+    {
+      "id": "world_facility_hydro_damaged",
+      "kind": "image",
+      "src": "/assets/world/facilities/hydro/damaged.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "hydro",
+        "damaged"
+      ]
+    },
+    {
+      "id": "world_facility_hydro_shadow",
+      "kind": "image",
+      "src": "/assets/world/facilities/hydro/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "hydro",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_facility_hydro_component_light",
+      "kind": "image",
+      "src": "/assets/world/facilities/hydro/components/light.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "hydro",
+        "component",
+        "light"
+      ]
+    },
+    {
+      "id": "world_facility_hydro_component_motion",
+      "kind": "image",
+      "src": "/assets/world/facilities/hydro/components/motion.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "hydro",
+        "component",
+        "motion"
+      ]
+    },
+    {
+      "id": "world_facility_hydro_component_effect",
+      "kind": "image",
+      "src": "/assets/world/facilities/hydro/components/effect.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "hydro",
+        "component",
+        "effect"
+      ]
+    },
+    {
+      "id": "world_facility_offshore_wind_idle",
+      "kind": "image",
+      "src": "/assets/world/facilities/offshore_wind/idle.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "offshore_wind",
+        "idle"
+      ]
+    },
+    {
+      "id": "world_facility_offshore_wind_active",
+      "kind": "image",
+      "src": "/assets/world/facilities/offshore_wind/active.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "offshore_wind",
+        "active"
+      ]
+    },
+    {
+      "id": "world_facility_offshore_wind_overload",
+      "kind": "image",
+      "src": "/assets/world/facilities/offshore_wind/overload.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "offshore_wind",
+        "overload"
+      ]
+    },
+    {
+      "id": "world_facility_offshore_wind_offline",
+      "kind": "image",
+      "src": "/assets/world/facilities/offshore_wind/offline.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "offshore_wind",
+        "offline"
+      ]
+    },
+    {
+      "id": "world_facility_offshore_wind_construction",
+      "kind": "image",
+      "src": "/assets/world/facilities/offshore_wind/construction.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "offshore_wind",
+        "construction"
+      ]
+    },
+    {
+      "id": "world_facility_offshore_wind_upgrade",
+      "kind": "image",
+      "src": "/assets/world/facilities/offshore_wind/upgrade.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "offshore_wind",
+        "upgrade"
+      ]
+    },
+    {
+      "id": "world_facility_offshore_wind_selected",
+      "kind": "image",
+      "src": "/assets/world/facilities/offshore_wind/selected.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "offshore_wind",
+        "selected"
+      ]
+    },
+    {
+      "id": "world_facility_offshore_wind_damaged",
+      "kind": "image",
+      "src": "/assets/world/facilities/offshore_wind/damaged.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "offshore_wind",
+        "damaged"
+      ]
+    },
+    {
+      "id": "world_facility_offshore_wind_shadow",
+      "kind": "image",
+      "src": "/assets/world/facilities/offshore_wind/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "offshore_wind",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_facility_offshore_wind_component_light",
+      "kind": "image",
+      "src": "/assets/world/facilities/offshore_wind/components/light.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "offshore_wind",
+        "component",
+        "light"
+      ]
+    },
+    {
+      "id": "world_facility_offshore_wind_component_motion",
+      "kind": "image",
+      "src": "/assets/world/facilities/offshore_wind/components/motion.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "offshore_wind",
+        "component",
+        "motion"
+      ]
+    },
+    {
+      "id": "world_facility_offshore_wind_component_effect",
+      "kind": "image",
+      "src": "/assets/world/facilities/offshore_wind/components/effect.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "offshore_wind",
+        "component",
+        "effect"
+      ]
+    },
+    {
+      "id": "world_facility_grid_node_idle",
+      "kind": "image",
+      "src": "/assets/world/facilities/grid_node/idle.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "grid_node",
+        "idle"
+      ]
+    },
+    {
+      "id": "world_facility_grid_node_active",
+      "kind": "image",
+      "src": "/assets/world/facilities/grid_node/active.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "grid_node",
+        "active"
+      ]
+    },
+    {
+      "id": "world_facility_grid_node_overload",
+      "kind": "image",
+      "src": "/assets/world/facilities/grid_node/overload.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "grid_node",
+        "overload"
+      ]
+    },
+    {
+      "id": "world_facility_grid_node_offline",
+      "kind": "image",
+      "src": "/assets/world/facilities/grid_node/offline.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "grid_node",
+        "offline"
+      ]
+    },
+    {
+      "id": "world_facility_grid_node_construction",
+      "kind": "image",
+      "src": "/assets/world/facilities/grid_node/construction.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "grid_node",
+        "construction"
+      ]
+    },
+    {
+      "id": "world_facility_grid_node_upgrade",
+      "kind": "image",
+      "src": "/assets/world/facilities/grid_node/upgrade.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "grid_node",
+        "upgrade"
+      ]
+    },
+    {
+      "id": "world_facility_grid_node_selected",
+      "kind": "image",
+      "src": "/assets/world/facilities/grid_node/selected.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "grid_node",
+        "selected"
+      ]
+    },
+    {
+      "id": "world_facility_grid_node_damaged",
+      "kind": "image",
+      "src": "/assets/world/facilities/grid_node/damaged.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "grid_node",
+        "damaged"
+      ]
+    },
+    {
+      "id": "world_facility_grid_node_shadow",
+      "kind": "image",
+      "src": "/assets/world/facilities/grid_node/shadow.png",
+      "version": 5,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "grid_node",
+        "shadow"
+      ]
+    },
+    {
+      "id": "world_facility_grid_node_component_light",
+      "kind": "image",
+      "src": "/assets/world/facilities/grid_node/components/light.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "grid_node",
+        "component",
+        "light"
+      ]
+    },
+    {
+      "id": "world_facility_grid_node_component_motion",
+      "kind": "image",
+      "src": "/assets/world/facilities/grid_node/components/motion.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "grid_node",
+        "component",
+        "motion"
+      ]
+    },
+    {
+      "id": "world_facility_grid_node_component_effect",
+      "kind": "image",
+      "src": "/assets/world/facilities/grid_node/components/effect.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "facility",
+        "grid_node",
+        "component",
+        "effect"
+      ]
+    },
+    {
+      "id": "world_road_straight_2_ne",
+      "kind": "image",
+      "src": "/assets/world/roads/straight_2_ne.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "straight_2_ne"
+      ]
+    },
+    {
+      "id": "world_road_straight_2_nw",
+      "kind": "image",
+      "src": "/assets/world/roads/straight_2_nw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "straight_2_nw"
+      ]
+    },
+    {
+      "id": "world_road_curve_2_n",
+      "kind": "image",
+      "src": "/assets/world/roads/curve_2_n.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "curve_2_n"
+      ]
+    },
+    {
+      "id": "world_road_curve_2_e",
+      "kind": "image",
+      "src": "/assets/world/roads/curve_2_e.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "curve_2_e"
+      ]
+    },
+    {
+      "id": "world_road_curve_2_s",
+      "kind": "image",
+      "src": "/assets/world/roads/curve_2_s.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "curve_2_s"
+      ]
+    },
+    {
+      "id": "world_road_curve_2_w",
+      "kind": "image",
+      "src": "/assets/world/roads/curve_2_w.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "curve_2_w"
+      ]
+    },
+    {
+      "id": "world_road_t_2_n",
+      "kind": "image",
+      "src": "/assets/world/roads/t_2_n.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "t_2_n"
+      ]
+    },
+    {
+      "id": "world_road_t_2_e",
+      "kind": "image",
+      "src": "/assets/world/roads/t_2_e.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "t_2_e"
+      ]
+    },
+    {
+      "id": "world_road_t_2_s",
+      "kind": "image",
+      "src": "/assets/world/roads/t_2_s.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "t_2_s"
+      ]
+    },
+    {
+      "id": "world_road_t_2_w",
+      "kind": "image",
+      "src": "/assets/world/roads/t_2_w.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "t_2_w"
+      ]
+    },
+    {
+      "id": "world_road_cross_2",
+      "kind": "image",
+      "src": "/assets/world/roads/cross_2.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "cross_2"
+      ]
+    },
+    {
+      "id": "world_road_straight_4_ne",
+      "kind": "image",
+      "src": "/assets/world/roads/straight_4_ne.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "straight_4_ne"
+      ]
+    },
+    {
+      "id": "world_road_straight_4_nw",
+      "kind": "image",
+      "src": "/assets/world/roads/straight_4_nw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "straight_4_nw"
+      ]
+    },
+    {
+      "id": "world_road_curve_4_n",
+      "kind": "image",
+      "src": "/assets/world/roads/curve_4_n.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "curve_4_n"
+      ]
+    },
+    {
+      "id": "world_road_curve_4_e",
+      "kind": "image",
+      "src": "/assets/world/roads/curve_4_e.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "curve_4_e"
+      ]
+    },
+    {
+      "id": "world_road_curve_4_s",
+      "kind": "image",
+      "src": "/assets/world/roads/curve_4_s.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "curve_4_s"
+      ]
+    },
+    {
+      "id": "world_road_curve_4_w",
+      "kind": "image",
+      "src": "/assets/world/roads/curve_4_w.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "curve_4_w"
+      ]
+    },
+    {
+      "id": "world_road_t_4_n",
+      "kind": "image",
+      "src": "/assets/world/roads/t_4_n.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "t_4_n"
+      ]
+    },
+    {
+      "id": "world_road_t_4_e",
+      "kind": "image",
+      "src": "/assets/world/roads/t_4_e.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "t_4_e"
+      ]
+    },
+    {
+      "id": "world_road_t_4_s",
+      "kind": "image",
+      "src": "/assets/world/roads/t_4_s.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "t_4_s"
+      ]
+    },
+    {
+      "id": "world_road_t_4_w",
+      "kind": "image",
+      "src": "/assets/world/roads/t_4_w.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "t_4_w"
+      ]
+    },
+    {
+      "id": "world_road_cross_4",
+      "kind": "image",
+      "src": "/assets/world/roads/cross_4.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "cross_4"
+      ]
+    },
+    {
+      "id": "world_road_straight_6_ne",
+      "kind": "image",
+      "src": "/assets/world/roads/straight_6_ne.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "straight_6_ne"
+      ]
+    },
+    {
+      "id": "world_road_straight_6_nw",
+      "kind": "image",
+      "src": "/assets/world/roads/straight_6_nw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "straight_6_nw"
+      ]
+    },
+    {
+      "id": "world_road_curve_6_n",
+      "kind": "image",
+      "src": "/assets/world/roads/curve_6_n.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "curve_6_n"
+      ]
+    },
+    {
+      "id": "world_road_curve_6_e",
+      "kind": "image",
+      "src": "/assets/world/roads/curve_6_e.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "curve_6_e"
+      ]
+    },
+    {
+      "id": "world_road_curve_6_s",
+      "kind": "image",
+      "src": "/assets/world/roads/curve_6_s.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "curve_6_s"
+      ]
+    },
+    {
+      "id": "world_road_curve_6_w",
+      "kind": "image",
+      "src": "/assets/world/roads/curve_6_w.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "curve_6_w"
+      ]
+    },
+    {
+      "id": "world_road_t_6_n",
+      "kind": "image",
+      "src": "/assets/world/roads/t_6_n.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "t_6_n"
+      ]
+    },
+    {
+      "id": "world_road_t_6_e",
+      "kind": "image",
+      "src": "/assets/world/roads/t_6_e.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "t_6_e"
+      ]
+    },
+    {
+      "id": "world_road_t_6_s",
+      "kind": "image",
+      "src": "/assets/world/roads/t_6_s.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "t_6_s"
+      ]
+    },
+    {
+      "id": "world_road_t_6_w",
+      "kind": "image",
+      "src": "/assets/world/roads/t_6_w.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "t_6_w"
+      ]
+    },
+    {
+      "id": "world_road_cross_6",
+      "kind": "image",
+      "src": "/assets/world/roads/cross_6.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "cross_6"
+      ]
+    },
+    {
+      "id": "world_road_end_2_n",
+      "kind": "image",
+      "src": "/assets/world/roads/end_2_n.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "end_2_n"
+      ]
+    },
+    {
+      "id": "world_road_end_2_e",
+      "kind": "image",
+      "src": "/assets/world/roads/end_2_e.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "end_2_e"
+      ]
+    },
+    {
+      "id": "world_road_end_2_s",
+      "kind": "image",
+      "src": "/assets/world/roads/end_2_s.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "end_2_s"
+      ]
+    },
+    {
+      "id": "world_road_end_2_w",
+      "kind": "image",
+      "src": "/assets/world/roads/end_2_w.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "end_2_w"
+      ]
+    },
+    {
+      "id": "world_road_roundabout",
+      "kind": "image",
+      "src": "/assets/world/roads/roundabout.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "roundabout"
+      ]
+    },
+    {
+      "id": "world_road_bridge_2",
+      "kind": "image",
+      "src": "/assets/world/roads/bridge_2.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "bridge_2"
+      ]
+    },
+    {
+      "id": "world_road_bridge_4",
+      "kind": "image",
+      "src": "/assets/world/roads/bridge_4.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "bridge_4"
+      ]
+    },
+    {
+      "id": "world_road_zebra",
+      "kind": "image",
+      "src": "/assets/world/roads/zebra.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "zebra"
+      ]
+    },
+    {
+      "id": "world_road_bus_stop",
+      "kind": "image",
+      "src": "/assets/world/roads/bus_stop.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "bus_stop"
+      ]
+    },
+    {
+      "id": "world_road_parking_bay",
+      "kind": "image",
+      "src": "/assets/world/roads/parking_bay.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "parking_bay"
+      ]
+    },
+    {
+      "id": "world_road_rail_crossing",
+      "kind": "image",
+      "src": "/assets/world/roads/rail_crossing.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "rail_crossing"
+      ]
+    },
+    {
+      "id": "world_road_port_road",
+      "kind": "image",
+      "src": "/assets/world/roads/port_road.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "road",
+        "port_road"
+      ]
+    },
+    {
+      "id": "world_terrain_residential_lot",
+      "kind": "image",
+      "src": "/assets/world/terrain/residential_lot.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "terrain",
+        "residential_lot"
+      ]
+    },
+    {
+      "id": "world_terrain_commercial_lot",
+      "kind": "image",
+      "src": "/assets/world/terrain/commercial_lot.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "terrain",
+        "commercial_lot"
+      ]
+    },
+    {
+      "id": "world_terrain_industrial_lot",
+      "kind": "image",
+      "src": "/assets/world/terrain/industrial_lot.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "terrain",
+        "industrial_lot"
+      ]
+    },
+    {
+      "id": "world_terrain_civic_lot",
+      "kind": "image",
+      "src": "/assets/world/terrain/civic_lot.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "terrain",
+        "civic_lot"
+      ]
+    },
+    {
+      "id": "world_terrain_park_lot",
+      "kind": "image",
+      "src": "/assets/world/terrain/park_lot.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "terrain",
+        "park_lot"
+      ]
+    },
+    {
+      "id": "world_terrain_parking_lot",
+      "kind": "image",
+      "src": "/assets/world/terrain/parking_lot.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "terrain",
+        "parking_lot"
+      ]
+    },
+    {
+      "id": "world_terrain_construction_lot",
+      "kind": "image",
+      "src": "/assets/world/terrain/construction_lot.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "terrain",
+        "construction_lot"
+      ]
+    },
+    {
+      "id": "world_terrain_utility_lot",
+      "kind": "image",
+      "src": "/assets/world/terrain/utility_lot.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "terrain",
+        "utility_lot"
+      ]
+    },
+    {
+      "id": "world_terrain_port_lot",
+      "kind": "image",
+      "src": "/assets/world/terrain/port_lot.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "terrain",
+        "port_lot"
+      ]
+    },
+    {
+      "id": "world_terrain_river_lot",
+      "kind": "image",
+      "src": "/assets/world/terrain/river_lot.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "terrain",
+        "river_lot"
+      ]
+    },
+    {
+      "id": "world_terrain_coast_sand",
+      "kind": "image",
+      "src": "/assets/world/terrain/coast_sand.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "terrain",
+        "coast_sand"
+      ]
+    },
+    {
+      "id": "world_terrain_coast_rock",
+      "kind": "image",
+      "src": "/assets/world/terrain/coast_rock.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "terrain",
+        "coast_rock"
+      ]
+    },
+    {
+      "id": "world_terrain_grass_dense",
+      "kind": "image",
+      "src": "/assets/world/terrain/grass_dense.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "terrain",
+        "grass_dense"
+      ]
+    },
+    {
+      "id": "world_terrain_grass_clean",
+      "kind": "image",
+      "src": "/assets/world/terrain/grass_clean.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "terrain",
+        "grass_clean"
+      ]
+    },
+    {
+      "id": "world_terrain_wetland_lot",
+      "kind": "image",
+      "src": "/assets/world/terrain/wetland_lot.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "terrain",
+        "wetland_lot"
+      ]
+    },
+    {
+      "id": "world_terrain_desert_lot",
+      "kind": "image",
+      "src": "/assets/world/terrain/desert_lot.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "terrain",
+        "desert_lot"
+      ]
+    },
+    {
+      "id": "world_terrain_snow_lot",
+      "kind": "image",
+      "src": "/assets/world/terrain/snow_lot.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "terrain",
+        "snow_lot"
+      ]
+    },
+    {
+      "id": "world_terrain_rail_lot",
+      "kind": "image",
+      "src": "/assets/world/terrain/rail_lot.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "terrain",
+        "rail_lot"
+      ]
+    },
+    {
+      "id": "world_terrain_harbor_lot",
+      "kind": "image",
+      "src": "/assets/world/terrain/harbor_lot.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "terrain",
+        "harbor_lot"
+      ]
+    },
+    {
+      "id": "world_terrain_empty_plot",
+      "kind": "image",
+      "src": "/assets/world/terrain/empty_plot.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "terrain",
+        "empty_plot"
+      ]
+    },
+    {
+      "id": "world_decoration_tree_oak",
+      "kind": "image",
+      "src": "/assets/world/decorations/tree_oak.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "tree_oak"
+      ]
+    },
+    {
+      "id": "world_decoration_tree_pine",
+      "kind": "image",
+      "src": "/assets/world/decorations/tree_pine.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "tree_pine"
+      ]
+    },
+    {
+      "id": "world_decoration_tree_small",
+      "kind": "image",
+      "src": "/assets/world/decorations/tree_small.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "tree_small"
+      ]
+    },
+    {
+      "id": "world_decoration_tree_round",
+      "kind": "image",
+      "src": "/assets/world/decorations/tree_round.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "tree_round"
+      ]
+    },
+    {
+      "id": "world_decoration_tree_poplar",
+      "kind": "image",
+      "src": "/assets/world/decorations/tree_poplar.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "tree_poplar"
+      ]
+    },
+    {
+      "id": "world_decoration_tree_maple",
+      "kind": "image",
+      "src": "/assets/world/decorations/tree_maple.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "tree_maple"
+      ]
+    },
+    {
+      "id": "world_decoration_bush",
+      "kind": "image",
+      "src": "/assets/world/decorations/bush.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "bush"
+      ]
+    },
+    {
+      "id": "world_decoration_flower_bed",
+      "kind": "image",
+      "src": "/assets/world/decorations/flower_bed.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "flower_bed"
+      ]
+    },
+    {
+      "id": "world_decoration_bench",
+      "kind": "image",
+      "src": "/assets/world/decorations/bench.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "bench"
+      ]
+    },
+    {
+      "id": "world_decoration_fountain",
+      "kind": "image",
+      "src": "/assets/world/decorations/fountain.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "fountain"
+      ]
+    },
+    {
+      "id": "world_decoration_streetlight",
+      "kind": "image",
+      "src": "/assets/world/decorations/streetlight.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "streetlight"
+      ]
+    },
+    {
+      "id": "world_decoration_traffic_light",
+      "kind": "image",
+      "src": "/assets/world/decorations/traffic_light.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "traffic_light"
+      ]
+    },
+    {
+      "id": "world_decoration_bus_shelter",
+      "kind": "image",
+      "src": "/assets/world/decorations/bus_shelter.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "bus_shelter"
+      ]
+    },
+    {
+      "id": "world_decoration_parking_sign",
+      "kind": "image",
+      "src": "/assets/world/decorations/parking_sign.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "parking_sign"
+      ]
+    },
+    {
+      "id": "world_decoration_billboard",
+      "kind": "image",
+      "src": "/assets/world/decorations/billboard.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "billboard"
+      ]
+    },
+    {
+      "id": "world_decoration_container_blue",
+      "kind": "image",
+      "src": "/assets/world/decorations/container_blue.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "container_blue"
+      ]
+    },
+    {
+      "id": "world_decoration_container_orange",
+      "kind": "image",
+      "src": "/assets/world/decorations/container_orange.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "container_orange"
+      ]
+    },
+    {
+      "id": "world_decoration_container_green",
+      "kind": "image",
+      "src": "/assets/world/decorations/container_green.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "container_green"
+      ]
+    },
+    {
+      "id": "world_decoration_construction_barrier",
+      "kind": "image",
+      "src": "/assets/world/decorations/construction_barrier.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "construction_barrier"
+      ]
+    },
+    {
+      "id": "world_decoration_crane",
+      "kind": "image",
+      "src": "/assets/world/decorations/crane.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "crane"
+      ]
+    },
+    {
+      "id": "world_decoration_excavator",
+      "kind": "image",
+      "src": "/assets/world/decorations/excavator.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "excavator"
+      ]
+    },
+    {
+      "id": "world_decoration_scaffold",
+      "kind": "image",
+      "src": "/assets/world/decorations/scaffold.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "scaffold"
+      ]
+    },
+    {
+      "id": "world_decoration_charging_post",
+      "kind": "image",
+      "src": "/assets/world/decorations/charging_post.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "charging_post"
+      ]
+    },
+    {
+      "id": "world_decoration_transformer",
+      "kind": "image",
+      "src": "/assets/world/decorations/transformer.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "transformer"
+      ]
+    },
+    {
+      "id": "world_decoration_power_tower",
+      "kind": "image",
+      "src": "/assets/world/decorations/power_tower.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "power_tower"
+      ]
+    },
+    {
+      "id": "world_decoration_distribution_pole",
+      "kind": "image",
+      "src": "/assets/world/decorations/distribution_pole.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "distribution_pole"
+      ]
+    },
+    {
+      "id": "world_decoration_harbor_crane",
+      "kind": "image",
+      "src": "/assets/world/decorations/harbor_crane.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "harbor_crane"
+      ]
+    },
+    {
+      "id": "world_decoration_windsock",
+      "kind": "image",
+      "src": "/assets/world/decorations/windsock.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "windsock"
+      ]
+    },
+    {
+      "id": "world_decoration_sculpture",
+      "kind": "image",
+      "src": "/assets/world/decorations/sculpture.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "sculpture"
+      ]
+    },
+    {
+      "id": "world_decoration_tree_planter",
+      "kind": "image",
+      "src": "/assets/world/decorations/tree_planter.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "decoration",
+        "tree_planter"
+      ]
+    },
+    {
+      "id": "world_vehicle_car_cyan_ne",
+      "kind": "image",
+      "src": "/assets/world/vehicles/car_cyan/ne.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "car_cyan",
+        "ne"
+      ]
+    },
+    {
+      "id": "world_vehicle_car_cyan_nw",
+      "kind": "image",
+      "src": "/assets/world/vehicles/car_cyan/nw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "car_cyan",
+        "nw"
+      ]
+    },
+    {
+      "id": "world_vehicle_car_cyan_se",
+      "kind": "image",
+      "src": "/assets/world/vehicles/car_cyan/se.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "car_cyan",
+        "se"
+      ]
+    },
+    {
+      "id": "world_vehicle_car_cyan_sw",
+      "kind": "image",
+      "src": "/assets/world/vehicles/car_cyan/sw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "car_cyan",
+        "sw"
+      ]
+    },
+    {
+      "id": "world_vehicle_car_green_ne",
+      "kind": "image",
+      "src": "/assets/world/vehicles/car_green/ne.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "car_green",
+        "ne"
+      ]
+    },
+    {
+      "id": "world_vehicle_car_green_nw",
+      "kind": "image",
+      "src": "/assets/world/vehicles/car_green/nw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "car_green",
+        "nw"
+      ]
+    },
+    {
+      "id": "world_vehicle_car_green_se",
+      "kind": "image",
+      "src": "/assets/world/vehicles/car_green/se.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "car_green",
+        "se"
+      ]
+    },
+    {
+      "id": "world_vehicle_car_green_sw",
+      "kind": "image",
+      "src": "/assets/world/vehicles/car_green/sw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "car_green",
+        "sw"
+      ]
+    },
+    {
+      "id": "world_vehicle_car_red_ne",
+      "kind": "image",
+      "src": "/assets/world/vehicles/car_red/ne.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "car_red",
+        "ne"
+      ]
+    },
+    {
+      "id": "world_vehicle_car_red_nw",
+      "kind": "image",
+      "src": "/assets/world/vehicles/car_red/nw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "car_red",
+        "nw"
+      ]
+    },
+    {
+      "id": "world_vehicle_car_red_se",
+      "kind": "image",
+      "src": "/assets/world/vehicles/car_red/se.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "car_red",
+        "se"
+      ]
+    },
+    {
+      "id": "world_vehicle_car_red_sw",
+      "kind": "image",
+      "src": "/assets/world/vehicles/car_red/sw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "car_red",
+        "sw"
+      ]
+    },
+    {
+      "id": "world_vehicle_taxi_ne",
+      "kind": "image",
+      "src": "/assets/world/vehicles/taxi/ne.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "taxi",
+        "ne"
+      ]
+    },
+    {
+      "id": "world_vehicle_taxi_nw",
+      "kind": "image",
+      "src": "/assets/world/vehicles/taxi/nw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "taxi",
+        "nw"
+      ]
+    },
+    {
+      "id": "world_vehicle_taxi_se",
+      "kind": "image",
+      "src": "/assets/world/vehicles/taxi/se.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "taxi",
+        "se"
+      ]
+    },
+    {
+      "id": "world_vehicle_taxi_sw",
+      "kind": "image",
+      "src": "/assets/world/vehicles/taxi/sw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "taxi",
+        "sw"
+      ]
+    },
+    {
+      "id": "world_vehicle_bus_ne",
+      "kind": "image",
+      "src": "/assets/world/vehicles/bus/ne.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "bus",
+        "ne"
+      ]
+    },
+    {
+      "id": "world_vehicle_bus_nw",
+      "kind": "image",
+      "src": "/assets/world/vehicles/bus/nw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "bus",
+        "nw"
+      ]
+    },
+    {
+      "id": "world_vehicle_bus_se",
+      "kind": "image",
+      "src": "/assets/world/vehicles/bus/se.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "bus",
+        "se"
+      ]
+    },
+    {
+      "id": "world_vehicle_bus_sw",
+      "kind": "image",
+      "src": "/assets/world/vehicles/bus/sw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "bus",
+        "sw"
+      ]
+    },
+    {
+      "id": "world_vehicle_truck_ne",
+      "kind": "image",
+      "src": "/assets/world/vehicles/truck/ne.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "truck",
+        "ne"
+      ]
+    },
+    {
+      "id": "world_vehicle_truck_nw",
+      "kind": "image",
+      "src": "/assets/world/vehicles/truck/nw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "truck",
+        "nw"
+      ]
+    },
+    {
+      "id": "world_vehicle_truck_se",
+      "kind": "image",
+      "src": "/assets/world/vehicles/truck/se.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "truck",
+        "se"
+      ]
+    },
+    {
+      "id": "world_vehicle_truck_sw",
+      "kind": "image",
+      "src": "/assets/world/vehicles/truck/sw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "truck",
+        "sw"
+      ]
+    },
+    {
+      "id": "world_vehicle_fire_ne",
+      "kind": "image",
+      "src": "/assets/world/vehicles/fire/ne.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "fire",
+        "ne"
+      ]
+    },
+    {
+      "id": "world_vehicle_fire_nw",
+      "kind": "image",
+      "src": "/assets/world/vehicles/fire/nw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "fire",
+        "nw"
+      ]
+    },
+    {
+      "id": "world_vehicle_fire_se",
+      "kind": "image",
+      "src": "/assets/world/vehicles/fire/se.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "fire",
+        "se"
+      ]
+    },
+    {
+      "id": "world_vehicle_fire_sw",
+      "kind": "image",
+      "src": "/assets/world/vehicles/fire/sw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "fire",
+        "sw"
+      ]
+    },
+    {
+      "id": "world_vehicle_ambulance_ne",
+      "kind": "image",
+      "src": "/assets/world/vehicles/ambulance/ne.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "ambulance",
+        "ne"
+      ]
+    },
+    {
+      "id": "world_vehicle_ambulance_nw",
+      "kind": "image",
+      "src": "/assets/world/vehicles/ambulance/nw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "ambulance",
+        "nw"
+      ]
+    },
+    {
+      "id": "world_vehicle_ambulance_se",
+      "kind": "image",
+      "src": "/assets/world/vehicles/ambulance/se.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "ambulance",
+        "se"
+      ]
+    },
+    {
+      "id": "world_vehicle_ambulance_sw",
+      "kind": "image",
+      "src": "/assets/world/vehicles/ambulance/sw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "ambulance",
+        "sw"
+      ]
+    },
+    {
+      "id": "world_vehicle_police_ne",
+      "kind": "image",
+      "src": "/assets/world/vehicles/police/ne.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "police",
+        "ne"
+      ]
+    },
+    {
+      "id": "world_vehicle_police_nw",
+      "kind": "image",
+      "src": "/assets/world/vehicles/police/nw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "police",
+        "nw"
+      ]
+    },
+    {
+      "id": "world_vehicle_police_se",
+      "kind": "image",
+      "src": "/assets/world/vehicles/police/se.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "police",
+        "se"
+      ]
+    },
+    {
+      "id": "world_vehicle_police_sw",
+      "kind": "image",
+      "src": "/assets/world/vehicles/police/sw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "police",
+        "sw"
+      ]
+    },
+    {
+      "id": "world_vehicle_service_ne",
+      "kind": "image",
+      "src": "/assets/world/vehicles/service/ne.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "service",
+        "ne"
+      ]
+    },
+    {
+      "id": "world_vehicle_service_nw",
+      "kind": "image",
+      "src": "/assets/world/vehicles/service/nw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "service",
+        "nw"
+      ]
+    },
+    {
+      "id": "world_vehicle_service_se",
+      "kind": "image",
+      "src": "/assets/world/vehicles/service/se.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "service",
+        "se"
+      ]
+    },
+    {
+      "id": "world_vehicle_service_sw",
+      "kind": "image",
+      "src": "/assets/world/vehicles/service/sw.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "vehicle",
+        "service",
+        "sw"
+      ]
+    },
+    {
+      "id": "world_effect_plot_available",
+      "kind": "image",
+      "src": "/assets/world/effects/plot_available.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "effect",
+        "plot_available"
+      ]
+    },
+    {
+      "id": "world_effect_plot_blocked",
+      "kind": "image",
+      "src": "/assets/world/effects/plot_blocked.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "effect",
+        "plot_blocked"
+      ]
+    },
+    {
+      "id": "world_effect_selected_ring",
+      "kind": "image",
+      "src": "/assets/world/effects/selected_ring.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "effect",
+        "selected_ring"
+      ]
+    },
+    {
+      "id": "world_effect_upgrade_ring",
+      "kind": "image",
+      "src": "/assets/world/effects/upgrade_ring.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "effect",
+        "upgrade_ring"
+      ]
+    },
+    {
+      "id": "world_effect_power_shortage",
+      "kind": "image",
+      "src": "/assets/world/effects/power_shortage.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "effect",
+        "power_shortage"
+      ]
+    },
+    {
+      "id": "world_effect_power_surplus",
+      "kind": "image",
+      "src": "/assets/world/effects/power_surplus.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "effect",
+        "power_surplus"
+      ]
+    },
+    {
+      "id": "world_effect_blackout_zone",
+      "kind": "image",
+      "src": "/assets/world/effects/blackout_zone.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "effect",
+        "blackout_zone"
+      ]
+    },
+    {
+      "id": "world_effect_pollution_cloud",
+      "kind": "image",
+      "src": "/assets/world/effects/pollution_cloud.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "effect",
+        "pollution_cloud"
+      ]
+    },
+    {
+      "id": "world_effect_repair",
+      "kind": "image",
+      "src": "/assets/world/effects/repair.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "effect",
+        "repair"
+      ]
+    },
+    {
+      "id": "world_effect_construction",
+      "kind": "image",
+      "src": "/assets/world/effects/construction.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "effect",
+        "construction"
+      ]
+    },
+    {
+      "id": "world_effect_demand_high",
+      "kind": "image",
+      "src": "/assets/world/effects/demand_high.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "effect",
+        "demand_high"
+      ]
+    },
+    {
+      "id": "world_effect_demand_low",
+      "kind": "image",
+      "src": "/assets/world/effects/demand_low.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "effect",
+        "demand_low"
+      ]
+    },
+    {
+      "id": "world_effect_goal_complete",
+      "kind": "image",
+      "src": "/assets/world/effects/goal_complete.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "effect",
+        "goal_complete"
+      ]
+    },
+    {
+      "id": "world_effect_research_complete",
+      "kind": "image",
+      "src": "/assets/world/effects/research_complete.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "effect",
+        "research_complete"
+      ]
+    },
+    {
+      "id": "world_effect_citizen_happy",
+      "kind": "image",
+      "src": "/assets/world/effects/citizen_happy.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "effect",
+        "citizen_happy"
+      ]
+    },
+    {
+      "id": "world_effect_citizen_unhappy",
+      "kind": "image",
+      "src": "/assets/world/effects/citizen_unhappy.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "effect",
+        "citizen_unhappy"
+      ]
+    },
+    {
+      "id": "world_effect_fire_alert",
+      "kind": "image",
+      "src": "/assets/world/effects/fire_alert.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "effect",
+        "fire_alert"
+      ]
+    },
+    {
+      "id": "world_effect_storm_alert",
+      "kind": "image",
+      "src": "/assets/world/effects/storm_alert.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "effect",
+        "storm_alert"
+      ]
+    },
+    {
+      "id": "world_effect_heat_alert",
+      "kind": "image",
+      "src": "/assets/world/effects/heat_alert.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "effect",
+        "heat_alert"
+      ]
+    },
+    {
+      "id": "world_effect_policy_active",
+      "kind": "image",
+      "src": "/assets/world/effects/policy_active.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "effect",
+        "policy_active"
+      ]
+    },
+    {
+      "id": "world_hologram_base",
+      "kind": "image",
+      "src": "/assets/world/hologram/base.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 1024,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "hologram",
+        "base"
+      ]
+    },
+    {
+      "id": "world_hologram_rim",
+      "kind": "image",
+      "src": "/assets/world/hologram/rim.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 1024,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "hologram",
+        "rim"
+      ]
+    },
+    {
+      "id": "world_hologram_scanline",
+      "kind": "image",
+      "src": "/assets/world/hologram/scanline.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 1024,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "hologram",
+        "scanline"
+      ]
+    },
+    {
+      "id": "world_hologram_scan_beam",
+      "kind": "image",
+      "src": "/assets/world/hologram/scan_beam.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 1024,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "hologram",
+        "scan_beam"
+      ]
+    },
+    {
+      "id": "world_hologram_corner_emitter",
+      "kind": "image",
+      "src": "/assets/world/hologram/corner_emitter.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "hologram",
+        "corner_emitter"
+      ]
+    },
+    {
+      "id": "world_hologram_city_pulse",
+      "kind": "image",
+      "src": "/assets/world/hologram/city_pulse.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "hologram",
+        "city_pulse"
+      ]
+    },
+    {
+      "id": "world_hologram_node_beacon",
+      "kind": "image",
+      "src": "/assets/world/hologram/node_beacon.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "hologram",
+        "node_beacon"
+      ]
+    },
+    {
+      "id": "world_hologram_district_plate",
+      "kind": "image",
+      "src": "/assets/world/hologram/district_plate.png",
+      "version": 5,
+      "preload": "level",
+      "width": 256,
+      "height": 256,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "hologram",
+        "district_plate"
+      ]
+    },
+    {
+      "id": "world_hologram_grid_major",
+      "kind": "image",
+      "src": "/assets/world/hologram/grid_major.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 1024,
+      "height": 1024,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "hologram",
+        "grid_major"
+      ]
+    },
+    {
+      "id": "world_hologram_grid_minor",
+      "kind": "image",
+      "src": "/assets/world/hologram/grid_minor.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 1024,
+      "height": 1024,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "world",
+        "hologram",
+        "grid_minor"
+      ]
+    },
+    {
+      "id": "ui_icon_money",
+      "kind": "image",
+      "src": "/assets/ui/icons/money.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "icon",
+        "money"
+      ]
+    },
+    {
+      "id": "ui_icon_power",
+      "kind": "image",
+      "src": "/assets/ui/icons/power.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "icon",
+        "power"
+      ]
+    },
+    {
+      "id": "ui_icon_population",
+      "kind": "image",
+      "src": "/assets/ui/icons/population.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "icon",
+        "population"
+      ]
+    },
+    {
+      "id": "ui_icon_air",
+      "kind": "image",
+      "src": "/assets/ui/icons/air.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "icon",
+        "air"
+      ]
+    },
+    {
+      "id": "ui_icon_research",
+      "kind": "image",
+      "src": "/assets/ui/icons/research.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "icon",
+        "research"
+      ]
+    },
+    {
+      "id": "ui_icon_storage",
+      "kind": "image",
+      "src": "/assets/ui/icons/storage.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "icon",
+        "storage"
+      ]
+    },
+    {
+      "id": "ui_icon_time",
+      "kind": "image",
+      "src": "/assets/ui/icons/time.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "icon",
+        "time"
+      ]
+    },
+    {
+      "id": "ui_icon_objective",
+      "kind": "image",
+      "src": "/assets/ui/icons/objective.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "icon",
+        "objective"
+      ]
+    },
+    {
+      "id": "ui_icon_build",
+      "kind": "image",
+      "src": "/assets/ui/icons/build.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "icon",
+        "build"
+      ]
+    },
+    {
+      "id": "ui_icon_upgrade",
+      "kind": "image",
+      "src": "/assets/ui/icons/upgrade.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "icon",
+        "upgrade"
+      ]
+    },
+    {
+      "id": "ui_icon_road",
+      "kind": "image",
+      "src": "/assets/ui/icons/road.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "icon",
+        "road"
+      ]
+    },
+    {
+      "id": "ui_icon_district",
+      "kind": "image",
+      "src": "/assets/ui/icons/district.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "icon",
+        "district"
+      ]
+    },
+    {
+      "id": "ui_icon_policy",
+      "kind": "image",
+      "src": "/assets/ui/icons/policy.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "icon",
+        "policy"
+      ]
+    },
+    {
+      "id": "ui_icon_event",
+      "kind": "image",
+      "src": "/assets/ui/icons/event.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "icon",
+        "event"
+      ]
+    },
+    {
+      "id": "ui_icon_warning",
+      "kind": "image",
+      "src": "/assets/ui/icons/warning.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "icon",
+        "warning"
+      ]
+    },
+    {
+      "id": "ui_icon_save",
+      "kind": "image",
+      "src": "/assets/ui/icons/save.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "icon",
+        "save"
+      ]
+    },
+    {
+      "id": "ui_icon_load",
+      "kind": "image",
+      "src": "/assets/ui/icons/load.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "icon",
+        "load"
+      ]
+    },
+    {
+      "id": "ui_icon_speed",
+      "kind": "image",
+      "src": "/assets/ui/icons/speed.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "icon",
+        "speed"
+      ]
+    },
+    {
+      "id": "ui_icon_pause",
+      "kind": "image",
+      "src": "/assets/ui/icons/pause.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "icon",
+        "pause"
+      ]
+    },
+    {
+      "id": "ui_icon_satisfaction",
+      "kind": "image",
+      "src": "/assets/ui/icons/satisfaction.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "icon",
+        "satisfaction"
+      ]
+    },
+    {
+      "id": "ui_texture_grid_major",
+      "kind": "image",
+      "src": "/assets/ui/textures/grid_major.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 1024,
+      "height": 1024,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "texture",
+        "grid_major"
+      ]
+    },
+    {
+      "id": "ui_texture_grid_minor",
+      "kind": "image",
+      "src": "/assets/ui/textures/grid_minor.png",
+      "version": 5,
+      "preload": "boot",
+      "width": 1024,
+      "height": 1024,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "v5",
+        "ui",
+        "texture",
+        "grid_minor"
+      ]
+    }
+  ]
+}
