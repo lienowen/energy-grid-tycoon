@@ -1,13 +1,13 @@
 {
   "name": "energy-grid-tycoon",
-  "version": "0.2.0",
+  "version": "0.3.0-rc.1",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check:content": "node scripts/validate-content.mjs && node scripts/validate-global-assets.mjs",
+    "check:content": "node scripts/validate-content.mjs && node scripts/validate-global-assets.mjs && node scripts/validate-release.mjs",
     "typecheck": "tsc --noEmit",
     "build": "npm run typecheck && vite build",
     "quality": "npm run check:content && npm run test && npm run build",
