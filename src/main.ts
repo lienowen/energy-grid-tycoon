@@ -3,6 +3,7 @@ import './asset-presentation.css';
 import './mayor-game.css';
 import './player-city.css';
 import './ui/hologram-sandbox.css';
+import './ui/pixi-world.css';
 import './ui/release-polish.css';
 import buildingData from './data/buildings.json';
 import eventData from './data/events.json';
