@@ -1,6 +1,10 @@
 import { FacilityVisualRegistry } from '../../presentation/visuals/FacilityVisualRegistry';
 import type { HologramRenderInput } from './HologramCityRenderer';
 import { projectWorldPoint } from './HologramGeometry';
+import {
+  drawGroundedSprite,
+  isDrawableImage
+} from './WorldSpriteDrawing';
 
 const clamp = (value: number, min: number, max: number): number =>
   Math.min(max, Math.max(min, value));
@@ -8,23 +12,6 @@ const clamp = (value: number, min: number, max: number): number =>
 const easeOutCubic = (value: number): number => {
   const progress = clamp(value, 0, 1);
   return 1 - Math.pow(1 - progress, 3);
-};
-
-const drawCentered = (
-  context: CanvasRenderingContext2D,
-  image: HTMLImageElement,
-  centerX: number,
-  groundY: number,
-  size: number,
-  rise = 0
-): void => {
-  context.drawImage(
-    image,
-    centerX - size / 2,
-    groundY - size * 0.79 - rise,
-    size,
-    size
-  );
 };
 
 export class AssetFacilityRenderer {
@@ -48,7 +35,7 @@ export class AssetFacilityRenderer {
         constructionProgress: progress
       });
       const body = input.resolveImage(visual.bodyAssetId);
-      if (!body) continue;
+      if (!isDrawableImage(body)) continue;
 
       const size = clamp(178 * facility.scale * input.camera.zoom, 116, 264);
       const rise = (1 - progress) * size * 0.18;
@@ -56,24 +43,33 @@ export class AssetFacilityRenderer {
       const light = visual.lightAssetId ? input.resolveImage(visual.lightAssetId) : undefined;
       const motion = visual.motionAssetId ? input.resolveImage(visual.motionAssetId) : undefined;
       const effect = visual.effectAssetId ? input.resolveImage(visual.effectAssetId) : undefined;
+      const alpha = facility.enabled ? 1 : 0.72;
 
-      input.context.save();
-      input.context.globalAlpha = facility.enabled ? 1 : 0.72;
-      if (shadow) {
-        input.context.globalAlpha *= 0.72;
-        drawCentered(input.context, shadow, center.x, center.y + size * 0.02, size, 0);
-        input.context.globalAlpha = facility.enabled ? 1 : 0.72;
+      if (isDrawableImage(shadow)) {
+        drawGroundedSprite(
+          input.context,
+          shadow,
+          { x: center.x, y: center.y + size * 0.02 },
+          size,
+          { alpha: alpha * 0.72 }
+        );
       }
-      drawCentered(input.context, body, center.x, center.y, size, rise);
+      drawGroundedSprite(input.context, body, center, size, { rise, alpha });
 
-      if (light) {
-        input.context.save();
-        input.context.globalCompositeOperation = 'lighter';
-        input.context.globalAlpha = 0.34 + Math.sin(input.now / 420) * 0.08;
-        drawCentered(input.context, light, center.x, center.y, size * 0.62, rise + size * 0.08);
-        input.context.restore();
+      if (isDrawableImage(light)) {
+        drawGroundedSprite(
+          input.context,
+          light,
+          center,
+          size * 0.62,
+          {
+            rise: rise + size * 0.08,
+            alpha: 0.34 + Math.sin(input.now / 420) * 0.08,
+            composite: 'lighter'
+          }
+        );
       }
-      if (motion) {
+      if (isDrawableImage(motion)) {
         input.context.save();
         input.context.globalCompositeOperation = 'lighter';
         input.context.globalAlpha = 0.18;
@@ -82,14 +78,19 @@ export class AssetFacilityRenderer {
         input.context.drawImage(motion, -size * 0.24, -size * 0.24, size * 0.48, size * 0.48);
         input.context.restore();
       }
-      if (effect) {
-        input.context.save();
-        input.context.globalCompositeOperation = 'lighter';
-        input.context.globalAlpha = 0.16 + Math.sin(input.now / 530) * 0.04;
-        drawCentered(input.context, effect, center.x, center.y, size * 0.58, rise + size * 0.05);
-        input.context.restore();
+      if (isDrawableImage(effect)) {
+        drawGroundedSprite(
+          input.context,
+          effect,
+          center,
+          size * 0.58,
+          {
+            rise: rise + size * 0.05,
+            alpha: 0.16 + Math.sin(input.now / 530) * 0.04,
+            composite: 'lighter'
+          }
+        );
       }
-      input.context.restore();
     }
   }
 }
