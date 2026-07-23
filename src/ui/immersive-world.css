@@ -1,0 +1,309 @@
+.hologram-game {
+  background: #06131b;
+}
+
+.hologram-game .hologram-room-backdrop {
+  opacity: .42;
+  background:
+    radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--scenario-accent) 7%, transparent), transparent 48%),
+    linear-gradient(180deg, #081923, #041018 72%);
+}
+
+.hologram-game .hologram-room-backdrop::before {
+  opacity: .08;
+  background-size: 128px 128px;
+  mask-image: linear-gradient(to bottom, #000, transparent 80%);
+}
+
+.hologram-game .hologram-room-backdrop::after {
+  background: linear-gradient(90deg, rgba(0, 0, 0, .28), transparent 9% 91%, rgba(0, 0, 0, .28));
+}
+
+.hologram-game .hologram-room-backdrop i {
+  display: none;
+}
+
+.hologram-game .hologram-stage {
+  inset: 0;
+}
+
+.hologram-game .hologram-table-shell {
+  display: none;
+}
+
+.hologram-game .hologram-canvas-host {
+  inset: 0;
+}
+
+.hologram-game .immersive-world-canvas {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(37, 78, 85, .18), transparent 48%),
+    #06131b;
+}
+
+.hologram-game .hologram-topbar {
+  inset: 10px 14px auto;
+  height: 52px;
+  grid-template-columns: minmax(178px, 240px) minmax(520px, 1fr) auto;
+  gap: 9px;
+  padding: 4px 7px;
+  border: 1px solid rgba(95, 213, 255, .25);
+  border-radius: 16px;
+  background: rgba(3, 18, 29, .78);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, .28), inset 0 0 20px rgba(74, 215, 255, .035);
+  backdrop-filter: blur(16px) saturate(118%);
+}
+
+.hologram-game .hologram-city-identity {
+  gap: 8px;
+  padding-left: 2px;
+}
+
+.hologram-game .hologram-city-identity > span {
+  width: 38px;
+  height: 38px;
+  flex-basis: 38px;
+  padding: 4px;
+  border-radius: 10px;
+}
+
+.hologram-game .hologram-city-identity strong {
+  font-size: 14px;
+}
+
+.hologram-game .hologram-city-identity small {
+  margin-top: 1px;
+  font-size: 8px;
+}
+
+.hologram-game .hologram-vitals {
+  height: 42px;
+  padding: 2px 4px;
+  border-color: rgba(72, 209, 255, .16);
+  background: rgba(5, 29, 42, .54);
+}
+
+.hologram-game .hologram-vitals > div {
+  grid-template-columns: 23px minmax(0, 1fr);
+  gap: 4px;
+  padding: 2px 7px;
+}
+
+.hologram-game .hologram-vitals i {
+  width: 22px;
+  height: 22px;
+}
+
+.hologram-game .hologram-vitals i::before {
+  font-size: 13px;
+}
+
+.hologram-game .hologram-vitals small {
+  font-size: 7px;
+}
+
+.hologram-game .hologram-vitals strong {
+  margin-top: 0;
+  font-size: clamp(12px, 1vw, 16px);
+}
+
+.hologram-game .hologram-vitals em {
+  display: none;
+}
+
+.hologram-game .hologram-speed {
+  gap: 2px;
+  padding: 3px;
+  border-radius: 12px;
+  background: rgba(3, 20, 34, .62);
+}
+
+.hologram-game .hologram-speed button {
+  min-width: 35px;
+  height: 34px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.hologram-game .hologram-mission-card {
+  left: 18px;
+  top: 76px;
+  width: min(300px, 25vw);
+  padding: 10px 12px;
+  border-radius: 14px;
+  clip-path: none;
+  background: rgba(3, 20, 31, .72);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, .25);
+}
+
+.hologram-game .hologram-secretary {
+  top: 76px;
+  right: 90px;
+  width: min(360px, 31vw);
+  padding: 10px;
+  border-radius: 14px;
+  clip-path: none;
+  background: rgba(3, 20, 31, .76);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, .26);
+}
+
+.hologram-game .hologram-secretary p {
+  color: #b1c5cf;
+}
+
+.hologram-game .hologram-tool-rail {
+  right: 12px;
+  gap: 5px;
+}
+
+.hologram-game .hologram-tool-rail button {
+  width: 58px;
+  min-height: 44px;
+  border-radius: 10px;
+  clip-path: none;
+  background: rgba(3, 20, 31, .72);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .24);
+}
+
+.hologram-game .hologram-build-dock {
+  bottom: 10px;
+  width: min(1080px, calc(100vw - 172px));
+  height: 94px;
+  grid-template-columns: 138px minmax(0, 1fr);
+  padding: 7px;
+  border-radius: 16px;
+  clip-path: none;
+  background: rgba(3, 20, 31, .82);
+  box-shadow: 0 14px 42px rgba(0, 0, 0, .34), inset 0 0 22px rgba(74, 215, 255, .035);
+}
+
+.hologram-game .hologram-build-options > button {
+  min-width: 164px;
+  flex-basis: 164px;
+  background: rgba(8, 38, 52, .7);
+}
+
+.hologram-game .hologram-drawer {
+  inset: 74px 78px 116px auto;
+}
+
+.hologram-game .mayor-drawer-shade {
+  inset: 0;
+}
+
+.hologram-game .hologram-toast {
+  bottom: 118px;
+}
+
+@media (max-width: 1180px) {
+  .hologram-game .hologram-topbar {
+    grid-template-columns: 170px minmax(470px, 1fr) auto;
+    inset-inline: 8px;
+  }
+
+  .hologram-game .hologram-vitals > div {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .hologram-game .hologram-vitals i {
+    display: none;
+  }
+
+  .hologram-game .hologram-secretary {
+    width: min(340px, 35vw);
+  }
+}
+
+@media (max-width: 780px) {
+  .hologram-game .hologram-topbar {
+    top: max(5px, env(safe-area-inset-top));
+    height: 82px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: 36px 34px;
+    border-radius: 14px;
+  }
+
+  .hologram-game .hologram-city-identity > span {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
+  }
+
+  .hologram-game .hologram-vitals {
+    grid-column: 1 / 3;
+    grid-row: 2;
+    height: 32px;
+  }
+
+  .hologram-game .hologram-vitals > div {
+    padding-inline: 3px;
+  }
+
+  .hologram-game .hologram-vitals small {
+    display: none;
+  }
+
+  .hologram-game .hologram-vitals strong {
+    font-size: 11px;
+  }
+
+  .hologram-game .hologram-speed {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .hologram-game .hologram-mission-card {
+    top: calc(98px + env(safe-area-inset-top));
+    width: min(250px, calc(100vw - 88px));
+  }
+
+  .hologram-game .hologram-secretary {
+    top: auto;
+    right: 8px;
+    bottom: calc(154px + env(safe-area-inset-bottom));
+    width: min(360px, calc(100vw - 16px));
+  }
+
+  .hologram-game .hologram-build-dock {
+    width: calc(100vw - 8px);
+    height: 96px;
+    bottom: max(4px, env(safe-area-inset-bottom));
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .hologram-game .hologram-tool-rail {
+    bottom: calc(104px + env(safe-area-inset-bottom));
+  }
+
+  .hologram-game .hologram-drawer {
+    inset: calc(96px + env(safe-area-inset-top)) 8px calc(154px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-height: 540px) and (orientation: landscape) {
+  .hologram-game .hologram-topbar {
+    height: 48px;
+    grid-template-columns: 170px minmax(420px, 1fr) auto;
+    grid-template-rows: 1fr;
+  }
+
+  .hologram-game .hologram-vitals {
+    grid-column: auto;
+    grid-row: auto;
+    height: 38px;
+  }
+
+  .hologram-game .hologram-speed {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .hologram-game .hologram-mission-card {
+    top: 66px;
+  }
+
+  .hologram-game .hologram-build-dock {
+    height: 70px;
+  }
+}
