@@ -1,0 +1,436 @@
+:root {
+  --hud-safe-top: max(8px, env(safe-area-inset-top));
+  --hud-safe-right: max(10px, env(safe-area-inset-right));
+  --hud-safe-bottom: max(10px, env(safe-area-inset-bottom));
+  --hud-safe-left: max(10px, env(safe-area-inset-left));
+}
+
+.fullscreen-hud-enabled {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.fullscreen-hud-enabled .hologram-room-backdrop {
+  opacity: .72;
+  background:
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--scenario-accent) 10%, transparent), transparent 44%),
+    linear-gradient(180deg, #06121d, #020812 72%);
+}
+
+.fullscreen-hud-enabled .hologram-room-backdrop::before { opacity: .12; }
+.fullscreen-hud-enabled .hologram-room-backdrop::after { opacity: .45; }
+.fullscreen-hud-enabled .hologram-room-backdrop i { opacity: .2; }
+
+.fullscreen-hud-enabled .hologram-stage {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.fullscreen-hud-enabled .hologram-canvas-host {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  transition: transform .32s cubic-bezier(.22, .8, .22, 1), filter .3s ease;
+}
+
+.fullscreen-hud-enabled.build-drawer-open .hologram-canvas-host {
+  transform: translateY(-5vh) scale(.985);
+  filter: brightness(.9);
+}
+
+.fullscreen-hud-enabled .hologram-table-shell {
+  inset: 2.5% 2.5% 3%;
+  opacity: .22;
+  filter: none;
+}
+
+.fullscreen-hud-enabled .hologram-topbar {
+  position: fixed;
+  top: var(--hud-safe-top);
+  left: var(--hud-safe-left);
+  right: auto;
+  bottom: auto;
+  z-index: 50;
+  width: min(860px, calc(100vw - 110px));
+  height: 44px;
+  min-height: 44px;
+  display: grid;
+  grid-template-columns: minmax(130px, auto) minmax(260px, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border: 1px solid rgba(112, 218, 255, .24);
+  border-radius: 15px;
+  clip-path: none;
+  background: linear-gradient(180deg, rgba(9, 24, 36, .72), rgba(3, 13, 23, .66));
+  box-shadow: 0 12px 34px rgba(0, 0, 0, .34), inset 0 1px rgba(255, 255, 255, .04);
+  backdrop-filter: blur(12px) saturate(1.15);
+}
+
+.fullscreen-hud-enabled .hologram-city-identity {
+  gap: 7px;
+  min-width: 0;
+  padding-right: 4px;
+}
+
+.fullscreen-hud-enabled .hologram-city-identity > span {
+  width: 32px;
+  height: 32px;
+  flex-basis: 32px;
+  padding: 3px;
+  border-radius: 10px;
+}
+
+.fullscreen-hud-enabled .hologram-city-identity strong {
+  max-width: 130px;
+  font-size: 12px;
+  letter-spacing: .02em;
+}
+
+.fullscreen-hud-enabled .hologram-city-identity small { display: none; }
+
+.fullscreen-hud-enabled .hologram-vitals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(76px, 1fr));
+  gap: 4px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  clip-path: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.fullscreen-hud-enabled .hologram-vitals > div {
+  min-width: 0;
+  height: 34px;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 4px;
+  align-items: center;
+  padding: 2px 7px;
+  border: 1px solid rgba(105, 207, 247, .1);
+  border-radius: 10px;
+  background: rgba(7, 27, 41, .46);
+}
+
+.fullscreen-hud-enabled .hologram-vitals > div:nth-child(3),
+.fullscreen-hud-enabled .hologram-vitals > div:nth-child(4) { display: none; }
+.fullscreen-hud-enabled .hologram-vitals > div:last-child { display: grid; }
+.fullscreen-hud-enabled .hologram-vitals i { width: 20px; height: 20px; }
+.fullscreen-hud-enabled .hologram-vitals i::before { font-size: 13px; }
+.fullscreen-hud-enabled .hologram-vitals small { font-size: 7px; }
+.fullscreen-hud-enabled .hologram-vitals strong { margin: 0; font-size: 12px; }
+.fullscreen-hud-enabled .hologram-vitals em { display: none; }
+.fullscreen-hud-enabled .hologram-vitals .hologram-time { grid-template-columns: 1fr; }
+
+.fullscreen-hud-enabled .hologram-speed {
+  gap: 2px;
+  padding: 2px;
+  border-radius: 10px;
+  background: rgba(3, 17, 28, .55);
+}
+.fullscreen-hud-enabled .hologram-speed button {
+  min-width: 27px;
+  width: 27px;
+  height: 28px;
+  padding: 0;
+  border-radius: 7px;
+  font-size: 9px;
+}
+
+.fullscreen-hud-enabled .hologram-mission-card {
+  position: fixed;
+  left: var(--hud-safe-left);
+  top: calc(var(--hud-safe-top) + 54px);
+  z-index: 30;
+  width: min(300px, calc(100vw - 100px));
+  min-height: 42px;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  gap: 7px;
+  padding: 7px 10px;
+  border-radius: 12px;
+  clip-path: none;
+  background: rgba(4, 19, 31, .62);
+  backdrop-filter: blur(10px);
+}
+.fullscreen-hud-enabled .hologram-mission-card > span { font-size: 17px; }
+.fullscreen-hud-enabled .hologram-mission-card small { font-size: 7px; }
+.fullscreen-hud-enabled .hologram-mission-card strong { margin-top: 1px; font-size: 10px; }
+.fullscreen-hud-enabled .hologram-mission-card em { font-size: 8px; }
+.fullscreen-hud-enabled .hologram-progress { height: 3px; }
+
+.fullscreen-hud-enabled .hologram-secretary {
+  position: fixed;
+  top: calc(var(--hud-safe-top) + 54px);
+  right: calc(var(--hud-safe-right) + 58px);
+  left: auto;
+  bottom: auto;
+  z-index: 31;
+  width: min(330px, 34vw);
+  min-height: 46px;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  gap: 7px;
+  padding: 7px 8px;
+  border-radius: 12px;
+  clip-path: none;
+  background: rgba(4, 19, 31, .66);
+  backdrop-filter: blur(10px);
+}
+.fullscreen-hud-enabled .secretary-avatar i { width: 30px; height: 32px; }
+.fullscreen-hud-enabled .secretary-avatar span { display: none; }
+.fullscreen-hud-enabled .hologram-secretary small { font-size: 7px; }
+.fullscreen-hud-enabled .hologram-secretary strong { margin-top: 1px; font-size: 10px; }
+.fullscreen-hud-enabled .hologram-secretary p,
+.fullscreen-hud-enabled .hologram-secretary em { display: none; }
+.fullscreen-hud-enabled .hologram-secretary > button {
+  min-width: 58px;
+  padding: 7px 8px;
+  border-radius: 9px;
+  font-size: 8px;
+}
+
+.fullscreen-hud-enabled .hologram-tool-rail {
+  position: fixed;
+  right: var(--hud-safe-right);
+  top: 50%;
+  z-index: 35;
+  transform: translateY(-50%);
+  gap: 5px;
+}
+.fullscreen-hud-enabled .hologram-tool-rail button {
+  width: 42px;
+  min-height: 42px;
+  grid-template-columns: 1fr;
+  place-items: center;
+  padding: 4px;
+  border-radius: 12px;
+  clip-path: none;
+  background: rgba(4, 19, 31, .64);
+  backdrop-filter: blur(10px);
+}
+.fullscreen-hud-enabled .hologram-tool-rail button:hover,
+.fullscreen-hud-enabled .hologram-tool-rail button.active { transform: translateX(-3px); }
+.fullscreen-hud-enabled .hologram-tool-rail i { font-size: 14px; }
+.fullscreen-hud-enabled .hologram-tool-rail span { display: none; }
+
+.floating-build-controls {
+  position: fixed;
+  right: var(--hud-safe-right);
+  bottom: var(--hud-safe-bottom);
+  z-index: 52;
+  pointer-events: none;
+}
+
+.floating-build-fab {
+  width: 66px;
+  height: 66px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 2px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--scenario-accent) 72%, transparent);
+  border-radius: 50%;
+  color: #fff;
+  background:
+    radial-gradient(circle at 38% 28%, rgba(255, 255, 255, .12), transparent 34%),
+    linear-gradient(145deg, color-mix(in srgb, var(--scenario-accent) 34%, #0a2637), rgba(3, 18, 30, .96));
+  box-shadow: 0 10px 34px rgba(0, 0, 0, .5), 0 0 28px color-mix(in srgb, var(--scenario-accent) 20%, transparent), inset 0 0 18px rgba(255, 255, 255, .06);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform .2s ease, border-radius .2s ease, background .2s ease;
+}
+.floating-build-fab:hover { transform: translateY(-3px) scale(1.04); }
+.floating-build-fab span { font-size: 22px; line-height: 1; }
+.floating-build-fab strong { font-size: 9px; letter-spacing: .08em; }
+.floating-build-fab[data-state='open'] {
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(97, 67, 17, .96), rgba(25, 28, 31, .96));
+}
+
+.fullscreen-hud-enabled .hologram-build-dock {
+  position: fixed;
+  left: 50%;
+  right: auto;
+  bottom: var(--hud-safe-bottom);
+  z-index: 48;
+  width: min(1160px, calc(100vw - 24px));
+  height: min(320px, 42dvh);
+  transform: translate(-50%, calc(100% + 40px));
+  opacity: 0;
+  pointer-events: none;
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr);
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(102, 218, 255, .36);
+  border-radius: 22px;
+  clip-path: none;
+  background: linear-gradient(180deg, rgba(7, 28, 43, .94), rgba(2, 13, 23, .97));
+  box-shadow: 0 24px 80px rgba(0, 0, 0, .64), inset 0 0 32px rgba(74, 215, 255, .05);
+  backdrop-filter: blur(20px) saturate(1.2);
+  transition: transform .32s cubic-bezier(.22, .8, .22, 1), opacity .2s ease;
+}
+.fullscreen-hud-enabled.build-drawer-open .hologram-build-dock {
+  transform: translate(-50%, 0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.fullscreen-hud-enabled .hologram-build-dock header {
+  justify-content: flex-start;
+  padding: 10px 14px;
+  border-right: 1px solid rgba(108, 209, 247, .15);
+}
+.fullscreen-hud-enabled .hologram-build-dock header strong { font-size: 17px; }
+.fullscreen-hud-enabled .hologram-build-dock header small { font-size: 10px; }
+.fullscreen-hud-enabled .hologram-build-options {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(200px, 1fr);
+  grid-template-rows: repeat(2, minmax(110px, 1fr));
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-right: 44px;
+}
+.fullscreen-hud-enabled .hologram-build-options > button {
+  min-width: 0;
+  min-height: 0;
+  grid-template-columns: 82px minmax(0, 1fr);
+  align-items: center;
+  padding: 8px 10px;
+}
+.fullscreen-hud-enabled .hologram-build-options > button > span { width: 78px; height: 78px; }
+.fullscreen-hud-enabled .hologram-build-options strong { font-size: 12px; }
+.fullscreen-hud-enabled .hologram-build-options small { font-size: 9px; }
+.fullscreen-hud-enabled .hologram-build-options em { font-size: 12px; }
+
+.build-drawer-close {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(119, 214, 250, .25);
+  border-radius: 10px;
+  color: #dff7ff;
+  background: rgba(5, 25, 39, .8);
+  cursor: pointer;
+}
+
+.fullscreen-hud-enabled .hologram-drawer {
+  position: fixed;
+  inset: calc(var(--hud-safe-top) + 54px) var(--hud-safe-right) var(--hud-safe-bottom) auto;
+  z-index: 70;
+  width: min(440px, calc(100vw - 24px));
+  border-radius: 18px;
+}
+.fullscreen-hud-enabled .mayor-drawer-shade { position: fixed; inset: 0; z-index: 68; }
+.fullscreen-hud-enabled .hologram-toast { position: fixed; right: calc(var(--hud-safe-right) + 78px); bottom: calc(var(--hud-safe-bottom) + 12px); z-index: 85; }
+.fullscreen-hud-enabled.build-drawer-open .hologram-toast { bottom: min(350px, 46dvh); }
+
+@media (max-width: 900px) {
+  .fullscreen-hud-enabled .hologram-topbar {
+    width: min(720px, calc(100vw - 80px));
+    grid-template-columns: minmax(110px, auto) minmax(220px, 1fr) auto;
+  }
+  .fullscreen-hud-enabled .hologram-secretary { width: min(300px, 38vw); }
+  .fullscreen-hud-enabled .hologram-build-dock { height: min(340px, 48dvh); }
+}
+
+@media (max-width: 680px) {
+  .fullscreen-hud-enabled .hologram-topbar {
+    top: var(--hud-safe-top);
+    left: var(--hud-safe-left);
+    right: calc(var(--hud-safe-right) + 54px);
+    width: auto;
+    height: 44px;
+    grid-template-columns: minmax(74px, auto) minmax(0, 1fr);
+    grid-template-rows: 1fr;
+    padding: 4px;
+  }
+  .fullscreen-hud-enabled .hologram-city-identity { padding-right: 0; }
+  .fullscreen-hud-enabled .hologram-city-identity > span { display: none; }
+  .fullscreen-hud-enabled .hologram-city-identity strong { max-width: 86px; font-size: 10px; }
+  .fullscreen-hud-enabled .hologram-vitals { grid-column: 2; grid-row: 1; grid-template-columns: repeat(2, minmax(66px, 1fr)); }
+  .fullscreen-hud-enabled .hologram-vitals > div:last-child { display: none; }
+  .fullscreen-hud-enabled .hologram-vitals > div { height: 32px; padding-inline: 5px; }
+  .fullscreen-hud-enabled .hologram-speed {
+    position: fixed;
+    top: var(--hud-safe-top);
+    right: var(--hud-safe-right);
+    display: grid;
+    grid-template-columns: repeat(2, 24px);
+    z-index: 52;
+  }
+  .fullscreen-hud-enabled .hologram-speed button { width: 24px; min-width: 24px; height: 18px; font-size: 7px; }
+  .fullscreen-hud-enabled .hologram-mission-card {
+    top: calc(var(--hud-safe-top) + 52px);
+    left: var(--hud-safe-left);
+    width: min(250px, calc(100vw - 96px));
+  }
+  .fullscreen-hud-enabled .hologram-secretary {
+    left: var(--hud-safe-left);
+    right: calc(var(--hud-safe-right) + 52px);
+    top: auto;
+    bottom: calc(var(--hud-safe-bottom) + 76px);
+    width: auto;
+    grid-template-columns: 32px minmax(0, 1fr) auto;
+  }
+  .fullscreen-hud-enabled .hologram-tool-rail {
+    right: var(--hud-safe-right);
+    top: 44%;
+  }
+  .fullscreen-hud-enabled .hologram-tool-rail button { width: 38px; min-height: 38px; }
+  .fullscreen-hud-enabled .hologram-tool-rail button:nth-child(n + 6) { display: none; }
+  .floating-build-fab { width: 58px; height: 58px; }
+  .floating-build-fab span { font-size: 19px; }
+  .fullscreen-hud-enabled .hologram-build-dock {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: min(480px, 58dvh);
+    transform: translateY(calc(100% + 20px));
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 6px;
+    padding: 12px max(10px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+    border-radius: 22px 22px 0 0;
+  }
+  .fullscreen-hud-enabled.build-drawer-open .hologram-build-dock { transform: translateY(0); }
+  .fullscreen-hud-enabled .hologram-build-dock header {
+    min-height: 42px;
+    padding: 0 44px 4px 2px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(108, 209, 247, .15);
+  }
+  .fullscreen-hud-enabled .hologram-build-dock header strong { font-size: 14px; }
+  .fullscreen-hud-enabled .hologram-build-dock header small { margin-top: 2px; font-size: 8px; }
+  .fullscreen-hud-enabled .hologram-build-options {
+    grid-auto-columns: minmax(160px, 72vw);
+    grid-template-rows: repeat(2, minmax(95px, 1fr));
+    padding-right: 0;
+  }
+  .fullscreen-hud-enabled .hologram-build-options > button { grid-template-columns: 64px minmax(0, 1fr); }
+  .fullscreen-hud-enabled .hologram-build-options > button > span { width: 60px; height: 60px; }
+  .fullscreen-hud-enabled .hologram-drawer { inset: calc(var(--hud-safe-top) + 52px) var(--hud-safe-right) var(--hud-safe-bottom) var(--hud-safe-left); width: auto; }
+  .fullscreen-hud-enabled.build-drawer-open .hologram-canvas-host { transform: translateY(-7vh) scale(.97); }
+  .fullscreen-hud-enabled.build-drawer-open .hologram-secretary { opacity: 0; pointer-events: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fullscreen-hud-enabled .hologram-canvas-host,
+  .fullscreen-hud-enabled .hologram-build-dock,
+  .floating-build-fab { transition: none; }
+}
