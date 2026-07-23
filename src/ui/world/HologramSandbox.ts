@@ -1,15 +1,16 @@
+import { ImmersivePixiWorld } from '../../presentation/pixi/ImmersivePixiWorld';
 import { PixiGameWorld } from '../../presentation/pixi/PixiGameWorld';
 import { HologramSandbox as LegacyHologramSandbox } from './LegacyHologramSandbox';
 import type { WorldRenderActions, WorldRenderSurface } from './WorldRenderSurface';
 
 export type HologramSandboxActions = WorldRenderActions;
-export type WorldRendererMode = 'legacy' | 'pixi';
+export type WorldRendererMode = 'legacy' | 'pixi' | 'immersive';
 
 const STORAGE_KEY = 'energy-grid-tycoon.renderer';
 
 const resolveMode = (): WorldRendererMode => {
   const query = new URLSearchParams(window.location.search).get('renderer');
-  if (query === 'pixi' || query === 'legacy') {
+  if (query === 'immersive' || query === 'pixi' || query === 'legacy') {
     try {
       window.localStorage.setItem(STORAGE_KEY, query);
     } catch {
@@ -20,20 +21,24 @@ const resolveMode = (): WorldRendererMode => {
 
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored === 'pixi' || stored === 'legacy') return stored;
+    if (stored === 'legacy') return 'legacy';
+    if (stored === 'pixi' || stored === 'immersive') return 'immersive';
   } catch {
-    // Keep the stable renderer when storage is unavailable.
+    // Use the immersive renderer when storage is unavailable.
   }
-  return 'legacy';
+  return 'immersive';
 };
 
 export class HologramSandbox implements WorldRenderSurface {
   private readonly renderer: WorldRenderSurface;
 
   constructor(container: HTMLElement, actions: WorldRenderActions) {
-    this.renderer = resolveMode() === 'pixi'
-      ? new PixiGameWorld(container, actions)
-      : new LegacyHologramSandbox(container, actions);
+    const mode = resolveMode();
+    this.renderer = mode === 'legacy'
+      ? new LegacyHologramSandbox(container, actions)
+      : mode === 'pixi'
+        ? new PixiGameWorld(container, actions)
+        : new ImmersivePixiWorld(container, actions);
   }
 
   mount(): void {
