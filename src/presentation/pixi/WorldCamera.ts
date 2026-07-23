@@ -10,6 +10,10 @@ export class WorldCamera {
   private homeZoom = 1;
   private homeOffsetX = 0;
   private homeOffsetY = 0;
+  private panLimitX = 420;
+  private panLimitY = 280;
+  private homePositionX = 0;
+  private homePositionY = 0;
   private viewportWidth = 1;
   private viewportHeight = 1;
 
@@ -26,6 +30,8 @@ export class WorldCamera {
     this.homeZoom = clamp(config.startZoom, this.minZoom, this.maxZoom);
     this.homeOffsetX = config.startOffsetX;
     this.homeOffsetY = config.startOffsetY;
+    this.panLimitX = Math.max(0, config.panLimitX ?? 420);
+    this.panLimitY = Math.max(0, config.panLimitY ?? 280);
   }
 
   setPivot(x: number, y: number): void {
@@ -34,15 +40,16 @@ export class WorldCamera {
 
   focusHome(): void {
     this.target.scale.set(this.homeZoom);
-    this.target.position.set(
-      this.viewportWidth * 0.5 + this.homeOffsetX,
-      this.viewportHeight * 0.52 + this.homeOffsetY
-    );
+    this.homePositionX = this.viewportWidth * 0.5 + this.homeOffsetX;
+    this.homePositionY = this.viewportHeight * 0.52 + this.homeOffsetY;
+    this.target.position.set(this.homePositionX, this.homePositionY);
   }
 
   panBy(deltaX: number, deltaY: number): void {
-    this.target.position.x += deltaX;
-    this.target.position.y += deltaY;
+    this.target.position.set(
+      clamp(this.target.position.x + deltaX, this.homePositionX - this.panLimitX, this.homePositionX + this.panLimitX),
+      clamp(this.target.position.y + deltaY, this.homePositionY - this.panLimitY, this.homePositionY + this.panLimitY)
+    );
   }
 
   zoomBy(factor: number, screenX?: number, screenY?: number): void {
@@ -57,8 +64,16 @@ export class WorldCamera {
 
     this.target.scale.set(nextZoom);
     this.target.position.set(
-      focusX - (localX - this.target.pivot.x) * nextZoom,
-      focusY - (localY - this.target.pivot.y) * nextZoom
+      clamp(
+        focusX - (localX - this.target.pivot.x) * nextZoom,
+        this.homePositionX - this.panLimitX,
+        this.homePositionX + this.panLimitX
+      ),
+      clamp(
+        focusY - (localY - this.target.pivot.y) * nextZoom,
+        this.homePositionY - this.panLimitY,
+        this.homePositionY + this.panLimitY
+      )
     );
   }
 }
