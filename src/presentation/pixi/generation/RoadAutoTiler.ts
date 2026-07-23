@@ -9,6 +9,8 @@ export interface RoadGrid {
   hasRoad(x: number, y: number): boolean;
 }
 
+export type RoadLaneWidth = 2 | 4 | 6;
+
 const roadAssetByMask: Readonly<Record<number, string>> = {
   0: 'world_road_end_2_s',
   1: 'world_road_end_2_n',
@@ -38,7 +40,8 @@ export class RoadAutoTiler {
     return mask;
   }
 
-  static getAssetId(mask: number): string {
-    return roadAssetByMask[mask & 0b1111] ?? roadAssetByMask[0] ?? 'world_road_end_2_s';
+  static getAssetId(mask: number, laneWidth: RoadLaneWidth = 2): string {
+    const base = roadAssetByMask[mask & 0b1111] ?? roadAssetByMask[0] ?? 'world_road_end_2_s';
+    return laneWidth === 2 ? base : base.replace('_2', `_${laneWidth}`);
   }
 }
