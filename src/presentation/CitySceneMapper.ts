@@ -16,11 +16,17 @@ import {
 } from './CitySceneVisuals';
 import type {
   CitySceneState,
+  DistrictPrefabSceneState,
+  DistrictPrefabStatus,
   EnergyLinkSceneState,
+  EnvironmentPrefabSceneState,
   FacilitySceneState,
   HologramCameraConfig,
-  PlotSceneState
+  PlotSceneState,
+  RoadSceneState
 } from './CitySceneTypes';
+import type { LevelSceneLayout } from './layout/LevelSceneLayout';
+import { LevelSceneLayoutRegistry } from './layout/LevelSceneLayoutRegistry';
 
 export type {
   AmbientBlockKind,
@@ -30,8 +36,11 @@ export type {
   CityGrowthSceneState,
   CityScenePlacementState,
   CitySceneState,
+  DistrictPrefabSceneState,
+  DistrictPrefabStatus,
   DistrictSceneState,
   EnergyLinkSceneState,
+  EnvironmentPrefabSceneState,
   ExpansionSiteSceneState,
   FacilitySceneState,
   HologramCameraConfig,
@@ -64,7 +73,8 @@ const getStorageRatio = (building: BuildingBase, view: GameViewModel): number =>
   return capacity > 0 ? clamp(building.storedEnergy / capacity, 0, 1) : 0;
 };
 
-const getCamera = (view: GameViewModel): HologramCameraConfig => {
+const getCamera = (view: GameViewModel, layout?: LevelSceneLayout): HologramCameraConfig => {
+  if (layout) return { ...layout.camera };
   const sandbox = view.level.presentation?.world?.sandbox;
   return {
     startZoom: clamp(sandbox?.startZoom ?? 1, 0.55, 2.4),
@@ -139,9 +149,69 @@ const mapLinks = (
   intensity: facility.enabled ? clamp(supplyRatio, 0.25, 1) : 0.08
 }));
 
+const statusForPower = (powerRatio: number): DistrictPrefabStatus => {
+  if (powerRatio >= 0.88) return 'normal';
+  if (powerRatio >= 0.58) return 'warning';
+  if (powerRatio >= 0.16) return 'blackout';
+  return 'offline';
+};
+
+const mapDistrictPrefabs = (
+  layout: LevelSceneLayout,
+  supplyRatio: number
+): DistrictPrefabSceneState[] => {
+  const order = [...layout.districts]
+    .sort((left, right) => left.priority - right.priority)
+    .map((district) => district.id);
+  return layout.districts.map((district) => {
+    const rank = Math.max(0, order.indexOf(district.id));
+    const powerRatio = clamp(supplyRatio * layout.districts.length - rank, 0, 1);
+    return {
+      ...toScenePoint(district),
+      id: district.id,
+      label: district.label,
+      kind: district.kind,
+      width: district.width,
+      depth: district.depth,
+      scale: district.scale ?? 1,
+      buildingCount: district.buildingCount ?? 5,
+      variant: district.variant ?? rank,
+      powerRatio,
+      status: statusForPower(powerRatio)
+    };
+  });
+};
+
+const mapEnvironment = (layout: LevelSceneLayout): EnvironmentPrefabSceneState[] =>
+  layout.environment.map((item) => ({
+    ...toScenePoint(item),
+    id: item.id,
+    kind: item.kind,
+    width: item.width,
+    depth: item.depth,
+    density: item.density ?? 0.7,
+    variant: item.variant ?? 0
+  }));
+
+const mapAuthoredRoads = (
+  layout: LevelSceneLayout,
+  population: number,
+  supplyRatio: number
+): RoadSceneState[] => {
+  const traffic = clamp(population / 18000 * (0.45 + supplyRatio * 0.75), 0.08, 1);
+  return layout.roads.map((road, index) => ({
+    id: road.id,
+    points: road.points.map((point) => ({ ...toScenePoint(point), elevation: -0.2 })),
+    laneCount: road.laneCount,
+    traffic: clamp(traffic * (road.laneCount === 2 ? 0.9 : 0.58) * (1 - index * 0.025), 0.04, 1),
+    powered: supplyRatio > 0.35
+  }));
+};
+
 export class CitySceneMapper {
   static map(view: GameViewModel, selectedBuildingId?: string): CitySceneState {
     const plots = LevelLoader.getWorldPlots(view.level);
+    const layout = LevelSceneLayoutRegistry.resolve(view.level.id);
     const selected = selectedBuildingId
       ? view.availableBuildings.find((building) => building.id === selectedBuildingId)
       : undefined;
@@ -170,21 +240,25 @@ export class CitySceneMapper {
       view.state.hour,
       demandRatio
     );
-    const roads = makeRoads(
-      view.level.id,
-      plots,
-      city,
-      view.state.population,
-      supplyRatio,
-      growth.progress
-    );
-    const ambientBlocks = makeAmbientBlocks(
-      view.level.id,
-      plots,
-      districts,
-      theme,
-      growth.progress
-    );
+    const roads = layout
+      ? mapAuthoredRoads(layout, view.state.population, supplyRatio)
+      : makeRoads(
+          view.level.id,
+          plots,
+          city,
+          view.state.population,
+          supplyRatio,
+          growth.progress
+        );
+    const ambientBlocks = layout
+      ? []
+      : makeAmbientBlocks(
+          view.level.id,
+          plots,
+          districts,
+          theme,
+          growth.progress
+        );
     const trafficDensity = clamp(
       view.state.population / 18000 * (0.45 + supplyRatio * 0.75),
       0.08,
@@ -215,9 +289,12 @@ export class CitySceneMapper {
       blackoutIntensity: clamp((0.97 - supplyRatio) / 0.55, 0, 1),
       trafficDensity,
       city,
-      camera: getCamera(view),
+      camera: getCamera(view, layout),
+      sceneMode: layout ? 'authored' : 'procedural',
       growth,
       districts,
+      districtPrefabs: layout ? mapDistrictPrefabs(layout, supplyRatio) : undefined,
+      environment: layout ? mapEnvironment(layout) : undefined,
       plots: scenePlots,
       facilities,
       links: mapLinks(facilities, city, supplyRatio),
