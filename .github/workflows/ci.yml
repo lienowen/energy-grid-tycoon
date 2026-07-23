@@ -24,17 +24,22 @@ jobs:
       - name: Validate content and assets
         run: npm run check:content
       - name: Unit tests
-        run: npm test
+        shell: bash
+        run: |
+          set -o pipefail
+          npm test 2>&1 | tee test.log
       - name: Typecheck and production build
         shell: bash
         run: |
           set -o pipefail
           npm run build 2>&1 | tee build.log
-      - name: Upload build log
+      - name: Upload quality logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: release-build-log
-          path: build.log
+          path: |
+            test.log
+            build.log
           if-no-files-found: ignore
           retention-days: 3

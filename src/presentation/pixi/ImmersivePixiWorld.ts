@@ -4,11 +4,14 @@ import {
   Graphics,
   Rectangle,
   Sprite,
+  Text,
   type Texture
 } from 'pixi.js';
 import type {
   AmbientBlockSceneState,
   CitySceneState,
+  DistrictPrefabSceneState,
+  EnvironmentPrefabSceneState,
   FacilitySceneState,
   PlotSceneState,
   ScenePoint
@@ -19,7 +22,7 @@ import { PixiAssetLoader } from './PixiAssetLoader';
 import { WorldCamera } from './WorldCamera';
 import { WorldInputController } from './WorldInputController';
 import { WorldLayerManager } from './WorldLayerManager';
-import { ImmersiveRoadGrid, type ImmersiveRoadCell } from './generation/ImmersiveRoadGrid';
+import { ImmersiveRoadGrid } from './generation/ImmersiveRoadGrid';
 import { RoadAutoTiler, RoadDirection } from './generation/RoadAutoTiler';
 
 const SCENE_UNITS_PER_GRID = 10;
@@ -42,11 +45,27 @@ const buildingAssets = {
   utility: ['civic_hospital', 'civic_school', 'civic_cityhall', 'civic_transit']
 } as const;
 
+const districtBuildingAssets: Record<DistrictPrefabSceneState['kind'], readonly string[]> = {
+  residential: ['res_tower_a', 'res_tower_b', 'res_slab_a', 'res_slab_b', 'res_townhouse'],
+  commercial: ['com_mall', 'com_office', 'com_landmark', 'com_strip'],
+  industrial: ['ind_factory', 'ind_warehouse', 'ind_tankfarm', 'ind_heavy'],
+  public: ['civic_hospital', 'civic_school', 'civic_cityhall', 'civic_transit'],
+  old_town: ['res_oldblock', 'res_townhouse', 'res_slab_b', 'res_oldblock']
+};
+
 const terrainByBlockKind: Record<AmbientBlockSceneState['kind'], string> = {
   residential: 'world_terrain_residential_lot',
   industrial: 'world_terrain_industrial_lot',
   utility: 'world_terrain_civic_lot',
   park: 'world_terrain_park_lot'
+};
+
+const districtGroundColor: Record<DistrictPrefabSceneState['kind'], number> = {
+  residential: 0x25463f,
+  commercial: 0x263d4f,
+  industrial: 0x3c3a34,
+  public: 0x2b4a48,
+  old_town: 0x342e31
 };
 
 const toColor = (value: string, fallback = 0x4ad7ff): number => {
@@ -63,6 +82,12 @@ const seededUnit = (seed: number, salt: number): number => {
   value = Math.imul(value ^ (value >>> 16), 0x45d9f3b) >>> 0;
   value = Math.imul(value ^ (value >>> 16), 0x45d9f3b) >>> 0;
   return ((value ^ (value >>> 16)) >>> 0) / 0xffffffff;
+};
+
+const districtStatusColor = (district: DistrictPrefabSceneState): number => {
+  if (district.status === 'normal') return 0x5ce1a3;
+  if (district.status === 'warning') return 0xffd45f;
+  return 0xff667f;
 };
 
 export class ImmersivePixiWorld implements WorldRenderSurface {
@@ -121,15 +146,16 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
   focusHome(): void {
     if (!this.state || !this.camera) return;
     const city = this.project(this.state.city);
+    const authored = this.state.sceneMode === 'authored';
     const startZoom = clamp(
-      this.state.camera.startZoom * 1.16,
+      this.state.camera.startZoom * (authored ? 1 : 1.16),
       this.state.camera.minZoom,
       this.state.camera.maxZoom
     );
     this.camera.configure({
       ...this.state.camera,
       startZoom,
-      startOffsetY: this.state.camera.startOffsetY + 30
+      startOffsetY: this.state.camera.startOffsetY + (authored ? 0 : 30)
     });
     this.camera.setPivot(city.x, city.y);
     this.camera.focusHome();
@@ -183,12 +209,15 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
     this.layerManager.clear();
     const accent = toColor(state.accent);
     const roads = ImmersiveRoadGrid.fromRoads(state.roads, ROAD_STEP);
+    const authored = state.sceneMode === 'authored' && Boolean(state.districtPrefabs?.length);
 
     this.drawTerrain(state, accent);
-    this.drawDistrictGround(state, accent);
+    if (authored) this.drawEnvironment(state.environment ?? []);
+    else this.drawDistrictGround(state, accent);
     this.drawRoadTiles(roads, generation);
-    this.drawFacilityAccessRoads(state, roads);
-    this.drawAmbientBlocks(state, roads, generation);
+    if (!authored) this.drawFacilityAccessRoads(state, roads);
+    if (authored) this.drawDistrictPrefabs(state, generation);
+    else this.drawAmbientBlocks(state, roads, generation);
     this.drawFacilities(state, generation);
     this.drawEnergyLinks(state, accent);
     this.drawPlots(state, accent);
@@ -223,7 +252,9 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
       ? 0x182229
       : state.theme === 'green'
         ? 0x112921
-        : 0x10252b;
+        : state.sceneMode === 'authored'
+          ? 0x10251f
+          : 0x10252b;
     const ground = new Graphics()
       .poly(this.diamondPoints(state.city, WORLD_RADIUS, WORLD_RADIUS))
       .fill({ color: baseColor, alpha: 1 });
@@ -242,9 +273,80 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
       const d = this.project({ x: offset, z: span, elevation: -0.6 });
       grid.moveTo(c.x, c.y).lineTo(d.x, d.y);
     }
-    grid.stroke({ color: accent, alpha: state.placement ? 0.075 : 0.025, width: 1 });
+    const baseGridAlpha = state.sceneMode === 'authored' ? 0.009 : 0.025;
+    grid.stroke({ color: accent, alpha: state.placement ? 0.065 : baseGridAlpha, width: 1 });
     grid.zIndex = -999999;
     this.layerManager.layers.terrain.addChild(grid);
+  }
+
+  private drawEnvironment(environment: readonly EnvironmentPrefabSceneState[]): void {
+    for (const item of environment) {
+      if (item.kind === 'water' || item.kind === 'coast' || item.kind === 'park') {
+        const color = item.kind === 'water'
+          ? 0x071d29
+          : item.kind === 'coast'
+            ? 0x1e3433
+            : 0x28543e;
+        const alpha = item.kind === 'water' ? 0.96 : item.kind === 'coast' ? 0.82 : 0.76;
+        const shape = new Graphics()
+          .poly(this.diamondPoints(item, item.width * 0.5, item.depth * 0.5))
+          .fill({ color, alpha });
+        if (item.kind === 'water') {
+          shape.stroke({ color: 0x3e8092, alpha: 0.16, width: 2 });
+        }
+        shape.zIndex = this.depth(item, -400);
+        this.layerManager.layers.terrain.addChild(shape);
+        if (item.kind === 'park') this.drawEnvironmentTrees(item, 9);
+        continue;
+      }
+      if (item.kind === 'forest') {
+        this.drawEnvironmentTrees(item, Math.round(10 + item.density * 18));
+        continue;
+      }
+      this.drawRidge(item);
+    }
+  }
+
+  private drawEnvironmentTrees(item: EnvironmentPrefabSceneState, count: number): void {
+    for (let index = 0; index < count; index += 1) {
+      const point: ScenePoint = {
+        x: item.x + (seededUnit(item.variant, index * 3 + 1) - 0.5) * item.width,
+        z: item.z + (seededUnit(item.variant, index * 3 + 2) - 0.5) * item.depth,
+        elevation: 0.05
+      };
+      const position = this.project(point);
+      const size = 4.5 + seededUnit(item.variant, index * 3 + 3) * 5;
+      const tree = new Graphics()
+        .rect(position.x - 1.2, position.y - 1, 2.4, 7)
+        .fill({ color: 0x3f3126, alpha: 0.86 })
+        .circle(position.x, position.y - 5, size)
+        .fill({ color: item.kind === 'park' ? 0x4d956a : 0x274f3b, alpha: 0.94 });
+      tree.zIndex = this.depth(point, 1);
+      this.layerManager.layers.groundDecorations.addChild(tree);
+    }
+  }
+
+  private drawRidge(item: EnvironmentPrefabSceneState): void {
+    const count = Math.max(4, Math.round(item.width / 10));
+    for (let index = 0; index < count; index += 1) {
+      const point: ScenePoint = {
+        x: item.x - item.width * 0.5 + (index / Math.max(1, count - 1)) * item.width,
+        z: item.z + (seededUnit(item.variant, index + 7) - 0.5) * item.depth * 0.45,
+        elevation: -0.2
+      };
+      const position = this.project(point);
+      const size = 25 + seededUnit(item.variant, index + 19) * 28;
+      const ridge = new Graphics()
+        .poly([
+          position.x - size, position.y + size * 0.32,
+          position.x, position.y - size * 0.62,
+          position.x + size, position.y + size * 0.32
+        ])
+        .fill({ color: 0x172a29, alpha: 0.9 })
+        .stroke({ color: 0x42615d, alpha: 0.18, width: 1 });
+      ridge.zIndex = this.depth(point, -50);
+      this.layerManager.layers.terrain.addChild(ridge);
+    }
   }
 
   private drawDistrictGround(state: CitySceneState, accent: number): void {
@@ -256,6 +358,125 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
         .fill({ color, alpha: lowPower ? 0.055 : 0.018 });
       shape.zIndex = this.depth(district, -50);
       this.layerManager.layers.terrain.addChild(shape);
+    }
+  }
+
+  private drawDistrictPrefabs(state: CitySceneState, generation: number): void {
+    const districts = state.districtPrefabs ?? [];
+    for (const district of districts) {
+      const statusColor = districtStatusColor(district);
+      const ground = new Graphics()
+        .poly(this.diamondPoints(district, district.width * 0.5, district.depth * 0.5))
+        .fill({
+          color: districtGroundColor[district.kind],
+          alpha: district.status === 'offline' ? 0.58 : 0.88
+        })
+        .stroke({ color: statusColor, alpha: district.status === 'normal' ? 0.16 : 0.56, width: 2 });
+      ground.zIndex = this.depth(district, -80);
+      this.layerManager.layers.terrain.addChild(ground);
+
+      const suffix = district.status === 'blackout' || district.status === 'offline'
+        ? 'blackout'
+        : state.hour < 6 || state.hour >= 18
+          ? 'night'
+          : 'day';
+      const pool = districtBuildingAssets[district.kind];
+      const columns = district.kind === 'industrial' ? 3 : 3;
+      const rows = Math.ceil(district.buildingCount / columns);
+      const spacingX = district.width / Math.max(3.2, columns + 0.4);
+      const spacingZ = district.depth / Math.max(2.7, rows + 0.5);
+
+      for (let index = 0; index < district.buildingCount; index += 1) {
+        const column = index % columns;
+        const row = Math.floor(index / columns);
+        const selected = pool[(index + district.variant) % pool.length];
+        if (!selected) continue;
+        const jitterX = (seededUnit(district.variant, index * 2 + 1) - 0.5) * 1.8;
+        const jitterZ = (seededUnit(district.variant, index * 2 + 2) - 0.5) * 1.4;
+        const point: ScenePoint = {
+          x: district.x + (column - (columns - 1) * 0.5) * spacingX + jitterX,
+          z: district.z + (row - (rows - 1) * 0.5) * spacingZ + jitterZ,
+          elevation: 0.4 + row * 0.08
+        };
+        const sizeBias = district.kind === 'commercial'
+          ? 17
+          : district.kind === 'industrial'
+            ? 6
+            : district.kind === 'public'
+              ? 10
+              : 0;
+        const width = (98 + sizeBias + seededUnit(district.variant, index + 51) * 30) * district.scale;
+        this.addAssetObject({
+          assetId: `world_building_${selected}_shadow`,
+          point: { ...point, elevation: Math.max(-0.05, point.elevation - 0.45) },
+          width,
+          anchorY: 0.82,
+          generation,
+          layer: this.layerManager.layers.buildingShadows,
+          alpha: 0.54,
+          placeholderColor: 0x000000
+        });
+        this.addAssetObject({
+          assetId: `world_building_${selected}_${suffix}`,
+          point,
+          width,
+          anchorY: 0.82,
+          generation,
+          layer: this.layerManager.layers.buildings,
+          alpha: district.status === 'offline' ? 0.72 : 1,
+          placeholderColor: statusColor
+        });
+      }
+      this.drawDistrictLabel(district);
+      this.drawDistrictDecorations(district);
+    }
+  }
+
+  private drawDistrictLabel(district: DistrictPrefabSceneState): void {
+    const position = this.project({ ...district, elevation: 4.6 });
+    const statusColor = districtStatusColor(district);
+    const label = new Text({
+      text: `${district.label}  ${Math.round(district.powerRatio * 100)}%`,
+      style: {
+        fontFamily: 'Inter, PingFang SC, Microsoft YaHei, sans-serif',
+        fontSize: 13,
+        fontWeight: '600',
+        fill: 0xeefaff
+      }
+    });
+    label.anchor.set(0.5, 0.5);
+    const width = Math.max(104, label.width + 28);
+    const panel = new Graphics()
+      .roundRect(-width * 0.5, -16, width, 32, 9)
+      .fill({ color: 0x061722, alpha: 0.9 })
+      .stroke({ color: statusColor, alpha: 0.62, width: 1 });
+    const dot = new Graphics()
+      .circle(-width * 0.5 + 13, 0, 4)
+      .fill({ color: statusColor, alpha: 1 });
+    const container = new Container();
+    container.position.set(position.x, position.y - 46);
+    container.zIndex = this.depth(district, 250);
+    container.addChild(panel, dot, label);
+    this.layerManager.layers.overlays.addChild(container);
+  }
+
+  private drawDistrictDecorations(district: DistrictPrefabSceneState): void {
+    const treeCount = district.kind === 'industrial' ? 2 : district.kind === 'commercial' ? 4 : 6;
+    for (let index = 0; index < treeCount; index += 1) {
+      const edge = index % 2 === 0 ? -1 : 1;
+      const point: ScenePoint = {
+        x: district.x + edge * district.width * (0.32 + seededUnit(district.variant, index + 71) * 0.08),
+        z: district.z + (seededUnit(district.variant, index + 83) - 0.5) * district.depth * 0.72,
+        elevation: 0.08
+      };
+      const position = this.project(point);
+      const tree = new Graphics()
+        .rect(position.x - 1, position.y, 2, 8)
+        .fill({ color: 0x4d3828, alpha: 0.82 })
+        .circle(position.x, position.y - 4, 5.5)
+        .fill({ color: district.kind === 'old_town' ? 0x375f49 : 0x4b8d65, alpha: 0.9 });
+      tree.zIndex = this.depth(point, 3);
+      this.layerManager.layers.groundDecorations.addChild(tree);
     }
   }
 
@@ -277,9 +498,9 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
       this.addTileAsset({
         assetId,
         point,
-        width: 132,
+        width: 124,
         generation,
-        alpha: cell.powered ? 0.96 : 0.7,
+        alpha: cell.powered ? 0.88 : 0.62,
         placeholderColor: cell.powered ? 0x344b54 : 0x252c31
       });
     }
@@ -435,7 +656,7 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
       this.addAssetObject({
         assetId: visual.shadowAssetId,
         point: { ...facility, elevation: Math.max(0, facility.elevation - 0.8) },
-        width: 132 * facility.scale,
+        width: 150 * facility.scale,
         anchorY: 0.55,
         generation,
         layer: this.layerManager.layers.buildingShadows,
@@ -445,7 +666,7 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
       this.addAssetObject({
         assetId: visual.bodyAssetId,
         point: facility,
-        width: 150 * facility.scale,
+        width: 174 * facility.scale,
         anchorY: 0.84,
         generation,
         layer: this.layerManager.layers.buildings,
@@ -456,11 +677,11 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
         this.addAssetObject({
           assetId: visual.lightAssetId,
           point: facility,
-          width: 112 * facility.scale,
+          width: 130 * facility.scale,
           anchorY: 0.66,
           generation,
           layer: this.layerManager.layers.effects,
-          alpha: state.placement ? 0.58 : 0.36,
+          alpha: state.placement ? 0.62 : 0.48,
           placeholderColor: 0x4ad7ff
         });
       }
@@ -468,26 +689,30 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
   }
 
   private addFacilityLot(facility: FacilitySceneState, generation: number): void {
-    const category = String(facility.category);
-    const assetId = category === 'storage'
+    const assetId = facility.category === 'storage'
       ? 'world_terrain_utility_lot'
-      : category === 'solar' || category === 'wind' || category === 'hydro'
+      : facility.configId.includes('solar') || facility.configId.includes('wind')
         ? 'world_terrain_grass_clean'
         : 'world_terrain_industrial_lot';
     this.addTileAsset({
       assetId,
       point: { ...facility, elevation: -0.08 },
-      width: 144 * facility.scale,
+      width: 162 * facility.scale,
       generation,
-      alpha: 0.9,
+      alpha: 0.92,
       placeholderColor: 0x2b3b40,
       layer: this.layerManager.layers.terrain
     });
   }
 
   private drawEnergyLinks(state: CitySceneState, accent: number): void {
-    if (!state.placement && state.blackoutIntensity < 0.26) return;
-    const modeAlpha = state.placement ? 0.16 : 0.04 + state.blackoutIntensity * 0.08;
+    const authored = state.sceneMode === 'authored';
+    if (!authored && !state.placement && state.blackoutIntensity < 0.26) return;
+    const modeAlpha = authored
+      ? 0.12 + state.blackoutIntensity * 0.16
+      : state.placement
+        ? 0.16
+        : 0.04 + state.blackoutIntensity * 0.08;
     for (const link of state.links) {
       const from = this.project(link.from);
       const to = this.project(link.to);
@@ -497,7 +722,7 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
         .stroke({
           color: link.active ? accent : 0x56636c,
           alpha: modeAlpha * link.intensity,
-          width: state.placement ? 2 : 1
+          width: authored ? 2.4 : state.placement ? 2 : 1
         });
       beam.zIndex = this.depth(link.from, 5);
       this.layerManager.layers.effects.addChild(beam);
