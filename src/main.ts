@@ -8,13 +8,12 @@ import eventData from './data/events.json';
 import levelData from './data/levels.json';
 import policyData from './data/policies.json';
 import technologyData from './data/technologies.json';
-import assetCatalogData from './resources/asset-catalog.json';
 import type { BuildingConfig } from './buildings/BuildingBase';
 import { AppController } from './core/AppController';
 import { GameConfigValidator } from './core/GameConfigValidator';
 import { HologramConfigValidator } from './core/HologramConfigValidator';
 import { AssetManager } from './resources/AssetManager';
-import type { AssetCatalog } from './resources/AssetManager';
+import { globalAssetCatalog } from './resources/GlobalAssetCatalog';
 import type { EventConfig } from './systems/EventSystem';
 import type { LevelConfig } from './systems/LevelLoader';
 import type { PolicyConfig } from './systems/PolicySystem';
@@ -33,7 +32,7 @@ document.addEventListener('error', (event) => {
 
 const bootstrap = async (): Promise<void> => {
   LoadingScreen.render(root, '正在启动全息城市沙盘', '准备城市模型、可建设区域和居民生活状态。');
-  AssetManager.load(assetCatalogData as unknown as AssetCatalog);
+  AssetManager.load(globalAssetCatalog);
 
   const levels = levelData as unknown as LevelConfig[];
   const buildings = buildingData as unknown as BuildingConfig[];
@@ -58,6 +57,10 @@ const bootstrap = async (): Promise<void> => {
   if (gridPattern) document.documentElement.style.setProperty('--ui-grid-pattern', `url("${gridPattern}")`);
 
   new AppController(root, levels, buildings, events, technologies, policies).start();
+
+  void AssetManager.preloadGroup('level').then((report) => {
+    if (report.failed.length > 0) console.warn('Level assets failed to preload:', report.failed);
+  });
 };
 
 void bootstrap().catch((error: unknown) => LoadingScreen.renderError(root, error));
