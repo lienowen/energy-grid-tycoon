@@ -1,24 +1,27 @@
-import { BuildingConfig } from '../buildings/BuildingBase';
+import type { BuildingConfig } from '../buildings/BuildingBase';
 import { AssetManager } from '../resources/AssetManager';
 import { LevelAssetPlanner } from '../resources/LevelAssetPlanner';
-import { EventConfig } from '../systems/EventSystem';
-import { LevelConfig } from '../systems/LevelLoader';
+import type { EventConfig } from '../systems/EventSystem';
+import type { LevelConfig } from '../systems/LevelLoader';
 import { LevelProgressionSystem } from '../systems/LevelProgressionSystem';
-import { PolicyConfig } from '../systems/PolicySystem';
-import { TechnologyConfig } from '../systems/ResearchSystem';
+import type { PolicyConfig } from '../systems/PolicySystem';
+import type { TechnologyConfig } from '../systems/ResearchSystem';
 import { LevelSelect } from '../ui/LevelSelect';
 import { LoadingScreen } from '../ui/LoadingScreen';
 import { MayorDashboard } from '../ui/MayorDashboard';
-import { GameManager, GameViewModel } from './GameManager';
+import { ReleaseOnboarding } from '../ui/ReleaseOnboarding';
+import { GameManager, type GameActionResult, type GameViewModel } from './GameManager';
 import { SaveManager } from './SaveManager';
 
 export class AppController {
   private game?: GameManager;
   private dashboard?: MayorDashboard;
+  private onboarding?: ReleaseOnboarding;
   private currentLevelId?: string;
   private lastAutoSaveDay = 0;
   private completionRecorded = false;
   private loadGeneration = 0;
+  private pendingSystemNotice = '';
 
   constructor(
     private readonly root: HTMLElement,
@@ -31,16 +34,22 @@ export class AppController {
 
   start(): void {
     this.showCampaign();
-    window.addEventListener('beforeunload', () => {
-      this.dashboard?.destroy();
-      this.game?.destroy();
-    });
+    window.addEventListener('pagehide', this.handlePageHide);
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
+  }
+
+  emergencySave(): boolean {
+    if (!this.game) return false;
+    return SaveManager.saveGame(this.game.createSave());
   }
 
   private showCampaign(): void {
     this.loadGeneration += 1;
+    this.onboarding?.destroy();
     this.dashboard?.destroy();
     this.game?.destroy();
+    this.onboarding = undefined;
     this.game = undefined;
     this.dashboard = undefined;
     this.currentLevelId = undefined;
@@ -67,13 +76,16 @@ export class AppController {
     if (!level) return;
 
     const generation = ++this.loadGeneration;
+    this.onboarding?.destroy();
     this.dashboard?.destroy();
     this.game?.destroy();
+    this.onboarding = undefined;
     this.game = undefined;
     this.dashboard = undefined;
     this.currentLevelId = level.id;
     this.lastAutoSaveDay = 0;
     this.completionRecorded = false;
+    this.pendingSystemNotice = '';
 
     LoadingScreen.render(this.root, `正在前往${level.name}`, '正在铺开城市地图和可建设用地。');
     const assetReport = await AssetManager.preload(LevelAssetPlanner.resolve(level, {
@@ -88,14 +100,32 @@ export class AppController {
     const save = resume ? SaveManager.loadGame() : undefined;
     const compatibleSave = save?.levelId === level.id ? save : undefined;
     if (!resume) SaveManager.clearGame();
+    if (SaveManager.consumeRecoveryNotice()) {
+      this.pendingSystemNotice = '主存档校验失败，已经自动恢复到上一份安全备份。';
+    }
 
     this.dashboard = new MayorDashboard(this.root, {
-      onBuild: (configId: string, plotId?: string) => this.game?.build(configId, plotId) ?? { ok: false, reason: '城市还没有准备好' },
-      onUpgrade: (instanceId) => this.game?.upgrade(instanceId) ?? { ok: false, reason: '城市还没有准备好' },
-      onToggleBuilding: (instanceId) => this.game?.toggleBuilding(instanceId) ?? { ok: false, reason: '城市还没有准备好' },
-      onResearch: (technologyId) => this.game?.research(technologyId) ?? { ok: false, reason: '城市还没有准备好' },
-      onPolicy: (policyId) => this.game?.setPolicy(policyId) ?? { ok: false, reason: '城市还没有准备好' },
-      onSpeedChange: (speed) => this.game?.setSpeed(speed),
+      onBuild: (configId: string, plotId?: string) => {
+        const result = this.game?.build(configId, plotId) ?? this.notReady();
+        if (result.ok) this.onboarding?.record('buildPlaced');
+        return result;
+      },
+      onUpgrade: (instanceId) => {
+        const result = this.game?.upgrade(instanceId) ?? this.notReady();
+        if (result.ok) this.onboarding?.record('facilityManaged');
+        return result;
+      },
+      onToggleBuilding: (instanceId) => {
+        const result = this.game?.toggleBuilding(instanceId) ?? this.notReady();
+        if (result.ok) this.onboarding?.record('facilityManaged');
+        return result;
+      },
+      onResearch: (technologyId) => this.game?.research(technologyId) ?? this.notReady(),
+      onPolicy: (policyId) => this.game?.setPolicy(policyId) ?? this.notReady(),
+      onSpeedChange: (speed) => {
+        this.game?.setSpeed(speed);
+        if (speed > 0) this.onboarding?.record('speedChanged');
+      },
       onPriceChange: (price) => this.game?.setPowerPrice(price),
       onSave: () => this.saveCurrentGame(),
       onLoad: () => this.loadCurrentSave(),
@@ -103,6 +133,7 @@ export class AppController {
       onRetry: () => this.retryCurrentLevel(),
       onNext: () => this.startNextLevel()
     });
+    this.onboarding = new ReleaseOnboarding(this.root);
 
     this.game = new GameManager(
       level,
@@ -126,12 +157,17 @@ export class AppController {
       this.lastAutoSaveDay = view.state.day;
     }
     this.dashboard?.render(view);
+    this.onboarding?.render(view);
+    if (this.pendingSystemNotice) {
+      this.onboarding?.announce(this.pendingSystemNotice);
+      this.pendingSystemNotice = '';
+    }
   }
 
   private saveCurrentGame(): { ok: boolean; message: string } {
     if (!this.game) return { ok: false, message: '当前没有可保存的城市' };
     const ok = SaveManager.saveGame(this.game.createSave());
-    return { ok, message: ok ? '城市进度已经保存' : '浏览器阻止了本地保存' };
+    return { ok, message: ok ? '城市进度和安全备份已经保存' : '浏览器阻止了本地保存' };
   }
 
   private loadCurrentSave(): { ok: boolean; message: string } {
@@ -155,4 +191,23 @@ export class AppController {
     if (next) void this.startLevel(next.id, false);
     else this.showCampaign();
   }
+
+  private notReady(): GameActionResult {
+    return { ok: false, reason: '城市还没有准备好' };
+  }
+
+  private readonly handlePageHide = (): void => {
+    this.emergencySave();
+  };
+
+  private readonly handleVisibilityChange = (): void => {
+    if (document.visibilityState === 'hidden') this.emergencySave();
+  };
+
+  private readonly handleBeforeUnload = (): void => {
+    this.emergencySave();
+    this.onboarding?.destroy();
+    this.dashboard?.destroy();
+    this.game?.destroy();
+  };
 }
