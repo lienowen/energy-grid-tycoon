@@ -15,8 +15,8 @@ export interface AssetEntry {
 }
 
 export interface AssetCatalog {
-  schemaVersion: 1;
-  budgetBytes: number;
+  schemaVersion: number;
+  budgetBytes?: number;
   entries: AssetEntry[];
 }
 
@@ -33,6 +33,16 @@ export type AssetManifest = AssetCatalog | LegacyAssetManifest;
 const isCatalog = (manifest: AssetManifest): manifest is AssetCatalog =>
   'entries' in manifest && Array.isArray(manifest.entries);
 
+const assertValidEntries = (entries: readonly AssetEntry[]): void => {
+  const ids = new Set<string>();
+  for (const entry of entries) {
+    if (!entry.id) throw new Error('Asset catalog contains an entry without an id');
+    if (ids.has(entry.id)) throw new Error(`Asset catalog contains duplicate id: ${entry.id}`);
+    if (!entry.src) throw new Error(`Asset ${entry.id} is missing a source`);
+    ids.add(entry.id);
+  }
+};
+
 export class AssetManager {
   private static assets = new Map<string, AssetEntry>();
   private static statuses = new Map<string, AssetLoadStatus>();
@@ -41,12 +51,13 @@ export class AssetManager {
     const entries = isCatalog(manifest)
       ? manifest.entries
       : Object.entries(manifest).map(([id, src]): AssetEntry => ({
-        id,
-        src,
-        kind: 'image',
-        version: 1,
-        preload: 'lazy'
-      }));
+          id,
+          src,
+          kind: 'image',
+          version: 1,
+          preload: 'lazy'
+        }));
+    assertValidEntries(entries);
     this.assets = new Map(entries.map((entry) => [entry.id, { ...entry }]));
     this.statuses = new Map(entries.map((entry) => [entry.id, 'idle']));
   }
