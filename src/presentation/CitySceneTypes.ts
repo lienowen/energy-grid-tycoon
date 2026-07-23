@@ -1,5 +1,6 @@
 import type { BuildingConfig } from '../buildings/BuildingBase';
 import type { CityPlotZone } from '../core/CityMapConfig';
+import type { DistrictPrefabKind, EnvironmentPrefabKind } from './layout/LevelSceneLayout';
 
 export interface HologramCameraConfig {
   startZoom: number;
@@ -23,6 +24,30 @@ export interface DistrictSceneState extends ScenePoint {
   powerRatio: number;
   demandIntensity?: number;
   populationShare?: number;
+}
+
+export type DistrictPrefabStatus = 'normal' | 'warning' | 'blackout' | 'offline';
+
+export interface DistrictPrefabSceneState extends ScenePoint {
+  id: string;
+  label: string;
+  kind: DistrictPrefabKind;
+  width: number;
+  depth: number;
+  scale: number;
+  buildingCount: number;
+  variant: number;
+  powerRatio: number;
+  status: DistrictPrefabStatus;
+}
+
+export interface EnvironmentPrefabSceneState extends ScenePoint {
+  id: string;
+  kind: EnvironmentPrefabKind;
+  width: number;
+  depth: number;
+  density: number;
+  variant: number;
 }
 
 export interface FacilitySceneState extends ScenePoint {
@@ -131,8 +156,11 @@ export interface CitySceneState {
   trafficDensity: number;
   city: ScenePoint;
   camera: HologramCameraConfig;
+  sceneMode?: 'procedural' | 'authored';
   growth?: CityGrowthSceneState;
   districts: DistrictSceneState[];
+  districtPrefabs?: DistrictPrefabSceneState[];
+  environment?: EnvironmentPrefabSceneState[];
   plots: PlotSceneState[];
   facilities: FacilitySceneState[];
   links: EnergyLinkSceneState[];
