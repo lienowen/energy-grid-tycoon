@@ -24,4 +24,11 @@ jobs:
       - name: Unit tests
         run: npm test
       - name: Typecheck and production build
-        run: npm run build
+        run: npm run build 2>&1 | tee build.log
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-build-log
+          path: build.log
+          retention-days: 3
