@@ -7,8 +7,8 @@ import { LevelLoader, type LevelConfig } from '../systems/LevelLoader';
 import { neutralSimulationModifiers } from '../systems/SimulationModifiers';
 import { CitySceneMapper } from './CitySceneMapper';
 
-const makeView = (): GameViewModel => {
-  const level = levelData[0] as unknown as LevelConfig;
+const makeView = (levelIndex = 0): GameViewModel => {
+  const level = levelData[levelIndex] as unknown as LevelConfig;
   const buildings = buildingData as unknown as BuildingConfig[];
   const loaded = LevelLoader.load(level, buildings);
   loaded.state.supplyRatio = 0.72;
@@ -41,6 +41,9 @@ describe('CitySceneMapper', () => {
     expect(scene.plots.some((plot) => plot.occupied)).toBe(true);
     expect(scene.districts.length).toBeGreaterThan(1);
     expect(scene.supplyRatio).toBe(0.72);
+    expect(scene.sceneMode).toBe('authored');
+    expect(scene.districtPrefabs).toHaveLength(5);
+    expect(scene.ambientBlocks).toHaveLength(0);
   });
 
   it('marks only legal empty plots when the player chooses a facility', () => {
@@ -55,9 +58,16 @@ describe('CitySceneMapper', () => {
     }
   });
 
-  it('uses camera defaults from the presentation layer rather than the game rules', () => {
+  it('uses the authored camera composition for Dawn City', () => {
     const scene = CitySceneMapper.map(makeView());
-    expect(scene.camera.startZoom).toBe(1);
+    expect(scene.camera.startZoom).toBe(1.34);
     expect(scene.camera.minZoom).toBeLessThan(scene.camera.maxZoom);
+  });
+
+  it('keeps the procedural presentation camera fallback for later levels', () => {
+    const scene = CitySceneMapper.map(makeView(1));
+    expect(scene.sceneMode).toBe('procedural');
+    expect(scene.camera.startZoom).toBe(1);
+    expect(scene.ambientBlocks.length).toBeGreaterThan(0);
   });
 });
