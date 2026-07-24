@@ -6,6 +6,7 @@ import type { LevelConfig } from '../systems/LevelLoader';
 import { LevelProgressionSystem } from '../systems/LevelProgressionSystem';
 import type { PolicyConfig } from '../systems/PolicySystem';
 import type { TechnologyConfig } from '../systems/ResearchSystem';
+import { CityRecoveryFeedback } from '../ui/CityRecoveryFeedback';
 import { LevelSelect } from '../ui/LevelSelect';
 import { LoadingScreen } from '../ui/LoadingScreen';
 import { MayorDashboard } from '../ui/MayorDashboard';
@@ -17,6 +18,7 @@ export class AppController {
   private game?: GameManager;
   private dashboard?: MayorDashboard;
   private onboarding?: ReleaseOnboarding;
+  private recoveryFeedback?: CityRecoveryFeedback;
   private currentLevelId?: string;
   private lastAutoSaveDay = 0;
   private completionRecorded = false;
@@ -46,9 +48,11 @@ export class AppController {
 
   private showCampaign(): void {
     this.loadGeneration += 1;
+    this.recoveryFeedback?.destroy();
     this.onboarding?.destroy();
     this.dashboard?.destroy();
     this.game?.destroy();
+    this.recoveryFeedback = undefined;
     this.onboarding = undefined;
     this.game = undefined;
     this.dashboard = undefined;
@@ -76,9 +80,11 @@ export class AppController {
     if (!level) return;
 
     const generation = ++this.loadGeneration;
+    this.recoveryFeedback?.destroy();
     this.onboarding?.destroy();
     this.dashboard?.destroy();
     this.game?.destroy();
+    this.recoveryFeedback = undefined;
     this.onboarding = undefined;
     this.game = undefined;
     this.dashboard = undefined;
@@ -134,6 +140,7 @@ export class AppController {
       onNext: () => this.startNextLevel()
     });
     this.onboarding = new ReleaseOnboarding(this.root);
+    this.recoveryFeedback = new CityRecoveryFeedback(this.root);
 
     this.game = new GameManager(
       level,
@@ -158,6 +165,7 @@ export class AppController {
     }
     this.dashboard?.render(view);
     this.onboarding?.render(view);
+    this.recoveryFeedback?.render(view);
     if (this.pendingSystemNotice) {
       this.onboarding?.announce(this.pendingSystemNotice);
       this.pendingSystemNotice = '';
@@ -206,6 +214,7 @@ export class AppController {
 
   private readonly handleBeforeUnload = (): void => {
     this.emergencySave();
+    this.recoveryFeedback?.destroy();
     this.onboarding?.destroy();
     this.dashboard?.destroy();
     this.game?.destroy();

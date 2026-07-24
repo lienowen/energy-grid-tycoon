@@ -1,0 +1,112 @@
+.city-recovery-feedback {
+  --recovery-color: #5ce1a3;
+  position: fixed;
+  inset: 86px 0 98px;
+  z-index: 92;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .22s ease;
+}
+
+.city-recovery-feedback.is-visible { opacity: 1; }
+.city-recovery-feedback.tone-warning { --recovery-color: #ffd45f; }
+.city-recovery-feedback.tone-danger { --recovery-color: #ff7485; }
+.city-recovery-feedback.tone-celebration { --recovery-color: #7cf2d0; }
+
+.city-recovery-vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 48%, color-mix(in srgb, var(--recovery-color) 10%, transparent), transparent 34%),
+    linear-gradient(90deg, color-mix(in srgb, var(--recovery-color) 18%, transparent), transparent 14% 86%, color-mix(in srgb, var(--recovery-color) 18%, transparent));
+  animation: city-recovery-vignette 2.8s ease-out both;
+}
+
+.city-recovery-ripple {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  width: min(38vw, 460px);
+  aspect-ratio: 2 / 1;
+  transform: translate(-50%, -50%);
+}
+
+.city-recovery-ripple i {
+  position: absolute;
+  inset: 0;
+  border: 1px solid color-mix(in srgb, var(--recovery-color) 72%, transparent);
+  border-radius: 50%;
+  box-shadow: 0 0 38px color-mix(in srgb, var(--recovery-color) 18%, transparent);
+  opacity: 0;
+  transform: scale(.42);
+  animation: city-recovery-ripple 2.2s cubic-bezier(.2, .72, .25, 1) both;
+}
+
+.city-recovery-ripple i:nth-child(2) { animation-delay: .2s; }
+.city-recovery-ripple i:nth-child(3) { animation-delay: .4s; }
+
+.city-recovery-card {
+  position: absolute;
+  left: 50%;
+  top: 19%;
+  width: min(520px, calc(100vw - 40px));
+  padding: 15px 20px 17px;
+  border: 1px solid color-mix(in srgb, var(--recovery-color) 68%, transparent);
+  clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+  color: #effcff;
+  background: linear-gradient(145deg, rgba(5, 31, 48, .96), rgba(2, 14, 25, .94));
+  box-shadow: 0 22px 70px rgba(0, 0, 0, .56), inset 0 0 34px color-mix(in srgb, var(--recovery-color) 8%, transparent), 0 0 34px color-mix(in srgb, var(--recovery-color) 12%, transparent);
+  backdrop-filter: blur(18px);
+  transform: translate(-50%, -18px) scale(.97);
+  opacity: 0;
+  animation: city-recovery-card 2.65s cubic-bezier(.2, .72, .25, 1) both;
+}
+
+.city-recovery-card small,
+.city-recovery-card strong,
+.city-recovery-card p { display: block; }
+.city-recovery-card small { color: var(--recovery-color); font-size: 9px; letter-spacing: .16em; }
+.city-recovery-card strong { margin-top: 5px; font-size: clamp(18px, 2vw, 25px); letter-spacing: .03em; }
+.city-recovery-card p { margin: 7px 0 0; color: #9fbccc; font-size: 11px; line-height: 1.55; }
+
+.city-recovery-feedback.tone-celebration .city-recovery-card {
+  background: linear-gradient(145deg, rgba(7, 50, 54, .97), rgba(2, 20, 31, .95));
+}
+
+@keyframes city-recovery-vignette {
+  0% { opacity: 0; }
+  14% { opacity: 1; }
+  72% { opacity: .72; }
+  100% { opacity: 0; }
+}
+
+@keyframes city-recovery-ripple {
+  0% { opacity: 0; transform: scale(.42); }
+  18% { opacity: .82; }
+  100% { opacity: 0; transform: scale(1.28); }
+}
+
+@keyframes city-recovery-card {
+  0% { opacity: 0; transform: translate(-50%, -18px) scale(.97); }
+  14%, 78% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, 9px) scale(.99); }
+}
+
+@media (max-width: 680px) {
+  .city-recovery-feedback { inset: 118px 0 150px; }
+  .city-recovery-card { top: 14%; padding: 13px 15px 14px; }
+  .city-recovery-card p { font-size: 10px; }
+  .city-recovery-ripple { width: 72vw; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .city-recovery-feedback,
+  .city-recovery-vignette,
+  .city-recovery-ripple i,
+  .city-recovery-card { animation: none; transition: none; }
+  .city-recovery-feedback.is-visible,
+  .city-recovery-feedback.is-visible .city-recovery-card { opacity: 1; }
+  .city-recovery-card { transform: translate(-50%, 0); }
+  .city-recovery-ripple { display: none; }
+}

@@ -1,5 +1,6 @@
 import type { BuildingBase, BuildingConfig } from '../buildings/BuildingBase';
 import type { GameState } from '../core/GameState';
+import { DawnCityExperienceSystem } from './DawnCityExperienceSystem';
 import type { TechnologyConfig } from './ResearchSystem';
 
 export type MayorGuidePanel = 'market' | 'research' | 'policy' | 'fleet' | 'analytics';
@@ -75,6 +76,18 @@ export class MayorGuidanceSystem {
       };
     }
 
+    const dawnBeat = DawnCityExperienceSystem.evaluate(context);
+    if (dawnBeat) {
+      return {
+        tone: dawnBeat.tone,
+        headline: dawnBeat.title,
+        message: dawnBeat.message,
+        consequence: `${dawnBeat.consequence} 完成后：${dawnBeat.nextPromise}`, 
+        actionLabel: dawnBeat.actionLabel,
+        action: dawnBeat.action
+      };
+    }
+
     if (state.supplyRatio < 0.9) {
       const generator = bestAffordable(context.availableBuildings, state.money, 'generation');
       if (generator) {
@@ -82,7 +95,7 @@ export class MayorGuidanceSystem {
           tone: 'danger',
           headline: '部分街区快要停电了',
           message: `先建一座${generator.name}，让居民和商店恢复正常用电。`,
-          consequence: `会增加供电能力，同时每段时间要支付维护费用。`,
+          consequence: '会增加供电能力，同时每段时间要支付维护费用。',
           actionLabel: `建设${generator.name}`,
           action: { type: 'build', buildingId: generator.id }
         };

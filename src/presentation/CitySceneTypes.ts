@@ -1,6 +1,10 @@
 import type { BuildingConfig } from '../buildings/BuildingBase';
 import type { CityPlotZone } from '../core/CityMapConfig';
-import type { DistrictPrefabKind, EnvironmentPrefabKind } from './layout/LevelSceneLayout';
+import type {
+  DistrictPrefabKind,
+  EnergyNetworkNodeKind,
+  EnvironmentPrefabKind
+} from './layout/LevelSceneLayout';
 
 export interface HologramCameraConfig {
   startZoom: number;
@@ -8,6 +12,8 @@ export interface HologramCameraConfig {
   maxZoom: number;
   startOffsetX: number;
   startOffsetY: number;
+  panLimitX?: number;
+  panLimitY?: number;
 }
 
 export interface ScenePoint {
@@ -85,6 +91,30 @@ export interface EnergyLinkSceneState {
   intensity: number;
 }
 
+export type EnergyNetworkNodeStatus = 'active' | 'warning' | 'offline' | 'planned';
+export type EnergyNetworkEdgeStatus = 'normal' | 'overload' | 'offline' | 'planned';
+
+export interface EnergyNetworkNodeSceneState extends ScenePoint {
+  id: string;
+  label: string;
+  kind: EnergyNetworkNodeKind;
+  status: EnergyNetworkNodeStatus;
+  capacity: number;
+  loadRatio: number;
+  facilityId?: string;
+  districtId?: string;
+}
+
+export interface EnergyNetworkEdgeSceneState {
+  id: string;
+  fromNodeId: string;
+  toNodeId: string;
+  points: ScenePoint[];
+  capacity: number;
+  loadRatio: number;
+  status: EnergyNetworkEdgeStatus;
+}
+
 export interface RoadSceneState {
   id: string;
   points: ScenePoint[];
@@ -155,12 +185,15 @@ export interface CitySceneState {
   blackoutIntensity: number;
   trafficDensity: number;
   city: ScenePoint;
+  focus?: ScenePoint;
   camera: HologramCameraConfig;
   sceneMode?: 'procedural' | 'authored';
   growth?: CityGrowthSceneState;
   districts: DistrictSceneState[];
   districtPrefabs?: DistrictPrefabSceneState[];
   environment?: EnvironmentPrefabSceneState[];
+  networkNodes?: EnergyNetworkNodeSceneState[];
+  networkEdges?: EnergyNetworkEdgeSceneState[];
   plots: PlotSceneState[];
   facilities: FacilitySceneState[];
   links: EnergyLinkSceneState[];
