@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="768" viewBox="0 0 1024 768" fill="none">
+  <defs>
+    <linearGradient id="ground" x1="240" y1="330" x2="760" y2="690" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#244C48"/>
+      <stop offset="1" stop-color="#112825"/>
+    </linearGradient>
+    <linearGradient id="road" x1="300" y1="390" x2="720" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3A4B50"/>
+      <stop offset="1" stop-color="#1B292E"/>
+    </linearGradient>
+    <linearGradient id="cyanFace" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#2A7892"/>
+      <stop offset="1" stop-color="#123845"/>
+    </linearGradient>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="9" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="16"/>
+    </filter>
+  </defs>
+<ellipse cx="512" cy="640" rx="260" ry="70" fill="#02080A" opacity="0.52" filter="url(#soft)"/>
+<polygon points="512,405 812,555 512,705 212,555" fill="#21463F" stroke="#3E8179" opacity="0.98"/>
+<g transform="translate(360 520)"><rect x="-42" y="-55" width="84" height="90" rx="9" fill="#315763"/><ellipse cx="0" cy="-55" rx="42" ry="18" fill="#6B97A0"/><path d="M-60 25L0 -10L60 25L0 60Z" fill="#233B43" stroke="#55DEFF" stroke-width="3"/><circle cx="0" cy="-8" r="12" fill="#FFD26C" filter="url(#glow)"/></g>
+<g transform="translate(520 520)"><rect x="-42" y="-55" width="84" height="90" rx="9" fill="#315763"/><ellipse cx="0" cy="-55" rx="42" ry="18" fill="#6B97A0"/><path d="M-60 25L0 -10L60 25L0 60Z" fill="#233B43" stroke="#55DEFF" stroke-width="3"/><circle cx="0" cy="-8" r="12" fill="#FFD26C" filter="url(#glow)"/></g>
+<g transform="translate(680 520)"><rect x="-42" y="-55" width="84" height="90" rx="9" fill="#315763"/><ellipse cx="0" cy="-55" rx="42" ry="18" fill="#6B97A0"/><path d="M-60 25L0 -10L60 25L0 60Z" fill="#233B43" stroke="#55DEFF" stroke-width="3"/><circle cx="0" cy="-8" r="12" fill="#FFD26C" filter="url(#glow)"/></g>
+<path d="M275 465L350 420L430 465M595 465L675 420L755 465" stroke="#A9C7CE" stroke-width="8" stroke-linecap="round"/>
+<path d="M350 420V285M675 420V285" stroke="#92B0B7" stroke-width="10"/><path d="M315 330H385M640 330H710" stroke="#92B0B7" stroke-width="8"/>
+<ellipse cx="512" cy="535" rx="235" ry="112" stroke="#55DEFF" stroke-width="4" opacity="0.24" filter="url(#glow)"/>
+</svg>

@@ -66,6 +66,14 @@ const zoneLabels = {
   utility: '公共服务区'
 } as const;
 
+const commercialDistrictAssetIds: Record<DistrictPrefabSceneState['kind'], string> = {
+  residential: 'commercial_district_residential',
+  commercial: 'commercial_district_commercial',
+  industrial: 'commercial_district_industrial',
+  public: 'commercial_district_public',
+  old_town: 'commercial_district_old_town'
+};
+
 const clamp = (value: number, min: number, max: number): number =>
   Math.min(max, Math.max(min, value));
 
@@ -194,6 +202,7 @@ const mapDistrictPrefabs = (
       scale: district.scale ?? 1,
       buildingCount: district.buildingCount ?? 5,
       variant: district.variant ?? rank,
+      prefabAssetId: commercialDistrictAssetIds[district.kind],
       powerRatio,
       status: statusForPower(powerRatio)
     };

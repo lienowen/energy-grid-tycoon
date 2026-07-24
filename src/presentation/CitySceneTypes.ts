@@ -43,6 +43,7 @@ export interface DistrictPrefabSceneState extends ScenePoint {
   scale: number;
   buildingCount: number;
   variant: number;
+  prefabAssetId?: string;
   powerRatio: number;
   status: DistrictPrefabStatus;
 }

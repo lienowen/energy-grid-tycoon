@@ -100,11 +100,11 @@ def tree(x: float, y: float, scale: float = 1) -> str:
 
 def lamp(x: float, y: float, blackout: bool) -> str:
     light = '#FFDD82' if not blackout else '#404B4F'
+    glow_attr = 'filter="url(#glow)"' if not blackout else ''
     return f'''<g transform="translate({x} {y})">
   <rect x="-2" y="-27" width="4" height="30" rx="2" fill="#6E8890"/>
-  <circle cx="0" cy="-30" r="5" fill="{light}" opacity="0.95" {'filter="url(#glow)"' if not blackout else ''}/>
+  <circle cx="0" cy="-30" r="5" fill="{light}" opacity="0.95" {glow_attr}/>
 </g>'''
-
 
 def district_svg(kind: str, blackout: bool) -> str:
     palettes = {
@@ -358,8 +358,8 @@ replace_once(
 )
 replace_once(
     'src/presentation/pixi/ImmersivePixiWorld.ts',
-    "    generation: number,\n    showDiagnostics: boolean\n  ): void {\n",
-    "    generation: number,\n    showDiagnostics: boolean,\n    commercial: boolean\n  ): void {\n"
+    "  private drawNetworkNode(\n    node: EnergyNetworkNodeSceneState,\n    generation: number,\n    showDiagnostics: boolean\n  ): void {\n",
+    "  private drawNetworkNode(\n    node: EnergyNetworkNodeSceneState,\n    generation: number,\n    showDiagnostics: boolean,\n    commercial: boolean\n  ): void {\n"
 )
 replace_once(
     'src/presentation/pixi/ImmersivePixiWorld.ts',

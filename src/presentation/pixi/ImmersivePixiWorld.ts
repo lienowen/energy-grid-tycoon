@@ -569,14 +569,15 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
     }
 
     for (const node of state.networkNodes ?? []) {
-      this.drawNetworkNode(node, generation, showDiagnostics);
+      this.drawNetworkNode(node, generation, showDiagnostics, state.levelId === 'city-01');
     }
   }
 
   private drawNetworkNode(
     node: EnergyNetworkNodeSceneState,
     generation: number,
-    showDiagnostics: boolean
+    showDiagnostics: boolean,
+    commercial: boolean
   ): void {
     if (node.kind === 'district') return;
     const color = networkNodeColor(node);
@@ -587,10 +588,13 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
         : node.status === 'warning'
           ? 'overload'
           : 'active';
+      const bodyAssetId = commercial && node.kind === 'substation'
+        ? `commercial_facility_substation_${node.status === 'offline' ? 'offline' : 'active'}`
+        : `world_facility_${assetPrefix}_${stateSuffix}`;
       this.addAssetObject({
-        assetId: `world_facility_${assetPrefix}_${stateSuffix}`,
+        assetId: bodyAssetId,
         point: { ...node, elevation: node.elevation + 0.65 },
-        width: node.kind === 'substation' ? 142 : 92,
+        width: commercial && node.kind === 'substation' ? 178 : node.kind === 'substation' ? 142 : 92,
         anchorY: 0.82,
         generation,
         layer: this.layerManager.layers.buildings,
@@ -642,6 +646,32 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
   ): void {
     for (const district of state.districtPrefabs ?? []) {
       const statusColor = districtStatusColor(district);
+      if (district.prefabAssetId) {
+        const suffix = district.status === 'blackout' || district.status === 'offline' ? 'blackout' : 'night';
+        const width = district.width * 13.2 * district.scale;
+        this.addAssetObject({
+          assetId: 'commercial_district_shadow',
+          point: { ...district, elevation: Math.max(-0.08, district.elevation - 0.28) },
+          width,
+          anchorY: 0.86,
+          generation,
+          layer: this.layerManager.layers.buildingShadows,
+          alpha: 0.68,
+          placeholderColor: 0x000000
+        });
+        this.addAssetObject({
+          assetId: `${district.prefabAssetId}_${suffix}`,
+          point: { ...district, elevation: district.elevation + 0.42 },
+          width,
+          anchorY: 0.86,
+          generation,
+          layer: this.layerManager.layers.buildings,
+          alpha: district.status === 'offline' ? 0.8 : 1,
+          placeholderColor: statusColor
+        });
+        if (shouldRenderDistrictLabel(district, showDiagnostics)) this.drawDistrictLabel(district);
+        continue;
+      }
       const ground = this.roundedDiamond(district, district.width * 0.5, district.depth * 0.5)
         .fill({
           color: districtGroundColor[district.kind],
@@ -948,7 +978,8 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
         category: facility.category,
         enabled: facility.enabled,
         selected: false,
-        constructionProgress: 1
+        constructionProgress: 1,
+        presentation: authored ? 'commercial' : 'standard'
       });
       this.addAssetObject({
         assetId: visual.shadowAssetId,
