@@ -1,7 +1,28 @@
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "budgetBytes": 40000000,
   "entries": [
+    {
+      "id": "commercial_city_dawn_base",
+      "kind": "image",
+      "src": "/assets/commercial/environment/dawn-city-base.svg",
+      "version": 7,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v7",
+        "environment",
+        "city-base",
+        "dawn-city"
+      ]
+    },
     {
       "id": "commercial_district_residential_night",
       "kind": "image",
