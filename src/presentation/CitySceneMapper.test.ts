@@ -6,6 +6,7 @@ import type { GameViewModel } from '../core/GameManager';
 import { LevelLoader, type LevelConfig } from '../systems/LevelLoader';
 import { neutralSimulationModifiers } from '../systems/SimulationModifiers';
 import { CitySceneMapper } from './CitySceneMapper';
+import { toScenePoint } from './CitySceneVisuals';
 
 const makeView = (levelIndex = 0): GameViewModel => {
   const level = levelData[levelIndex] as unknown as LevelConfig;
@@ -55,12 +56,9 @@ describe('CitySceneMapper', () => {
     const wind = scene.facilities.find((facility) => facility.plotId === 'east-coast');
     const gasPlot = scene.plots.find((plot) => plot.id === 'west-industry');
 
-    expect(solar?.x).toBe(17);
-    expect(solar?.z).toBe(25);
-    expect(wind?.x).toBe(76);
-    expect(wind?.z).toBe(14);
-    expect(gasPlot?.x).toBe(18);
-    expect(gasPlot?.z).toBe(70);
+    expect(solar).toMatchObject(toScenePoint({ x: 17, y: 25, elevation: 0.2 }));
+    expect(wind).toMatchObject(toScenePoint({ x: 76, y: 14, elevation: 0.45 }));
+    expect(gasPlot).toMatchObject(toScenePoint({ x: 18, y: 70, elevation: 0.15 }));
   });
 
   it('marks only legal empty plots when the player chooses a facility', () => {
@@ -79,7 +77,7 @@ describe('CitySceneMapper', () => {
     const scene = CitySceneMapper.map(makeView());
     expect(scene.camera.startZoom).toBe(1.24);
     expect(scene.camera.panLimitX).toBe(170);
-    expect(scene.focus).toEqual({ x: 51, z: 46, elevation: 0 });
+    expect(scene.focus).toEqual(toScenePoint({ x: 51, y: 46, elevation: 0 }));
     expect(scene.camera.minZoom).toBeLessThan(scene.camera.maxZoom);
   });
 
