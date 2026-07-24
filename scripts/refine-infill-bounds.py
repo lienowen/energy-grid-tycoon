@@ -37,12 +37,21 @@ replace_once(
 """
 )
 
-test = 'src/presentation/CommercialCityLifePlanner.test.ts'
-replace_once(test, "    expect(plan.infill).toHaveLength(9);\n", "    expect(plan.infill).toHaveLength(7);\n")
-replace_once(test, "    expect(plan.infill).toHaveLength(9);\n", "    expect(plan.infill).toHaveLength(7);\n")
-replace_once(
-    test,
-    "    expect(plan.infill.some((block) => !block.powered)).toBe(true);\n",
-    "    expect(plan.infill.some((block) => !block.powered)).toBe(true);\n"
-    "    expect(plan.infill.every((block) => block.point.z <= 60)).toBe(true);\n"
+test = Path('src/presentation/CommercialCityLifePlanner.test.ts')
+text = test.read_text(encoding='utf-8')
+old_count = text.count("    expect(plan.infill).toHaveLength(9);\n")
+if old_count != 2:
+    raise RuntimeError(f'expected two infill length assertions, found {old_count}')
+text = text.replace(
+    "    expect(plan.infill).toHaveLength(9);\n",
+    "    expect(plan.infill).toHaveLength(7);\n"
 )
+needle = "    expect(plan.infill.some((block) => !block.powered)).toBe(true);\n"
+if text.count(needle) != 1:
+    raise RuntimeError('expected one unpowered infill assertion')
+text = text.replace(
+    needle,
+    needle + "    expect(plan.infill.every((block) => block.point.z <= 60)).toBe(true);\n",
+    1
+)
+test.write_text(text, encoding='utf-8')
