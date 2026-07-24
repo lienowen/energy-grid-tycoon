@@ -7,6 +7,8 @@ import type {
 
 export type CityFabricTone = 'core' | 'waterfront' | 'service' | 'greenway';
 export type CommercialVehicleTone = 'commuter' | 'service' | 'freight';
+export type CommercialInfillTone = 'residential' | 'mixed' | 'service' | 'warehouse';
+export type CommercialJunctionTone = 'residential' | 'core' | 'civic' | 'industrial';
 
 export interface CityFabricPatch {
   id: string;
@@ -30,6 +32,25 @@ export interface CommercialVehiclePlan {
   headlights: boolean;
 }
 
+export interface CommercialInfillBlockPlan {
+  id: string;
+  point: ScenePoint;
+  width: number;
+  depth: number;
+  height: number;
+  tone: CommercialInfillTone;
+  powered: boolean;
+  night: boolean;
+  seed: number;
+}
+
+export interface CommercialJunctionPlan {
+  id: string;
+  point: ScenePoint;
+  radius: number;
+  tone: CommercialJunctionTone;
+}
+
 export interface CommercialDistrictRecoveryPlan {
   id: string;
   point: ScenePoint;
@@ -42,6 +63,8 @@ export interface CommercialDistrictRecoveryPlan {
 
 export interface CommercialCityLifePlan {
   fabric: CityFabricPatch[];
+  infill: CommercialInfillBlockPlan[];
+  junctions: CommercialJunctionPlan[];
   streetLights: CommercialStreetLightPlan[];
   vehicles: CommercialVehiclePlan[];
   recovery: CommercialDistrictRecoveryPlan[];
@@ -90,6 +113,52 @@ const dawnCityFabric = (): CityFabricPatch[] => [
       point(73, 75, -0.28), point(55, 84, -0.28), point(36, 75, -0.28)
     ]
   }
+];
+
+const dawnCityInfill = (
+  supplyRatio: number,
+  night: boolean
+): CommercialInfillBlockPlan[] => {
+  const define = (
+    id: string,
+    x: number,
+    z: number,
+    width: number,
+    depth: number,
+    height: number,
+    tone: CommercialInfillTone,
+    threshold: number,
+    seed: number
+  ): CommercialInfillBlockPlan => ({
+    id,
+    point: { x, z, elevation: 0.12 },
+    width,
+    depth,
+    height,
+    tone,
+    powered: supplyRatio >= threshold,
+    night,
+    seed
+  });
+
+  return [
+    define('west-market', 30, 50, 4.8, 3.6, 2.8, 'mixed', 0.28, 101),
+    define('north-terraces', 36, 35, 4.6, 3.4, 3.2, 'residential', 0.22, 113),
+    define('central-exchange', 57, 50, 5.2, 4, 3.8, 'mixed', 0.16, 127),
+    define('park-edge', 62, 35, 4.4, 3.2, 2.6, 'residential', 0.36, 139),
+    define('civic-north', 49, 62, 4.8, 3.8, 2.8, 'service', 0.12, 151),
+    define('south-market', 36, 69, 4.5, 3.4, 2.5, 'mixed', 0.44, 163),
+    define('industrial-south', 68, 62, 5.2, 4, 2.4, 'warehouse', 0.58, 179),
+    define('east-workshops', 82, 51, 4.6, 3.6, 2.7, 'warehouse', 0.68, 191),
+    define('old-town-gate', 75, 73, 4.2, 3.2, 2.4, 'mixed', 0.82, 211)
+  ];
+};
+
+const dawnCityJunctions = (): CommercialJunctionPlan[] => [
+  { id: 'west-junction', point: point(34, 44, -0.16), radius: 2.4, tone: 'residential' },
+  { id: 'central-junction', point: point(48, 45, -0.16), radius: 3, tone: 'core' },
+  { id: 'civic-junction', point: point(58, 64, -0.16), radius: 2.6, tone: 'civic' },
+  { id: 'east-junction', point: point(71, 46, -0.16), radius: 2.6, tone: 'industrial' }
 ];
 
 const interpolate = (from: ScenePoint, to: ScenePoint, progress: number): ScenePoint => ({
@@ -162,15 +231,22 @@ const makeVehicles = (
   return vehicles.slice(0, 11);
 };
 
+const emptyPlan = (): CommercialCityLifePlan => ({
+  fabric: [],
+  infill: [],
+  junctions: [],
+  streetLights: [],
+  vehicles: [],
+  recovery: []
+});
+
 export const planCommercialCityLife = (
   state: Pick<
     CitySceneState,
-    'levelId' | 'hour' | 'presentationMode' | 'roads' | 'districtPrefabs'
+    'levelId' | 'hour' | 'supplyRatio' | 'presentationMode' | 'roads' | 'districtPrefabs'
   >
 ): CommercialCityLifePlan => {
-  if (state.levelId !== 'city-01') {
-    return { fabric: [], streetLights: [], vehicles: [], recovery: [] };
-  }
+  if (state.levelId !== 'city-01') return emptyPlan();
 
   const night = state.hour < 6 || state.hour >= 18;
   const diagnostics = state.presentationMode === 'grid';
@@ -188,6 +264,8 @@ export const planCommercialCityLife = (
 
   return {
     fabric: dawnCityFabric(),
+    infill: dawnCityInfill(state.supplyRatio, night),
+    junctions: dawnCityJunctions(),
     streetLights: makeStreetLights(state.roads, night),
     vehicles: makeVehicles(state.roads, night, diagnostics),
     recovery
