@@ -1,0 +1,37 @@
+name: Build commercial vertical slice assets
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - scripts/build-commercial-vertical-slice-assets.py
+      - .github/workflows/build-commercial-vertical-slice-assets.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build-assets:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout rebuild branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Generate and wire commercial assets
+        run: python scripts/build-commercial-vertical-slice-assets.py
+
+      - name: Remove one-shot asset tooling
+        run: git rm scripts/build-commercial-vertical-slice-assets.py .github/workflows/build-commercial-vertical-slice-assets.yml
+
+      - name: Commit commercial asset pack
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: replace graybox districts with commercial prefab assets"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
