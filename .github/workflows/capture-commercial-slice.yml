@@ -36,6 +36,12 @@ jobs:
           npm install --no-audit --no-fund
           npm run build
 
+      - name: Install screenshot fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+
       - name: Start production preview
         run: |
           nohup npm run preview -- --host 127.0.0.1 --port 4173 > /tmp/commercial-preview.log 2>&1 &
