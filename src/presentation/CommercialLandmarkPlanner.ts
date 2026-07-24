@@ -1,5 +1,6 @@
 import type { FacilitySceneState } from './CitySceneTypes';
 
+// Repeated facility units remain separate in simulation but share one authored city landmark.
 export const planCommercialFacilities = (
   facilities: readonly FacilitySceneState[]
 ): FacilitySceneState[] => {
