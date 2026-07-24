@@ -88,3 +88,7 @@
   .hologram-mission-card[data-dawn-beat] { width: min(280px, calc(100vw - 92px)); }
   .hologram-mission-card[data-dawn-beat] p { display: none; }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .release-experience-progress i { transition: none; }
+}
