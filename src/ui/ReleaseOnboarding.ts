@@ -26,7 +26,7 @@ export class ReleaseOnboarding {
     this.lastView = view;
     this.clearHighlight();
 
-    if (this.dismissed || view.level.id !== 'city-01' || view.state.completed || view.state.failed) {
+    if (view.level.id !== 'city-01' || view.state.completed || view.state.failed) {
       this.root.querySelector('[data-release-onboarding]')?.remove();
       return;
     }
@@ -43,10 +43,17 @@ export class ReleaseOnboarding {
       return;
     }
 
+    this.syncMissionCard(beat);
+
     if (this.lastBeatId && this.lastBeatId !== beat.id) {
       this.announce(`阶段完成。现在进入第 ${beat.stage} 阶段：${beat.title}`);
     }
     this.lastBeatId = beat.id;
+
+    if (this.dismissed) {
+      this.root.querySelector('[data-release-onboarding]')?.remove();
+      return;
+    }
 
     const target = this.root.querySelector(this.targetSelector(view, beat));
     target?.classList.add('release-onboarding-target');
@@ -110,6 +117,24 @@ export class ReleaseOnboarding {
     this.root.querySelector('[data-release-onboarding]')?.remove();
     this.root.querySelector('[data-release-announcement]')?.remove();
     if (this.announcementTimer !== undefined) window.clearTimeout(this.announcementTimer);
+  }
+
+  private syncMissionCard(beat: DawnCityExperienceBeat): void {
+    const mission = this.root.querySelector<HTMLElement>('.hologram-mission-card');
+    if (!mission) return;
+    const progress = Math.round(beat.progress * 100);
+    mission.dataset.dawnBeat = beat.id;
+    mission.dataset.tone = beat.tone;
+    mission.innerHTML = `
+      <span>${beat.stage}</span>
+      <div>
+        <small>当前任务 · ${beat.stage}/${beat.totalStages}</small>
+        <strong>${escapeHtml(beat.title)}</strong>
+        <p>${escapeHtml(beat.nextPromise)}</p>
+      </div>
+      <em>${progress}%</em>
+      <div class="hologram-progress"><i style="width:${progress}%"></i></div>
+    `;
   }
 
   private targetSelector(view: GameViewModel, beat: DawnCityExperienceBeat): string {
