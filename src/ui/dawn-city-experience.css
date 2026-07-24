@@ -86,6 +86,7 @@
 @media (max-width: 680px) {
   .release-onboarding-copy em { font-size: 9px; }
   .hologram-mission-card[data-dawn-beat] { width: min(280px, calc(100vw - 92px)); }
+  .hologram-mission-card[data-dawn-beat] strong { font-size: 11px; }
   .hologram-mission-card[data-dawn-beat] p { display: none; }
 }
 
