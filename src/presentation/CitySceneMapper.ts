@@ -15,6 +15,7 @@ import {
   toScenePoint
 } from './CitySceneVisuals';
 import type {
+  CityPresentationMode,
   CitySceneState,
   DistrictPrefabSceneState,
   DistrictPrefabStatus,
@@ -37,6 +38,7 @@ export type {
   CitizenFeedbackSceneState,
   CitizenFeedbackTone,
   CityGrowthSceneState,
+  CityPresentationMode,
   CityScenePlacementState,
   CitySceneState,
   DistrictPrefabSceneState,
@@ -63,6 +65,14 @@ const zoneLabels = {
   outskirts: '城市边缘',
   utility: '公共服务区'
 } as const;
+
+const commercialDistrictAssetIds: Record<DistrictPrefabSceneState['kind'], string> = {
+  residential: 'commercial_district_residential',
+  commercial: 'commercial_district_commercial',
+  industrial: 'commercial_district_industrial',
+  public: 'commercial_district_public',
+  old_town: 'commercial_district_old_town'
+};
 
 const clamp = (value: number, min: number, max: number): number =>
   Math.min(max, Math.max(min, value));
@@ -192,6 +202,7 @@ const mapDistrictPrefabs = (
       scale: district.scale ?? 1,
       buildingCount: district.buildingCount ?? 5,
       variant: district.variant ?? rank,
+      prefabAssetId: commercialDistrictAssetIds[district.kind],
       powerRatio,
       status: statusForPower(powerRatio)
     };
@@ -342,7 +353,11 @@ const mapEnergyNetwork = (
 };
 
 export class CitySceneMapper {
-  static map(view: GameViewModel, selectedBuildingId?: string): CitySceneState {
+  static map(
+    view: GameViewModel,
+    selectedBuildingId?: string,
+    presentationMode: CityPresentationMode = 'city'
+  ): CitySceneState {
     const plots = LevelLoader.getWorldPlots(view.level);
     const layout = LevelSceneLayoutRegistry.resolve(view.level.id);
     const selected = selectedBuildingId
@@ -429,6 +444,7 @@ export class CitySceneMapper {
       focus: layout ? toScenePoint(layout.focus) : undefined,
       camera: getCamera(view, layout),
       sceneMode: layout ? 'authored' : 'procedural',
+      presentationMode,
       growth,
       districts,
       districtPrefabs,

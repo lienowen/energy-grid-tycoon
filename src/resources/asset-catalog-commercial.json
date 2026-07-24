@@ -1,0 +1,487 @@
+{
+  "schemaVersion": 7,
+  "budgetBytes": 40000000,
+  "entries": [
+    {
+      "id": "commercial_city_dawn_base",
+      "kind": "image",
+      "src": "/assets/commercial/environment/dawn-city-base.svg",
+      "version": 7,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v7",
+        "environment",
+        "city-base",
+        "dawn-city"
+      ]
+    },
+    {
+      "id": "commercial_district_residential_night",
+      "kind": "image",
+      "src": "/assets/commercial/districts/residential/night.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "district",
+        "residential",
+        "night"
+      ]
+    },
+    {
+      "id": "commercial_district_residential_blackout",
+      "kind": "image",
+      "src": "/assets/commercial/districts/residential/blackout.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "district",
+        "residential",
+        "blackout"
+      ]
+    },
+    {
+      "id": "commercial_district_commercial_night",
+      "kind": "image",
+      "src": "/assets/commercial/districts/commercial/night.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "district",
+        "commercial",
+        "night"
+      ]
+    },
+    {
+      "id": "commercial_district_commercial_blackout",
+      "kind": "image",
+      "src": "/assets/commercial/districts/commercial/blackout.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "district",
+        "commercial",
+        "blackout"
+      ]
+    },
+    {
+      "id": "commercial_district_industrial_night",
+      "kind": "image",
+      "src": "/assets/commercial/districts/industrial/night.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "district",
+        "industrial",
+        "night"
+      ]
+    },
+    {
+      "id": "commercial_district_industrial_blackout",
+      "kind": "image",
+      "src": "/assets/commercial/districts/industrial/blackout.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "district",
+        "industrial",
+        "blackout"
+      ]
+    },
+    {
+      "id": "commercial_district_public_night",
+      "kind": "image",
+      "src": "/assets/commercial/districts/public/night.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "district",
+        "public",
+        "night"
+      ]
+    },
+    {
+      "id": "commercial_district_public_blackout",
+      "kind": "image",
+      "src": "/assets/commercial/districts/public/blackout.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "district",
+        "public",
+        "blackout"
+      ]
+    },
+    {
+      "id": "commercial_district_old_town_night",
+      "kind": "image",
+      "src": "/assets/commercial/districts/old_town/night.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "district",
+        "old_town",
+        "night"
+      ]
+    },
+    {
+      "id": "commercial_district_old_town_blackout",
+      "kind": "image",
+      "src": "/assets/commercial/districts/old_town/blackout.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "district",
+        "old_town",
+        "blackout"
+      ]
+    },
+    {
+      "id": "commercial_district_shadow",
+      "kind": "image",
+      "src": "/assets/commercial/districts/shadow.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "district",
+        "shadow"
+      ]
+    },
+    {
+      "id": "commercial_facility_solar_active",
+      "kind": "image",
+      "src": "/assets/commercial/facilities/solar/active.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "facility",
+        "solar",
+        "active"
+      ]
+    },
+    {
+      "id": "commercial_facility_solar_offline",
+      "kind": "image",
+      "src": "/assets/commercial/facilities/solar/offline.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "facility",
+        "solar",
+        "offline"
+      ]
+    },
+    {
+      "id": "commercial_facility_wind_active",
+      "kind": "image",
+      "src": "/assets/commercial/facilities/wind/active.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "facility",
+        "wind",
+        "active"
+      ]
+    },
+    {
+      "id": "commercial_facility_wind_offline",
+      "kind": "image",
+      "src": "/assets/commercial/facilities/wind/offline.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "facility",
+        "wind",
+        "offline"
+      ]
+    },
+    {
+      "id": "commercial_facility_gas_active",
+      "kind": "image",
+      "src": "/assets/commercial/facilities/gas/active.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "facility",
+        "gas",
+        "active"
+      ]
+    },
+    {
+      "id": "commercial_facility_gas_offline",
+      "kind": "image",
+      "src": "/assets/commercial/facilities/gas/offline.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "facility",
+        "gas",
+        "offline"
+      ]
+    },
+    {
+      "id": "commercial_facility_battery_active",
+      "kind": "image",
+      "src": "/assets/commercial/facilities/battery/active.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "facility",
+        "battery",
+        "active"
+      ]
+    },
+    {
+      "id": "commercial_facility_battery_offline",
+      "kind": "image",
+      "src": "/assets/commercial/facilities/battery/offline.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "facility",
+        "battery",
+        "offline"
+      ]
+    },
+    {
+      "id": "commercial_facility_substation_active",
+      "kind": "image",
+      "src": "/assets/commercial/facilities/substation/active.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "facility",
+        "substation",
+        "active"
+      ]
+    },
+    {
+      "id": "commercial_facility_substation_offline",
+      "kind": "image",
+      "src": "/assets/commercial/facilities/substation/offline.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "facility",
+        "substation",
+        "offline"
+      ]
+    },
+    {
+      "id": "commercial_facility_shadow",
+      "kind": "image",
+      "src": "/assets/commercial/facilities/shadow.svg",
+      "version": 6,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.86
+      },
+      "tags": [
+        "global",
+        "commercial",
+        "v6",
+        "facility",
+        "shadow"
+      ]
+    }
+  ]
+}

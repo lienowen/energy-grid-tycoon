@@ -1,0 +1,71 @@
+name: Capture commercial vertical slice
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - scripts/capture-commercial-slice.mjs
+      - .github/workflows/capture-commercial-slice.yml
+      - public/assets/commercial/**
+      - src/presentation/**
+      - src/ui/MayorDashboard.ts
+      - src/resources/**
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout rebuild branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install and build
+        shell: bash
+        run: |
+          set -o pipefail
+          npm install --no-audit --no-fund
+          npm run build
+
+      - name: Start production preview
+        run: |
+          nohup npm run preview -- --host 127.0.0.1 --port 4173 > /tmp/commercial-preview.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:4173/ > /dev/null; then
+              exit 0
+            fi
+            sleep 0.25
+          done
+          cat /tmp/commercial-preview.log
+          exit 1
+
+      - name: Capture city and grid views
+        env:
+          APP_URL: http://127.0.0.1:4173/?renderer=immersive
+          SCREENSHOT_DIR: artifacts/commercial-slice
+        run: |
+          CHROME_PATH="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          if [ -z "$CHROME_PATH" ]; then
+            echo "No Chrome executable found"
+            exit 1
+          fi
+          export CHROME_PATH
+          node scripts/capture-commercial-slice.mjs
+
+      - name: Upload commercial screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: commercial-vertical-slice-${{ github.sha }}
+          path: artifacts/commercial-slice
+          if-no-files-found: warn
+          retention-days: 14

@@ -43,7 +43,9 @@ describe('CitySceneMapper', () => {
     expect(scene.districts.length).toBeGreaterThan(1);
     expect(scene.supplyRatio).toBe(0.72);
     expect(scene.sceneMode).toBe('authored');
+    expect(scene.presentationMode).toBe('city');
     expect(scene.districtPrefabs).toHaveLength(5);
+    expect(scene.districtPrefabs?.every((district) => Boolean(district.prefabAssetId))).toBe(true);
     expect(scene.networkNodes?.length).toBeGreaterThanOrEqual(10);
     expect(scene.networkEdges?.length).toBeGreaterThanOrEqual(10);
     expect(scene.networkNodes?.some((node) => node.status === 'planned')).toBe(true);
@@ -55,12 +57,12 @@ describe('CitySceneMapper', () => {
     const solar = scene.facilities.find((facility) => facility.plotId === 'sunrise-neighborhood');
     const wind = scene.facilities.find((facility) => facility.plotId === 'east-coast');
     const gasPlot = scene.plots.find((plot) => plot.id === 'west-industry');
-    const solarPoint = toScenePoint({ x: 17, y: 25, elevation: 0.2 });
-    const windPoint = toScenePoint({ x: 76, y: 14, elevation: 0.45 });
+    const solarPoint = toScenePoint({ x: 10, y: 23, elevation: 0.2 });
+    const windPoint = toScenePoint({ x: 82, y: 16, elevation: 0.45 });
 
     expect(solar).toMatchObject({ ...solarPoint, elevation: solarPoint.elevation + 1.1 });
     expect(wind).toMatchObject({ ...windPoint, elevation: windPoint.elevation + 1.1 });
-    expect(gasPlot).toMatchObject(toScenePoint({ x: 18, y: 70, elevation: 0.15 }));
+    expect(gasPlot).toMatchObject(toScenePoint({ x: 17, y: 72, elevation: 0.15 }));
   });
 
   it('marks only legal empty plots when the player chooses a facility', () => {
@@ -77,9 +79,9 @@ describe('CitySceneMapper', () => {
 
   it('uses the authored camera composition for Dawn City', () => {
     const scene = CitySceneMapper.map(makeView());
-    expect(scene.camera.startZoom).toBe(1.24);
+    expect(scene.camera.startZoom).toBe(1.43);
     expect(scene.camera.panLimitX).toBe(170);
-    expect(scene.focus).toEqual(toScenePoint({ x: 51, y: 46, elevation: 0 }));
+    expect(scene.focus).toEqual(toScenePoint({ x: 53, y: 47, elevation: 0 }));
     expect(scene.camera.minZoom).toBeLessThan(scene.camera.maxZoom);
   });
 
