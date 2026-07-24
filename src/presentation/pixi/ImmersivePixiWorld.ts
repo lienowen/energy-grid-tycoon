@@ -151,23 +151,23 @@ const districtGroundColor: Record<DistrictPrefabSceneState['kind'], number> = {
 };
 
 const commercialDistrictRenderScale: Record<DistrictPrefabSceneState['kind'], number> = {
-  residential: 10.2,
-  commercial: 10.8,
-  industrial: 10.6,
-  public: 10.4,
-  old_town: 10.8
+  residential: 8.9,
+  commercial: 9.3,
+  industrial: 9.1,
+  public: 8.9,
+  old_town: 9.2
 };
 
 const commercialFacilityWidth = (facility: FacilitySceneState): number => {
   const base = facility.configId.includes('solar')
-    ? 128
+    ? 116
     : facility.configId.includes('wind')
-      ? 184
+      ? 158
       : facility.configId.includes('gas')
-        ? 172
+        ? 150
         : facility.configId.includes('battery')
-          ? 158
-          : 174;
+          ? 142
+          : 150;
   return base * facility.scale;
 };
 
@@ -476,7 +476,7 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
     this.layerManager.layers.terrain.addChild(slot);
     void this.assets.load('commercial_city_dawn_base').then((texture) => {
       if (!texture || !this.mounted || generation !== this.renderGeneration || slot.destroyed) return;
-      slot.addChild(this.makeSprite(texture, 1024, 0.5, 1));
+      slot.addChild(this.makeSprite(texture, 1120, 0.5, 1));
     });
   }
 
@@ -1170,7 +1170,7 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
       ? planCommercialFacilities(state.facilities)
       : state.facilities;
     for (const facility of facilities) {
-      this.addFacilityLot(facility, generation);
+      if (!authored || state.levelId !== 'city-01') this.addFacilityLot(facility, generation);
       const visual = FacilityVisualRegistry.resolve({
         configId: facility.configId,
         category: facility.category,

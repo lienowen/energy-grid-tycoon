@@ -61,6 +61,7 @@ export class MayorDashboard {
   private lastView?: GameViewModel;
   private activePanel: MayorPanel = 'none';
   private presentationMode: 'city' | 'grid' = 'city';
+  private buildDockOpen = false;
   private selectedBuildingId?: string;
   private focusedBuildingId?: string;
   private noticeTimer?: number;
@@ -238,6 +239,7 @@ export class MayorDashboard {
         <button data-camera-zoom="in" title="放大沙盘"><i>＋</i><span>放大</span></button>
         <button data-camera-zoom="out" title="缩小沙盘"><i>－</i><span>缩小</span></button>
         <button data-presentation-toggle="true" aria-pressed="${this.presentationMode === 'grid'}" class="${this.presentationMode === 'grid' ? 'active' : ''}" title="切换城市经营与电网诊断视图"><i>⌁</i><span>${this.presentationMode === 'grid' ? '城市' : '电网'}</span></button>
+        <button data-build-dock-toggle="true" aria-pressed="${this.buildDockOpen}" class="${this.buildDockOpen ? 'active' : ''}" title="打开建设设施"><i>＋</i><span>建设</span></button>
         ${items.map(([panel, label, icon]) => `
           <button data-panel="${panel}" class="${this.activePanel === panel ? 'active' : ''}"><i>${icon}</i><span>${label}</span></button>
         `).join('')}
@@ -246,10 +248,11 @@ export class MayorDashboard {
   }
 
   private renderBuildDock(view: GameViewModel, counts: ReadonlyMap<string, number>): string {
+    if (!this.buildDockOpen) return '';
     const ended = view.state.completed || view.state.failed;
     return `
       <section class="hologram-build-dock">
-        <header><strong>建设设施</strong><small>${this.selectedBuildingId ? '点击沙盘中发亮的位置' : '先选择一个项目'}</small></header>
+        <header><strong>建设设施</strong><small>选择项目后，在城市中确认位置</small><button data-build-dock-toggle="true" aria-label="关闭建设栏">×</button></header>
         <div class="hologram-build-options">
           ${view.availableBuildings.map((config) => {
             const disabled = ended || view.state.money < config.cost;
@@ -470,6 +473,7 @@ export class MayorDashboard {
 
   private openPanel(panel: MayorPanel): void {
     this.activePanel = panel;
+    this.buildDockOpen = false;
     this.selectedBuildingId = undefined;
     if (this.lastView) this.render(this.lastView);
   }
@@ -478,6 +482,7 @@ export class MayorDashboard {
     this.activePanel = 'none';
     this.presentationMode = 'city';
     this.focusedBuildingId = undefined;
+    this.buildDockOpen = false;
     this.selectedBuildingId = this.selectedBuildingId === buildingId ? undefined : buildingId;
     if (this.lastView) this.render(this.lastView);
   }
@@ -503,6 +508,12 @@ export class MayorDashboard {
     this.root.querySelectorAll<HTMLButtonElement>('[data-camera-zoom]').forEach((button) => button.addEventListener('click', () => this.sandbox?.zoomBy(button.dataset.cameraZoom === 'in' ? 1.16 : 0.86)));
     this.root.querySelectorAll<HTMLButtonElement>('[data-presentation-toggle]').forEach((button) => button.addEventListener('click', () => {
       this.presentationMode = this.presentationMode === 'city' ? 'grid' : 'city';
+      if (this.lastView) this.render(this.lastView);
+    }));
+    this.root.querySelectorAll<HTMLButtonElement>('[data-build-dock-toggle]').forEach((button) => button.addEventListener('click', () => {
+      this.buildDockOpen = !this.buildDockOpen;
+      this.activePanel = 'none';
+      this.selectedBuildingId = undefined;
       if (this.lastView) this.render(this.lastView);
     }));
     this.root.querySelectorAll<HTMLButtonElement>('[data-speed]').forEach((button) => button.addEventListener('click', () => this.actions.onSpeedChange(Number(button.dataset.speed) as GameSpeed)));

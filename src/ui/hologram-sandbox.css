@@ -227,7 +227,7 @@
 
 .hologram-canvas-host {
   position: absolute;
-  inset: 0 0 98px;
+  inset: 0;
   z-index: 2;
   overflow: hidden;
 }
@@ -387,6 +387,21 @@
 .hologram-build-dock header { display: flex; flex-direction: column; justify-content: center; padding: 0 12px; border-right: 1px solid rgba(108, 209, 247, .15); }
 .hologram-build-dock header strong { color: var(--scenario-accent); font-size: 14px; }
 .hologram-build-dock header small { margin-top: 5px; color: #7899ad; font-size: 9px; line-height: 1.4; }
+.hologram-build-dock header { position: relative; }
+.hologram-build-dock header > button {
+  position: absolute;
+  right: 6px;
+  top: 5px;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(120, 218, 255, .28);
+  border-radius: 8px;
+  color: #b9d8e7;
+  background: rgba(4, 22, 35, .78);
+  cursor: pointer;
+}
+.hologram-build-dock header > button:hover { color: #fff; border-color: var(--scenario-accent); }
+
 .hologram-build-options { min-width: 0; display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; }
 .hologram-build-options::-webkit-scrollbar { display: none; }
 .hologram-build-options > button {
@@ -458,7 +473,7 @@
   .hologram-build-dock { width: calc(100vw - 92px); grid-template-columns: 112px minmax(0, 1fr); }
   .hologram-tool-rail { right: 6px; }
   .hologram-tool-rail button { width: 56px; }
-  .hologram-canvas-host { inset-bottom: 96px; }
+  .hologram-canvas-host { inset-bottom: 0; }
 }
 
 @media (max-width: 680px) {
@@ -482,6 +497,6 @@
   .hologram-build-dock header small { font-size: 7px; }
   .hologram-build-options > button { min-width: 138px; flex-basis: 138px; grid-template-columns: 55px minmax(0, 1fr); padding: 4px; }
   .hologram-build-options > button > span { width: 52px; height: 52px; }
-  .hologram-canvas-host { inset-bottom: 86px; }
+  .hologram-canvas-host { inset-bottom: 0; }
   .hologram-drawer { inset: 132px 8px 102px; width: auto; }
 }
