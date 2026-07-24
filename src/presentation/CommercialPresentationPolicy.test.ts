@@ -1,10 +1,26 @@
 import { describe, expect, it } from 'vitest';
 import {
+  selectVisibleNetworkEdges,
   shouldRenderDistrictLabel,
   shouldRenderNetworkEdge,
   shouldRenderNetworkNodeAsset,
   shouldRenderNetworkNodeDiagnostics
 } from './CommercialPresentationPolicy';
+import type { EnergyNetworkEdgeSceneState } from './CitySceneTypes';
+
+const edge = (
+  id: string,
+  status: EnergyNetworkEdgeSceneState['status'],
+  loadRatio: number
+): EnergyNetworkEdgeSceneState => ({
+  id,
+  status,
+  loadRatio,
+  fromNodeId: 'a',
+  toNodeId: 'b',
+  capacity: 1,
+  points: []
+});
 
 describe('CommercialPresentationPolicy', () => {
   it('keeps normal topology out of the default city view', () => {
@@ -13,17 +29,20 @@ describe('CommercialPresentationPolicy', () => {
     expect(shouldRenderNetworkNodeDiagnostics({ status: 'active' }, false)).toBe(false);
   });
 
-  it('keeps faults visible without opening the grid view', () => {
-    expect(shouldRenderNetworkEdge({ status: 'overload' }, false)).toBe(true);
-    expect(shouldRenderNetworkEdge({ status: 'offline' }, false)).toBe(true);
-    expect(shouldRenderNetworkNodeDiagnostics({ status: 'warning' }, false)).toBe(true);
-    expect(shouldRenderNetworkNodeDiagnostics({ status: 'offline' }, false)).toBe(true);
+  it('caps default incident paths to the two highest-priority faults', () => {
+    const visible = selectVisibleNetworkEdges([
+      edge('normal', 'normal', 0.8),
+      edge('overload-low', 'overload', 1.1),
+      edge('offline', 'offline', 0),
+      edge('overload-high', 'overload', 1.4)
+    ], false);
+    expect(visible.map((item) => item.id)).toEqual(['offline', 'overload-high']);
   });
 
-  it('keeps the main substation as a city landmark while hiding routine diagnostics', () => {
-    expect(shouldRenderNetworkNodeAsset({ kind: 'substation', status: 'active' }, false)).toBe(true);
-    expect(shouldRenderNetworkNodeAsset({ kind: 'distribution', status: 'active' }, false)).toBe(false);
-    expect(shouldRenderNetworkNodeDiagnostics({ status: 'active' }, false)).toBe(false);
+  it('keeps the main substation as a landmark without engineering markers', () => {
+    expect(shouldRenderNetworkNodeAsset({ kind: 'substation' }, false)).toBe(true);
+    expect(shouldRenderNetworkNodeAsset({ kind: 'distribution' }, false)).toBe(false);
+    expect(shouldRenderNetworkNodeDiagnostics({ status: 'offline' }, false)).toBe(false);
   });
 
   it('only labels healthy districts in the explicit grid view', () => {
@@ -33,8 +52,9 @@ describe('CommercialPresentationPolicy', () => {
   });
 
   it('shows the complete topology in grid view', () => {
-    expect(shouldRenderNetworkEdge({ status: 'normal' }, true)).toBe(true);
-    expect(shouldRenderNetworkNodeAsset({ kind: 'distribution', status: 'active' }, true)).toBe(true);
+    const all = [edge('normal', 'normal', 0.8), edge('planned', 'planned', 0)];
+    expect(selectVisibleNetworkEdges(all, true)).toEqual(all);
+    expect(shouldRenderNetworkNodeAsset({ kind: 'distribution' }, true)).toBe(true);
     expect(shouldRenderNetworkNodeDiagnostics({ status: 'planned' }, true)).toBe(true);
   });
 });
