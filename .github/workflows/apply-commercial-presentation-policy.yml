@@ -24,12 +24,6 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
       - name: Apply one-shot codemod
         run: python scripts/apply-commercial-vertical-slice.py
 
