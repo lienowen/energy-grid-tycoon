@@ -1,0 +1,33 @@
+name: Apply commercial v8 product pass
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - scripts/apply-commercial-v8-product-pass.py
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout rebuild branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/commercial-vertical-slice-rebuild
+          fetch-depth: 0
+
+      - name: Apply product pass
+        run: python scripts/apply-commercial-v8-product-pass.py
+
+      - name: Commit product pass
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/ui/MayorDashboard.ts src/ui/hologram-sandbox.css src/presentation/pixi/ImmersivePixiWorld.ts src/presentation/layout/LevelSceneLayoutRegistry.ts src/presentation/CitySceneMapper.test.ts
+          git diff --cached --quiet && exit 0
+          git commit -m "feat: focus the commercial city and collapse construction UI"
+          git push origin HEAD:feat/commercial-vertical-slice-rebuild
