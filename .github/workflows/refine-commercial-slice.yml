@@ -1,0 +1,34 @@
+name: Refine commercial slice from screenshot
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - scripts/refine-commercial-slice.py
+      - .github/workflows/refine-commercial-slice.yml
+
+permissions:
+  contents: write
+
+jobs:
+  refine:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout rebuild branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Apply screenshot-driven refinement
+        run: python scripts/refine-commercial-slice.py
+
+      - name: Commit refinement
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix: rebalance commercial city composition from runtime screenshot"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
