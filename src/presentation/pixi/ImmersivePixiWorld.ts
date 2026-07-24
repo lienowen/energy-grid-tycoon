@@ -20,6 +20,7 @@ import type {
   ScenePoint
 } from '../CitySceneMapper';
 import {
+  selectVisibleNetworkEdges,
   shouldRenderDistrictLabel,
   shouldRenderNetworkEdge,
   shouldRenderNetworkNodeAsset,
@@ -130,6 +131,27 @@ const districtGroundColor: Record<DistrictPrefabSceneState['kind'], number> = {
   industrial: 0x3c3a34,
   public: 0x2b4a48,
   old_town: 0x342e31
+};
+
+const commercialDistrictRenderScale: Record<DistrictPrefabSceneState['kind'], number> = {
+  residential: 10.2,
+  commercial: 10.8,
+  industrial: 10.6,
+  public: 10.4,
+  old_town: 10.8
+};
+
+const commercialFacilityWidth = (facility: FacilitySceneState): number => {
+  const base = facility.configId.includes('solar')
+    ? 128
+    : facility.configId.includes('wind')
+      ? 184
+      : facility.configId.includes('gas')
+        ? 172
+        : facility.configId.includes('battery')
+          ? 158
+          : 174;
+  return base * facility.scale;
 };
 
 const toColor = (value: string, fallback = 0x4ad7ff): number => {
@@ -462,23 +484,20 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
   }
 
   private drawRidge(item: EnvironmentPrefabSceneState): void {
-    const count = Math.max(8, Math.round(item.width / 7));
+    const colors = [0x142724, 0x1b332e, 0x24443a];
     for (let layer = 0; layer < 3; layer += 1) {
-      const top: { x: number; y: number }[] = [];
-      const base: { x: number; y: number }[] = [];
-      for (let index = 0; index < count; index += 1) {
-        const progress = index / Math.max(1, count - 1);
-        const x = item.x - item.width * 0.5 + progress * item.width;
-        const z = item.z + layer * 2 + (seededUnit(item.variant + layer * 11, index + 7) - 0.5) * item.depth * 0.32;
-        const elevation = 1.8 + seededUnit(item.variant + layer * 13, index + 19) * (2.8 - layer * 0.4);
-        top.push(this.project({ x, z, elevation }));
-        base.push(this.project({ x, z: z + item.depth * 0.5, elevation: -0.35 }));
-      }
-      const polygon = [...top, ...base.reverse()].flatMap(({ x, y }) => [x, y]);
-      const ridge = new Graphics()
-        .poly(polygon)
-        .fill({ color: [0x172a29, 0x1d3430, 0x25423a][layer] ?? 0x172a29, alpha: 0.88 - layer * 0.08 })
-        .stroke({ color: 0x52736c, alpha: 0.12, width: 1 });
+      const point: ScenePoint = {
+        x: item.x,
+        z: item.z + layer * 2.2,
+        elevation: 0.18 + layer * 0.12
+      };
+      const ridge = this.roundedDiamond(
+        point,
+        item.width * (0.48 - layer * 0.035),
+        item.depth * (0.58 - layer * 0.06)
+      )
+        .fill({ color: colors[layer] ?? colors[0]!, alpha: 0.72 - layer * 0.08 })
+        .stroke({ color: 0x52736c, alpha: 0.08, width: 1 });
       ridge.zIndex = this.depth(item, -80 + layer);
       this.layerManager.layers.terrain.addChild(ridge);
     }
@@ -540,7 +559,7 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
     generation: number,
     showDiagnostics: boolean
   ): void {
-    for (const edge of state.networkEdges ?? []) {
+    for (const edge of selectVisibleNetworkEdges(state.networkEdges ?? [], showDiagnostics)) {
       if (edge.points.length < 2 || !shouldRenderNetworkEdge(edge, showDiagnostics)) continue;
       const color = networkEdgeColor(edge);
       const glow = new Graphics();
@@ -594,7 +613,7 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
       this.addAssetObject({
         assetId: bodyAssetId,
         point: { ...node, elevation: node.elevation + 0.65 },
-        width: commercial && node.kind === 'substation' ? 178 : node.kind === 'substation' ? 142 : 92,
+        width: commercial && node.kind === 'substation' ? 154 : node.kind === 'substation' ? 142 : 92,
         anchorY: 0.82,
         generation,
         layer: this.layerManager.layers.buildings,
@@ -648,7 +667,7 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
       const statusColor = districtStatusColor(district);
       if (district.prefabAssetId) {
         const suffix = district.status === 'blackout' || district.status === 'offline' ? 'blackout' : 'night';
-        const width = district.width * 13.2 * district.scale;
+        const width = district.width * commercialDistrictRenderScale[district.kind] * district.scale;
         this.addAssetObject({
           assetId: 'commercial_district_shadow',
           point: { ...district, elevation: Math.max(-0.08, district.elevation - 0.28) },
@@ -981,10 +1000,12 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
         constructionProgress: 1,
         presentation: authored ? 'commercial' : 'standard'
       });
+      const bodyWidth = authored ? commercialFacilityWidth(facility) : 174 * facility.scale;
+      const shadowWidth = authored ? bodyWidth * 0.88 : 150 * facility.scale;
       this.addAssetObject({
         assetId: visual.shadowAssetId,
         point: { ...facility, elevation: Math.max(0, facility.elevation - 0.8) },
-        width: (authored ? 164 : 150) * facility.scale,
+        width: shadowWidth,
         anchorY: 0.55,
         generation,
         layer: this.layerManager.layers.buildingShadows,
@@ -994,7 +1015,7 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
       this.addAssetObject({
         assetId: visual.bodyAssetId,
         point: facility,
-        width: (authored ? 190 : 174) * facility.scale,
+        width: bodyWidth,
         anchorY: 0.84,
         generation,
         layer: this.layerManager.layers.buildings,
