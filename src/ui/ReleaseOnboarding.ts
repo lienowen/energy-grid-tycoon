@@ -1,97 +1,54 @@
 import type { GameViewModel } from '../core/GameManager';
+import {
+  DawnCityExperienceSystem,
+  type DawnCityExperienceBeat
+} from '../systems/DawnCityExperienceSystem';
 
-type OnboardingStep = 'choose' | 'place' | 'manage' | 'speed' | 'done';
 type OnboardingAction = 'buildPlaced' | 'facilityManaged' | 'speedChanged';
 
-interface StoredOnboardingState {
-  version: 1;
-  step: OnboardingStep;
-  completed: boolean;
-}
-
-interface StepContent {
-  eyebrow: string;
-  title: string;
-  message: string;
-  target: string;
-}
-
-const STORAGE_KEY = 'energy-grid-tycoon:onboarding:v1';
-
-const steps: Record<Exclude<OnboardingStep, 'done'>, StepContent> = {
-  choose: {
-    eyebrow: '第 1 步 / 4',
-    title: '选择一个建设项目',
-    message: '从底部项目栏选择发电或储能设施。资金不足的项目会自动锁定。',
-    target: '.hologram-build-dock'
-  },
-  place: {
-    eyebrow: '第 2 步 / 4',
-    title: '把设施放进城市',
-    message: '拖动沙盘寻找位置，发亮地块可以建设。轻点地块确认施工。',
-    target: '.hologram-canvas-host'
-  },
-  manage: {
-    eyebrow: '第 3 步 / 4',
-    title: '管理已建成的设施',
-    message: '打开“设施”面板，扩建、停运或恢复城市中的能源设施。',
-    target: '[data-panel="fleet"]'
-  },
-  speed: {
-    eyebrow: '第 4 步 / 4',
-    title: '让城市开始运转',
-    message: '使用右上角速度按钮推进时间，观察供电、资金和居民满意度的变化。',
-    target: '.hologram-speed'
-  }
-};
-
-const defaultState = (): StoredOnboardingState => ({
-  version: 1,
-  step: 'choose',
-  completed: false
-});
-
-const loadState = (): StoredOnboardingState => {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return defaultState();
-    const parsed = JSON.parse(raw) as Partial<StoredOnboardingState>;
-    const validSteps: OnboardingStep[] = ['choose', 'place', 'manage', 'speed', 'done'];
-    if (!parsed.step || !validSteps.includes(parsed.step)) return defaultState();
-    return {
-      version: 1,
-      step: parsed.step,
-      completed: parsed.completed === true || parsed.step === 'done'
-    };
-  } catch {
-    return defaultState();
-  }
-};
+const escapeHtml = (value: string): string => value
+  .replaceAll('&', '&amp;')
+  .replaceAll('<', '&lt;')
+  .replaceAll('>', '&gt;')
+  .replaceAll('"', '&quot;')
+  .replaceAll("'", '&#39;');
 
 export class ReleaseOnboarding {
-  private state = loadState();
   private lastView?: GameViewModel;
   private highlighted?: Element;
   private announcementTimer?: number;
+  private dismissed = false;
+  private lastBeatId?: DawnCityExperienceBeat['id'];
 
-  constructor(private readonly root: HTMLElement) {
-    this.root.addEventListener('click', this.handleRootClick);
-  }
+  constructor(private readonly root: HTMLElement) {}
 
   render(view: GameViewModel): void {
     this.lastView = view;
-    this.syncWithGame(view);
     this.clearHighlight();
 
-    if (this.state.completed) {
+    if (this.dismissed || view.level.id !== 'city-01' || view.state.completed || view.state.failed) {
       this.root.querySelector('[data-release-onboarding]')?.remove();
       return;
     }
 
-    const content = steps[this.state.step as Exclude<OnboardingStep, 'done'>];
-    if (!content) return;
+    const beat = DawnCityExperienceSystem.evaluate({
+      state: view.state,
+      buildings: view.buildings,
+      availableBuildings: view.availableBuildings,
+      technologies: view.technologies,
+      goalProgress: view.goalProgress
+    });
+    if (!beat) {
+      this.root.querySelector('[data-release-onboarding]')?.remove();
+      return;
+    }
 
-    const target = this.root.querySelector(content.target);
+    if (this.lastBeatId && this.lastBeatId !== beat.id) {
+      this.announce(`阶段完成。现在进入第 ${beat.stage} 阶段：${beat.title}`);
+    }
+    this.lastBeatId = beat.id;
+
+    const target = this.root.querySelector(this.targetSelector(view, beat));
     target?.classList.add('release-onboarding-target');
     this.highlighted = target ?? undefined;
 
@@ -105,35 +62,35 @@ export class ReleaseOnboarding {
       this.root.append(card);
     }
 
+    const progress = Math.round(beat.progress * 100);
+    card.className = `release-onboarding experience-${beat.tone}`;
+    card.dataset.experienceBeat = beat.id;
     card.innerHTML = `
       <div class="release-onboarding-copy">
-        <small>${content.eyebrow}</small>
-        <strong>${content.title}</strong>
-        <p>${content.message}</p>
+        <small>曙光新城 · 第 ${beat.stage} / ${beat.totalStages} 阶段</small>
+        <strong>${escapeHtml(beat.title)}</strong>
+        <p>${escapeHtml(beat.message)}</p>
+        <div class="release-experience-progress" aria-label="阶段进度 ${progress}%"><i style="width:${progress}%"></i></div>
+        <em>${progress}% · 完成后：${escapeHtml(beat.nextPromise)}</em>
       </div>
       <div class="release-onboarding-actions">
-        <button type="button" data-onboarding-focus="true">带我过去</button>
-        <button type="button" data-onboarding-skip="true">跳过引导</button>
+        <button type="button" data-onboarding-focus="true">${escapeHtml(beat.actionLabel)}</button>
+        <button type="button" data-onboarding-skip="true">暂时收起</button>
       </div>
     `;
 
     card.querySelector<HTMLButtonElement>('[data-onboarding-focus]')?.addEventListener('click', () => {
-      this.highlighted?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-      if (this.highlighted instanceof HTMLElement) this.highlighted.focus({ preventScroll: true });
+      this.activateTarget();
     });
-    card.querySelector<HTMLButtonElement>('[data-onboarding-skip]')?.addEventListener('click', () => this.complete());
+    card.querySelector<HTMLButtonElement>('[data-onboarding-skip]')?.addEventListener('click', () => {
+      this.dismissed = true;
+      this.clearHighlight();
+      card?.remove();
+    });
   }
 
-  record(action: OnboardingAction): void {
-    if (this.state.completed) return;
-    if (action === 'buildPlaced' && (this.state.step === 'choose' || this.state.step === 'place')) {
-      this.setStep('manage');
-    } else if (action === 'facilityManaged' && this.state.step === 'manage') {
-      this.setStep('speed');
-    } else if (action === 'speedChanged' && this.state.step === 'speed') {
-      this.complete();
-      this.announce('新手引导完成。现在这座城市交给你了。');
-    }
+  record(_action: OnboardingAction): void {
+    if (this.lastView && !this.dismissed) this.render(this.lastView);
   }
 
   announce(message: string): void {
@@ -149,55 +106,41 @@ export class ReleaseOnboarding {
   }
 
   destroy(): void {
-    this.root.removeEventListener('click', this.handleRootClick);
     this.clearHighlight();
     this.root.querySelector('[data-release-onboarding]')?.remove();
     this.root.querySelector('[data-release-announcement]')?.remove();
     if (this.announcementTimer !== undefined) window.clearTimeout(this.announcementTimer);
   }
 
-  private readonly handleRootClick = (event: Event): void => {
-    if (this.state.completed) return;
-    const target = event.target;
-    if (!(target instanceof Element)) return;
-    if (target.closest('[data-select-build]') && this.state.step === 'choose') this.setStep('place');
-    if (target.closest('[data-panel="fleet"]') && this.state.step === 'manage') {
-      this.announce('选择任意设施即可扩建、停运或恢复运行。');
+  private targetSelector(view: GameViewModel, beat: DawnCityExperienceBeat): string {
+    if (beat.id === 'stabilize') {
+      const gas = view.buildings.find((building) => building.config.id === 'gas_basic');
+      if (!gas) return '[data-select-build="gas_basic"]';
+      if (!gas.enabled) return '[data-panel="fleet"]';
+      return '.hologram-speed';
     }
-  };
+    if (beat.id === 'store') return '[data-select-build="battery_basic"]';
+    if (beat.id === 'develop') {
+      const target = view.technologies.find((technology) =>
+        !view.state.unlockedTechnologyIds.includes(technology.id)
+        && technology.prerequisites.every((id) => view.state.unlockedTechnologyIds.includes(id))
+      );
+      return target && view.state.researchPoints >= target.cost
+        ? '[data-panel="research"]'
+        : '.hologram-speed';
+    }
+    return '[data-panel="market"]';
+  }
 
-  private syncWithGame(view: GameViewModel): void {
-    if (view.state.completed || view.state.failed) {
-      this.complete();
+  private activateTarget(): void {
+    const target = this.highlighted;
+    if (!target) return;
+    target.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+    if (target instanceof HTMLButtonElement && !target.disabled) {
+      target.click();
       return;
     }
-    const initialCount = view.level.initial.buildings.length;
-    if (
-      view.buildings.length > initialCount
-      && (this.state.step === 'choose' || this.state.step === 'place')
-    ) {
-      this.setStep('manage', false);
-    }
-  }
-
-  private setStep(step: OnboardingStep, rerender = true): void {
-    this.state = { version: 1, step, completed: step === 'done' };
-    this.persist();
-    if (rerender && this.lastView) this.render(this.lastView);
-  }
-
-  private complete(): void {
-    this.setStep('done', false);
-    this.clearHighlight();
-    this.root.querySelector('[data-release-onboarding]')?.remove();
-  }
-
-  private persist(): void {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
-    } catch {
-      // The tutorial still works for the current session when storage is unavailable.
-    }
+    if (target instanceof HTMLElement) target.focus({ preventScroll: true });
   }
 
   private clearHighlight(): void {
