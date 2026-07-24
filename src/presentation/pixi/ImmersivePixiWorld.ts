@@ -19,6 +19,12 @@ import type {
   RoadSceneState,
   ScenePoint
 } from '../CitySceneMapper';
+import {
+  shouldRenderDistrictLabel,
+  shouldRenderNetworkEdge,
+  shouldRenderNetworkNodeAsset,
+  shouldRenderNetworkNodeDiagnostics
+} from '../CommercialPresentationPolicy';
 import { FacilityVisualRegistry } from '../visuals/FacilityVisualRegistry';
 import type { WorldRenderActions, WorldRenderSurface } from '../../ui/world/WorldRenderSurface';
 import { PixiAssetLoader } from './PixiAssetLoader';
@@ -282,13 +288,15 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
     this.layerManager.clear();
     const accent = toColor(state.accent);
     const authored = state.sceneMode === 'authored' && Boolean(state.districtPrefabs?.length);
+    const showDiagnostics = state.presentationMode === 'grid';
+    this.host.dataset.presentationMode = showDiagnostics ? 'grid' : 'city';
 
     this.drawTerrain(state, accent);
     if (authored) {
       this.drawEnvironment(state.environment ?? []);
       this.drawAuthoredRoads(state.roads);
-      this.drawEnergyNetwork(state, generation);
-      this.drawDistrictPrefabs(state, generation);
+      this.drawEnergyNetwork(state, generation, showDiagnostics);
+      this.drawDistrictPrefabs(state, generation, showDiagnostics);
     } else {
       const roads = ImmersiveRoadGrid.fromRoads(state.roads, ROAD_STEP);
       this.drawDistrictGround(state, accent);
@@ -527,9 +535,13 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
     }
   }
 
-  private drawEnergyNetwork(state: CitySceneState, generation: number): void {
+  private drawEnergyNetwork(
+    state: CitySceneState,
+    generation: number,
+    showDiagnostics: boolean
+  ): void {
     for (const edge of state.networkEdges ?? []) {
-      if (edge.points.length < 2) continue;
+      if (edge.points.length < 2 || !shouldRenderNetworkEdge(edge, showDiagnostics)) continue;
       const color = networkEdgeColor(edge);
       const glow = new Graphics();
       this.traceSmoothPath(glow, edge.points);
@@ -557,14 +569,18 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
     }
 
     for (const node of state.networkNodes ?? []) {
-      this.drawNetworkNode(node, generation);
+      this.drawNetworkNode(node, generation, showDiagnostics);
     }
   }
 
-  private drawNetworkNode(node: EnergyNetworkNodeSceneState, generation: number): void {
+  private drawNetworkNode(
+    node: EnergyNetworkNodeSceneState,
+    generation: number,
+    showDiagnostics: boolean
+  ): void {
     if (node.kind === 'district') return;
     const color = networkNodeColor(node);
-    if (node.kind === 'substation' || node.kind === 'distribution') {
+    if (shouldRenderNetworkNodeAsset(node, showDiagnostics) && (node.kind === 'substation' || node.kind === 'distribution')) {
       const assetPrefix = node.kind === 'substation' ? 'substation' : 'grid_node';
       const stateSuffix = node.status === 'offline'
         ? 'offline'
@@ -582,6 +598,8 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
         alpha: node.status === 'offline' ? 0.72 : 0.96
       });
     }
+
+    if (!shouldRenderNetworkNodeDiagnostics(node, showDiagnostics)) return;
 
     const position = this.project({ ...node, elevation: 0.35 });
     const marker = new Graphics()
@@ -617,7 +635,11 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
     this.layerManager.layers.overlays.addChild(label);
   }
 
-  private drawDistrictPrefabs(state: CitySceneState, generation: number): void {
+  private drawDistrictPrefabs(
+    state: CitySceneState,
+    generation: number,
+    showDiagnostics: boolean
+  ): void {
     for (const district of state.districtPrefabs ?? []) {
       const statusColor = districtStatusColor(district);
       const ground = this.roundedDiamond(district, district.width * 0.5, district.depth * 0.5)
@@ -687,7 +709,7 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
         });
       }
       this.drawDistrictDecorations(district);
-      this.drawDistrictLabel(district);
+      if (shouldRenderDistrictLabel(district, showDiagnostics)) this.drawDistrictLabel(district);
     }
   }
 

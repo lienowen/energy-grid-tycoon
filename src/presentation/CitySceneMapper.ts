@@ -15,6 +15,7 @@ import {
   toScenePoint
 } from './CitySceneVisuals';
 import type {
+  CityPresentationMode,
   CitySceneState,
   DistrictPrefabSceneState,
   DistrictPrefabStatus,
@@ -37,6 +38,7 @@ export type {
   CitizenFeedbackSceneState,
   CitizenFeedbackTone,
   CityGrowthSceneState,
+  CityPresentationMode,
   CityScenePlacementState,
   CitySceneState,
   DistrictPrefabSceneState,
@@ -342,7 +344,11 @@ const mapEnergyNetwork = (
 };
 
 export class CitySceneMapper {
-  static map(view: GameViewModel, selectedBuildingId?: string): CitySceneState {
+  static map(
+    view: GameViewModel,
+    selectedBuildingId?: string,
+    presentationMode: CityPresentationMode = 'city'
+  ): CitySceneState {
     const plots = LevelLoader.getWorldPlots(view.level);
     const layout = LevelSceneLayoutRegistry.resolve(view.level.id);
     const selected = selectedBuildingId
@@ -429,6 +435,7 @@ export class CitySceneMapper {
       focus: layout ? toScenePoint(layout.focus) : undefined,
       camera: getCamera(view, layout),
       sceneMode: layout ? 'authored' : 'procedural',
+      presentationMode,
       growth,
       districts,
       districtPrefabs,

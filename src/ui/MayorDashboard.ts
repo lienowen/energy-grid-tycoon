@@ -60,6 +60,7 @@ export class MayorDashboard {
   private notice = '';
   private lastView?: GameViewModel;
   private activePanel: MayorPanel = 'none';
+  private presentationMode: 'city' | 'grid' = 'city';
   private selectedBuildingId?: string;
   private focusedBuildingId?: string;
   private noticeTimer?: number;
@@ -108,7 +109,7 @@ export class MayorDashboard {
     this.setRegion('toast', this.notice ? `<div class="mayor-toast hologram-toast">${this.notice}</div>` : '');
     this.setRegion('result', view.state.completed || view.state.failed ? this.renderResult(view) : '');
 
-    this.sandbox?.setState(CitySceneMapper.map(view, this.selectedBuildingId));
+    this.sandbox?.setState(CitySceneMapper.map(view, this.selectedBuildingId, this.presentationMode));
     this.bindEvents();
   }
 
@@ -236,6 +237,7 @@ export class MayorDashboard {
         <button data-camera-home="true" title="回到城市全景"><i>◎</i><span>视角</span></button>
         <button data-camera-zoom="in" title="放大沙盘"><i>＋</i><span>放大</span></button>
         <button data-camera-zoom="out" title="缩小沙盘"><i>－</i><span>缩小</span></button>
+        <button data-presentation-toggle="true" aria-pressed="${this.presentationMode === 'grid'}" class="${this.presentationMode === 'grid' ? 'active' : ''}" title="切换城市经营与电网诊断视图"><i>⌁</i><span>${this.presentationMode === 'grid' ? '城市' : '电网'}</span></button>
         ${items.map(([panel, label, icon]) => `
           <button data-panel="${panel}" class="${this.activePanel === panel ? 'active' : ''}"><i>${icon}</i><span>${label}</span></button>
         `).join('')}
@@ -474,6 +476,7 @@ export class MayorDashboard {
 
   private selectBuilding(buildingId?: string): void {
     this.activePanel = 'none';
+    this.presentationMode = 'city';
     this.focusedBuildingId = undefined;
     this.selectedBuildingId = this.selectedBuildingId === buildingId ? undefined : buildingId;
     if (this.lastView) this.render(this.lastView);
@@ -498,6 +501,10 @@ export class MayorDashboard {
     this.root.querySelectorAll<HTMLButtonElement>('[data-cancel-build]').forEach((button) => button.addEventListener('click', () => this.selectBuilding(undefined)));
     this.root.querySelectorAll<HTMLButtonElement>('[data-camera-home]').forEach((button) => button.addEventListener('click', () => this.sandbox?.focusHome()));
     this.root.querySelectorAll<HTMLButtonElement>('[data-camera-zoom]').forEach((button) => button.addEventListener('click', () => this.sandbox?.zoomBy(button.dataset.cameraZoom === 'in' ? 1.16 : 0.86)));
+    this.root.querySelectorAll<HTMLButtonElement>('[data-presentation-toggle]').forEach((button) => button.addEventListener('click', () => {
+      this.presentationMode = this.presentationMode === 'city' ? 'grid' : 'city';
+      if (this.lastView) this.render(this.lastView);
+    }));
     this.root.querySelectorAll<HTMLButtonElement>('[data-speed]').forEach((button) => button.addEventListener('click', () => this.actions.onSpeedChange(Number(button.dataset.speed) as GameSpeed)));
     this.root.querySelectorAll<HTMLButtonElement>('[data-research]').forEach((button) => button.addEventListener('click', () => {
       const result = this.actions.onResearch(button.dataset.research ?? '');
