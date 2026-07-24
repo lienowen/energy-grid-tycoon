@@ -1,0 +1,155 @@
+/* Product-first visual hierarchy: the city is primary, UI is supporting information. */
+
+.hologram-mission-card,
+.hologram-mission-card[data-dawn-beat] {
+  width: min(268px, 22vw);
+  padding: 10px 11px;
+  gap: 8px;
+  background: linear-gradient(145deg, rgba(4, 24, 37, .9), rgba(2, 14, 24, .82));
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .28), inset 0 0 18px rgba(74, 215, 255, .035);
+  backdrop-filter: blur(10px);
+}
+
+.hologram-mission-card[data-dawn-beat] > span {
+  width: 24px;
+  height: 24px;
+  font-size: 11px;
+}
+
+.hologram-mission-card small { font-size: 7px; }
+.hologram-mission-card strong { margin-top: 3px; font-size: 11px; line-height: 1.35; }
+.hologram-mission-card[data-dawn-beat] p { display: none; }
+.hologram-mission-card em { font-size: 8px; }
+.hologram-progress { height: 3px; }
+
+.release-onboarding {
+  left: auto;
+  right: 18px;
+  bottom: calc(92px + env(safe-area-inset-bottom));
+  width: min(310px, calc(100vw - 36px));
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  padding: 10px 11px;
+  border-radius: 11px;
+  background: linear-gradient(145deg, rgba(5, 28, 42, .91), rgba(2, 15, 25, .88));
+  box-shadow: 0 14px 36px rgba(0, 0, 0, .38), inset 0 0 20px rgba(74, 215, 255, .045);
+  backdrop-filter: blur(12px);
+  transform: none;
+}
+
+.release-onboarding-copy small { font-size: 8px; }
+.release-onboarding-copy strong { margin-top: 3px; font-size: 12px; line-height: 1.35; }
+.release-onboarding-copy p,
+.release-onboarding-copy em,
+.release-experience-progress { display: none; }
+
+.release-onboarding-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.release-onboarding-actions button {
+  min-height: 32px;
+  padding: 6px 10px;
+  font-size: 10px;
+}
+
+.release-onboarding-actions button:last-child {
+  width: 32px;
+  min-width: 32px;
+  padding: 0;
+  font-size: 15px;
+}
+
+.hologram-secretary {
+  top: 78px;
+  right: 16px;
+  width: min(306px, 26vw);
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 8px;
+  padding: 9px;
+  background: linear-gradient(145deg, rgba(5, 28, 43, .9), rgba(2, 15, 26, .86));
+  box-shadow: 0 12px 34px rgba(0, 0, 0, .3), inset 0 0 18px rgba(74, 215, 255, .035);
+  backdrop-filter: blur(11px);
+}
+
+.secretary-avatar i { width: 34px; height: 38px; }
+.hologram-secretary strong { font-size: 11px; }
+.hologram-secretary p,
+.hologram-secretary em { display: none; }
+.hologram-secretary > button { min-width: 68px; padding: 8px 9px; font-size: 10px; }
+
+.hologram-tool-rail { right: 9px; gap: 4px; }
+.hologram-tool-rail button {
+  width: 54px;
+  min-height: 42px;
+  padding: 5px;
+  background: rgba(3, 19, 31, .76);
+  backdrop-filter: blur(9px);
+}
+
+.city-recovery-feedback {
+  inset: calc(86px + env(safe-area-inset-top)) 18px auto auto;
+  width: min(330px, calc(100vw - 36px));
+  height: auto;
+  overflow: visible;
+  z-index: 91;
+}
+
+.city-recovery-vignette,
+.city-recovery-ripple { display: none; }
+
+.city-recovery-card {
+  position: relative;
+  left: auto;
+  top: auto;
+  width: 100%;
+  padding: 10px 12px 11px;
+  border-radius: 11px;
+  clip-path: none;
+  background: linear-gradient(145deg, rgba(5, 29, 43, .94), rgba(2, 15, 25, .92));
+  box-shadow: 0 14px 38px rgba(0, 0, 0, .42), inset 0 0 20px color-mix(in srgb, var(--recovery-color) 5%, transparent);
+  backdrop-filter: blur(12px);
+  transform: translateY(-8px);
+  animation: product-recovery-toast 1.75s ease both;
+}
+
+.city-recovery-card small { font-size: 7px; }
+.city-recovery-card strong { margin-top: 3px; font-size: 14px; }
+.city-recovery-card p { margin-top: 4px; font-size: 9px; line-height: 1.4; }
+
+@keyframes product-recovery-toast {
+  0% { opacity: 0; transform: translateY(-8px); }
+  16%, 76% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-4px); }
+}
+
+@media (max-width: 900px) {
+  .hologram-mission-card,
+  .hologram-mission-card[data-dawn-beat] { width: min(238px, 34vw); }
+  .hologram-secretary { display: none; }
+}
+
+@media (max-width: 680px) {
+  .release-onboarding {
+    left: 8px;
+    right: 8px;
+    bottom: calc(151px + env(safe-area-inset-bottom));
+    width: auto;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 9px 10px;
+  }
+
+  .city-recovery-feedback {
+    inset: calc(126px + env(safe-area-inset-top)) 8px auto 8px;
+    width: auto;
+  }
+
+  .hologram-mission-card,
+  .hologram-mission-card[data-dawn-beat] { width: min(220px, calc(100vw - 88px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .city-recovery-card { animation: none; transform: none; }
+}
