@@ -1,0 +1,33 @@
+name: Regenerate commercial district assets
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - scripts/generate-commercial-district-assets.py
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout rebuild branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/commercial-vertical-slice-rebuild
+          fetch-depth: 0
+
+      - name: Generate district assets
+        run: python scripts/generate-commercial-district-assets.py
+
+      - name: Commit generated assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/assets/commercial/districts
+          git diff --cached --quiet && exit 0
+          git commit -m "feat: replace district islands with compact commercial prefabs"
+          git push origin HEAD:feat/commercial-vertical-slice-rebuild
