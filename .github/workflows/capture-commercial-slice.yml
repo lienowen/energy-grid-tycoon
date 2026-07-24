@@ -24,14 +24,10 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
       - name: Install and build
         run: |
+          node --version
+          npm --version
           npm ci
           npm run build
 
