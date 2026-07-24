@@ -207,8 +207,8 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'main-substation',
         label: '主变电站',
         kind: 'substation',
-        x: 31,
-        y: 49,
+        x: 43,
+        y: 48,
         elevation: 0.15,
         alwaysOperational: true,
         capacity: 1.35
@@ -217,8 +217,8 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'west-distribution',
         label: '西部配电',
         kind: 'distribution',
-        x: 49,
-        y: 49,
+        x: 57,
+        y: 48,
         elevation: 0.12,
         alwaysOperational: true,
         capacity: 1.15
@@ -227,7 +227,7 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'east-distribution',
         label: '东部配电',
         kind: 'distribution',
-        x: 70,
+        x: 71,
         y: 50,
         elevation: 0.12,
         alwaysOperational: true,
@@ -290,28 +290,28 @@ const dawnCityLayout: LevelSceneLayout = {
         from: 'solar-hub',
         to: 'main-substation',
         capacity: 0.78,
-        points: [{ x: 21, y: 27 }, { x: 24, y: 34 }, { x: 27, y: 40 }, { x: 30, y: 45 }]
+        points: [{ x: 17, y: 29 }, { x: 26, y: 35 }, { x: 35, y: 42 }, { x: 43, y: 48 }]
       },
       {
         id: 'reserve-to-main',
         from: 'reserve-plant',
         to: 'main-substation',
         capacity: 1.2,
-        points: [{ x: 18, y: 70 }, { x: 21, y: 60 }, { x: 25, y: 52 }, { x: 30, y: 45 }]
+        points: [{ x: 17, y: 72 }, { x: 25, y: 63 }, { x: 34, y: 55 }, { x: 43, y: 48 }]
       },
       {
         id: 'main-to-west',
         from: 'main-substation',
         to: 'west-distribution',
         capacity: 1.25,
-        points: [{ x: 30, y: 45 }, { x: 39, y: 44 }, { x: 48, y: 45 }]
+        points: [{ x: 43, y: 48 }, { x: 50, y: 47 }, { x: 57, y: 48 }]
       },
       {
         id: 'west-to-east',
         from: 'west-distribution',
         to: 'east-distribution',
         capacity: 1.05,
-        points: [{ x: 48, y: 45 }, { x: 58, y: 43 }, { x: 70, y: 45 }]
+        points: [{ x: 57, y: 48 }, { x: 64, y: 47 }, { x: 71, y: 50 }]
       },
       {
         id: 'wind-to-east',

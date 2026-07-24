@@ -26,6 +26,7 @@ import {
   shouldRenderNetworkNodeAsset,
   shouldRenderNetworkNodeDiagnostics
 } from '../CommercialPresentationPolicy';
+import { planCommercialFacilities } from '../CommercialLandmarkPlanner';
 import { FacilityVisualRegistry } from '../visuals/FacilityVisualRegistry';
 import type { WorldRenderActions, WorldRenderSurface } from '../../ui/world/WorldRenderSurface';
 import { PixiAssetLoader } from './PixiAssetLoader';
@@ -990,7 +991,10 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
 
   private drawFacilities(state: CitySceneState, generation: number): void {
     const authored = state.sceneMode === 'authored';
-    for (const facility of state.facilities) {
+    const facilities = authored && state.levelId === 'city-01'
+      ? planCommercialFacilities(state.facilities)
+      : state.facilities;
+    for (const facility of facilities) {
       this.addFacilityLot(facility, generation);
       const visual = FacilityVisualRegistry.resolve({
         configId: facility.configId,
