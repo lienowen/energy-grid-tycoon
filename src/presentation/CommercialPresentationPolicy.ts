@@ -4,24 +4,42 @@ import type {
   EnergyNetworkNodeSceneState
 } from './CitySceneTypes';
 
+const incidentPriority: Readonly<Record<EnergyNetworkEdgeSceneState['status'], number>> = {
+  offline: 3,
+  overload: 2,
+  planned: 1,
+  normal: 0
+};
+
 // The default city view protects the player's visual hierarchy; diagnostics are opt-in.
 export const shouldRenderNetworkEdge = (
   edge: Pick<EnergyNetworkEdgeSceneState, 'status'>,
   showDiagnostics: boolean
 ): boolean => showDiagnostics || edge.status === 'overload' || edge.status === 'offline';
 
-export const shouldRenderNetworkNodeAsset = (
-  node: Pick<EnergyNetworkNodeSceneState, 'kind' | 'status'>,
+export const selectVisibleNetworkEdges = (
+  edges: readonly EnergyNetworkEdgeSceneState[],
   showDiagnostics: boolean
-): boolean => node.kind === 'substation'
-  || showDiagnostics
-  || node.status === 'warning'
-  || node.status === 'offline';
+): EnergyNetworkEdgeSceneState[] => {
+  if (showDiagnostics) return [...edges];
+  return edges
+    .filter((edge) => shouldRenderNetworkEdge(edge, false))
+    .sort((left, right) =>
+      incidentPriority[right.status] - incidentPriority[left.status]
+      || right.loadRatio - left.loadRatio
+    )
+    .slice(0, 2);
+};
+
+export const shouldRenderNetworkNodeAsset = (
+  node: Pick<EnergyNetworkNodeSceneState, 'kind'>,
+  showDiagnostics: boolean
+): boolean => node.kind === 'substation' || showDiagnostics;
 
 export const shouldRenderNetworkNodeDiagnostics = (
-  node: Pick<EnergyNetworkNodeSceneState, 'status'>,
+  _node: Pick<EnergyNetworkNodeSceneState, 'status'>,
   showDiagnostics: boolean
-): boolean => showDiagnostics || node.status === 'warning' || node.status === 'offline';
+): boolean => showDiagnostics;
 
 export const shouldRenderDistrictLabel = (
   district: Pick<DistrictPrefabSceneState, 'status'>,
