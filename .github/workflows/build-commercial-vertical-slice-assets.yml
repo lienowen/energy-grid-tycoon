@@ -61,9 +61,6 @@ jobs:
       - name: Generate and wire commercial assets
         run: python scripts/build-commercial-vertical-slice-assets.py
 
-      - name: Remove one-shot asset tooling
-        run: git rm scripts/build-commercial-vertical-slice-assets.py .github/workflows/build-commercial-vertical-slice-assets.yml
-
       - name: Commit commercial asset pack
         run: |
           git config user.name "github-actions[bot]"
