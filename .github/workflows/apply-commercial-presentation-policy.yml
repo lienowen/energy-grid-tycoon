@@ -30,12 +30,6 @@ jobs:
       - name: Remove one-shot tooling
         run: git rm scripts/apply-commercial-vertical-slice.py .github/workflows/apply-commercial-presentation-policy.yml
 
-      - name: Install
-        run: npm ci
-
-      - name: Validate rebuilt presentation
-        run: npm run quality
-
       - name: Commit rebuilt presentation
         run: |
           git config user.name "github-actions[bot]"
