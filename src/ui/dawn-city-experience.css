@@ -47,6 +47,44 @@
   background: linear-gradient(90deg, #ffd45f, #5ce1a3);
 }
 
+.hologram-mission-card[data-dawn-beat] {
+  width: min(350px, 27vw);
+}
+
+.hologram-mission-card[data-dawn-beat] > span {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--scenario-accent, #4ad7ff) 65%, transparent);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  background: color-mix(in srgb, var(--scenario-accent, #4ad7ff) 20%, rgba(4, 24, 37, .95));
+}
+
+.hologram-mission-card[data-dawn-beat] p {
+  margin: 5px 0 0;
+  color: #789aae;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.hologram-mission-card[data-tone="danger"] {
+  border-color: rgba(255, 116, 133, .55);
+}
+
+.hologram-mission-card[data-tone="warning"] {
+  border-color: rgba(255, 212, 95, .5);
+}
+
+.hologram-mission-card[data-tone="success"] {
+  border-color: rgba(92, 225, 163, .5);
+}
+
 @media (max-width: 680px) {
   .release-onboarding-copy em { font-size: 9px; }
+  .hologram-mission-card[data-dawn-beat] { width: min(280px, calc(100vw - 92px)); }
+  .hologram-mission-card[data-dawn-beat] p { display: none; }
 }
