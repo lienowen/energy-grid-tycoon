@@ -4,6 +4,7 @@ import type {
   EnergyNetworkNodeSceneState
 } from './CitySceneTypes';
 
+// The default city view protects the player's visual hierarchy; diagnostics are opt-in.
 export const shouldRenderNetworkEdge = (
   edge: Pick<EnergyNetworkEdgeSceneState, 'status'>,
   showDiagnostics: boolean
