@@ -22,6 +22,42 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
 
+      - name: Normalize asset generator
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('scripts/build-commercial-vertical-slice-assets.py')
+          text = path.read_text(encoding='utf-8')
+
+          lamp_start = text.index('def lamp(')
+          lamp_end = text.index('\ndef district_svg', lamp_start)
+          fixed_lamp = '''def lamp(x: float, y: float, blackout: bool) -> str:
+              light = '#FFDD82' if not blackout else '#404B4F'
+              glow_attr = 'filter="url(#glow)"' if not blackout else ''
+              return f\'''<g transform="translate({x} {y})">
+            <rect x="-2" y="-27" width="4" height="30" rx="2" fill="#6E8890"/>
+            <circle cx="0" cy="-30" r="5" fill="{light}" opacity="0.95" {glow_attr}/>
+          </g>\'''
+          '''
+          text = text[:lamp_start] + fixed_lamp + text[lamp_end:]
+
+          old_signature_patch = '''replace_once(
+              'src/presentation/pixi/ImmersivePixiWorld.ts',
+              "    generation: number,\\n    showDiagnostics: boolean\\n  ): void {\\n",
+              "    generation: number,\\n    showDiagnostics: boolean,\\n    commercial: boolean\\n  ): void {\\n"
+          )'''
+          new_signature_patch = '''replace_once(
+              'src/presentation/pixi/ImmersivePixiWorld.ts',
+              "  private drawNetworkNode(\\n    node: EnergyNetworkNodeSceneState,\\n    generation: number,\\n    showDiagnostics: boolean\\n  ): void {\\n",
+              "  private drawNetworkNode(\\n    node: EnergyNetworkNodeSceneState,\\n    generation: number,\\n    showDiagnostics: boolean,\\n    commercial: boolean\\n  ): void {\\n"
+          )'''
+          if old_signature_patch not in text:
+              raise RuntimeError('drawNetworkNode signature patch was not found')
+          text = text.replace(old_signature_patch, new_signature_patch, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+
       - name: Generate and wire commercial assets
         run: python scripts/build-commercial-vertical-slice-assets.py
 
