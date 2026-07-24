@@ -17,7 +17,8 @@ export class ReleaseOnboarding {
   private lastView?: GameViewModel;
   private highlighted?: Element;
   private announcementTimer?: number;
-  private dismissed = false;
+  private lastBeatId?: DawnCityExperienceBeat['id'];
+  private dismissedBeatId?: DawnCityExperienceBeat['id'];
 
   constructor(private readonly root: HTMLElement) {}
 
@@ -42,9 +43,16 @@ export class ReleaseOnboarding {
       return;
     }
 
+    const beatChanged = this.lastBeatId !== beat.id;
+    if (beatChanged) {
+      this.lastBeatId = beat.id;
+      this.dismissedBeatId = undefined;
+    }
+
     this.syncMissionCard(beat);
 
-    if (this.dismissed) {
+    const actionable = beat.action.type !== 'wait';
+    if (!actionable || this.dismissedBeatId === beat.id) {
       this.root.querySelector('[data-release-onboarding]')?.remove();
       return;
     }
@@ -63,20 +71,16 @@ export class ReleaseOnboarding {
       this.root.append(card);
     }
 
-    const progress = Math.round(beat.progress * 100);
     card.className = `release-onboarding experience-${beat.tone}`;
     card.dataset.experienceBeat = beat.id;
     card.innerHTML = `
       <div class="release-onboarding-copy">
-        <small>曙光新城 · 第 ${beat.stage} / ${beat.totalStages} 阶段</small>
-        <strong>${escapeHtml(beat.title)}</strong>
-        <p>${escapeHtml(beat.message)}</p>
-        <div class="release-experience-progress" aria-label="阶段进度 ${progress}%"><i style="width:${progress}%"></i></div>
-        <em>${progress}% · 完成后：${escapeHtml(beat.nextPromise)}</em>
+        <small>第 ${beat.stage} / ${beat.totalStages} 阶段 · 可立即行动</small>
+        <strong>${escapeHtml(beat.actionLabel)}</strong>
       </div>
       <div class="release-onboarding-actions">
-        <button type="button" data-onboarding-focus="true">${escapeHtml(beat.actionLabel)}</button>
-        <button type="button" data-onboarding-skip="true">暂时收起</button>
+        <button type="button" data-onboarding-focus="true">执行</button>
+        <button type="button" data-onboarding-skip="true" aria-label="收起本阶段提示">×</button>
       </div>
     `;
 
@@ -84,14 +88,14 @@ export class ReleaseOnboarding {
       this.activateTarget();
     });
     card.querySelector<HTMLButtonElement>('[data-onboarding-skip]')?.addEventListener('click', () => {
-      this.dismissed = true;
+      this.dismissedBeatId = beat.id;
       this.clearHighlight();
       card?.remove();
     });
   }
 
   record(_action: OnboardingAction): void {
-    if (this.lastView && !this.dismissed) this.render(this.lastView);
+    if (this.lastView) this.render(this.lastView);
   }
 
   announce(message: string): void {
@@ -103,7 +107,7 @@ export class ReleaseOnboarding {
     notice.textContent = message;
     this.root.append(notice);
     if (this.announcementTimer !== undefined) window.clearTimeout(this.announcementTimer);
-    this.announcementTimer = window.setTimeout(() => notice.remove(), 4200);
+    this.announcementTimer = window.setTimeout(() => notice.remove(), 3000);
   }
 
   destroy(): void {
@@ -119,12 +123,12 @@ export class ReleaseOnboarding {
     const progress = Math.round(beat.progress * 100);
     mission.dataset.dawnBeat = beat.id;
     mission.dataset.tone = beat.tone;
+    mission.setAttribute('aria-label', `${beat.title}，进度 ${progress}%，完成后 ${beat.nextPromise}`);
     mission.innerHTML = `
       <span>${beat.stage}</span>
       <div>
         <small>当前任务 · ${beat.stage}/${beat.totalStages}</small>
         <strong>${escapeHtml(beat.title)}</strong>
-        <p>${escapeHtml(beat.nextPromise)}</p>
       </div>
       <em>${progress}%</em>
       <div class="hologram-progress"><i style="width:${progress}%"></i></div>

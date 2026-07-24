@@ -122,12 +122,12 @@ export class DawnCityExperienceSystem {
           ? `发展点已经足够，完成“${technology?.name ?? '城市升级'}”，让这次复电变成长期能力。`
           : '保持全城稳定供电，发展点会持续增加。不要为了追求速度再次制造停电。',
         consequence: ready
-          ? '升级完成后，进入最后的城市运营冲刺。'
+          ? '升级完成后，进入最后的城市经营验证。'
           : `还需要约 ${Math.max(0, target - state.researchPoints).toFixed(0)} 点发展点。`,
         actionLabel: ready ? '完成城市升级' : '推进城市运行',
         action: ready ? { type: 'openPanel', panel: 'research' } : { type: 'wait' },
         progress: clamp01(state.researchPoints / target),
-        nextPromise: '解锁城市运营冲刺和下一座城市预告'
+        nextPromise: '解锁城市经营验证和下一座城市预告'
       };
     }
 
@@ -136,10 +136,10 @@ export class DawnCityExperienceSystem {
       stage: 4,
       totalStages: 4,
       tone: context.goalProgress >= 0.82 ? 'success' : 'calm',
-      title: context.goalProgress >= 0.82 ? '曙光新城已经接近兑现承诺' : '把复电成果变成可持续城市',
-      message: '保持供电稳定，同时检查居民电价、设施开支和城市收入，把能源系统运营到最终目标。',
+      title: context.goalProgress >= 0.82 ? '曙光新城已经能够稳定运转' : '证明这次复电不是一次临时抢修',
+      message: '保持全城供电在 98% 以上，检查居民电价和设施开支，让城市累计收入达到 ¥3,000。',
       consequence: '完成后将解锁“工业走廊”，新的工厂负荷和污染取舍会出现。',
-      actionLabel: '检查城市运营',
+      actionLabel: '检查城市经营',
       action: { type: 'openPanel', panel: 'market' },
       progress: clamp01(context.goalProgress),
       nextPromise: '解锁第二关“工业走廊”'

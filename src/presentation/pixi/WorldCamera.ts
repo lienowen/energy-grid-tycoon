@@ -27,7 +27,8 @@ export class WorldCamera {
   configure(config: HologramCameraConfig): void {
     this.minZoom = config.minZoom;
     this.maxZoom = config.maxZoom;
-    this.homeZoom = clamp(config.startZoom, this.minZoom, this.maxZoom);
+    const authoredFraming = (config.panLimitX ?? 420) <= 220 ? 1.1 : 1;
+    this.homeZoom = clamp(config.startZoom * authoredFraming, this.minZoom, this.maxZoom);
     this.homeOffsetX = config.startOffsetX;
     this.homeOffsetY = config.startOffsetY;
     this.panLimitX = Math.max(0, config.panLimitX ?? 420);
@@ -41,7 +42,7 @@ export class WorldCamera {
   focusHome(): void {
     this.target.scale.set(this.homeZoom);
     this.homePositionX = this.viewportWidth * 0.5 + this.homeOffsetX;
-    this.homePositionY = this.viewportHeight * 0.52 + this.homeOffsetY;
+    this.homePositionY = this.viewportHeight * 0.49 + this.homeOffsetY;
     this.target.position.set(this.homePositionX, this.homePositionY);
   }
 

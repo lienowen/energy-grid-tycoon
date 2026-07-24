@@ -3,7 +3,7 @@ import { CitySceneMapper } from '../presentation/CitySceneMapper';
 import { CityRecoveryFeedbackSystem, type CityRecoveryFeedbackEvent, type CityRecoverySnapshot } from '../systems/CityRecoveryFeedbackSystem';
 import { DawnCityExperienceSystem } from '../systems/DawnCityExperienceSystem';
 
-const feedbackDurationMs = 2850;
+const feedbackDurationMs = 1750;
 
 export class CityRecoveryFeedback {
   private previous?: CityRecoverySnapshot;
@@ -83,7 +83,7 @@ export class CityRecoveryFeedback {
     const card = document.createElement('div');
     card.className = 'city-recovery-card';
     const eyebrow = document.createElement('small');
-    eyebrow.textContent = event.tone === 'danger' ? '城市电网警报' : event.tone === 'celebration' ? '城市里程碑' : '城市状态变化';
+    eyebrow.textContent = event.tone === 'danger' ? '电网警报' : event.tone === 'celebration' ? '城市里程碑' : '城市状态';
     const title = document.createElement('strong');
     title.textContent = event.title;
     const message = document.createElement('p');
@@ -101,7 +101,7 @@ export class CityRecoveryFeedback {
         if (this.shell === shell) this.shell = undefined;
         this.timer = undefined;
         this.showNext();
-      }, 220);
+      }, 180);
     }, feedbackDurationMs);
   }
 

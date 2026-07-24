@@ -55,11 +55,13 @@
         }
       ],
       "objective": {
-        "label": "城市资金达到 ¥9,000，并完成 1 项城市发展",
+        "label": "全城供电达到 98%，建成储能，完成 1 项城市发展，并累计收入 ¥3,000",
         "mode": "all",
         "conditions": [
-          { "metric": "money", "operator": "gte", "target": 9000, "label": "城市资金达到 ¥9,000" },
-          { "metric": "unlockedTechnologies", "operator": "gte", "target": 1, "label": "完成 1 项城市发展" }
+          { "metric": "supplyRatio", "operator": "gte", "target": 0.98, "label": "全城供电达到 98%" },
+          { "metric": "storageCapacity", "operator": "gte", "target": 900, "label": "建成城市备用电站" },
+          { "metric": "unlockedTechnologies", "operator": "gte", "target": 1, "label": "完成 1 项城市发展" },
+          { "metric": "totalRevenue", "operator": "gte", "target": 3000, "label": "累计收入达到 ¥3,000" }
         ]
       },
       "failure": {
