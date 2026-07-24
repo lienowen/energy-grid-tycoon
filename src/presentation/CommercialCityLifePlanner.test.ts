@@ -101,11 +101,12 @@ describe('CommercialCityLifePlanner', () => {
 
   it('fills gaps with bounded low-rise urban blocks and junctions', () => {
     const plan = planCommercialCityLife(makeState());
-    expect(plan.infill).toHaveLength(9);
+    expect(plan.infill).toHaveLength(7);
     expect(plan.junctions).toHaveLength(4);
     expect(plan.infill.some((block) => block.tone === 'warehouse')).toBe(true);
     expect(plan.infill.some((block) => block.powered)).toBe(true);
     expect(plan.infill.some((block) => !block.powered)).toBe(true);
+    expect(plan.infill.every((block) => block.point.z <= 60)).toBe(true);
   });
 
   it('adds bounded street life without overwhelming the city view', () => {
@@ -120,7 +121,7 @@ describe('CommercialCityLifePlanner', () => {
   it('removes moving traffic from diagnostics while preserving city structure', () => {
     const plan = planCommercialCityLife(makeState({ presentationMode: 'grid' }));
     expect(plan.fabric).toHaveLength(4);
-    expect(plan.infill).toHaveLength(9);
+    expect(plan.infill).toHaveLength(7);
     expect(plan.streetLights.length).toBeGreaterThan(0);
     expect(plan.vehicles).toHaveLength(0);
   });
