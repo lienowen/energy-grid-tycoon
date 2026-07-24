@@ -3,13 +3,13 @@ import type { LevelSceneLayout } from './LevelSceneLayout';
 const dawnCityLayout: LevelSceneLayout = {
   levelId: 'city-01',
   mode: 'authored',
-  focus: { x: 53, y: 48, elevation: 0 },
+  focus: { x: 54, y: 50, elevation: 0 },
   camera: {
-    startZoom: 1.31,
+    startZoom: 1.34,
     minZoom: 0.86,
     maxZoom: 2.05,
     startOffsetX: 8,
-    startOffsetY: 12,
+    startOffsetY: -6,
     panLimitX: 170,
     panLimitY: 120
   },
