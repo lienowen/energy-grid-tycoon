@@ -55,9 +55,11 @@ describe('CitySceneMapper', () => {
     const solar = scene.facilities.find((facility) => facility.plotId === 'sunrise-neighborhood');
     const wind = scene.facilities.find((facility) => facility.plotId === 'east-coast');
     const gasPlot = scene.plots.find((plot) => plot.id === 'west-industry');
+    const solarPoint = toScenePoint({ x: 17, y: 25, elevation: 0.2 });
+    const windPoint = toScenePoint({ x: 76, y: 14, elevation: 0.45 });
 
-    expect(solar).toMatchObject(toScenePoint({ x: 17, y: 25, elevation: 0.2 }));
-    expect(wind).toMatchObject(toScenePoint({ x: 76, y: 14, elevation: 0.45 }));
+    expect(solar).toMatchObject({ ...solarPoint, elevation: solarPoint.elevation + 1.1 });
+    expect(wind).toMatchObject({ ...windPoint, elevation: windPoint.elevation + 1.1 });
     expect(gasPlot).toMatchObject(toScenePoint({ x: 18, y: 70, elevation: 0.15 }));
   });
 
