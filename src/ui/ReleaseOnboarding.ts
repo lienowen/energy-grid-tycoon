@@ -18,7 +18,6 @@ export class ReleaseOnboarding {
   private highlighted?: Element;
   private announcementTimer?: number;
   private dismissed = false;
-  private lastBeatId?: DawnCityExperienceBeat['id'];
 
   constructor(private readonly root: HTMLElement) {}
 
@@ -44,11 +43,6 @@ export class ReleaseOnboarding {
     }
 
     this.syncMissionCard(beat);
-
-    if (this.lastBeatId && this.lastBeatId !== beat.id) {
-      this.announce(`阶段完成。现在进入第 ${beat.stage} 阶段：${beat.title}`);
-    }
-    this.lastBeatId = beat.id;
 
     if (this.dismissed) {
       this.root.querySelector('[data-release-onboarding]')?.remove();
