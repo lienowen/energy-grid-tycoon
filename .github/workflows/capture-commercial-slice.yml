@@ -24,25 +24,16 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
       - name: Install and build
         shell: bash
         run: |
           set -o pipefail
-          node --version
-          npm --version
-          installed=false
-          for attempt in 1 2 3; do
-            echo "npm install attempt $attempt"
-            if npm ci --prefer-offline --no-audit --no-fund --loglevel=error; then
-              installed=true
-              break
-            fi
-            sleep $((attempt * 4))
-          done
-          if [ "$installed" != "true" ]; then
-            echo "npm ci failed after three attempts"
-            exit 1
-          fi
+          npm install --no-audit --no-fund
           npm run build
 
       - name: Start production preview
