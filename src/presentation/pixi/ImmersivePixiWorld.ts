@@ -152,8 +152,8 @@ const districtGroundColor: Record<DistrictPrefabSceneState['kind'], number> = {
 
 const commercialDistrictRenderScale: Record<DistrictPrefabSceneState['kind'], number> = {
   residential: 8.9,
-  commercial: 9.3,
-  industrial: 9.1,
+  commercial: 7.7,
+  industrial: 7.8,
   public: 8.9,
   old_town: 9.2
 };
@@ -789,7 +789,7 @@ export class ImmersivePixiWorld implements WorldRenderSurface {
       this.addAssetObject({
         assetId: bodyAssetId,
         point: { ...node, elevation: node.elevation + 0.65 },
-        width: commercial && node.kind === 'substation' ? 208 : node.kind === 'substation' ? 142 : 92,
+        width: commercial && node.kind === 'substation' ? 182 : node.kind === 'substation' ? 142 : 92,
         anchorY: 0.82,
         generation,
         layer: this.layerManager.layers.buildings,

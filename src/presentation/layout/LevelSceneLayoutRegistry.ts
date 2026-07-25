@@ -31,11 +31,11 @@ const dawnCityLayout: LevelSceneLayout = {
       id: 'dawn-commercial',
       label: '商业区',
       kind: 'commercial',
-      x: 40,
-      y: 54,
-      width: 23,
-      depth: 17,
-      scale: 0.9,
+      x: 34,
+      y: 50,
+      width: 21,
+      depth: 16,
+      scale: 0.78,
       buildingCount: 6,
       priority: 2,
       variant: 23
@@ -44,11 +44,11 @@ const dawnCityLayout: LevelSceneLayout = {
       id: 'dawn-industrial',
       label: '工业区',
       kind: 'industrial',
-      x: 70,
-      y: 49,
-      width: 23,
-      depth: 17,
-      scale: 0.9,
+      x: 75,
+      y: 54,
+      width: 22,
+      depth: 16,
+      scale: 0.78,
       buildingCount: 5,
       priority: 3,
       variant: 37
@@ -207,8 +207,8 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'main-substation',
         label: '主变电站',
         kind: 'substation',
-        x: 43,
-        y: 48,
+        x: 56,
+        y: 45,
         elevation: 0.15,
         alwaysOperational: true,
         capacity: 1.35
@@ -247,8 +247,8 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'commercial-load',
         label: '商业区',
         kind: 'district',
-        x: 40,
-        y: 54,
+        x: 34,
+        y: 50,
         elevation: 0.1,
         districtId: 'dawn-commercial',
         capacity: 1.05
@@ -257,8 +257,8 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'industrial-load',
         label: '工业区',
         kind: 'district',
-        x: 70,
-        y: 49,
+        x: 75,
+        y: 54,
         elevation: 0.1,
         districtId: 'dawn-industrial',
         capacity: 1.2
@@ -290,21 +290,21 @@ const dawnCityLayout: LevelSceneLayout = {
         from: 'solar-hub',
         to: 'main-substation',
         capacity: 0.78,
-        points: [{ x: 17, y: 29 }, { x: 26, y: 35 }, { x: 35, y: 42 }, { x: 43, y: 48 }]
+        points: [{ x: 17, y: 29 }, { x: 26, y: 35 }, { x: 44, y: 43 }, { x: 56, y: 45 }]
       },
       {
         id: 'reserve-to-main',
         from: 'reserve-plant',
         to: 'main-substation',
         capacity: 1.2,
-        points: [{ x: 17, y: 72 }, { x: 25, y: 63 }, { x: 34, y: 55 }, { x: 43, y: 48 }]
+        points: [{ x: 17, y: 72 }, { x: 25, y: 63 }, { x: 43, y: 51 }, { x: 56, y: 45 }]
       },
       {
         id: 'main-to-west',
         from: 'main-substation',
         to: 'west-distribution',
         capacity: 1.25,
-        points: [{ x: 43, y: 48 }, { x: 50, y: 47 }, { x: 57, y: 48 }]
+        points: [{ x: 56, y: 45 }, { x: 56, y: 47 }, { x: 57, y: 48 }]
       },
       {
         id: 'west-to-east',
