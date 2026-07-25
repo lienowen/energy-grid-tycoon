@@ -42,7 +42,7 @@ export class SimulationSystem {
     const gridLossRate = 0.04;
     const gridNetwork = GridNetworkRegistry.resolve(state.levelId);
 
-    const generationOutputs = buildings.getBuildings()
+    const allGenerationOutputs = buildings.getBuildings()
       .filter((building) => building.config.category === 'generation')
       .map((building): GenerationOutput => ({
         building,
@@ -53,6 +53,11 @@ export class SimulationSystem {
           }) * modifiers.generationMultiplier
         )
       }));
+    const generationOutputs = gridNetwork
+      ? allGenerationOutputs.filter((item) =>
+        Boolean(this.findSourceNodeId(gridNetwork, item.building, 'generation'))
+      )
+      : allGenerationOutputs;
     const generationSupply = generationOutputs.reduce((sum, item) => sum + item.output, 0);
 
     const requiredGrossSupply = demand / (1 - gridLossRate);
