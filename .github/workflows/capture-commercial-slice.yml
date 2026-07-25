@@ -61,13 +61,22 @@ jobs:
           APP_URL: http://127.0.0.1:4173/?renderer=immersive
           SCREENSHOT_DIR: artifacts/commercial-slice
         run: |
+          mkdir -p "$SCREENSHOT_DIR"
           CHROME_PATH="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
           if [ -z "$CHROME_PATH" ]; then
             echo "No Chrome executable found"
             exit 1
           fi
           export CHROME_PATH
-          node scripts/capture-commercial-slice.mjs
+          for attempt in 1 2; do
+            if node scripts/capture-commercial-slice.mjs; then
+              exit 0
+            fi
+            echo "Capture attempt $attempt failed; retrying"
+            sleep 3
+          done
+          cat /tmp/commercial-preview.log || true
+          exit 1
 
       - name: Upload commercial screenshots
         if: always()
