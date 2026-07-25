@@ -11,6 +11,10 @@ on:
       - src/presentation/**
       - src/ui/MayorDashboard.ts
       - src/resources/**
+      - src/systems/**
+      - src/core/**
+      - src/buildings/**
+      - src/data/**
 
 permissions:
   contents: read
