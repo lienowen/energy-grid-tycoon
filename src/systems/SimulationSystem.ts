@@ -1,8 +1,15 @@
+import type { BuildingBase } from '../buildings/BuildingBase';
 import { BuildingManager } from '../buildings/BuildingManager';
 import { GameState } from '../core/GameState';
 import { SpecialLogicSystem } from '../gameplay/SpecialLogicSystem';
 import { EconomyResult, EconomySystem } from './EconomySystem';
 import { EventEffects } from './EventSystem';
+import {
+  GridGraphSystem,
+  type GridNetworkConfig,
+  type GridSourceInput
+} from './GridGraphSystem';
+import { GridNetworkRegistry } from './GridNetworkRegistry';
 import { PowerResult, PowerSystem } from './PowerSystem';
 import {
   neutralSimulationModifiers,
@@ -17,6 +24,11 @@ export interface SimulationResult {
   storage: StorageResult;
 }
 
+interface GenerationOutput {
+  building: BuildingBase;
+  output: number;
+}
+
 export class SimulationSystem {
   static tick(
     state: GameState,
@@ -28,19 +40,31 @@ export class SimulationSystem {
     const peakCurve = 0.82 + 0.28 * Math.max(0, Math.sin(((state.hour - 7) / 24) * Math.PI * 2));
     const demand = state.baseDemand * peakCurve * effects.demandMultiplier * modifiers.demandMultiplier;
     const gridLossRate = 0.04;
+    const gridNetwork = GridNetworkRegistry.resolve(state.levelId);
 
-    const generationSupply = buildings.getTotalPower((building) =>
-      SpecialLogicSystem.getOutputMultiplier(building, {
-        hour: state.hour,
-        eventOutputMultiplier: effects.outputMultiplier
-      }) * modifiers.generationMultiplier
-    );
+    const generationOutputs = buildings.getBuildings()
+      .filter((building) => building.config.category === 'generation')
+      .map((building): GenerationOutput => ({
+        building,
+        output: building.getPowerOutput(
+          SpecialLogicSystem.getOutputMultiplier(building, {
+            hour: state.hour,
+            eventOutputMultiplier: effects.outputMultiplier
+          }) * modifiers.generationMultiplier
+        )
+      }));
+    const generationSupply = generationOutputs.reduce((sum, item) => sum + item.output, 0);
 
     const requiredGrossSupply = demand / (1 - gridLossRate);
+    const storageParticipants = gridNetwork
+      ? buildings.getStorageBuildings().filter((building) =>
+        Boolean(this.findSourceNodeId(gridNetwork, building, 'storage'))
+      )
+      : buildings.getBuildings();
     const storage = StorageSystem.balance(
       generationSupply,
       requiredGrossSupply,
-      buildings.getBuildings(),
+      storageParticipants,
       tickHours,
       {
         capacityMultiplier: modifiers.storageCapacityMultiplier,
@@ -49,10 +73,27 @@ export class SimulationSystem {
       }
     );
 
+    const gridDispatch = gridNetwork
+      ? GridGraphSystem.dispatch({
+        network: gridNetwork,
+        demand,
+        capacityBase: state.baseDemand,
+        sources: this.buildGridSources(
+          gridNetwork,
+          generationOutputs,
+          storageParticipants,
+          storage,
+          gridLossRate,
+          modifiers
+        )
+      })
+      : undefined;
+
     const power = PowerSystem.calculate({
       supply: storage.gridSupply,
       demand,
-      gridLossRate
+      gridLossRate,
+      deliveredSupply: gridDispatch?.servedDemand
     });
 
     const economy = EconomySystem.calculate({
@@ -101,7 +142,7 @@ export class SimulationSystem {
       money: state.money + economy.profit,
       population: Math.max(0, state.population + populationGrowth),
       powerDemand: demand,
-      powerSupply: power.netSupply,
+      powerSupply: power.energyServed,
       supplyRatio: power.supplyRatio,
       energySold: power.energyServed,
       satisfaction,
@@ -116,5 +157,71 @@ export class SimulationSystem {
     };
 
     return { state: nextState, power, economy, storage };
+  }
+
+  private static buildGridSources(
+    network: GridNetworkConfig,
+    generationOutputs: readonly GenerationOutput[],
+    storageParticipants: readonly BuildingBase[],
+    storage: StorageResult,
+    gridLossRate: number,
+    modifiers: SimulationModifiers
+  ): GridSourceInput[] {
+    const sourceByNode = new Map<string, number>();
+    const generationSupply = generationOutputs.reduce((sum, item) => sum + item.output, 0);
+    const chargingInput = storage.charged > 0 ? storage.charged + storage.losses : 0;
+    const generationScale = generationSupply > 0
+      ? Math.max(0, generationSupply - chargingInput) / generationSupply
+      : 0;
+    const netMultiplier = 1 - gridLossRate;
+
+    for (const item of generationOutputs) {
+      const nodeId = this.findSourceNodeId(network, item.building, 'generation');
+      if (!nodeId) continue;
+      sourceByNode.set(
+        nodeId,
+        (sourceByNode.get(nodeId) ?? 0) + item.output * generationScale * netMultiplier
+      );
+    }
+
+    if (storage.discharged > 0) {
+      const connectedStorage = storageParticipants
+        .map((building) => ({
+          building,
+          nodeId: this.findSourceNodeId(network, building, 'storage'),
+          weight: building.getDischargeRate(modifiers.storageRateMultiplier)
+        }))
+        .filter((item): item is { building: BuildingBase; nodeId: string; weight: number } =>
+          Boolean(item.nodeId) && item.weight > 0
+        );
+      const totalWeight = connectedStorage.reduce((sum, item) => sum + item.weight, 0);
+
+      for (const item of connectedStorage) {
+        const share = totalWeight > 0 ? item.weight / totalWeight : 0;
+        sourceByNode.set(
+          item.nodeId,
+          (sourceByNode.get(item.nodeId) ?? 0) + storage.discharged * share * netMultiplier
+        );
+      }
+    }
+
+    return [...sourceByNode].map(([nodeId, available]) => ({ nodeId, available }));
+  }
+
+  private static findSourceNodeId(
+    network: GridNetworkConfig,
+    building: BuildingBase,
+    kind: 'generation' | 'storage'
+  ): string | undefined {
+    return network.nodes.find((node) => {
+      if (node.kind !== kind) return false;
+      if (node.plotIds && node.plotIds.length > 0) {
+        if (!building.placementId || !node.plotIds.includes(building.placementId)) return false;
+        return !node.facilityConfigIds
+          || node.facilityConfigIds.length === 0
+          || node.facilityConfigIds.includes(building.config.id);
+      }
+      return Boolean(node.facilityConfigIds?.includes(building.config.id));
+    })?.id;
   }
 }
