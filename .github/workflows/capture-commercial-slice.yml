@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - scripts/capture-commercial-slice.mjs
-      - scripts/apply-commercial-v10.py
+      - scripts/apply-commercial-v10b.py
       - .github/workflows/capture-commercial-slice.yml
       - public/assets/commercial/**
       - src/presentation/**
@@ -28,10 +28,10 @@ jobs:
           fetch-depth: 0
 
       - name: Apply V10 hierarchy pass
-        if: hashFiles('scripts/apply-commercial-v10.py') != ''
+        if: hashFiles('scripts/apply-commercial-v10b.py') != ''
         shell: bash
         run: |
-          python scripts/apply-commercial-v10.py
+          python scripts/apply-commercial-v10b.py
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
