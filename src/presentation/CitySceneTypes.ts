@@ -43,6 +43,7 @@ export interface DistrictPrefabSceneState extends ScenePoint {
   scale: number;
   buildingCount: number;
   variant: number;
+  prefabAssetId?: string;
   powerRatio: number;
   status: DistrictPrefabStatus;
 }
@@ -93,6 +94,7 @@ export interface EnergyLinkSceneState {
 
 export type EnergyNetworkNodeStatus = 'active' | 'warning' | 'offline' | 'planned';
 export type EnergyNetworkEdgeStatus = 'normal' | 'overload' | 'offline' | 'planned';
+export type CityPresentationMode = 'city' | 'grid';
 
 export interface EnergyNetworkNodeSceneState extends ScenePoint {
   id: string;
@@ -188,6 +190,7 @@ export interface CitySceneState {
   focus?: ScenePoint;
   camera: HologramCameraConfig;
   sceneMode?: 'procedural' | 'authored';
+  presentationMode?: CityPresentationMode;
   growth?: CityGrowthSceneState;
   districts: DistrictSceneState[];
   districtPrefabs?: DistrictPrefabSceneState[];

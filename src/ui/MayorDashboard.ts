@@ -27,7 +27,7 @@ export interface MayorDashboardActions {
   onNext: () => void;
 }
 
-type MayorPanel = MayorGuidePanel | 'system' | 'none';
+type MayorPanel = MayorGuidePanel | 'hub' | 'system' | 'none';
 type HudRegion = 'top' | 'mission' | 'guide' | 'tools' | 'build' | 'drawer' | 'toast' | 'result';
 
 const panelLabels: Record<Exclude<MayorPanel, 'none'>, string> = {
@@ -36,6 +36,7 @@ const panelLabels: Record<Exclude<MayorPanel, 'none'>, string> = {
   policy: '发展方向',
   fleet: '城市设施',
   analytics: '城市情况',
+  hub: '市政管理',
   system: '游戏设置'
 };
 
@@ -60,6 +61,8 @@ export class MayorDashboard {
   private notice = '';
   private lastView?: GameViewModel;
   private activePanel: MayorPanel = 'none';
+  private presentationMode: 'city' | 'grid' = 'city';
+  private buildDockOpen = false;
   private selectedBuildingId?: string;
   private focusedBuildingId?: string;
   private noticeTimer?: number;
@@ -108,7 +111,7 @@ export class MayorDashboard {
     this.setRegion('toast', this.notice ? `<div class="mayor-toast hologram-toast">${this.notice}</div>` : '');
     this.setRegion('result', view.state.completed || view.state.failed ? this.renderResult(view) : '');
 
-    this.sandbox?.setState(CitySceneMapper.map(view, this.selectedBuildingId));
+    this.sandbox?.setState(CitySceneMapper.map(view, this.selectedBuildingId, this.presentationMode));
     this.bindEvents();
   }
 
@@ -222,32 +225,23 @@ export class MayorDashboard {
     return 'data-speed="1"';
   }
 
-  private renderToolRail(view: GameViewModel): string {
-    const items: Array<[Exclude<MayorPanel, 'none'>, string, string]> = [
-      ['market', '用电', '⌁'],
-      ['research', `发展 ${view.state.unlockedTechnologyIds.length}/${view.technologies.length}`, '↑'],
-      ['policy', '方向', '◇'],
-      ['fleet', `设施 ${view.buildings.length}`, '▦'],
-      ['analytics', '城市', '▥'],
-      ['system', '设置', '⚙']
-    ];
+  private renderToolRail(_view: GameViewModel): string {
     return `
-      <nav class="hologram-tool-rail" aria-label="城市工具">
-        <button data-camera-home="true" title="回到城市全景"><i>◎</i><span>视角</span></button>
-        <button data-camera-zoom="in" title="放大沙盘"><i>＋</i><span>放大</span></button>
-        <button data-camera-zoom="out" title="缩小沙盘"><i>－</i><span>缩小</span></button>
-        ${items.map(([panel, label, icon]) => `
-          <button data-panel="${panel}" class="${this.activePanel === panel ? 'active' : ''}"><i>${icon}</i><span>${label}</span></button>
-        `).join('')}
+      <nav class="hologram-tool-rail" aria-label="城市主要工具">
+        <button data-camera-home="true" title="回到城市全景"><i>◎</i><span>回城</span></button>
+        <button data-presentation-toggle="true" aria-pressed="${this.presentationMode === 'grid'}" class="${this.presentationMode === 'grid' ? 'active' : ''}" title="切换城市经营与电网诊断视图"><i>⌁</i><span>${this.presentationMode === 'grid' ? '城市' : '电网'}</span></button>
+        <button data-build-dock-toggle="true" aria-pressed="${this.buildDockOpen}" class="${this.buildDockOpen ? 'active' : ''}" title="打开建设设施"><i>＋</i><span>建设</span></button>
+        <button data-panel="hub" class="${this.activePanel === 'hub' ? 'active' : ''}" title="打开市政管理"><i>▦</i><span>管理</span></button>
       </nav>
     `;
   }
 
   private renderBuildDock(view: GameViewModel, counts: ReadonlyMap<string, number>): string {
+    if (!this.buildDockOpen) return '';
     const ended = view.state.completed || view.state.failed;
     return `
       <section class="hologram-build-dock">
-        <header><strong>建设设施</strong><small>${this.selectedBuildingId ? '点击沙盘中发亮的位置' : '先选择一个项目'}</small></header>
+        <header><strong>建设设施</strong><small>选择项目后，在城市中确认位置</small><button data-build-dock-toggle="true" aria-label="关闭建设栏">×</button></header>
         <div class="hologram-build-options">
           ${view.availableBuildings.map((config) => {
             const disabled = ended || view.state.money < config.cost;
@@ -285,6 +279,28 @@ export class MayorDashboard {
     if (this.activePanel === 'analytics') return this.renderCityReport(view);
     if (this.activePanel === 'system') return this.renderOffice();
     return this.renderResidentPower(view);
+  }
+
+  private renderManagementHub(view: GameViewModel): string {
+    const items: Array<[Exclude<MayorPanel, 'hub' | 'none'>, string, string, string]> = [
+      ['market', '居民用电', '⌁', `${view.state.powerPrice.toFixed(2)} 元 / 度`],
+      ['research', '城市发展', '↑', `${view.state.unlockedTechnologyIds.length}/${view.technologies.length} 项已完成`],
+      ['policy', '发展方向', '◇', view.activePolicy?.name ?? '平稳发展'],
+      ['fleet', '能源设施', '▦', `${view.buildings.length} 座设施`],
+      ['analytics', '城市报告', '▥', `供电 ${Math.round(view.state.supplyRatio * 100)}%`],
+      ['system', '游戏设置', '⚙', '存档与城市列表']
+    ];
+    return `
+      <div class="hologram-management-grid">
+        ${items.map(([panel, label, icon, detail]) => `
+          <button data-panel="${panel}">
+            <i>${icon}</i>
+            <span><strong>${label}</strong><small>${detail}</small></span>
+            <em>›</em>
+          </button>
+        `).join('')}
+      </div>
+    `;
   }
 
   private renderResidentPower(view: GameViewModel): string {
@@ -468,13 +484,16 @@ export class MayorDashboard {
 
   private openPanel(panel: MayorPanel): void {
     this.activePanel = panel;
+    this.buildDockOpen = false;
     this.selectedBuildingId = undefined;
     if (this.lastView) this.render(this.lastView);
   }
 
   private selectBuilding(buildingId?: string): void {
     this.activePanel = 'none';
+    this.presentationMode = 'city';
     this.focusedBuildingId = undefined;
+    this.buildDockOpen = false;
     this.selectedBuildingId = this.selectedBuildingId === buildingId ? undefined : buildingId;
     if (this.lastView) this.render(this.lastView);
   }
@@ -498,6 +517,16 @@ export class MayorDashboard {
     this.root.querySelectorAll<HTMLButtonElement>('[data-cancel-build]').forEach((button) => button.addEventListener('click', () => this.selectBuilding(undefined)));
     this.root.querySelectorAll<HTMLButtonElement>('[data-camera-home]').forEach((button) => button.addEventListener('click', () => this.sandbox?.focusHome()));
     this.root.querySelectorAll<HTMLButtonElement>('[data-camera-zoom]').forEach((button) => button.addEventListener('click', () => this.sandbox?.zoomBy(button.dataset.cameraZoom === 'in' ? 1.16 : 0.86)));
+    this.root.querySelectorAll<HTMLButtonElement>('[data-presentation-toggle]').forEach((button) => button.addEventListener('click', () => {
+      this.presentationMode = this.presentationMode === 'city' ? 'grid' : 'city';
+      if (this.lastView) this.render(this.lastView);
+    }));
+    this.root.querySelectorAll<HTMLButtonElement>('[data-build-dock-toggle]').forEach((button) => button.addEventListener('click', () => {
+      this.buildDockOpen = !this.buildDockOpen;
+      this.activePanel = 'none';
+      this.selectedBuildingId = undefined;
+      if (this.lastView) this.render(this.lastView);
+    }));
     this.root.querySelectorAll<HTMLButtonElement>('[data-speed]').forEach((button) => button.addEventListener('click', () => this.actions.onSpeedChange(Number(button.dataset.speed) as GameSpeed)));
     this.root.querySelectorAll<HTMLButtonElement>('[data-research]').forEach((button) => button.addEventListener('click', () => {
       const result = this.actions.onResearch(button.dataset.research ?? '');

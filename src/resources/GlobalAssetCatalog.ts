@@ -1,9 +1,11 @@
 import legacyCatalogData from './asset-catalog.json';
 import v5CatalogData from './asset-catalog-v5.json';
+import commercialCatalogData from './asset-catalog-commercial.json';
 import type { AssetCatalog, AssetEntry } from './AssetManager';
 
 const legacyCatalog = legacyCatalogData as unknown as AssetCatalog;
 const v5Catalog = v5CatalogData as unknown as AssetCatalog;
+const commercialCatalog = commercialCatalogData as unknown as AssetCatalog;
 
 const mergeEntries = (...catalogs: readonly AssetCatalog[]): AssetEntry[] => {
   const entries = new Map<string, AssetEntry>();
@@ -14,7 +16,9 @@ const mergeEntries = (...catalogs: readonly AssetCatalog[]): AssetEntry[] => {
 };
 
 export const globalAssetCatalog: AssetCatalog = {
-  schemaVersion: Math.max(legacyCatalog.schemaVersion, v5Catalog.schemaVersion),
-  budgetBytes: (legacyCatalog.budgetBytes ?? 0) + (v5Catalog.budgetBytes ?? 100_000_000),
-  entries: mergeEntries(legacyCatalog, v5Catalog)
+  schemaVersion: Math.max(legacyCatalog.schemaVersion, v5Catalog.schemaVersion, commercialCatalog.schemaVersion),
+  budgetBytes: (legacyCatalog.budgetBytes ?? 0)
+    + (v5Catalog.budgetBytes ?? 100_000_000)
+    + (commercialCatalog.budgetBytes ?? 40_000_000),
+  entries: mergeEntries(legacyCatalog, v5Catalog, commercialCatalog)
 };
