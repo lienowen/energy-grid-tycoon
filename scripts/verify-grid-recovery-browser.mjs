@@ -14,7 +14,9 @@ const numberFrom = (value) => Number(value.replace(/[^0-9.-]/g, ''));
 const money = async () => numberFrom(await text('.hologram-vitals > div:first-child strong'));
 const lights = async () => numberFrom(await text('.hologram-vitals > div:nth-child(2) strong'));
 const guideButton = () => page.locator('.hologram-secretary > button');
-const operationRow = (label) => page.locator('.grid-operation').filter({ hasText: label });
+const edgeRow = (edgeId) => page
+  .locator(`[data-grid-edge-repair="${edgeId}"], [data-grid-edge-toggle="${edgeId}"]`)
+  .locator('xpath=ancestor::article');
 const clickCurrent = async (selector) => page.evaluate((candidate) => {
   const element = document.querySelector(candidate);
   if (!(element instanceof HTMLElement)) throw new Error(`没有找到可点击元素：${candidate}`);
@@ -22,13 +24,17 @@ const clickCurrent = async (selector) => page.evaluate((candidate) => {
 }, selector);
 
 const snapshot = async (name) => {
+  const direct = edgeRow('east-to-industrial');
+  const tie = edgeRow('west-to-industrial-tie');
   const result = {
     name,
     money: await money(),
     lights: await lights(),
     guide: await guideButton().innerText(),
-    directAction: await operationRow('东部配电 → 工业区').locator('button').innerText(),
-    tieAction: await operationRow('西部配电 → 工业区').locator('button').innerText()
+    directAction: await direct.locator('button').innerText(),
+    directStatus: await direct.locator('small').innerText(),
+    tieAction: await tie.locator('button').innerText(),
+    tieStatus: await tie.locator('small').innerText()
   };
   await page.screenshot({ path: `${outputDir}/${name}.png`, fullPage: true });
   return result;
@@ -48,14 +54,17 @@ try {
   assert.match(initial.guide, /投入备用联络线/);
   assert.match(initial.directAction, /抢修/);
   assert.equal(initial.tieAction, '合闸');
+  assert.match(initial.tieStatus, /当前分闸/);
 
   await clickCurrent('.hologram-secretary > button');
   await page.waitForFunction(() => document.querySelector('.hologram-secretary > button')?.textContent?.includes('抢修主线路'));
   const transferred = await snapshot('02-tie-transfer');
   assert.match(transferred.guide, /抢修主线路/);
   assert.equal(transferred.tieAction, '分闸');
+  assert.match(transferred.tieStatus, /当前负载/);
+  assert.ok(numberFrom(transferred.tieStatus) > 0, `备用联络线必须承载实际负荷：${transferred.tieStatus}`);
   assert.equal(transferred.money, initial.money);
-  assert.ok(transferred.lights >= initial.lights, `转供后亮灯率不应下降：${initial.lights}% -> ${transferred.lights}%`);
+  assert.ok(transferred.lights > initial.lights, `转供后亮灯率必须上升：${initial.lights}% -> ${transferred.lights}%`);
 
   await clickCurrent('.hologram-secretary > button');
   await page.waitForFunction(() => document.querySelector('.hologram-secretary > button')?.textContent?.includes('断开备用联络线'));
@@ -72,6 +81,7 @@ try {
   assert.match(normalized.guide, /建设应急电站/);
   assert.equal(normalized.directAction, '分闸');
   assert.equal(normalized.tieAction, '合闸');
+  assert.match(normalized.tieStatus, /当前分闸/);
   assert.equal(normalized.money, repaired.money);
 
   const report = {
