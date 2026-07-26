@@ -28,7 +28,7 @@ const CITY01_GRID_DISTRICT_POSITIONS: Readonly<Record<string, Pick<ScenePoint, '
   'dawn-commercial': { x: 43, z: 33 },
   'dawn-residential': { x: 83, z: 38 },
   'dawn-public': { x: 19, z: 52 },
-  'dawn-industrial': { x: 90, z: 77 },
+  'dawn-industrial': { x: 88, z: 69 },
   'dawn-old-town': { x: 29, z: 77 }
 };
 
@@ -98,8 +98,8 @@ const gridEdgeRoute = (edge: EnergyNetworkEdgeSceneState): ScenePoint[] | undefi
     'west-to-residential': [gridPoint(36, 58), gridPoint(56, 44), gridPoint(83, 38)],
     'west-to-commercial': [gridPoint(36, 58), gridPoint(38, 44), gridPoint(43, 33)],
     'west-to-public': [gridPoint(36, 58), gridPoint(27, 57), gridPoint(19, 52)],
-    'east-to-industrial': [gridPoint(76, 51), gridPoint(89, 58), gridPoint(90, 77)],
-    'west-to-industrial-tie': [gridPoint(76, 51), gridPoint(68, 80), gridPoint(90, 77)],
+    'east-to-industrial': [gridPoint(76, 51), gridPoint(88, 56), gridPoint(88, 69)],
+    'west-to-industrial-tie': [gridPoint(76, 51), gridPoint(68, 76), gridPoint(88, 69)],
     'east-to-public': [gridPoint(76, 51), gridPoint(57, 71), gridPoint(36, 69), gridPoint(19, 52)],
     'east-to-old-town': [gridPoint(76, 51), gridPoint(57, 74), gridPoint(29, 77)]
   };
@@ -205,13 +205,13 @@ export class ProductAssetWorld implements WorldRenderSurface {
     return {
       ...next,
       city: shiftPoint(next.city),
-      focus: { x: 55, z: diagnostics ? 58 : 56, elevation: 0 },
+      focus: { x: 55, z: diagnostics ? 57 : 56, elevation: 0 },
       camera: {
         ...next.camera,
-        startZoom: diagnostics ? 1.12 : 1.48,
+        startZoom: diagnostics ? 1.13 : 1.48,
         minZoom: Math.min(next.camera.minZoom, 0.76),
         maxZoom: Math.max(next.camera.maxZoom, 2.2),
-        startOffsetX: diagnostics ? 92 : 96,
+        startOffsetX: diagnostics ? 90 : 96,
         startOffsetY: diagnostics ? 16 : 18,
         panLimitX: Math.max(next.camera.panLimitX ?? 170, 260),
         panLimitY: Math.max(next.camera.panLimitY ?? 120, 200)
