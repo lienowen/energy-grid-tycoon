@@ -1,4 +1,5 @@
 import type { GameViewModel } from '../core/GameManager';
+import { AssetManager } from '../resources/AssetManager';
 import { GridNetworkRegistry } from '../systems/GridNetworkRegistry';
 
 export interface GridOperationsResult {
@@ -16,6 +17,40 @@ const percent = (value: number | undefined): string =>
 
 const money = (value: number): string =>
   `¥${Math.round(value).toLocaleString('zh-CN')}`;
+
+const escapeAttribute = (value: string): string => value
+  .replaceAll('&', '&amp;')
+  .replaceAll('"', '&quot;')
+  .replaceAll("'", '&#39;')
+  .replaceAll('<', '&lt;')
+  .replaceAll('>', '&gt;');
+
+const crew = [
+  { assetId: 'portrait_engineer_male', role: '系统工程师', name: '主网调度' },
+  { assetId: 'portrait_engineer_female', role: '新能源工程师', name: '电源协调' },
+  { assetId: 'portrait_maintenance_worker', role: '线路维修工', name: '现场抢修' },
+  { assetId: 'portrait_grid_technician', role: '电网技术员', name: '继保监控' },
+  { assetId: 'portrait_driver', role: '抢修司机', name: '车辆调度' }
+] as const;
+
+const renderCrewRoster = (): string => `
+  <section class="grid-crew-roster" aria-label="本次电网抢修班组">
+    <header><strong>抢修班组</strong><small>5 人待命</small></header>
+    <div>
+      ${crew.map((member) => {
+        const source = AssetManager.get(member.assetId, '');
+        return `
+          <figure title="${escapeAttribute(`${member.role} · ${member.name}`)}">
+            ${source
+              ? `<img src="${escapeAttribute(source)}" alt="${escapeAttribute(member.role)}" data-product-portrait="${member.assetId}">`
+              : '<span aria-hidden="true">◇</span>'}
+            <figcaption><b>${member.role}</b><small>${member.name}</small></figcaption>
+          </figure>
+        `;
+      }).join('')}
+    </div>
+  </section>
+`;
 
 export class GridOperationsPanel {
   private element?: HTMLElement;
@@ -87,6 +122,7 @@ export class GridOperationsPanel {
       </header>
       <div class="grid-operations-body">
         <p>先投入备用联络线临时转供，再安排抢修恢复主线路。所有操作都会立即改变城区供电。</p>
+        ${renderCrewRoster()}
         ${this.message ? `<div class="grid-operations-message">${this.message}</div>` : ''}
         <div class="grid-operations-list">
           ${edges.map((edge) => {
