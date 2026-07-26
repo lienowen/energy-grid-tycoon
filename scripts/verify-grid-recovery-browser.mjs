@@ -113,8 +113,11 @@ try {
     assert.ok(cityAssets.includes(assetId), `城市视图没有加载核心素材：${assetId}`);
   }
   assert.ok(cityAssets.length >= 15, `城市视图核心素材数量异常：${cityAssets.length}`);
+  assert.ok(await page.locator('.grid-operations-panel').evaluate((element) => element.classList.contains('collapsed')));
   await page.screenshot({ path: `${outputDir}/00-city-composition.png`, fullPage: true });
 
+  await clickCurrent('[data-grid-panel-toggle="true"]');
+  await page.waitForFunction(() => !document.querySelector('.grid-operations-panel')?.classList.contains('collapsed'));
   await page.waitForFunction(() => {
     const portraits = [...document.querySelectorAll('.grid-crew-roster img')];
     return portraits.length === 5
