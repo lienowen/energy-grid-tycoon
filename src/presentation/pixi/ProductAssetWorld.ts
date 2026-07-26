@@ -25,17 +25,17 @@ const CITY01_DISTRICT_POSITIONS: Readonly<Record<string, Pick<ScenePoint, 'x' | 
 };
 
 const CITY01_GRID_DISTRICT_POSITIONS: Readonly<Record<string, Pick<ScenePoint, 'x' | 'z'>>> = {
-  'dawn-commercial': { x: 43, z: 41 },
-  'dawn-residential': { x: 77, z: 39 },
-  'dawn-public': { x: 25, z: 56 },
-  'dawn-industrial': { x: 78, z: 66 },
-  'dawn-old-town': { x: 37, z: 75 }
+  'dawn-commercial': { x: 43, z: 33 },
+  'dawn-residential': { x: 83, z: 38 },
+  'dawn-public': { x: 19, z: 52 },
+  'dawn-industrial': { x: 84, z: 72 },
+  'dawn-old-town': { x: 29, z: 77 }
 };
 
 const CITY01_GRID_NODE_POSITIONS: Readonly<Record<string, Pick<ScenePoint, 'x' | 'z'>>> = {
-  'main-substation': { x: 55, z: 53 },
-  'west-distribution': { x: 40, z: 59 },
-  'east-distribution': { x: 69, z: 58 }
+  'main-substation': { x: 55, z: 52 },
+  'west-distribution': { x: 36, z: 58 },
+  'east-distribution': { x: 73, z: 54 }
 };
 
 const CITY01_PLOT_POSITIONS: Readonly<Record<string, Pick<ScenePoint, 'x' | 'z'>>> = {
@@ -89,19 +89,19 @@ const city01Roads = (powered: boolean): RoadSceneState[] => [
 
 const gridEdgeRoute = (edge: EnergyNetworkEdgeSceneState): ScenePoint[] | undefined => {
   const routes: Readonly<Record<string, readonly ScenePoint[]>> = {
-    'solar-to-main': [gridPoint(31, 42), gridPoint(43, 46), gridPoint(55, 53)],
-    'reserve-to-main': [gridPoint(25, 70), gridPoint(39, 64), gridPoint(55, 53)],
-    'main-to-west': [gridPoint(55, 53), gridPoint(47, 55), gridPoint(40, 59)],
-    'west-to-east': [gridPoint(40, 59), gridPoint(55, 62), gridPoint(69, 58)],
-    'wind-to-east': [gridPoint(79, 37), gridPoint(76, 48), gridPoint(69, 58)],
-    'storage-to-east': [gridPoint(82, 45), gridPoint(77, 52), gridPoint(69, 58)],
-    'west-to-residential': [gridPoint(40, 59), gridPoint(54, 48), gridPoint(77, 39)],
-    'west-to-commercial': [gridPoint(40, 59), gridPoint(40, 49), gridPoint(43, 41)],
-    'west-to-public': [gridPoint(40, 59), gridPoint(32, 59), gridPoint(25, 56)],
-    'east-to-industrial': [gridPoint(69, 58), gridPoint(75, 61), gridPoint(78, 66)],
-    'west-to-industrial-tie': [gridPoint(69, 58), gridPoint(72, 68), gridPoint(78, 66)],
-    'east-to-public': [gridPoint(69, 58), gridPoint(53, 70), gridPoint(34, 66), gridPoint(25, 56)],
-    'east-to-old-town': [gridPoint(69, 58), gridPoint(56, 72), gridPoint(37, 75)]
+    'solar-to-main': [gridPoint(31, 42), gridPoint(43, 46), gridPoint(55, 52)],
+    'reserve-to-main': [gridPoint(25, 70), gridPoint(40, 63), gridPoint(55, 52)],
+    'main-to-west': [gridPoint(55, 52), gridPoint(46, 54), gridPoint(36, 58)],
+    'west-to-east': [gridPoint(36, 58), gridPoint(54, 64), gridPoint(73, 54)],
+    'wind-to-east': [gridPoint(79, 37), gridPoint(78, 46), gridPoint(73, 54)],
+    'storage-to-east': [gridPoint(82, 45), gridPoint(78, 50), gridPoint(73, 54)],
+    'west-to-residential': [gridPoint(36, 58), gridPoint(55, 45), gridPoint(83, 38)],
+    'west-to-commercial': [gridPoint(36, 58), gridPoint(38, 44), gridPoint(43, 33)],
+    'west-to-public': [gridPoint(36, 58), gridPoint(27, 57), gridPoint(19, 52)],
+    'east-to-industrial': [gridPoint(73, 54), gridPoint(80, 62), gridPoint(84, 72)],
+    'west-to-industrial-tie': [gridPoint(73, 54), gridPoint(76, 72), gridPoint(84, 72)],
+    'east-to-public': [gridPoint(73, 54), gridPoint(58, 72), gridPoint(36, 69), gridPoint(19, 52)],
+    'east-to-old-town': [gridPoint(73, 54), gridPoint(57, 74), gridPoint(29, 77)]
   };
   const route = routes[edge.id];
   return route ? route.map((point) => ({ ...point })) : undefined;
@@ -189,7 +189,7 @@ export class ProductAssetWorld implements WorldRenderSurface {
         ...shifted,
         width: DISTRICT_PAD_WIDTH,
         depth: DISTRICT_PAD_DEPTH,
-        scale: originalVisualWidth * (diagnostics ? 0.9 : 1.2) / DISTRICT_PAD_WIDTH
+        scale: originalVisualWidth * (diagnostics ? 0.84 : 1.2) / DISTRICT_PAD_WIDTH
       };
     });
     const primaryByKind = new Map(primaryDistricts.map((district) => [district.kind, district]));
@@ -208,11 +208,11 @@ export class ProductAssetWorld implements WorldRenderSurface {
       focus: { x: 55, z: diagnostics ? 57 : 56, elevation: 0 },
       camera: {
         ...next.camera,
-        startZoom: diagnostics ? 1.24 : 1.48,
+        startZoom: diagnostics ? 1.18 : 1.48,
         minZoom: Math.min(next.camera.minZoom, 0.76),
         maxZoom: Math.max(next.camera.maxZoom, 2.2),
-        startOffsetX: diagnostics ? 82 : 96,
-        startOffsetY: diagnostics ? 20 : 18,
+        startOffsetX: diagnostics ? 88 : 96,
+        startOffsetY: diagnostics ? 18 : 18,
         panLimitX: Math.max(next.camera.panLimitX ?? 170, 260),
         panLimitY: Math.max(next.camera.panLimitY ?? 120, 200)
       },
@@ -234,7 +234,7 @@ export class ProductAssetWorld implements WorldRenderSurface {
           ?.filter((edge) =>
             edge.status === 'offline'
             || edge.status === 'overload'
-            || edge.loadRatio > 0.025
+            || edge.loadRatio > 0.08
           )
           .map((edge) => ({
             ...edge,
