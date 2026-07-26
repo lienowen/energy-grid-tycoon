@@ -180,12 +180,13 @@ export class ProductAssetWorld implements WorldRenderSurface {
       focus: { x: 55, z: diagnostics ? 52 : 56, elevation: 0 },
       camera: {
         ...next.camera,
-        startZoom: diagnostics ? 0.94 : 1.08,
-        minZoom: Math.min(next.camera.minZoom, 0.68),
-        startOffsetX: diagnostics ? 55 : 76,
-        startOffsetY: 12,
-        panLimitX: Math.max(next.camera.panLimitX ?? 170, 230),
-        panLimitY: Math.max(next.camera.panLimitY ?? 120, 180)
+        startZoom: diagnostics ? 1.3 : 1.48,
+        minZoom: Math.min(next.camera.minZoom, 0.76),
+        maxZoom: Math.max(next.camera.maxZoom, 2.2),
+        startOffsetX: diagnostics ? 70 : 96,
+        startOffsetY: diagnostics ? 24 : 18,
+        panLimitX: Math.max(next.camera.panLimitX ?? 170, 260),
+        panLimitY: Math.max(next.camera.panLimitY ?? 120, 200)
       },
       districtPrefabs: [...primaryDistricts, ...fillerDistricts],
       facilities: next.facilities.map((facility) => ({
