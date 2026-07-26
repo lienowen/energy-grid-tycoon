@@ -195,11 +195,43 @@ export class GameManager {
     const network = GridNetworkRegistry.resolve(state.levelId);
     const edge = network?.edges.find((candidate) => candidate.id === edgeId);
     if (!edge) return { ok: false, reason: '没有找到这条电网线路' };
+    if (!edge.controllable) return { ok: false, reason: '这条线路不能由市级调度操作' };
+    if (state.gridEdgeFaulted?.[edgeId] ?? edge.initialFaulted ?? false) {
+      return { ok: false, reason: '线路仍在故障，需先抢修' };
+    }
 
-    const enabled = state.gridEdgeEnabled?.[edgeId] ?? edge.enabled ?? true;
+    const enabled = state.gridEdgeEnabled?.[edgeId]
+      ?? edge.initialEnabled
+      ?? edge.enabled
+      ?? true;
     state.gridEdgeEnabled = {
       ...(state.gridEdgeEnabled ?? {}),
       [edgeId]: !enabled
+    };
+    this.recalculate();
+    return { ok: true };
+  }
+
+  repairGridEdge(edgeId: string): GameActionResult {
+    const state = this.session.state;
+    if (state.completed || state.failed) return { ok: false, reason: '本局已经结束' };
+    const network = GridNetworkRegistry.resolve(state.levelId);
+    const edge = network?.edges.find((candidate) => candidate.id === edgeId);
+    if (!edge) return { ok: false, reason: '没有找到这条电网线路' };
+    const repairCost = Math.max(0, edge.repairCost ?? 0);
+    if (repairCost <= 0) return { ok: false, reason: '这条线路没有可执行的抢修任务' };
+    const faulted = state.gridEdgeFaulted?.[edgeId] ?? edge.initialFaulted ?? false;
+    if (!faulted) return { ok: false, reason: '线路当前没有故障' };
+    if (state.money < repairCost) return { ok: false, reason: '市政资金不足，无法安排抢修' };
+
+    state.money -= repairCost;
+    state.gridEdgeFaulted = {
+      ...(state.gridEdgeFaulted ?? {}),
+      [edgeId]: false
+    };
+    state.gridEdgeEnabled = {
+      ...(state.gridEdgeEnabled ?? {}),
+      [edgeId]: true
     };
     this.recalculate();
     return { ok: true };
@@ -253,7 +285,8 @@ export class GameManager {
       state: {
         ...this.session.state,
         unlockedTechnologyIds: [...this.session.state.unlockedTechnologyIds],
-        gridEdgeEnabled: { ...(this.session.state.gridEdgeEnabled ?? {}) }
+        gridEdgeEnabled: { ...(this.session.state.gridEdgeEnabled ?? {}) },
+        gridEdgeFaulted: { ...(this.session.state.gridEdgeFaulted ?? {}) }
       },
       buildings: this.session.buildings.toSnapshots(),
       activeEvent: this.eventSystem.getSnapshot(),
@@ -444,7 +477,8 @@ export class GameManager {
       state: {
         ...this.session.state,
         unlockedTechnologyIds: [...this.session.state.unlockedTechnologyIds],
-        gridEdgeEnabled: { ...(this.session.state.gridEdgeEnabled ?? {}) }
+        gridEdgeEnabled: { ...(this.session.state.gridEdgeEnabled ?? {}) },
+        gridEdgeFaulted: { ...(this.session.state.gridEdgeFaulted ?? {}) }
       },
       level,
       availableBuildings,
