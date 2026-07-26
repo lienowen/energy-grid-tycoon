@@ -71,22 +71,29 @@ const resolveState = (input: ResolveFacilityVisualInput): FacilityVisualState =>
 const assetId = (family: FacilityVisualFamily, suffix: string): string =>
   `world_facility_${family}_${suffix}`;
 
-const commercialFamilies = new Set<FacilityVisualFamily>(['solar', 'wind', 'gas', 'battery']);
+const city01ProductAssetByFamily: Partial<Record<FacilityVisualFamily, string>> = {
+  solar: 'facility_solar_farm_base',
+  wind: 'facility_wind_farm_base',
+  gas: 'facility_gas_peaker_base',
+  battery: 'facility_battery_storage_base'
+};
 
 export class FacilityVisualRegistry {
   static resolve(input: ResolveFacilityVisualInput): FacilityVisualDescriptor {
     const family = resolveFamily(input.configId, input.category);
     const state = resolveState(input);
     const animated = input.enabled && state !== 'construction' && state !== 'offline';
-    if (input.presentation === 'commercial' && commercialFamilies.has(family)) {
-      const commercialState = state === 'offline' ? 'offline' : 'active';
+    const productAssetId = city01ProductAssetByFamily[family];
+
+    if (input.presentation === 'commercial' && productAssetId) {
       return {
         family,
         state,
-        bodyAssetId: `commercial_facility_${family}_${commercialState}`,
+        bodyAssetId: productAssetId,
         shadowAssetId: 'commercial_facility_shadow'
       };
     }
+
     return {
       family,
       state,
