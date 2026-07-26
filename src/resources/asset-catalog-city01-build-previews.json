@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 9,
+  "budgetBytes": 0,
+  "entries": [
+    {
+      "id": "building_solar",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-solar-farm-base.png",
+      "version": 9,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "build-preview", "facility", "solar"]
+    },
+    {
+      "id": "building_wind",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-wind-farm-base.png",
+      "version": 9,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "build-preview", "facility", "wind"]
+    },
+    {
+      "id": "building_offshore",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-wind-farm-base.png",
+      "version": 9,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "build-preview", "facility", "offshore-wind"]
+    },
+    {
+      "id": "building_gas",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-gas-peaker-base.png",
+      "version": 9,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "build-preview", "facility", "gas"]
+    },
+    {
+      "id": "building_battery",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-battery-storage-base.png",
+      "version": 9,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "build-preview", "facility", "battery"]
+    },
+    {
+      "id": "building_battery_utility",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-battery-storage-base.png",
+      "version": 9,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "build-preview", "facility", "utility-battery"]
+    }
+  ]
+}
