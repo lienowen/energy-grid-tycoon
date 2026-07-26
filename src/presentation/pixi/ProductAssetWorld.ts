@@ -56,9 +56,10 @@ export class ProductAssetWorld implements WorldRenderSurface {
     const diagnostics = next.presentationMode === 'grid';
     return {
       ...next,
+      focus: { x: 53, z: 52, elevation: 0 },
       camera: {
         ...next.camera,
-        startZoom: diagnostics ? 0.84 : 0.87,
+        startZoom: diagnostics ? 0.84 : 0.88,
         minZoom: Math.min(next.camera.minZoom, 0.62),
         startOffsetX: 8,
         startOffsetY: 18,
@@ -73,6 +74,7 @@ export class ProductAssetWorld implements WorldRenderSurface {
         ...facility,
         scale: facility.scale * 1.12
       })),
+      roads: [],
       networkEdges: diagnostics
         ? next.networkEdges?.filter((edge) =>
           edge.status === 'offline'
