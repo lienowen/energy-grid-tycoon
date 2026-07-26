@@ -28,6 +28,7 @@ export interface GameState {
   totalShortage: number;
   randomState: number;
   activeEventId?: string;
+  gridEdgeEnabled?: Record<string, boolean>;
   completed: boolean;
   failed: boolean;
 }
@@ -43,6 +44,7 @@ export interface InitialStateInput {
   researchPoints?: number;
   unlockedTechnologyIds?: string[];
   randomSeed?: number;
+  gridEdgeEnabled?: Record<string, boolean>;
 }
 
 const normalizeRandomState = (seed: number | undefined): number => {
@@ -76,6 +78,7 @@ export const createInitialState = (input: InitialStateInput): GameState => ({
   totalEnergyServed: 0,
   totalShortage: 0,
   randomState: normalizeRandomState(input.randomSeed),
+  gridEdgeEnabled: { ...(input.gridEdgeEnabled ?? {}) },
   completed: false,
   failed: false
 });
