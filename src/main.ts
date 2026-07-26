@@ -96,6 +96,9 @@ const bootstrap = async (): Promise<void> => {
   if (gridPattern) document.documentElement.style.setProperty('--ui-grid-pattern', `url("${gridPattern}")`);
   setImageVariable('--city01-secretary-avatar', 'icon_engineer_female');
   setImageVariable('--city01-planner-avatar', 'icon_engineer_male');
+  setImageVariable('--city01-maintenance-avatar', 'icon_maintenance_worker');
+  setImageVariable('--city01-driver-avatar', 'icon_driver');
+  setImageVariable('--city01-repair-truck', 'vehicle_repair_truck');
 
   controller = new AppController(root, levels, buildings, events, technologies, policies);
   controller.start();
