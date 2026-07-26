@@ -64,6 +64,18 @@ const snapshot = async (name) => {
   return result;
 };
 
+const verifyBuildPreview = async (buildingId, expectedPath) => {
+  const image = page.locator(`[data-select-build="${buildingId}"] img`);
+  await image.waitFor({ state: 'visible' });
+  await page.waitForFunction((selector) => {
+    const candidate = document.querySelector(selector);
+    return candidate instanceof HTMLImageElement && candidate.complete && candidate.naturalWidth > 0;
+  }, `[data-select-build="${buildingId}"] img`);
+  const source = await image.getAttribute('src');
+  assert.equal(source, expectedPath, `建设栏没有使用正式素材：${buildingId}`);
+  return source;
+};
+
 try {
   await page.goto(baseUrl, { waitUntil: 'networkidle' });
   await page.evaluate(() => window.localStorage.clear());
@@ -96,7 +108,23 @@ try {
   for (const assetId of requiredProductAssets) {
     assert.ok(productAssets.includes(assetId), `浏览器没有加载已提交素材：${assetId}`);
   }
+  assert.equal(productAssets.length, 40, '沙盘必须实际加载 40 张地图、设施、人员图标和车辆素材');
   assert.equal(await page.locator('.grid-crew-roster img[data-product-portrait]').count(), 5);
+
+  await clickCurrent('[data-build-dock-toggle="true"]');
+  await page.locator('.hologram-build-dock').waitFor({ state: 'visible' });
+  const gasPreview = await verifyBuildPreview(
+    'gas_basic',
+    '/assets/city01/product/facilities/facility-gas-peaker-base.png'
+  );
+  const batteryPreview = await verifyBuildPreview(
+    'battery_basic',
+    '/assets/city01/product/facilities/facility-battery-storage-base.png'
+  );
+  await page.screenshot({ path: `${outputDir}/00-build-previews.png`, fullPage: true });
+  await clickCurrent('.hologram-build-dock [data-build-dock-toggle="true"]');
+  await page.locator('.hologram-build-dock').waitFor({ state: 'detached' });
+
   await page.waitForFunction(() => document.querySelector('.hologram-secretary > button')?.textContent?.includes('投入备用联络线'));
 
   const initial = await snapshot('01-initial-fault');
@@ -136,10 +164,13 @@ try {
   const report = {
     baseUrl,
     passed: true,
+    submittedAssetCount: 47,
     productAssetCount: productAssets.length,
     productAssets,
     requiredProductAssets,
     crewPortraitCount: 5,
+    buildPreviewCount: 2,
+    buildPreviews: { gasPreview, batteryPreview },
     stages: [initial, transferred, repaired, normalized]
   };
   await writeFile(`${outputDir}/report.json`, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
