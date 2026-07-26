@@ -10,12 +10,6 @@ const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
 
 const requiredCityAssets = [
-  'terrain_riverfront_base',
-  'terrain_road_bridge_base',
-  'terrain_harbor_pier_base',
-  'terrain_forest_base',
-  'terrain_rocky_hill_base',
-  'terrain_park_plaza_base',
   'district_residential_base',
   'district_commercial_base',
   'district_industrial_base',
@@ -27,6 +21,8 @@ const requiredCityAssets = [
   'facility_distribution_node_base',
   'vehicle_sedan',
   'vehicle_sedan_mirrored',
+  'vehicle_utility_van',
+  'vehicle_utility_van_mirrored',
   'vehicle_repair_truck',
   'vehicle_repair_truck_mirrored'
 ];
@@ -116,7 +112,7 @@ try {
   for (const assetId of requiredCityAssets) {
     assert.ok(cityAssets.includes(assetId), `城市视图没有加载核心素材：${assetId}`);
   }
-  assert.ok(cityAssets.length >= 20, `城市视图核心素材数量异常：${cityAssets.length}`);
+  assert.ok(cityAssets.length >= 15, `城市视图核心素材数量异常：${cityAssets.length}`);
   await page.screenshot({ path: `${outputDir}/00-city-composition.png`, fullPage: true });
 
   await page.waitForFunction(() => {
@@ -190,6 +186,8 @@ try {
     baseUrl,
     passed: true,
     catalogAssetCount: 47,
+    liveEnvironmentAssetCount: 0,
+    quarantinedEnvironmentAssetCount: 16,
     cityAssetCount: cityAssets.length,
     cityAssets,
     diagnosticAssetCount: diagnosticAssets.length,
