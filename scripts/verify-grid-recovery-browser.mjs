@@ -71,6 +71,9 @@ try {
   await page.locator('[data-start="city-01"]').click();
   await page.locator('.grid-operations-panel').waitFor({ state: 'visible' });
 
+  await clickCurrent('.hologram-speed [data-speed="0"]');
+  await page.waitForFunction(() => document.querySelector('.hologram-speed [data-speed="0"]')?.classList.contains('active'));
+
   await page.waitForFunction((required) => {
     const host = document.querySelector('[data-hologram-canvas]');
     if (host?.getAttribute('data-world-renderer') !== 'city01-product') return false;
@@ -94,9 +97,6 @@ try {
     assert.ok(productAssets.includes(assetId), `浏览器没有加载已提交素材：${assetId}`);
   }
   assert.equal(await page.locator('.grid-crew-roster img[data-product-portrait]').count(), 5);
-
-  await clickCurrent('.hologram-speed [data-speed="0"]');
-  await page.waitForFunction(() => document.querySelector('.hologram-speed [data-speed="0"]')?.classList.contains('active'));
   await page.waitForFunction(() => document.querySelector('.hologram-secretary > button')?.textContent?.includes('投入备用联络线'));
 
   const initial = await snapshot('01-initial-fault');
