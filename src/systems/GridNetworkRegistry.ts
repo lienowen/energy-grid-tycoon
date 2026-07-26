@@ -32,9 +32,29 @@ const dawnCityGrid: GridNetworkConfig = {
 };
 
 const networks = new Map<string, GridNetworkConfig>([['city-01', dawnCityGrid]]);
+const initialEdgeStates = new Map<string, Record<string, boolean>>([
+  ['city-01', { 'east-to-industrial': false }]
+]);
 
 export class GridNetworkRegistry {
   static resolve(levelId: string): GridNetworkConfig | undefined {
     return networks.get(levelId);
+  }
+
+  static getInitialEdgeStates(levelId: string): Record<string, boolean> {
+    return { ...(initialEdgeStates.get(levelId) ?? {}) };
+  }
+
+  static withEdgeStates(
+    network: GridNetworkConfig,
+    edgeStates: Readonly<Record<string, boolean>> | undefined
+  ): GridNetworkConfig {
+    return {
+      nodes: network.nodes,
+      edges: network.edges.map((edge) => ({
+        ...edge,
+        enabled: edgeStates?.[edge.id] ?? edge.enabled ?? true
+      }))
+    };
   }
 }
