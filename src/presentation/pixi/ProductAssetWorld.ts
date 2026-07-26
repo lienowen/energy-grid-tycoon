@@ -1,4 +1,4 @@
-import type { CitySceneState, ScenePoint } from '../CitySceneMapper';
+import type { CitySceneState, RoadSceneState, ScenePoint } from '../CitySceneMapper';
 import type { WorldRenderActions, WorldRenderSurface } from '../../ui/world/WorldRenderSurface';
 import { City01ProductPixiWorld } from './City01ProductPixiWorld';
 import { ImmersivePixiWorld } from './ImmersivePixiWorld';
@@ -39,6 +39,76 @@ const placeAt = <T extends ScenePoint>(
   point: T,
   position: Pick<ScenePoint, 'x' | 'z'> | undefined
 ): T => position ? { ...point, ...position } : point;
+
+const roadPoint = (x: number, z: number): ScenePoint => ({ x, z, elevation: -0.02 });
+
+const city01Roads = (powered: boolean): RoadSceneState[] => [
+  {
+    id: 'city01-east-west-arterial',
+    laneCount: 2,
+    traffic: 0.82,
+    powered,
+    points: [
+      roadPoint(24, 49),
+      roadPoint(38, 47),
+      roadPoint(56, 49),
+      roadPoint(75, 51),
+      roadPoint(88, 52)
+    ]
+  },
+  {
+    id: 'city01-north-south-avenue',
+    laneCount: 2,
+    traffic: 0.72,
+    powered,
+    points: [
+      roadPoint(55, 24),
+      roadPoint(56, 32),
+      roadPoint(56, 49),
+      roadPoint(48, 64),
+      roadPoint(46, 74)
+    ]
+  },
+  {
+    id: 'city01-north-ring',
+    laneCount: 1,
+    traffic: 0.46,
+    powered,
+    points: [
+      roadPoint(31, 36),
+      roadPoint(42, 34),
+      roadPoint(56, 32),
+      roadPoint(76, 31),
+      roadPoint(82, 38)
+    ]
+  },
+  {
+    id: 'city01-south-ring',
+    laneCount: 1,
+    traffic: 0.54,
+    powered,
+    points: [
+      roadPoint(29, 64),
+      roadPoint(48, 64),
+      roadPoint(60, 66),
+      roadPoint(76, 66),
+      roadPoint(83, 51)
+    ]
+  },
+  {
+    id: 'city01-energy-corridor',
+    laneCount: 1,
+    traffic: 0.34,
+    powered,
+    points: [
+      roadPoint(56, 49),
+      roadPoint(67, 44),
+      roadPoint(75, 38),
+      roadPoint(82, 38),
+      roadPoint(83, 51)
+    ]
+  }
+];
 
 export class ProductAssetWorld implements WorldRenderSurface {
   private renderer?: WorldRenderSurface;
@@ -122,10 +192,7 @@ export class ProductAssetWorld implements WorldRenderSurface {
         CITY01_PLOT_POSITIONS[facility.plotId]
       )),
       plots: shiftedPlots,
-      roads: next.roads.map((road) => ({
-        ...road,
-        points: road.points.map((point) => shiftPoint(point))
-      })),
+      roads: city01Roads(next.supplyRatio > 0.35),
       networkNodes: next.networkNodes?.map((node) => shiftPoint(node)),
       networkEdges: diagnostics
         ? next.networkEdges
