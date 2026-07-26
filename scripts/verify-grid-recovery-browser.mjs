@@ -15,6 +15,11 @@ const money = async () => numberFrom(await text('.hologram-vitals > div:first-ch
 const lights = async () => numberFrom(await text('.hologram-vitals > div:nth-child(2) strong'));
 const guideButton = () => page.locator('.hologram-secretary > button');
 const operationRow = (label) => page.locator('.grid-operation').filter({ hasText: label });
+const clickCurrent = async (selector) => page.evaluate((candidate) => {
+  const element = document.querySelector(candidate);
+  if (!(element instanceof HTMLElement)) throw new Error(`没有找到可点击元素：${candidate}`);
+  element.click();
+}, selector);
 
 const snapshot = async (name) => {
   const result = {
@@ -35,7 +40,8 @@ try {
   await page.reload({ waitUntil: 'networkidle' });
   await page.locator('[data-start="city-01"]').click();
   await page.locator('.grid-operations-panel').waitFor({ state: 'visible' });
-  await page.locator('.hologram-speed [data-speed="0"]').click();
+  await clickCurrent('.hologram-speed [data-speed="0"]');
+  await page.waitForFunction(() => document.querySelector('.hologram-speed [data-speed="0"]')?.classList.contains('active'));
   await page.waitForFunction(() => document.querySelector('.hologram-secretary > button')?.textContent?.includes('投入备用联络线'));
 
   const initial = await snapshot('01-initial-fault');
@@ -43,7 +49,7 @@ try {
   assert.match(initial.directAction, /抢修/);
   assert.equal(initial.tieAction, '合闸');
 
-  await guideButton().click();
+  await clickCurrent('.hologram-secretary > button');
   await page.waitForFunction(() => document.querySelector('.hologram-secretary > button')?.textContent?.includes('抢修主线路'));
   const transferred = await snapshot('02-tie-transfer');
   assert.match(transferred.guide, /抢修主线路/);
@@ -51,7 +57,7 @@ try {
   assert.equal(transferred.money, initial.money);
   assert.ok(transferred.lights >= initial.lights, `转供后亮灯率不应下降：${initial.lights}% -> ${transferred.lights}%`);
 
-  await guideButton().click();
+  await clickCurrent('.hologram-secretary > button');
   await page.waitForFunction(() => document.querySelector('.hologram-secretary > button')?.textContent?.includes('断开备用联络线'));
   const repaired = await snapshot('03-main-line-repaired');
   assert.match(repaired.guide, /断开备用联络线/);
@@ -60,7 +66,7 @@ try {
   assert.equal(repaired.money, transferred.money - 320);
   assert.ok(repaired.lights >= transferred.lights, `主线抢修后亮灯率不应下降：${transferred.lights}% -> ${repaired.lights}%`);
 
-  await guideButton().click();
+  await clickCurrent('.hologram-secretary > button');
   await page.waitForFunction(() => document.querySelector('.hologram-secretary > button')?.textContent?.includes('建设应急电站'));
   const normalized = await snapshot('04-normal-grid-configuration');
   assert.match(normalized.guide, /建设应急电站/);
