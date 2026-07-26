@@ -59,72 +59,23 @@ export const city01FacilityAssetFor = (configId: string): string | undefined => 
 };
 
 /**
- * The live city only draws assets that reinforce the coastline and city structure.
- * The remaining environment tiles stay in the reusable material catalog and are not
- * forced into the same screenshot.
+ * The submitted environment tiles currently contain opaque rectangular backgrounds.
+ * Rendering them over the city hides the continuous island and recreates the rejected
+ * sticker-board composition. They remain registered as reusable source materials but
+ * are intentionally not drawn in the live world until production-transparent masters exist.
  */
-export const city01EnvironmentPlacements: readonly ProductAssetPlacement[] = [
-  {
-    assetId: 'terrain_riverfront_base',
-    point: { x: 10, z: 48, elevation: -0.34 },
-    width: 188,
-    layer: 'terrain',
-    alpha: 0.82,
-    zOffset: -930
-  },
-  {
-    assetId: 'terrain_road_bridge_base',
-    point: { x: 20, z: 48, elevation: -0.18 },
-    width: 104,
-    layer: 'roads',
-    alpha: 0.9,
-    zOffset: -510
-  },
-  {
-    assetId: 'terrain_seafront_base',
-    point: { x: 58, z: 90, elevation: -0.36 },
-    width: 278,
-    layer: 'terrain',
-    alpha: 0.78,
-    zOffset: -920
-  },
-  {
-    assetId: 'terrain_harbor_pier_base',
-    point: { x: 37, z: 82, elevation: -0.08 },
-    width: 122,
-    layer: 'groundDecorations',
-    alpha: 0.92,
-    zOffset: -220
-  },
-  {
-    assetId: 'terrain_rocky_hill_base',
-    point: { x: 73, z: 8, elevation: -0.05 },
-    width: 142,
-    layer: 'terrain',
-    alpha: 0.88,
-    zOffset: -690
-  },
-  {
-    assetId: 'terrain_forest_base',
-    point: { x: 31, z: 9, elevation: -0.05 },
-    width: 146,
-    layer: 'terrain',
-    alpha: 0.88,
-    zOffset: -690
-  },
-  {
-    assetId: 'terrain_park_plaza_base',
-    point: { x: 55, z: 48, elevation: 0 },
-    width: 82,
-    layer: 'groundDecorations',
-    alpha: 0.9,
-    zOffset: -120
-  }
-];
+export const city01EnvironmentPlacements: readonly ProductAssetPlacement[] = [];
 
 export const city01EnvironmentMaterialAssetIds = [
+  'terrain_riverfront_base',
+  'terrain_road_bridge_base',
+  'terrain_seafront_base',
   'terrain_beach_open_base',
+  'terrain_harbor_pier_base',
   'terrain_coast_cliff_base',
+  'terrain_rocky_hill_base',
+  'terrain_forest_base',
+  'terrain_park_plaza_base',
   'terrain_small_park_base',
   'terrain_empty_grasslot_base',
   'terrain_road_straight_base',
