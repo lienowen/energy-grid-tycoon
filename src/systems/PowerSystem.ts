@@ -31,8 +31,7 @@ export class PowerSystem {
       : Math.min(netSupply, Math.max(0, input.deliveredSupply));
     const energyServed = Math.min(deliveredSupply, demand);
     const supplyRatio = demand === 0 ? 1 : Math.min(energyServed / demand, 1.5);
-
-    return {
+    const result: PowerResult = {
       grossSupply,
       netSupply,
       demand,
@@ -40,8 +39,10 @@ export class PowerSystem {
       shortage: Math.max(demand - energyServed, 0),
       surplus: Math.max(netSupply - energyServed, 0),
       energyServed,
-      stable: supplyRatio >= 0.98,
-      gridDispatch: input.gridDispatch
+      stable: supplyRatio >= 0.98
     };
+
+    if (input.gridDispatch) result.gridDispatch = input.gridDispatch;
+    return result;
   }
 }
