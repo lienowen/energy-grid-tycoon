@@ -56,13 +56,12 @@ export class ProductAssetWorld implements WorldRenderSurface {
     const diagnostics = next.presentationMode === 'grid';
     return {
       ...next,
-      focus: { x: 52, z: 56, elevation: 0 },
       camera: {
         ...next.camera,
-        startZoom: diagnostics ? 0.9 : 0.94,
-        minZoom: Math.min(next.camera.minZoom, 0.66),
-        startOffsetX: 14,
-        startOffsetY: 22,
+        startZoom: diagnostics ? 0.8 : 0.82,
+        minZoom: Math.min(next.camera.minZoom, 0.62),
+        startOffsetX: 8,
+        startOffsetY: 12,
         panLimitX: Math.max(next.camera.panLimitX ?? 170, 230),
         panLimitY: Math.max(next.camera.panLimitY ?? 120, 180)
       },
