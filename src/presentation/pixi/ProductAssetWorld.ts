@@ -1,4 +1,9 @@
-import type { CitySceneState, RoadSceneState, ScenePoint } from '../CitySceneMapper';
+import type {
+  CitySceneState,
+  DistrictPrefabSceneState,
+  RoadSceneState,
+  ScenePoint
+} from '../CitySceneMapper';
 import type { WorldRenderActions, WorldRenderSurface } from '../../ui/world/WorldRenderSurface';
 import { City01ProductPixiWorld } from './City01ProductPixiWorld';
 import { ImmersivePixiWorld } from './ImmersivePixiWorld';
@@ -81,6 +86,25 @@ const city01Roads = (powered: boolean): RoadSceneState[] => [
   }
 ];
 
+const visualDistrict = (
+  source: DistrictPrefabSceneState | undefined,
+  id: string,
+  x: number,
+  z: number,
+  scaleFactor: number
+): DistrictPrefabSceneState | undefined => source ? {
+  ...source,
+  id,
+  label: '',
+  x,
+  z,
+  width: DISTRICT_PAD_WIDTH,
+  depth: DISTRICT_PAD_DEPTH,
+  scale: source.scale * scaleFactor,
+  powerRatio: 1,
+  status: 'normal'
+} : undefined;
+
 export class ProductAssetWorld implements WorldRenderSurface {
   private renderer?: WorldRenderSurface;
   private mode?: ProductRendererMode;
@@ -137,30 +161,37 @@ export class ProductAssetWorld implements WorldRenderSurface {
       shiftPoint(plot),
       CITY01_PLOT_POSITIONS[plot.id]
     ));
+    const primaryDistricts = (next.districtPrefabs ?? []).map((district) => {
+      const shifted = placeAt(shiftPoint(district), districtPositions[district.id]);
+      const originalVisualWidth = district.width * district.scale;
+      return {
+        ...shifted,
+        width: DISTRICT_PAD_WIDTH,
+        depth: DISTRICT_PAD_DEPTH,
+        scale: originalVisualWidth * (diagnostics ? 0.98 : 1.22) / DISTRICT_PAD_WIDTH
+      };
+    });
+    const primaryByKind = new Map(primaryDistricts.map((district) => [district.kind, district]));
+    const fillerDistricts = diagnostics ? [] : [
+      visualDistrict(primaryByKind.get('residential'), 'city01-visual-residential', 57, 42, 0.52),
+      visualDistrict(primaryByKind.get('commercial'), 'city01-visual-commercial', 42, 58, 0.46),
+      visualDistrict(primaryByKind.get('public'), 'city01-visual-public', 59, 65, 0.44)
+    ].filter((district): district is DistrictPrefabSceneState => Boolean(district));
 
     return {
       ...next,
       city: shiftPoint(next.city),
-      focus: { x: 55, z: diagnostics ? 52 : 51, elevation: 0 },
+      focus: { x: 55, z: diagnostics ? 52 : 52, elevation: 0 },
       camera: {
         ...next.camera,
-        startZoom: diagnostics ? 0.94 : 1.06,
+        startZoom: diagnostics ? 0.94 : 1.08,
         minZoom: Math.min(next.camera.minZoom, 0.68),
-        startOffsetX: diagnostics ? 55 : 70,
+        startOffsetX: diagnostics ? 55 : 72,
         startOffsetY: 18,
         panLimitX: Math.max(next.camera.panLimitX ?? 170, 230),
         panLimitY: Math.max(next.camera.panLimitY ?? 120, 180)
       },
-      districtPrefabs: next.districtPrefabs?.map((district) => {
-        const shifted = placeAt(shiftPoint(district), districtPositions[district.id]);
-        const originalVisualWidth = district.width * district.scale;
-        return {
-          ...shifted,
-          width: DISTRICT_PAD_WIDTH,
-          depth: DISTRICT_PAD_DEPTH,
-          scale: originalVisualWidth * (diagnostics ? 0.98 : 1.22) / DISTRICT_PAD_WIDTH
-        };
-      }),
+      districtPrefabs: [...primaryDistricts, ...fillerDistricts],
       facilities: next.facilities.map((facility) => ({
         ...placeAt(shiftPoint(facility), CITY01_PLOT_POSITIONS[facility.plotId]),
         scale: facility.scale * 0.78
