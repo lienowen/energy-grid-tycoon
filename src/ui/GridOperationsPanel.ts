@@ -55,8 +55,7 @@ const renderCrewRoster = (): string => `
 export class GridOperationsPanel {
   private element?: HTMLElement;
   private lastView?: GameViewModel;
-  private expanded = true;
-  private initialized = false;
+  private expanded = false;
   private message = '';
 
   constructor(
@@ -97,10 +96,6 @@ export class GridOperationsPanel {
     ]));
     const faultCount = [...faultedById.values()].filter(Boolean).length;
     const openCount = edges.filter((edge) => !faultedById.get(edge.id) && !enabledById.get(edge.id)).length;
-    if (!this.initialized) {
-      this.expanded = faultCount > 0 || openCount > 0;
-      this.initialized = true;
-    }
 
     const dispatchById = new Map(
       (view.lastPower?.gridDispatch?.edges ?? []).map((edge) => [edge.edgeId, edge])
@@ -175,7 +170,7 @@ export class GridOperationsPanel {
     this.element?.remove();
     this.element = undefined;
     this.lastView = undefined;
-    this.initialized = false;
+    this.expanded = false;
     this.message = '';
   }
 
