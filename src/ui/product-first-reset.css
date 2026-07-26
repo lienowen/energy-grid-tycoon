@@ -65,8 +65,8 @@
 .hologram-secretary {
   top: 78px;
   right: 16px;
-  width: min(306px, 26vw);
-  grid-template-columns: 42px minmax(0, 1fr) auto;
+  width: min(326px, 27vw);
+  grid-template-columns: 46px minmax(0, 1fr) auto;
   gap: 8px;
   padding: 9px;
   background: linear-gradient(145deg, rgba(5, 28, 43, .9), rgba(2, 15, 26, .86));
@@ -74,7 +74,23 @@
   backdrop-filter: blur(11px);
 }
 
-.secretary-avatar i { width: 34px; height: 38px; }
+.secretary-avatar i {
+  width: 40px;
+  height: 42px;
+  border: 1px solid rgba(95, 213, 255, .34);
+  border-radius: 10px;
+  background:
+    linear-gradient(rgba(5, 28, 43, .08), rgba(5, 28, 43, .08)),
+    url('/assets/city01/product/characters/icons/icon-engineer-female.png') center 88% / 46px 46px no-repeat;
+  box-shadow: inset 0 0 14px rgba(74, 215, 255, .08), 0 0 12px rgba(0, 0, 0, .24);
+}
+.secretary-avatar i::before,
+.secretary-avatar i::after { display: none; }
+.hologram-secretary.placement .secretary-avatar i {
+  background-image:
+    linear-gradient(rgba(5, 28, 43, .08), rgba(5, 28, 43, .08)),
+    url('/assets/city01/product/characters/icons/icon-engineer-male.png');
+}
 .hologram-secretary strong { font-size: 11px; }
 .hologram-secretary p,
 .hologram-secretary em { display: none; }
@@ -90,7 +106,7 @@
 }
 
 .city-recovery-feedback {
-  inset: calc(86px + env(safe-area-inset-top)) 18px auto auto;
+  inset: calc(164px + env(safe-area-inset-top)) 18px auto auto;
   width: min(330px, calc(100vw - 36px));
   height: auto;
   overflow: visible;
@@ -129,6 +145,7 @@
   .hologram-mission-card,
   .hologram-mission-card[data-dawn-beat] { width: min(238px, 34vw); }
   .hologram-secretary { display: none; }
+  .city-recovery-feedback { inset: calc(92px + env(safe-area-inset-top)) 18px auto auto; }
 }
 
 @media (max-width: 680px) {
