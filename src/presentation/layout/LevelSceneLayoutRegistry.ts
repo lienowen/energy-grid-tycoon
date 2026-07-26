@@ -333,10 +333,10 @@ const dawnCityLayout: LevelSceneLayout = {
       { id: 'east-to-industrial', from: 'east-distribution', to: 'industrial-load', capacity: 1.1 },
       {
         id: 'west-to-industrial-tie',
-        from: 'west-distribution',
+        from: 'east-distribution',
         to: 'industrial-load',
         capacity: 0.12,
-        points: [{ x: 49, y: 50 }, { x: 55, y: 60 }, { x: 65, y: 63 }, { x: 75, y: 51 }]
+        points: [{ x: 69, y: 52 }, { x: 66, y: 60 }, { x: 70, y: 63 }, { x: 75, y: 51 }]
       },
       { id: 'east-to-public', from: 'east-distribution', to: 'public-load', capacity: 0.82 },
       { id: 'east-to-old-town', from: 'east-distribution', to: 'old-town-load', capacity: 0.76 }
