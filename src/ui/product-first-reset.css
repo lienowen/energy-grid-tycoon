@@ -81,7 +81,7 @@
   border-radius: 10px;
   background:
     linear-gradient(rgba(5, 28, 43, .08), rgba(5, 28, 43, .08)),
-    url('/assets/city01/product/characters/icons/icon-engineer-female.png') center 88% / 46px 46px no-repeat;
+    var(--city01-secretary-avatar, none) center 88% / 46px 46px no-repeat;
   box-shadow: inset 0 0 14px rgba(74, 215, 255, .08), 0 0 12px rgba(0, 0, 0, .24);
 }
 .secretary-avatar i::before,
@@ -89,7 +89,7 @@
 .hologram-secretary.placement .secretary-avatar i {
   background-image:
     linear-gradient(rgba(5, 28, 43, .08), rgba(5, 28, 43, .08)),
-    url('/assets/city01/product/characters/icons/icon-engineer-male.png');
+    var(--city01-planner-avatar, none);
 }
 .hologram-secretary strong { font-size: 11px; }
 .hologram-secretary p,
