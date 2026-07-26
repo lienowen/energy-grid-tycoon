@@ -9,6 +9,7 @@ import './ui/dawn-city-experience.css';
 import './ui/city-recovery-feedback.css';
 import './ui/immersive-world.css';
 import './ui/product-first-reset.css';
+import './ui/grid-operations.css';
 import buildingData from './data/buildings.json';
 import eventData from './data/events.json';
 import levelData from './data/levels.json';
