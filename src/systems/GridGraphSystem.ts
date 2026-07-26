@@ -24,6 +24,11 @@ export interface GridEdgeConfig {
   to: string;
   capacity: number;
   enabled?: boolean;
+  controllable?: boolean;
+  initialEnabled?: boolean;
+  initialFaulted?: boolean;
+  repairCost?: number;
+  role?: 'backbone' | 'feeder' | 'tie';
 }
 
 export interface GridNetworkConfig {
