@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 8,
+  "budgetBytes": 0,
+  "entries": [
+    {
+      "id": "commercial_district_residential_night",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-residential-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "district", "residential"]
+    },
+    {
+      "id": "commercial_district_residential_blackout",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-residential-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "district", "residential", "blackout"]
+    },
+    {
+      "id": "commercial_district_commercial_night",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-commercial-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "district", "commercial"]
+    },
+    {
+      "id": "commercial_district_commercial_blackout",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-commercial-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "district", "commercial", "blackout"]
+    },
+    {
+      "id": "commercial_district_industrial_night",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-industrial-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "district", "industrial"]
+    },
+    {
+      "id": "commercial_district_industrial_blackout",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-industrial-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "district", "industrial", "blackout"]
+    },
+    {
+      "id": "commercial_district_public_night",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-public-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "district", "public"]
+    },
+    {
+      "id": "commercial_district_public_blackout",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-public-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "district", "public", "blackout"]
+    },
+    {
+      "id": "commercial_district_old_town_night",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-old-town-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "district", "old-town"]
+    },
+    {
+      "id": "commercial_district_old_town_blackout",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-old-town-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "district", "old-town", "blackout"]
+    },
+    {
+      "id": "commercial_facility_solar_active",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-solar-farm-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "facility", "solar"]
+    },
+    {
+      "id": "commercial_facility_solar_offline",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-solar-farm-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "facility", "solar", "offline"]
+    },
+    {
+      "id": "commercial_facility_wind_active",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-wind-farm-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "facility", "wind"]
+    },
+    {
+      "id": "commercial_facility_wind_offline",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-wind-farm-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "facility", "wind", "offline"]
+    },
+    {
+      "id": "commercial_facility_gas_active",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-gas-peaker-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "facility", "gas"]
+    },
+    {
+      "id": "commercial_facility_gas_offline",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-gas-peaker-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "facility", "gas", "offline"]
+    },
+    {
+      "id": "commercial_facility_battery_active",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-battery-storage-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "facility", "battery"]
+    },
+    {
+      "id": "commercial_facility_battery_offline",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-battery-storage-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "facility", "battery", "offline"]
+    },
+    {
+      "id": "commercial_facility_substation_active",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-main-substation-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "facility", "substation"]
+    },
+    {
+      "id": "commercial_facility_substation_offline",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-main-substation-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "facility", "substation", "offline"]
+    },
+    {
+      "id": "world_facility_grid_node_active",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-distribution-node-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "facility", "distribution"]
+    },
+    {
+      "id": "world_facility_grid_node_overload",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-distribution-node-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "facility", "distribution", "overload"]
+    },
+    {
+      "id": "world_facility_grid_node_offline",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-distribution-node-base.png",
+      "version": 8,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "runtime-alias", "facility", "distribution", "offline"]
+    }
+  ]
+}
