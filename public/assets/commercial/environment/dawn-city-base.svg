@@ -1,97 +1,93 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="768" viewBox="0 0 1024 768" fill="none">
   <defs>
-    <linearGradient id="skyWater" x1="88" y1="42" x2="900" y2="716" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#0C4058"/>
-      <stop offset="0.58" stop-color="#082B3C"/>
+    <linearGradient id="water" x1="80" y1="40" x2="920" y2="730" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0D4057"/>
+      <stop offset=".56" stop-color="#082C3D"/>
       <stop offset="1" stop-color="#041923"/>
     </linearGradient>
-    <linearGradient id="island" x1="245" y1="160" x2="790" y2="638" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#315D50"/>
-      <stop offset="0.52" stop-color="#21483F"/>
+    <linearGradient id="land" x1="260" y1="150" x2="790" y2="640" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#315F50"/>
+      <stop offset=".54" stop-color="#20483E"/>
       <stop offset="1" stop-color="#12312D"/>
     </linearGradient>
-    <linearGradient id="road" x1="280" y1="250" x2="760" y2="560" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#53666B"/>
-      <stop offset="1" stop-color="#29383D"/>
-    </linearGradient>
-    <linearGradient id="park" x1="0" y1="0" x2="1" y2="1">
-      <stop stop-color="#315F4A"/>
-      <stop offset="1" stop-color="#1E4639"/>
+    <linearGradient id="road" x1="260" y1="250" x2="780" y2="560" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#53676C"/>
+      <stop offset="1" stop-color="#2A393E"/>
     </linearGradient>
     <radialGradient id="cityGlow" cx="0" cy="0" r="1" gradientTransform="translate(520 405) rotate(90) scale(250 390)" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#53D7E9" stop-opacity="0.12"/>
+      <stop stop-color="#53D7E9" stop-opacity=".12"/>
       <stop offset="1" stop-color="#53D7E9" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="lampGlow" cx="0" cy="0" r="1" gradientTransform="scale(1)">
-      <stop stop-color="#FFD978" stop-opacity="0.75"/>
+    <radialGradient id="lampGlow" cx="0" cy="0" r="1">
+      <stop stop-color="#FFD978" stop-opacity=".7"/>
       <stop offset="1" stop-color="#FFD978" stop-opacity="0"/>
     </radialGradient>
     <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="10"/>
-    </filter>
-    <filter id="waterBlur" x="-20%" y="-100%" width="140%" height="300%">
-      <feGaussianBlur stdDeviation="5"/>
+      <feGaussianBlur stdDeviation="6"/>
     </filter>
     <g id="tree">
-      <ellipse cy="2" rx="7" ry="2.8" fill="#06130F" opacity="0.38"/>
+      <ellipse cy="2" rx="7" ry="2.8" fill="#06130F" opacity=".38"/>
       <rect x="-1.3" y="-8" width="2.6" height="10" rx="1" fill="#49372A"/>
       <circle cy="-11" r="7" fill="#2D7257"/>
-      <circle cx="-3" cy="-14" r="4.4" fill="#58A276" opacity="0.9"/>
+      <circle cx="-3" cy="-14" r="4.4" fill="#58A276" opacity=".9"/>
     </g>
     <style>
-      .road-outline{fill:none;stroke:#081115;stroke-linecap:round;stroke-linejoin:round;opacity:.98}
+      .road-outline{fill:none;stroke:#081115;stroke-linecap:round;stroke-linejoin:round;opacity:.96}
       .road-surface{fill:none;stroke:url(#road);stroke-linecap:round;stroke-linejoin:round}
-      .road-line{fill:none;stroke:#E2C76D;stroke-linecap:round;stroke-dasharray:9 8;opacity:.34}
-      .sidewalk{fill:none;stroke:#7EA0A4;stroke-linecap:round;opacity:.12}
-      .lot{stroke:#9ED8D1;stroke-opacity:.12;stroke-width:1.5}
+      .road-line{fill:none;stroke:#E2C76D;stroke-linecap:round;stroke-dasharray:9 9;opacity:.34}
+      .lot{stroke:#9ED8D1;stroke-opacity:.11;stroke-width:1.4}
     </style>
   </defs>
 
-  <rect width="1024" height="768" fill="url(#skyWater)"/>
-  <path d="M0 98C166 46 318 63 438 119C545 169 627 148 745 111C867 73 973 108 1024 151V768H0Z" fill="#0A3142" opacity="0.48"/>
-  <path d="M89 367C196 334 278 343 371 372C470 403 557 420 661 408C773 395 862 349 949 327" stroke="#62B8CA" stroke-opacity="0.06" stroke-width="9" filter="url(#waterBlur)"/>
+  <rect width="1024" height="768" fill="url(#water)"/>
+  <path d="M0 100C168 49 320 63 439 119C548 170 629 149 746 112C868 74 975 108 1024 151V768H0Z" fill="#0A3142" opacity=".46"/>
+  <path d="M86 370C197 336 282 343 374 373C470 404 559 420 664 408C776 395 865 349 950 327" stroke="#70C1D1" stroke-opacity=".065" stroke-width="8" filter="url(#soft)"/>
 
-  <polygon points="365,157 525,154 698,202 858,288 954,400 915,502 730,596 525,621 301,573 141,474 90,358 154,256" fill="#071313" opacity="0.72" transform="translate(0 11)"/>
-  <polygon points="365,157 525,154 698,202 858,288 954,400 915,502 730,596 525,621 301,573 141,474 90,358 154,256" fill="url(#island)" stroke="#5C9488" stroke-opacity="0.48" stroke-width="2.4"/>
-  <polyline points="365,157 525,154 698,202 858,288 954,400 915,502" stroke="#8ACFD6" stroke-opacity="0.25" stroke-width="3.2"/>
+  <polygon points="365,157 525,154 698,202 858,288 954,400 915,502 730,596 525,621 301,573 141,474 90,358 154,256" fill="#061313" opacity=".7" transform="translate(0 11)"/>
+  <polygon points="365,157 525,154 698,202 858,288 954,400 915,502 730,596 525,621 301,573 141,474 90,358 154,256" fill="url(#land)" stroke="#6AA296" stroke-opacity=".46" stroke-width="2.4"/>
+  <polyline points="365,157 525,154 698,202 858,288 954,400 915,502" stroke="#8ACFD6" stroke-opacity=".22" stroke-width="3"/>
   <ellipse cx="520" cy="408" rx="350" ry="226" fill="url(#cityGlow)"/>
 
-  <polygon class="lot" points="414,211 585,238 558,315 397,309 348,250" fill="#244D4D" opacity="0.92"/>
-  <polygon class="lot" points="267,282 424,314 463,392 298,392 233,337" fill="#244852" opacity="0.92"/>
-  <polygon class="lot" points="618,322 794,371 783,474 608,454 552,369" fill="#4A4037" opacity="0.92"/>
-  <polygon class="lot" points="303,393 463,419 491,506 330,503 259,446" fill="#275248" opacity="0.92"/>
-  <polygon class="lot" points="502,455 700,483 698,585 511,589 439,520" fill="#42383E" opacity="0.92"/>
+  <polygon class="lot" points="410,205 594,236 569,326 390,316 338,247" fill="#28534E" opacity=".78"/>
+  <polygon class="lot" points="244,271 431,305 469,401 282,400 215,334" fill="#274A51" opacity=".78"/>
+  <polygon class="lot" points="610,310 812,365 798,479 596,462 542,365" fill="#514439" opacity=".78"/>
+  <polygon class="lot" points="278,390 472,414 500,515 309,510 240,443" fill="#2B5548" opacity=".78"/>
+  <polygon class="lot" points="476,449 712,478 709,600 486,602 416,517" fill="#493D43" opacity=".78"/>
 
-  <polygon points="557,300 621,322 614,358 544,355 512,320" fill="url(#park)" stroke="#6DB18A" stroke-opacity="0.24"/>
-  <polygon points="365,400 435,422 429,458 352,451 320,416" fill="url(#park)" stroke="#6DB18A" stroke-opacity="0.24"/>
-  <polygon points="801,272 889,329 909,410 877,439 800,381" fill="#2A5041" opacity="0.78"/>
-  <path d="M808 300C842 313 871 341 886 376" stroke="#75B78C" stroke-opacity="0.16" stroke-width="17" stroke-linecap="round"/>
+  <polygon points="545,294 626,320 618,363 531,359 496,318" fill="#315F49" stroke="#7AB491" stroke-opacity=".23"/>
+  <polygon points="348,397 437,419 431,466 335,457 300,414" fill="#315F49" stroke="#7AB491" stroke-opacity=".23"/>
+  <polygon points="799,269 893,327 913,411 878,443 796,382" fill="#2A5041" opacity=".75"/>
 
-  <path d="M170 326L292 356L420 390L554 410L690 430L826 410" class="road-outline" stroke-width="22"/>
-  <path d="M170 326L292 356L420 390L554 410L690 430L826 410" class="road-surface" stroke-width="15"/>
-  <path d="M170 326L292 356L420 390L554 410L690 430L826 410" class="sidewalk" stroke-width="19"/>
-  <path d="M170 326L292 356L420 390L554 410L690 430L826 410" class="road-line" stroke-width="1.2"/>
+  <path d="M170 326L292 356L420 390L554 410L690 430L826 410" class="road-outline" stroke-width="17"/>
+  <path d="M170 326L292 356L420 390L554 410L690 430L826 410" class="road-surface" stroke-width="11"/>
+  <path d="M170 326L292 356L420 390L554 410L690 430L826 410" class="road-line" stroke-width="1"/>
 
-  <path d="M334 252L452 268L574 286L684 320L780 376" class="road-outline" stroke-width="20"/>
-  <path d="M334 252L452 268L574 286L684 320L780 376" class="road-surface" stroke-width="13"/>
-  <path d="M334 252L452 268L574 286L684 320L780 376" class="road-line" stroke-width="1"/>
+  <path d="M334 252L452 268L574 286L684 320L780 376" class="road-outline" stroke-width="15"/>
+  <path d="M334 252L452 268L574 286L684 320L780 376" class="road-surface" stroke-width="9"/>
+  <path d="M334 252L452 268L574 286L684 320L780 376" class="road-line" stroke-width=".9"/>
 
-  <path d="M278 438L396 464L516 500L638 544" class="road-outline" stroke-width="20"/>
-  <path d="M278 438L396 464L516 500L638 544" class="road-surface" stroke-width="13"/>
-  <path d="M278 438L396 464L516 500L638 544" class="road-line" stroke-width="1"/>
+  <path d="M278 438L396 464L516 500L638 544" class="road-outline" stroke-width="15"/>
+  <path d="M278 438L396 464L516 500L638 544" class="road-surface" stroke-width="9"/>
+  <path d="M278 438L396 464L516 500L638 544" class="road-line" stroke-width=".9"/>
 
-  <path d="M420 390L454 334L480 286" class="road-outline" stroke-width="14"/>
-  <path d="M420 390L454 334L480 286" class="road-surface" stroke-width="9"/>
-  <path d="M554 410L604 360L650 308" class="road-outline" stroke-width="14"/>
-  <path d="M554 410L604 360L650 308" class="road-surface" stroke-width="9"/>
-  <path d="M516 500L536 454L554 410" class="road-outline" stroke-width="14"/>
-  <path d="M516 500L536 454L554 410" class="road-surface" stroke-width="9"/>
+  <path d="M420 390L454 334L480 286" class="road-outline" stroke-width="11"/>
+  <path d="M420 390L454 334L480 286" class="road-surface" stroke-width="6.5"/>
+  <path d="M554 410L604 360L650 308" class="road-outline" stroke-width="11"/>
+  <path d="M554 410L604 360L650 308" class="road-surface" stroke-width="6.5"/>
+  <path d="M516 500L536 454L554 410" class="road-outline" stroke-width="11"/>
+  <path d="M516 500L536 454L554 410" class="road-surface" stroke-width="6.5"/>
 
-  <ellipse cx="554" cy="410" rx="20" ry="9" fill="#1B2A2E" stroke="#6D9297" stroke-opacity="0.24"/>
-  <ellipse cx="420" cy="390" rx="15" ry="7" fill="#1B2A2E" stroke="#6D9297" stroke-opacity="0.2"/>
-  <ellipse cx="516" cy="500" rx="14" ry="7" fill="#1B2A2E" stroke="#6D9297" stroke-opacity="0.2"/>
-  <ellipse cx="448" cy="409" rx="22" ry="10" fill="#16343A" stroke="#7AD8DF" stroke-opacity="0.28"/>
-  <ellipse cx="448" cy="408" rx="9" ry="4" fill="#4DB3C8" opacity="0.52"/>
+  <ellipse cx="554" cy="410" rx="17" ry="7" fill="#1B2A2E" stroke="#6D9297" stroke-opacity=".22"/>
+  <ellipse cx="420" cy="390" rx="13" ry="6" fill="#1B2A2E" stroke="#6D9297" stroke-opacity=".2"/>
+  <ellipse cx="516" cy="500" rx="12" ry="6" fill="#1B2A2E" stroke="#6D9297" stroke-opacity=".2"/>
+  <ellipse cx="448" cy="409" rx="20" ry="9" fill="#16343A" stroke="#7AD8DF" stroke-opacity=".26"/>
+  <ellipse cx="448" cy="408" rx="8" ry="3.5" fill="#4DB3C8" opacity=".5"/>
+
+  <g id="product-vehicles" opacity=".98">
+    <image href="/assets/city01/product/vehicles/base/vehicle-sedan.png" x="303" y="326" width="72" height="48" preserveAspectRatio="xMidYMid meet"/>
+    <image href="/assets/city01/product/vehicles/base/vehicle-utility-van.png" x="495" y="383" width="78" height="52" preserveAspectRatio="xMidYMid meet"/>
+    <image href="/assets/city01/product/vehicles/base/vehicle-repair-truck.png" x="630" y="420" width="82" height="55" preserveAspectRatio="xMidYMid meet"/>
+  </g>
 
   <use href="#tree" transform="translate(461 192) scale(.9)"/>
   <use href="#tree" transform="translate(513 192) scale(.94)"/>
@@ -112,16 +108,16 @@
   <use href="#tree" transform="translate(409 442) scale(.74)"/>
   <use href="#tree" transform="translate(461 474) scale(.74)"/>
 
-  <g opacity="0.52">
-    <circle cx="410" cy="285" r="2.4" fill="#FFD978"/><circle cx="410" cy="285" r="9" fill="url(#lampGlow)"/>
-    <circle cx="448" cy="311" r="2.4" fill="#FFD978"/><circle cx="448" cy="311" r="9" fill="url(#lampGlow)"/>
-    <circle cx="499" cy="343" r="2.4" fill="#FFD978"/><circle cx="499" cy="343" r="9" fill="url(#lampGlow)"/>
-    <circle cx="563" cy="368" r="2.4" fill="#FFD978"/><circle cx="563" cy="368" r="9" fill="url(#lampGlow)"/>
-    <circle cx="621" cy="403" r="2.4" fill="#FFD978"/><circle cx="621" cy="403" r="9" fill="url(#lampGlow)"/>
-    <circle cx="678" cy="445" r="2.4" fill="#FFD978"/><circle cx="678" cy="445" r="9" fill="url(#lampGlow)"/>
-    <circle cx="250" cy="352" r="2.4" fill="#FFD978"/><circle cx="250" cy="352" r="9" fill="url(#lampGlow)"/>
-    <circle cx="333" cy="381" r="2.4" fill="#FFD978"/><circle cx="333" cy="381" r="9" fill="url(#lampGlow)"/>
-    <circle cx="474" cy="451" r="2.4" fill="#FFD978"/><circle cx="474" cy="451" r="9" fill="url(#lampGlow)"/>
-    <circle cx="544" cy="499" r="2.4" fill="#FFD978"/><circle cx="544" cy="499" r="9" fill="url(#lampGlow)"/>
+  <g opacity=".48">
+    <circle cx="410" cy="285" r="2.3" fill="#FFD978"/><circle cx="410" cy="285" r="8" fill="url(#lampGlow)"/>
+    <circle cx="448" cy="311" r="2.3" fill="#FFD978"/><circle cx="448" cy="311" r="8" fill="url(#lampGlow)"/>
+    <circle cx="499" cy="343" r="2.3" fill="#FFD978"/><circle cx="499" cy="343" r="8" fill="url(#lampGlow)"/>
+    <circle cx="563" cy="368" r="2.3" fill="#FFD978"/><circle cx="563" cy="368" r="8" fill="url(#lampGlow)"/>
+    <circle cx="621" cy="403" r="2.3" fill="#FFD978"/><circle cx="621" cy="403" r="8" fill="url(#lampGlow)"/>
+    <circle cx="678" cy="445" r="2.3" fill="#FFD978"/><circle cx="678" cy="445" r="8" fill="url(#lampGlow)"/>
+    <circle cx="250" cy="352" r="2.3" fill="#FFD978"/><circle cx="250" cy="352" r="8" fill="url(#lampGlow)"/>
+    <circle cx="333" cy="381" r="2.3" fill="#FFD978"/><circle cx="333" cy="381" r="8" fill="url(#lampGlow)"/>
+    <circle cx="474" cy="451" r="2.3" fill="#FFD978"/><circle cx="474" cy="451" r="8" fill="url(#lampGlow)"/>
+    <circle cx="544" cy="499" r="2.3" fill="#FFD978"/><circle cx="544" cy="499" r="8" fill="url(#lampGlow)"/>
   </g>
 </svg>
