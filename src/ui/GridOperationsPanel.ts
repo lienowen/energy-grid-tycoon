@@ -23,6 +23,7 @@ const percent = (value: number | undefined): string =>
 
 export class GridOperationsPanel {
   private element?: HTMLElement;
+  private lastView?: GameViewModel;
   private expanded = true;
   private initialized = false;
   private message = '';
@@ -33,6 +34,7 @@ export class GridOperationsPanel {
   ) {}
 
   render(view: GameViewModel): void {
+    this.lastView = view;
     const network = GridNetworkRegistry.resolve(view.level.id);
     if (!network) {
       this.destroy();
@@ -105,6 +107,7 @@ export class GridOperationsPanel {
     this.element?.removeEventListener('click', this.handleClick);
     this.element?.remove();
     this.element = undefined;
+    this.lastView = undefined;
     this.initialized = false;
     this.message = '';
   }
@@ -126,9 +129,7 @@ export class GridOperationsPanel {
 
     if (target.closest('[data-grid-panel-toggle]')) {
       this.expanded = !this.expanded;
-      this.element?.classList.toggle('collapsed', !this.expanded);
-      const button = this.element?.querySelector<HTMLButtonElement>('[data-grid-panel-toggle]');
-      button?.setAttribute('aria-expanded', String(this.expanded));
+      if (this.lastView) this.render(this.lastView);
       return;
     }
 
@@ -137,5 +138,6 @@ export class GridOperationsPanel {
     if (!edgeId) return;
     const result = this.actions.onToggleEdge(edgeId);
     this.message = result.ok ? '' : result.reason ?? '线路操作失败';
+    if (this.lastView) this.render(this.lastView);
   };
 }
