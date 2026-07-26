@@ -7,26 +7,26 @@ type ProductRendererMode = 'city01-product' | 'immersive';
 
 const CITY01_OFFSET_X = 55;
 const CITY01_OFFSET_Z = 49;
-const DISTRICT_PAD_WIDTH = 13;
-const DISTRICT_PAD_DEPTH = 9;
+const DISTRICT_PAD_WIDTH = 1;
+const DISTRICT_PAD_DEPTH = 1;
 
 const CITY01_DISTRICT_POSITIONS: Readonly<Record<string, Pick<ScenePoint, 'x' | 'z'>>> = {
-  'dawn-residential': { x: 56, z: 31 },
-  'dawn-commercial': { x: 37, z: 47 },
-  'dawn-industrial': { x: 76, z: 51 },
-  'dawn-public': { x: 48, z: 65 },
-  'dawn-old-town': { x: 78, z: 67 }
+  'dawn-residential': { x: 56, z: 32 },
+  'dawn-commercial': { x: 38, z: 47 },
+  'dawn-industrial': { x: 75, z: 51 },
+  'dawn-public': { x: 48, z: 64 },
+  'dawn-old-town': { x: 76, z: 66 }
 };
 
 const CITY01_PLOT_POSITIONS: Readonly<Record<string, Pick<ScenePoint, 'x' | 'z'>>> = {
-  'sunrise-neighborhood': { x: 21, z: 31 },
-  'south-outskirts': { x: 29, z: 39 },
-  'north-outskirts': { x: 39, z: 20 },
-  'east-coast': { x: 84, z: 25 },
-  'west-industry': { x: 24, z: 69 },
-  'south-neighborhood': { x: 39, z: 74 },
-  'central-utility': { x: 82, z: 35 },
-  'east-industry': { x: 89, z: 51 }
+  'sunrise-neighborhood': { x: 31, z: 36 },
+  'south-outskirts': { x: 42, z: 34 },
+  'north-outskirts': { x: 49, z: 23 },
+  'east-coast': { x: 76, z: 31 },
+  'west-industry': { x: 29, z: 64 },
+  'south-neighborhood': { x: 42, z: 69 },
+  'central-utility': { x: 75, z: 38 },
+  'east-industry': { x: 83, z: 51 }
 };
 
 const shiftPoint = <T extends ScenePoint>(point: T): T => ({
@@ -100,10 +100,10 @@ export class ProductAssetWorld implements WorldRenderSurface {
       focus: { x: 56, z: 49, elevation: 0 },
       camera: {
         ...next.camera,
-        startZoom: diagnostics ? 0.88 : 0.94,
-        minZoom: Math.min(next.camera.minZoom, 0.64),
-        startOffsetX: 8,
-        startOffsetY: 16,
+        startZoom: diagnostics ? 1.02 : 1.1,
+        minZoom: Math.min(next.camera.minZoom, 0.7),
+        startOffsetX: 22,
+        startOffsetY: 20,
         panLimitX: Math.max(next.camera.panLimitX ?? 170, 230),
         panLimitY: Math.max(next.camera.panLimitY ?? 120, 180)
       },
@@ -114,7 +114,7 @@ export class ProductAssetWorld implements WorldRenderSurface {
           ...shifted,
           width: DISTRICT_PAD_WIDTH,
           depth: DISTRICT_PAD_DEPTH,
-          scale: originalVisualWidth * 0.9 / DISTRICT_PAD_WIDTH
+          scale: originalVisualWidth * 0.92 / DISTRICT_PAD_WIDTH
         };
       }),
       facilities: next.facilities.map((facility) => placeAt(
