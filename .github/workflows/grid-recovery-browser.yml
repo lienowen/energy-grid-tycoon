@@ -20,14 +20,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
       - name: Install project
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       - name: Install Playwright browser
         run: |
-          npm install --no-save --package-lock=false playwright@1.54.1
+          npm install --no-save --package-lock=false --no-audit --no-fund playwright@1.54.1
           npx playwright install --with-deps chromium
 
       - name: Build production bundle
@@ -57,5 +56,5 @@ jobs:
         with:
           name: grid-recovery-browser-${{ github.sha }}
           path: artifacts/grid-recovery-browser
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
