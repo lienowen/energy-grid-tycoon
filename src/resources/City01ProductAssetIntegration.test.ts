@@ -50,6 +50,15 @@ describe('City-01 product asset integration', () => {
     }).bodyAssetId).toBe('facility_battery_storage_base');
   });
 
+  it('uses submitted gas and battery art in the real build dock', () => {
+    expect(entryById.get('building_gas')?.src)
+      .toBe('/assets/city01/product/facilities/facility-gas-peaker-base.png');
+    expect(entryById.get('building_battery')?.src)
+      .toBe('/assets/city01/product/facilities/facility-battery-storage-base.png');
+    expect(entryById.get('building_battery_utility')?.src)
+      .toBe('/assets/city01/product/facilities/facility-battery-storage-base.png');
+  });
+
   it('redirects main and distribution substations to the product pack', () => {
     expect(entryById.get('commercial_facility_substation_active')?.src)
       .toBe('/assets/city01/product/facilities/facility-main-substation-base.png');
