@@ -18,15 +18,23 @@ const CITY01_DISTRICT_POSITIONS: Readonly<Record<string, Pick<ScenePoint, 'x' | 
   'dawn-old-town': { x: 46, z: 68 }
 };
 
+const CITY01_GRID_DISTRICT_POSITIONS: Readonly<Record<string, Pick<ScenePoint, 'x' | 'z'>>> = {
+  'dawn-commercial': { x: 43, z: 45 },
+  'dawn-residential': { x: 70, z: 35 },
+  'dawn-public': { x: 30, z: 56 },
+  'dawn-industrial': { x: 77, z: 58 },
+  'dawn-old-town': { x: 43, z: 71 }
+};
+
 const CITY01_PLOT_POSITIONS: Readonly<Record<string, Pick<ScenePoint, 'x' | 'z'>>> = {
-  'sunrise-neighborhood': { x: 27, z: 34 },
-  'south-outskirts': { x: 38, z: 28 },
-  'north-outskirts': { x: 51, z: 19 },
-  'east-coast': { x: 82, z: 29 },
-  'west-industry': { x: 23, z: 70 },
+  'sunrise-neighborhood': { x: 29, z: 40 },
+  'south-outskirts': { x: 40, z: 39 },
+  'north-outskirts': { x: 52, z: 26 },
+  'east-coast': { x: 79, z: 36 },
+  'west-industry': { x: 24, z: 70 },
   'south-neighborhood': { x: 39, z: 78 },
-  'central-utility': { x: 83, z: 42 },
-  'east-industry': { x: 88, z: 58 }
+  'central-utility': { x: 82, z: 43 },
+  'east-industry': { x: 87, z: 58 }
 };
 
 const shiftPoint = <T extends ScenePoint>(point: T): T => ({
@@ -48,21 +56,21 @@ const city01Roads = (powered: boolean): RoadSceneState[] => [
     laneCount: 1,
     traffic: 0.32,
     powered,
-    points: [roadPoint(27, 34), roadPoint(39, 41), roadPoint(51, 48)]
+    points: [roadPoint(29, 40), roadPoint(40, 43), roadPoint(51, 48)]
   },
   {
     id: 'city01-east-generation-link',
     laneCount: 1,
     traffic: 0.3,
     powered,
-    points: [roadPoint(82, 29), roadPoint(68, 38), roadPoint(57, 46)]
+    points: [roadPoint(79, 36), roadPoint(68, 40), roadPoint(57, 46)]
   },
   {
     id: 'city01-industrial-corridor',
     laneCount: 2,
     traffic: 0.68,
     powered,
-    points: [roadPoint(51, 48), roadPoint(69, 58), roadPoint(88, 58)]
+    points: [roadPoint(51, 48), roadPoint(69, 58), roadPoint(87, 58)]
   },
   {
     id: 'city01-south-service-link',
@@ -122,6 +130,9 @@ export class ProductAssetWorld implements WorldRenderSurface {
 
   private city01State(next: CitySceneState): CitySceneState {
     const diagnostics = next.presentationMode === 'grid';
+    const districtPositions = diagnostics
+      ? CITY01_GRID_DISTRICT_POSITIONS
+      : CITY01_DISTRICT_POSITIONS;
     const shiftedPlots = next.plots.map((plot) => placeAt(
       shiftPoint(plot),
       CITY01_PLOT_POSITIONS[plot.id]
@@ -130,33 +141,33 @@ export class ProductAssetWorld implements WorldRenderSurface {
     return {
       ...next,
       city: shiftPoint(next.city),
-      focus: { x: 55, z: 51, elevation: 0 },
+      focus: { x: 55, z: diagnostics ? 52 : 51, elevation: 0 },
       camera: {
         ...next.camera,
-        startZoom: diagnostics ? 0.98 : 1.04,
+        startZoom: diagnostics ? 0.94 : 1.06,
         minZoom: Math.min(next.camera.minZoom, 0.68),
-        startOffsetX: 30,
+        startOffsetX: diagnostics ? 55 : 70,
         startOffsetY: 18,
         panLimitX: Math.max(next.camera.panLimitX ?? 170, 230),
         panLimitY: Math.max(next.camera.panLimitY ?? 120, 180)
       },
       districtPrefabs: next.districtPrefabs?.map((district) => {
-        const shifted = placeAt(shiftPoint(district), CITY01_DISTRICT_POSITIONS[district.id]);
+        const shifted = placeAt(shiftPoint(district), districtPositions[district.id]);
         const originalVisualWidth = district.width * district.scale;
         return {
           ...shifted,
           width: DISTRICT_PAD_WIDTH,
           depth: DISTRICT_PAD_DEPTH,
-          scale: originalVisualWidth * 1.25 / DISTRICT_PAD_WIDTH
+          scale: originalVisualWidth * (diagnostics ? 0.98 : 1.22) / DISTRICT_PAD_WIDTH
         };
       }),
-      facilities: next.facilities.map((facility) => placeAt(
-        shiftPoint(facility),
-        CITY01_PLOT_POSITIONS[facility.plotId]
-      )),
+      facilities: next.facilities.map((facility) => ({
+        ...placeAt(shiftPoint(facility), CITY01_PLOT_POSITIONS[facility.plotId]),
+        scale: facility.scale * 0.78
+      })),
       plots: shiftedPlots,
-      roads: city01Roads(next.supplyRatio > 0.35),
-      networkNodes: next.networkNodes?.map((node) => shiftPoint(node)),
+      roads: diagnostics ? [] : city01Roads(next.supplyRatio > 0.35),
+      networkNodes: diagnostics ? next.networkNodes?.map((node) => shiftPoint(node)) : [],
       networkEdges: diagnostics
         ? next.networkEdges
           ?.filter((edge) =>
