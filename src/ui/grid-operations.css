@@ -3,7 +3,7 @@
   left: 18px;
   bottom: 18px;
   z-index: 38;
-  width: min(352px, calc(100vw - 94px));
+  width: min(382px, calc(100vw - 94px));
   border: 1px solid rgba(91, 214, 255, .34);
   border-radius: 14px;
   overflow: hidden;
@@ -61,10 +61,10 @@
 .grid-operations-message {
   margin-bottom: 8px;
   padding: 7px 9px;
-  border: 1px solid rgba(255, 116, 133, .35);
+  border: 1px solid rgba(92, 225, 163, .3);
   border-radius: 8px;
-  color: #ffb4bf;
-  background: rgba(255, 116, 133, .08);
+  color: #a3f4c9;
+  background: rgba(92, 225, 163, .08);
   font-size: 9px;
 }
 
@@ -79,6 +79,10 @@
   border: 1px solid rgba(103, 179, 210, .13);
   border-radius: 9px;
   background: rgba(8, 37, 53, .58);
+}
+.grid-operation.faulted {
+  border-color: rgba(255, 116, 133, .38);
+  background: linear-gradient(90deg, rgba(255, 116, 133, .11), rgba(8, 37, 53, .62));
 }
 .grid-operation-state {
   width: 17px;
@@ -97,9 +101,14 @@
   background: #ffd45f;
   box-shadow: 0 0 11px rgba(255, 212, 95, .62);
 }
-.grid-operation.offline .grid-operation-state i {
+.grid-operation.offline .grid-operation-state i,
+.grid-operation.faulted .grid-operation-state i {
   background: #ff7485;
   box-shadow: 0 0 11px rgba(255, 116, 133, .58);
+}
+.grid-operation.faulted .grid-operation-state i {
+  border-radius: 2px;
+  transform: rotate(45deg);
 }
 .grid-operation > div { min-width: 0; }
 .grid-operation strong,
@@ -107,6 +116,7 @@
 .grid-operation strong { font-size: 10px; }
 .grid-operation small { margin-top: 3px; color: #86a8bb; font-size: 8px; }
 .grid-operation.offline small { color: #ff9eaa; }
+.grid-operation.faulted small { color: #ffb1bc; }
 .grid-operation.overload small { color: #ffdf86; }
 .grid-operation-meter {
   position: relative;
@@ -125,9 +135,10 @@
   background: #5ce1a3;
 }
 .grid-operation.overload .grid-operation-meter i { background: #ffd45f; }
-.grid-operation.offline .grid-operation-meter i { background: #ff7485; }
+.grid-operation.offline .grid-operation-meter i,
+.grid-operation.faulted .grid-operation-meter i { background: #ff7485; }
 .grid-operation > button {
-  min-width: 48px;
+  min-width: 52px;
   min-height: 30px;
   padding: 5px 8px;
   border: 1px solid rgba(91, 214, 255, .28);
@@ -141,15 +152,26 @@
   color: #8ff0bd;
   background: rgba(92, 225, 163, .1);
 }
+.grid-operation > button.repair {
+  min-width: 82px;
+  border-color: rgba(255, 116, 133, .5);
+  color: #ffd3d9;
+  background: rgba(255, 116, 133, .12);
+}
 .grid-operation > button:hover { filter: brightness(1.18); }
+.grid-operation > button:disabled {
+  cursor: not-allowed;
+  opacity: .45;
+  filter: none;
+}
 
 @media (max-width: 760px) {
   .grid-operations-panel {
     left: 8px;
     bottom: 154px;
-    width: min(330px, calc(100vw - 78px));
+    width: min(350px, calc(100vw - 78px));
   }
-  .grid-operations-body { max-height: 270px; overflow: auto; }
+  .grid-operations-body { max-height: 300px; overflow: auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {
