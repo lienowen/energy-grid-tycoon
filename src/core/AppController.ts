@@ -7,6 +7,7 @@ import { LevelProgressionSystem } from '../systems/LevelProgressionSystem';
 import type { PolicyConfig } from '../systems/PolicySystem';
 import type { TechnologyConfig } from '../systems/ResearchSystem';
 import { CityRecoveryFeedback } from '../ui/CityRecoveryFeedback';
+import { GridOperationsPanel } from '../ui/GridOperationsPanel';
 import { LevelSelect } from '../ui/LevelSelect';
 import { LoadingScreen } from '../ui/LoadingScreen';
 import { MayorDashboard } from '../ui/MayorDashboard';
@@ -17,6 +18,7 @@ import { SaveManager } from './SaveManager';
 export class AppController {
   private game?: GameManager;
   private dashboard?: MayorDashboard;
+  private gridOperations?: GridOperationsPanel;
   private onboarding?: ReleaseOnboarding;
   private recoveryFeedback?: CityRecoveryFeedback;
   private currentLevelId?: string;
@@ -48,10 +50,12 @@ export class AppController {
 
   private showCampaign(): void {
     this.loadGeneration += 1;
+    this.gridOperations?.destroy();
     this.recoveryFeedback?.destroy();
     this.onboarding?.destroy();
     this.dashboard?.destroy();
     this.game?.destroy();
+    this.gridOperations = undefined;
     this.recoveryFeedback = undefined;
     this.onboarding = undefined;
     this.game = undefined;
@@ -80,10 +84,12 @@ export class AppController {
     if (!level) return;
 
     const generation = ++this.loadGeneration;
+    this.gridOperations?.destroy();
     this.recoveryFeedback?.destroy();
     this.onboarding?.destroy();
     this.dashboard?.destroy();
     this.game?.destroy();
+    this.gridOperations = undefined;
     this.recoveryFeedback = undefined;
     this.onboarding = undefined;
     this.game = undefined;
@@ -139,6 +145,9 @@ export class AppController {
       onRetry: () => this.retryCurrentLevel(),
       onNext: () => this.startNextLevel()
     });
+    this.gridOperations = new GridOperationsPanel(this.root, {
+      onToggleEdge: (edgeId) => this.game?.toggleGridEdge(edgeId) ?? this.notReady()
+    });
     this.onboarding = new ReleaseOnboarding(this.root);
     this.recoveryFeedback = new CityRecoveryFeedback(this.root);
 
@@ -164,6 +173,7 @@ export class AppController {
       this.lastAutoSaveDay = view.state.day;
     }
     this.dashboard?.render(view);
+    this.gridOperations?.render(view);
     this.onboarding?.render(view);
     this.recoveryFeedback?.render(view);
     if (this.pendingSystemNotice) {
@@ -214,6 +224,7 @@ export class AppController {
 
   private readonly handleBeforeUnload = (): void => {
     this.emergencySave();
+    this.gridOperations?.destroy();
     this.recoveryFeedback?.destroy();
     this.onboarding?.destroy();
     this.dashboard?.destroy();
