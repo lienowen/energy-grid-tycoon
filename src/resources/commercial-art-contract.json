@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Single source of truth for all manually uploaded commercial game cutout assets.",
+  "renderingBaseline": {
+    "projection": "isometric-2-to-1",
+    "cameraYawDegrees": 45,
+    "cameraPitchDegrees": 30,
+    "lightDirection": "top-left",
+    "canvas": { "width": 1024, "height": 1024 },
+    "background": "transparent",
+    "safeBounds": { "left": 96, "top": 72, "right": 928, "bottom": 936 },
+    "anchor": { "x": 0.5, "y": 0.86 },
+    "shadow": "soft-ground-shadow-separated-from-object",
+    "outline": "none-or-very-light",
+    "detailLevel": "commercial-gameplay-readable-at-160px",
+    "forbidden": [
+      "baked UI labels",
+      "baked power lines unrelated to the object",
+      "full-scene backgrounds",
+      "random perspective changes",
+      "photorealistic texture pasted onto low-detail geometry",
+      "duplicate filler buildings baked into terrain"
+    ]
+  },
+  "codeBaseline": {
+    "terrainLayer": "terrain, roads, water, parks only",
+    "districtLayer": "independent transparent district cutouts",
+    "ambientBuildingLayer": "data-driven secondary buildings; must respond to power state",
+    "facilityLayer": "independent transparent facility cutouts",
+    "networkLayer": "runtime lines, switches, nodes and load state; never baked into art",
+    "uiLayer": "runtime labels and diagnostics only"
+  },
+  "requiredStates": {
+    "district": ["night", "blackout"],
+    "facility": ["active", "offline"]
+  },
+  "firstBatch": [
+    {
+      "id": "commercial_district_residential_night",
+      "filename": "public/assets/commercial/districts/residential/night.png",
+      "subject": "recognizable mid-density residential district with apartment towers, lower residential blocks, internal streets, trees and warm windows"
+    },
+    {
+      "id": "commercial_district_commercial_night",
+      "filename": "public/assets/commercial/districts/commercial/night.png",
+      "subject": "recognizable commercial center with office tower, shopping podium, plaza, streetlights and mixed cyan/warm windows"
+    },
+    {
+      "id": "commercial_district_industrial_night",
+      "filename": "public/assets/commercial/districts/industrial/night.png",
+      "subject": "recognizable industrial district with factory hall, warehouse, tanks, pipe racks, loading yard and restrained stack emissions"
+    },
+    {
+      "id": "commercial_district_public_night",
+      "filename": "public/assets/commercial/districts/public/night.png",
+      "subject": "recognizable public services district with hospital, school, civic building, transit stop, emergency access and landscaped plaza"
+    },
+    {
+      "id": "commercial_facility_solar_active",
+      "filename": "public/assets/commercial/facilities/solar/active.png",
+      "subject": "utility solar farm with multiple tilted panel rows, inverter containers, transformer, service road and security fence"
+    },
+    {
+      "id": "commercial_facility_wind_active",
+      "filename": "public/assets/commercial/facilities/wind/active.png",
+      "subject": "three utility wind turbines with realistic nacelles, tapered towers, service pads and access road"
+    },
+    {
+      "id": "commercial_facility_gas_active",
+      "filename": "public/assets/commercial/facilities/gas/active.png",
+      "subject": "compact gas turbine power station with turbine hall, heat-recovery unit, stack, transformer yard and fuel piping"
+    },
+    {
+      "id": "commercial_facility_battery_active",
+      "filename": "public/assets/commercial/facilities/battery/active.png",
+      "subject": "grid battery energy storage station with container rows, PCS skids, transformer, control cabin and fire access spacing"
+    },
+    {
+      "id": "commercial_facility_substation_active",
+      "filename": "public/assets/commercial/facilities/substation/active.png",
+      "subject": "realistic outdoor substation with busbars, breakers, disconnectors, power transformers, control building and perimeter fence"
+    }
+  ]
+}
