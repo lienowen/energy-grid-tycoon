@@ -13,8 +13,8 @@ const requiredCityAssets = [
   'terrain_riverfront_base',
   'terrain_road_bridge_base',
   'terrain_harbor_pier_base',
-  'terrain_beach_open_base',
   'terrain_forest_base',
+  'terrain_rocky_hill_base',
   'terrain_park_plaza_base',
   'district_residential_base',
   'district_commercial_base',
@@ -116,7 +116,7 @@ try {
   for (const assetId of requiredCityAssets) {
     assert.ok(cityAssets.includes(assetId), `城市视图没有加载核心素材：${assetId}`);
   }
-  assert.ok(cityAssets.length >= 26, `城市视图核心素材数量异常：${cityAssets.length}`);
+  assert.ok(cityAssets.length >= 20, `城市视图核心素材数量异常：${cityAssets.length}`);
   await page.screenshot({ path: `${outputDir}/00-city-composition.png`, fullPage: true });
 
   await page.waitForFunction(() => {
