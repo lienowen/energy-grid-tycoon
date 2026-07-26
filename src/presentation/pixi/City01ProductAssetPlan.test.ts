@@ -24,10 +24,9 @@ describe('City01ProductAssetPlan', () => {
     expect(usedIds).toHaveLength(47);
   });
 
-  it('keeps the live world composition curated instead of rendering every tile at once', () => {
-    expect(city01EnvironmentPlacements).toHaveLength(7);
-    expect(new Set(city01EnvironmentPlacements.map((item) => item.assetId)).size).toBe(7);
-    expect(city01EnvironmentMaterialAssetIds).toHaveLength(9);
+  it('keeps opaque environment tiles out of the live city composition', () => {
+    expect(city01EnvironmentPlacements).toHaveLength(0);
+    expect(city01EnvironmentMaterialAssetIds).toHaveLength(16);
     expect(city01FacilityAssetIds).toHaveLength(6);
     expect(city01CrewMarkers.filter((marker) => marker.worldVisible)).toHaveLength(3);
     expect(city01CrewPortraitAssetIds).toHaveLength(5);
