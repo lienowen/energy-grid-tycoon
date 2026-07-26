@@ -102,7 +102,7 @@ export class GridOperationsPanel {
                   : 'normal';
             const roleLabel = edge.role === 'tie' ? '备用联络线' : edge.role === 'backbone' ? '主干线路' : '供电线路';
             const statusText = faulted
-              ? `线路故障 · 抢修后恢复额定容量`
+              ? '线路故障 · 抢修后恢复额定容量'
               : !enabled
                 ? `${roleLabel} · 当前分闸`
                 : dispatch?.status === 'overload'
@@ -110,6 +110,9 @@ export class GridOperationsPanel {
                   : `${roleLabel} · 当前负载 ${percent(dispatch?.loadRatio)}`;
             const from = nodeById.get(edge.from)?.label ?? edge.from;
             const to = nodeById.get(edge.to)?.label ?? edge.to;
+            const displayName = edge.role === 'tie'
+              ? `${roleLabel}：${from} → ${to}`
+              : `${from} → ${to}`;
             const repairCost = Math.max(0, edge.repairCost ?? 0);
             const action = faulted
               ? `<button type="button" data-grid-edge-repair="${edge.id}" class="repair" ${view.state.money < repairCost ? 'disabled' : ''}>抢修 ${money(repairCost)}</button>`
@@ -118,7 +121,7 @@ export class GridOperationsPanel {
               <article class="grid-operation ${visualStatus}">
                 <span class="grid-operation-state"><i></i></span>
                 <div>
-                  <strong>${from} → ${to}</strong>
+                  <strong>${displayName}</strong>
                   <small>${statusText}</small>
                   <span class="grid-operation-meter"><i style="width:${enabled && !faulted ? percent(dispatch?.loadRatio) : '0%'}"></i></span>
                 </div>
