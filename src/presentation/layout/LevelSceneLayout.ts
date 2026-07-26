@@ -1,3 +1,5 @@
+import type { CityPlotZone } from '../../core/CityMapConfig';
+
 export type DistrictPrefabKind =
   | 'residential'
   | 'commercial'
@@ -6,6 +8,8 @@ export type DistrictPrefabKind =
   | 'old_town';
 
 export type EnvironmentPrefabKind = 'water' | 'coast' | 'forest' | 'ridge' | 'park';
+
+export type AuthoredAmbientBlockKind = 'residential' | 'industrial' | 'utility' | 'park';
 
 export type EnergyNetworkNodeKind =
   | 'generation'
@@ -39,6 +43,18 @@ export interface EnvironmentPrefabConfig extends LayoutPoint {
   depth: number;
   density?: number;
   variant?: number;
+}
+
+export interface AuthoredAmbientBlockConfig extends LayoutPoint {
+  id: string;
+  zone: CityPlotZone;
+  kind: AuthoredAmbientBlockKind;
+  width: number;
+  depth: number;
+  height: number;
+  floors: number;
+  lightSeed: number;
+  districtId?: string;
 }
 
 export interface AuthoredRoadConfig {
@@ -94,6 +110,7 @@ export interface LevelSceneLayout {
   districts: DistrictPrefabConfig[];
   roads: AuthoredRoadConfig[];
   environment: EnvironmentPrefabConfig[];
+  ambientBlocks?: AuthoredAmbientBlockConfig[];
   plotAnchors?: AuthoredPlotAnchorConfig[];
   energyNetwork: EnergyNetworkLayoutConfig;
 }
