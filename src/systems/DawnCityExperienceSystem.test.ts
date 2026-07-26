@@ -60,7 +60,12 @@ const makeState = (): GameState => createInitialState({
   population: 4200,
   baseDemand: 720,
   powerPrice: 0.42,
-  researchPoints: 12
+  researchPoints: 12,
+  gridEdgeEnabled: {
+    'east-to-industrial': false,
+    'west-to-industrial-tie': false
+  },
+  gridEdgeFaulted: { 'east-to-industrial': true }
 });
 
 const makeContext = (state: GameState, buildings: readonly BuildingBase[] = []): DawnCityExperienceContext => ({
@@ -72,18 +77,54 @@ const makeContext = (state: GameState, buildings: readonly BuildingBase[] = []):
 });
 
 describe('DawnCityExperienceSystem', () => {
-  it('starts by directing the player to emergency generation', () => {
+  it('guides transfer, repair, and normal configuration before generation expansion', () => {
     const state = makeState();
-    state.supplyRatio = 0.72;
+    state.supplyRatio = 0.35;
 
-    const beat = DawnCityExperienceSystem.evaluate(makeContext(state));
+    expect(DawnCityExperienceSystem.evaluate(makeContext(state))?.action).toEqual({
+      type: 'gridOperation',
+      edgeId: 'west-to-industrial-tie',
+      operation: 'toggle'
+    });
 
-    expect(beat?.id).toBe('stabilize');
-    expect(beat?.action).toEqual({ type: 'build', buildingId: 'gas_basic' });
+    state.gridEdgeEnabled = {
+      ...(state.gridEdgeEnabled ?? {}),
+      'west-to-industrial-tie': true
+    };
+    expect(DawnCityExperienceSystem.evaluate(makeContext(state))?.action).toEqual({
+      type: 'gridOperation',
+      edgeId: 'east-to-industrial',
+      operation: 'repair'
+    });
+
+    state.gridEdgeFaulted = { 'east-to-industrial': false };
+    state.gridEdgeEnabled = {
+      ...(state.gridEdgeEnabled ?? {}),
+      'east-to-industrial': true
+    };
+    expect(DawnCityExperienceSystem.evaluate(makeContext(state))?.action).toEqual({
+      type: 'gridOperation',
+      edgeId: 'west-to-industrial-tie',
+      operation: 'toggle'
+    });
+
+    state.gridEdgeEnabled = {
+      ...(state.gridEdgeEnabled ?? {}),
+      'west-to-industrial-tie': false
+    };
+    expect(DawnCityExperienceSystem.evaluate(makeContext(state))?.action).toEqual({
+      type: 'build',
+      buildingId: 'gas_basic'
+    });
   });
 
-  it('moves from stable supply to storage', () => {
+  it('moves from stable supply to storage after the fault loop is complete', () => {
     const state = makeState();
+    state.gridEdgeFaulted = { 'east-to-industrial': false };
+    state.gridEdgeEnabled = {
+      'east-to-industrial': true,
+      'west-to-industrial-tie': false
+    };
     state.supplyRatio = 1;
 
     const beat = DawnCityExperienceSystem.evaluate(makeContext(state));
@@ -94,6 +135,11 @@ describe('DawnCityExperienceSystem', () => {
 
   it('waits for development points and opens research when ready', () => {
     const state = makeState();
+    state.gridEdgeFaulted = { 'east-to-industrial': false };
+    state.gridEdgeEnabled = {
+      'east-to-industrial': true,
+      'west-to-industrial-tie': false
+    };
     state.supplyRatio = 1;
     state.storageCapacity = 900;
 
@@ -108,6 +154,11 @@ describe('DawnCityExperienceSystem', () => {
 
   it('finishes with a profitability promise tied to the next city', () => {
     const state = makeState();
+    state.gridEdgeFaulted = { 'east-to-industrial': false };
+    state.gridEdgeEnabled = {
+      'east-to-industrial': true,
+      'west-to-industrial-tie': false
+    };
     state.supplyRatio = 1;
     state.storageCapacity = 900;
     state.unlockedTechnologyIds = ['solar_forecasting'];
