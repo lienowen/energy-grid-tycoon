@@ -64,7 +64,7 @@ export class DawnCityExperienceSystem {
         totalStages: 4,
         tone: 'danger',
         title: '工业区主线路故障，先做临时转供',
-        message: '东部配电到工业区的主线已经故障。先投入西部备用联络线，恢复部分工业负荷，再安排永久抢修。',
+        message: '东部配电到工业区的主线已经故障。先投入备用联络线，恢复部分工业负荷，再安排永久抢修。',
         consequence: '备用线容量有限，只能降低停电损失，不能代替主线路。',
         actionLabel: '投入备用联络线',
         action: { type: 'gridOperation', edgeId: 'west-to-industrial-tie', operation: 'toggle' },
