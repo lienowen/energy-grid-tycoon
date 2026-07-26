@@ -34,13 +34,14 @@ export class ProductAssetWorld implements WorldRenderSurface {
   }
 
   setState(next: CitySceneState): void {
-    this.lastState = next;
+    const renderedState = next.levelId === 'city-01' ? this.city01State(next) : next;
+    this.lastState = renderedState;
     const nextMode: ProductRendererMode = next.levelId === 'city-01'
       ? 'city01-product'
       : 'immersive';
     const changed = this.ensureRenderer(nextMode);
     if (changed && this.mounted) this.renderer?.mount();
-    this.renderer?.setState(next);
+    this.renderer?.setState(renderedState);
   }
 
   focusHome(): void {
@@ -49,6 +50,25 @@ export class ProductAssetWorld implements WorldRenderSurface {
 
   zoomBy(factor: number): void {
     this.renderer?.zoomBy(factor);
+  }
+
+  private city01State(next: CitySceneState): CitySceneState {
+    const diagnostics = next.presentationMode === 'grid';
+    return {
+      ...next,
+      camera: {
+        ...next.camera,
+        startZoom: 0.88,
+        minZoom: Math.min(next.camera.minZoom, 0.68),
+        startOffsetX: 8,
+        startOffsetY: 18,
+        panLimitX: Math.max(next.camera.panLimitX ?? 170, 220),
+        panLimitY: Math.max(next.camera.panLimitY ?? 120, 160)
+      },
+      networkEdges: diagnostics
+        ? next.networkEdges
+        : next.networkEdges?.filter((edge) => edge.status === 'offline' || edge.status === 'overload')
+    };
   }
 
   private ensureRenderer(nextMode: ProductRendererMode): boolean {
