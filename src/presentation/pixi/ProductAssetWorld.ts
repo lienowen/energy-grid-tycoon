@@ -56,18 +56,23 @@ export class ProductAssetWorld implements WorldRenderSurface {
     const diagnostics = next.presentationMode === 'grid';
     return {
       ...next,
+      focus: { x: 52, z: 56, elevation: 0 },
       camera: {
         ...next.camera,
-        startZoom: 0.88,
-        minZoom: Math.min(next.camera.minZoom, 0.68),
-        startOffsetX: 8,
-        startOffsetY: 18,
-        panLimitX: Math.max(next.camera.panLimitX ?? 170, 220),
-        panLimitY: Math.max(next.camera.panLimitY ?? 120, 160)
+        startZoom: diagnostics ? 0.9 : 0.94,
+        minZoom: Math.min(next.camera.minZoom, 0.66),
+        startOffsetX: 14,
+        startOffsetY: 22,
+        panLimitX: Math.max(next.camera.panLimitX ?? 170, 230),
+        panLimitY: Math.max(next.camera.panLimitY ?? 120, 180)
       },
       networkEdges: diagnostics
-        ? next.networkEdges
-        : next.networkEdges?.filter((edge) => edge.status === 'offline' || edge.status === 'overload')
+        ? next.networkEdges?.filter((edge) =>
+          edge.status === 'offline'
+          || edge.status === 'overload'
+          || edge.loadRatio > 0.025
+        )
+        : []
     };
   }
 
