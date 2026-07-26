@@ -98,7 +98,8 @@ export class SimulationSystem {
       supply: storage.gridSupply,
       demand,
       gridLossRate,
-      deliveredSupply: gridDispatch?.servedDemand
+      deliveredSupply: gridDispatch?.servedDemand,
+      gridDispatch
     });
 
     const economy = EconomySystem.calculate({
