@@ -248,9 +248,9 @@ export class AppController {
 
   private readonly handleGridGuideClick = (event: Event): void => {
     const target = event.target;
-    if (!(target instanceof Element)) return;
-    const button = target.closest<HTMLButtonElement>('[data-grid-guide-operation]');
-    if (!button || !this.currentGridGuideAction) return;
+    if (!(target instanceof Element) || !this.currentGridGuideAction) return;
+    const button = target.closest<HTMLButtonElement>('.hologram-secretary > button');
+    if (!button) return;
 
     event.preventDefault();
     event.stopImmediatePropagation();
