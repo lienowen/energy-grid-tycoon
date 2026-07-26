@@ -1,6 +1,7 @@
 import type {
   CitySceneState,
   DistrictPrefabSceneState,
+  EnergyNetworkEdgeSceneState,
   RoadSceneState,
   ScenePoint
 } from '../CitySceneMapper';
@@ -24,11 +25,17 @@ const CITY01_DISTRICT_POSITIONS: Readonly<Record<string, Pick<ScenePoint, 'x' | 
 };
 
 const CITY01_GRID_DISTRICT_POSITIONS: Readonly<Record<string, Pick<ScenePoint, 'x' | 'z'>>> = {
-  'dawn-commercial': { x: 43, z: 45 },
-  'dawn-residential': { x: 70, z: 35 },
-  'dawn-public': { x: 30, z: 56 },
-  'dawn-industrial': { x: 77, z: 58 },
-  'dawn-old-town': { x: 43, z: 71 }
+  'dawn-commercial': { x: 43, z: 41 },
+  'dawn-residential': { x: 77, z: 39 },
+  'dawn-public': { x: 25, z: 56 },
+  'dawn-industrial': { x: 78, z: 66 },
+  'dawn-old-town': { x: 37, z: 75 }
+};
+
+const CITY01_GRID_NODE_POSITIONS: Readonly<Record<string, Pick<ScenePoint, 'x' | 'z'>>> = {
+  'main-substation': { x: 55, z: 53 },
+  'west-distribution': { x: 40, z: 59 },
+  'east-distribution': { x: 69, z: 58 }
 };
 
 const CITY01_PLOT_POSITIONS: Readonly<Record<string, Pick<ScenePoint, 'x' | 'z'>>> = {
@@ -54,6 +61,7 @@ const placeAt = <T extends ScenePoint>(
 ): T => position ? { ...point, ...position } : point;
 
 const roadPoint = (x: number, z: number): ScenePoint => ({ x, z, elevation: -0.02 });
+const gridPoint = (x: number, z: number): ScenePoint => ({ x, z, elevation: 0.34 });
 
 const city01Roads = (powered: boolean): RoadSceneState[] => [
   {
@@ -78,6 +86,26 @@ const city01Roads = (powered: boolean): RoadSceneState[] => [
     points: [roadPoint(53, 50), roadPoint(70, 64), roadPoint(87, 61)]
   }
 ];
+
+const gridEdgeRoute = (edge: EnergyNetworkEdgeSceneState): ScenePoint[] | undefined => {
+  const routes: Readonly<Record<string, readonly ScenePoint[]>> = {
+    'solar-to-main': [gridPoint(31, 42), gridPoint(43, 46), gridPoint(55, 53)],
+    'reserve-to-main': [gridPoint(25, 70), gridPoint(39, 64), gridPoint(55, 53)],
+    'main-to-west': [gridPoint(55, 53), gridPoint(47, 55), gridPoint(40, 59)],
+    'west-to-east': [gridPoint(40, 59), gridPoint(55, 62), gridPoint(69, 58)],
+    'wind-to-east': [gridPoint(79, 37), gridPoint(76, 48), gridPoint(69, 58)],
+    'storage-to-east': [gridPoint(82, 45), gridPoint(77, 52), gridPoint(69, 58)],
+    'west-to-residential': [gridPoint(40, 59), gridPoint(54, 48), gridPoint(77, 39)],
+    'west-to-commercial': [gridPoint(40, 59), gridPoint(40, 49), gridPoint(43, 41)],
+    'west-to-public': [gridPoint(40, 59), gridPoint(32, 59), gridPoint(25, 56)],
+    'east-to-industrial': [gridPoint(69, 58), gridPoint(75, 61), gridPoint(78, 66)],
+    'west-to-industrial-tie': [gridPoint(69, 58), gridPoint(72, 68), gridPoint(78, 66)],
+    'east-to-public': [gridPoint(69, 58), gridPoint(53, 70), gridPoint(34, 66), gridPoint(25, 56)],
+    'east-to-old-town': [gridPoint(69, 58), gridPoint(56, 72), gridPoint(37, 75)]
+  };
+  const route = routes[edge.id];
+  return route ? route.map((point) => ({ ...point })) : undefined;
+};
 
 const visualDistrict = (
   source: DistrictPrefabSceneState | undefined,
@@ -161,7 +189,7 @@ export class ProductAssetWorld implements WorldRenderSurface {
         ...shifted,
         width: DISTRICT_PAD_WIDTH,
         depth: DISTRICT_PAD_DEPTH,
-        scale: originalVisualWidth * (diagnostics ? 0.98 : 1.2) / DISTRICT_PAD_WIDTH
+        scale: originalVisualWidth * (diagnostics ? 0.9 : 1.2) / DISTRICT_PAD_WIDTH
       };
     });
     const primaryByKind = new Map(primaryDistricts.map((district) => [district.kind, district]));
@@ -177,14 +205,14 @@ export class ProductAssetWorld implements WorldRenderSurface {
     return {
       ...next,
       city: shiftPoint(next.city),
-      focus: { x: 55, z: diagnostics ? 52 : 56, elevation: 0 },
+      focus: { x: 55, z: diagnostics ? 57 : 56, elevation: 0 },
       camera: {
         ...next.camera,
-        startZoom: diagnostics ? 1.3 : 1.48,
+        startZoom: diagnostics ? 1.24 : 1.48,
         minZoom: Math.min(next.camera.minZoom, 0.76),
         maxZoom: Math.max(next.camera.maxZoom, 2.2),
-        startOffsetX: diagnostics ? 70 : 96,
-        startOffsetY: diagnostics ? 24 : 18,
+        startOffsetX: diagnostics ? 82 : 96,
+        startOffsetY: diagnostics ? 20 : 18,
         panLimitX: Math.max(next.camera.panLimitX ?? 170, 260),
         panLimitY: Math.max(next.camera.panLimitY ?? 120, 200)
       },
@@ -195,7 +223,12 @@ export class ProductAssetWorld implements WorldRenderSurface {
       })),
       plots: shiftedPlots,
       roads: diagnostics ? [] : city01Roads(next.supplyRatio > 0.35),
-      networkNodes: diagnostics ? next.networkNodes?.map((node) => shiftPoint(node)) : [],
+      networkNodes: diagnostics
+        ? next.networkNodes?.map((node) => placeAt(
+          shiftPoint(node),
+          CITY01_GRID_NODE_POSITIONS[node.id]
+        ))
+        : [],
       networkEdges: diagnostics
         ? next.networkEdges
           ?.filter((edge) =>
@@ -205,7 +238,7 @@ export class ProductAssetWorld implements WorldRenderSurface {
           )
           .map((edge) => ({
             ...edge,
-            points: edge.points.map((point) => shiftPoint(point))
+            points: gridEdgeRoute(edge) ?? edge.points.map((point) => shiftPoint(point))
           }))
         : []
     };
