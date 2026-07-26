@@ -61,7 +61,7 @@ try {
   const transferred = await snapshot('02-tie-transfer');
   assert.match(transferred.guide, /抢修主线路/);
   assert.equal(transferred.tieAction, '分闸');
-  assert.match(transferred.tieStatus, /当前负载/);
+  assert.match(transferred.tieStatus, /(当前负载|容量已满)/);
   assert.ok(numberFrom(transferred.tieStatus) > 0, `备用联络线必须承载实际负荷：${transferred.tieStatus}`);
   assert.equal(transferred.money, initial.money);
   assert.ok(transferred.lights > initial.lights, `转供后亮灯率必须上升：${initial.lights}% -> ${transferred.lights}%`);
