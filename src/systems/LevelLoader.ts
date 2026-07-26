@@ -155,7 +155,8 @@ export class LevelLoader {
       researchPoints: level.initial.researchPoints,
       unlockedTechnologyIds: level.initial.technologies,
       randomSeed: level.rules.seed,
-      gridEdgeEnabled: GridNetworkRegistry.getInitialEdgeStates(level.id)
+      gridEdgeEnabled: GridNetworkRegistry.getInitialEdgeStates(level.id),
+      gridEdgeFaulted: GridNetworkRegistry.getInitialFaultStates(level.id)
     });
 
     state.storageEnergy = buildings.getTotalStoredEnergy();
@@ -189,7 +190,8 @@ export class LevelLoader {
       researchPoints: level.initial.researchPoints,
       unlockedTechnologyIds: level.initial.technologies,
       randomSeed: level.rules.seed,
-      gridEdgeEnabled: GridNetworkRegistry.getInitialEdgeStates(level.id)
+      gridEdgeEnabled: GridNetworkRegistry.getInitialEdgeStates(level.id),
+      gridEdgeFaulted: GridNetworkRegistry.getInitialFaultStates(level.id)
     });
     const state: GameState = {
       ...defaults,
@@ -201,6 +203,10 @@ export class LevelLoader {
       gridEdgeEnabled: {
         ...(defaults.gridEdgeEnabled ?? {}),
         ...(savedState.gridEdgeEnabled ?? {})
+      },
+      gridEdgeFaulted: {
+        ...(defaults.gridEdgeFaulted ?? {}),
+        ...(savedState.gridEdgeFaulted ?? {})
       },
       storageEnergy: buildings.getTotalStoredEnergy(),
       storageCapacity: buildings.getTotalStorageCapacity()
