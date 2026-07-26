@@ -1,0 +1,61 @@
+name: Verify grid recovery browser flow
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  grid-recovery-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install project
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: |
+          npm install --no-save --package-lock=false playwright@1.54.1
+          npx playwright install --with-deps chromium
+
+      - name: Build production bundle
+        run: npm run build
+
+      - name: Start production preview
+        run: |
+          nohup npm run preview -- --host 127.0.0.1 --port 4173 > /tmp/grid-preview.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173 >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/grid-preview.log
+          exit 1
+
+      - name: Exercise transfer repair and normalization
+        env:
+          GRID_E2E_BASE_URL: http://127.0.0.1:4173
+          GRID_E2E_OUTPUT: artifacts/grid-recovery-browser
+        run: node scripts/verify-grid-recovery-browser.mjs
+
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: grid-recovery-browser-${{ github.sha }}
+          path: artifacts/grid-recovery-browser
+          if-no-files-found: error
+          retention-days: 14
