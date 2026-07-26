@@ -1,0 +1,157 @@
+.grid-operations-panel {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  z-index: 38;
+  width: min(352px, calc(100vw - 94px));
+  border: 1px solid rgba(91, 214, 255, .34);
+  border-radius: 14px;
+  overflow: hidden;
+  color: #edfaff;
+  background: linear-gradient(155deg, rgba(5, 30, 46, .96), rgba(2, 14, 25, .94));
+  box-shadow: 0 18px 54px rgba(0, 0, 0, .48), inset 0 0 28px rgba(74, 215, 255, .045);
+  backdrop-filter: blur(16px);
+}
+
+.grid-operations-panel header { border-bottom: 1px solid rgba(91, 214, 255, .14); }
+.grid-operations-toggle {
+  width: 100%;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 9px 12px;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+.grid-operations-toggle > span {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 8px;
+  text-align: left;
+}
+.grid-operations-toggle > span > i {
+  grid-row: 1 / 3;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(88, 225, 165, .55);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(88, 225, 165, .86) 0 18%, rgba(88, 225, 165, .18) 20% 44%, transparent 46%);
+  box-shadow: 0 0 16px rgba(88, 225, 165, .24);
+}
+.grid-operations-toggle b { font-size: 13px; letter-spacing: .06em; }
+.grid-operations-toggle small { margin-top: 2px; color: #8fb1c3; font-size: 9px; }
+.grid-operations-toggle em { color: #8eb4c8; font-size: 9px; font-style: normal; }
+
+.grid-operations-body { padding: 10px; }
+.grid-operations-body > p {
+  margin: 0 0 8px;
+  color: #8eafc0;
+  font-size: 9px;
+  line-height: 1.45;
+}
+.grid-operations-panel.collapsed .grid-operations-body { display: none; }
+.grid-operations-panel.collapsed header { border-bottom: 0; }
+
+.grid-operations-message {
+  margin-bottom: 8px;
+  padding: 7px 9px;
+  border: 1px solid rgba(255, 116, 133, .35);
+  border-radius: 8px;
+  color: #ffb4bf;
+  background: rgba(255, 116, 133, .08);
+  font-size: 9px;
+}
+
+.grid-operations-list { display: grid; gap: 6px; }
+.grid-operation {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 54px;
+  padding: 7px 8px;
+  border: 1px solid rgba(103, 179, 210, .13);
+  border-radius: 9px;
+  background: rgba(8, 37, 53, .58);
+}
+.grid-operation-state {
+  width: 17px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+}
+.grid-operation-state i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #5ce1a3;
+  box-shadow: 0 0 10px rgba(92, 225, 163, .58);
+}
+.grid-operation.overload .grid-operation-state i {
+  background: #ffd45f;
+  box-shadow: 0 0 11px rgba(255, 212, 95, .62);
+}
+.grid-operation.offline .grid-operation-state i {
+  background: #ff7485;
+  box-shadow: 0 0 11px rgba(255, 116, 133, .58);
+}
+.grid-operation > div { min-width: 0; }
+.grid-operation strong,
+.grid-operation small { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.grid-operation strong { font-size: 10px; }
+.grid-operation small { margin-top: 3px; color: #86a8bb; font-size: 8px; }
+.grid-operation.offline small { color: #ff9eaa; }
+.grid-operation.overload small { color: #ffdf86; }
+.grid-operation-meter {
+  position: relative;
+  display: block;
+  height: 3px;
+  margin-top: 5px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(120, 183, 208, .13);
+}
+.grid-operation-meter i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  max-width: 100%;
+  border-radius: inherit;
+  background: #5ce1a3;
+}
+.grid-operation.overload .grid-operation-meter i { background: #ffd45f; }
+.grid-operation.offline .grid-operation-meter i { background: #ff7485; }
+.grid-operation > button {
+  min-width: 48px;
+  min-height: 30px;
+  padding: 5px 8px;
+  border: 1px solid rgba(91, 214, 255, .28);
+  border-radius: 8px;
+  color: #c8efff;
+  background: rgba(40, 118, 150, .14);
+  cursor: pointer;
+}
+.grid-operation > button.close {
+  border-color: rgba(92, 225, 163, .4);
+  color: #8ff0bd;
+  background: rgba(92, 225, 163, .1);
+}
+.grid-operation > button:hover { filter: brightness(1.18); }
+
+@media (max-width: 760px) {
+  .grid-operations-panel {
+    left: 8px;
+    bottom: 154px;
+    width: min(330px, calc(100vw - 78px));
+  }
+  .grid-operations-body { max-height: 270px; overflow: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid-operation-state i { box-shadow: none; }
+}
