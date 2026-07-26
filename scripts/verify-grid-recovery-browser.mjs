@@ -9,6 +9,23 @@ await mkdir(outputDir, { recursive: true });
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
 
+const requiredProductAssets = [
+  'terrain_riverfront_base',
+  'terrain_road_bridge_base',
+  'terrain_harbor_pier_base',
+  'terrain_beach_open_base',
+  'terrain_forest_base',
+  'terrain_road_crossroad_base',
+  'district_industrial_base',
+  'facility_main_substation_base',
+  'icon_maintenance_worker',
+  'icon_driver',
+  'vehicle_sedan',
+  'vehicle_sedan_mirrored',
+  'vehicle_repair_truck',
+  'vehicle_repair_truck_mirrored'
+];
+
 const text = async (selector) => (await page.locator(selector).innerText()).trim();
 const numberFrom = (value) => Number(value.replace(/[^0-9.-]/g, ''));
 const money = async () => numberFrom(await text('.hologram-vitals > div:first-child strong'));
@@ -22,6 +39,13 @@ const clickCurrent = async (selector) => page.evaluate((candidate) => {
   if (!(element instanceof HTMLElement)) throw new Error(`没有找到可点击元素：${candidate}`);
   element.click();
 }, selector);
+
+const loadedProductAssets = async () => page.locator('[data-hologram-canvas]').evaluate((element) =>
+  (element.getAttribute('data-product-assets-loaded') ?? '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean)
+);
 
 const snapshot = async (name) => {
   const direct = edgeRow('east-to-industrial');
@@ -46,6 +70,31 @@ try {
   await page.reload({ waitUntil: 'networkidle' });
   await page.locator('[data-start="city-01"]').click();
   await page.locator('.grid-operations-panel').waitFor({ state: 'visible' });
+
+  await page.waitForFunction((required) => {
+    const host = document.querySelector('[data-hologram-canvas]');
+    if (host?.getAttribute('data-world-renderer') !== 'city01-product') return false;
+    const loaded = new Set(
+      (host.getAttribute('data-product-assets-loaded') ?? '')
+        .split(',')
+        .map((value) => value.trim())
+        .filter(Boolean)
+    );
+    return required.every((assetId) => loaded.has(assetId));
+  }, requiredProductAssets, { timeout: 30000 });
+
+  await page.waitForFunction(() => {
+    const portraits = [...document.querySelectorAll('.grid-crew-roster img')];
+    return portraits.length === 5
+      && portraits.every((image) => image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0);
+  }, { timeout: 15000 });
+
+  const productAssets = await loadedProductAssets();
+  for (const assetId of requiredProductAssets) {
+    assert.ok(productAssets.includes(assetId), `浏览器没有加载已提交素材：${assetId}`);
+  }
+  assert.equal(await page.locator('.grid-crew-roster img[data-product-portrait]').count(), 5);
+
   await clickCurrent('.hologram-speed [data-speed="0"]');
   await page.waitForFunction(() => document.querySelector('.hologram-speed [data-speed="0"]')?.classList.contains('active'));
   await page.waitForFunction(() => document.querySelector('.hologram-secretary > button')?.textContent?.includes('投入备用联络线'));
@@ -87,6 +136,10 @@ try {
   const report = {
     baseUrl,
     passed: true,
+    productAssetCount: productAssets.length,
+    productAssets,
+    requiredProductAssets,
+    crewPortraitCount: 5,
     stages: [initial, transferred, repaired, normalized]
   };
   await writeFile(`${outputDir}/report.json`, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
