@@ -38,7 +38,7 @@ const dawnCityGrid: GridNetworkConfig = {
     },
     {
       id: 'west-to-industrial-tie',
-      from: 'west-distribution',
+      from: 'east-distribution',
       to: 'industrial-load',
       capacity: 0.12,
       controllable: true,
