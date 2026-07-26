@@ -25,13 +25,14 @@ describe('City01ProductAssetPlan', () => {
   });
 
   it('keeps the live world composition curated instead of rendering every tile at once', () => {
-    expect(city01EnvironmentPlacements).toHaveLength(11);
-    expect(new Set(city01EnvironmentPlacements.map((item) => item.assetId)).size).toBe(11);
-    expect(city01EnvironmentMaterialAssetIds).toHaveLength(5);
+    expect(city01EnvironmentPlacements).toHaveLength(7);
+    expect(new Set(city01EnvironmentPlacements.map((item) => item.assetId)).size).toBe(7);
+    expect(city01EnvironmentMaterialAssetIds).toHaveLength(9);
     expect(city01FacilityAssetIds).toHaveLength(6);
     expect(city01CrewMarkers.filter((marker) => marker.worldVisible)).toHaveLength(3);
     expect(city01CrewPortraitAssetIds).toHaveLength(5);
     expect(city01VehicleDefinitions).toHaveLength(5);
+    expect(city01VehicleDefinitions.filter((vehicle) => vehicle.worldVisible)).toHaveLength(3);
     expect(city01VehicleDefinitions.flatMap((vehicle) => [vehicle.baseAssetId, vehicle.mirroredAssetId]))
       .toHaveLength(10);
   });
