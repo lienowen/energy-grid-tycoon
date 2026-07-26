@@ -40,9 +40,13 @@ export class SimulationSystem {
     const peakCurve = 0.82 + 0.28 * Math.max(0, Math.sin(((state.hour - 7) / 24) * Math.PI * 2));
     const demand = state.baseDemand * peakCurve * effects.demandMultiplier * modifiers.demandMultiplier;
     const gridLossRate = 0.04;
-    const configuredGridNetwork = GridNetworkRegistry.resolve(state.levelId);
-    const gridNetwork = configuredGridNetwork
-      ? GridNetworkRegistry.withEdgeStates(configuredGridNetwork, state.gridEdgeEnabled)
+    const gridNetworkBase = GridNetworkRegistry.resolve(state.levelId);
+    const gridNetwork = gridNetworkBase
+      ? GridNetworkRegistry.withEdgeStates(
+          gridNetworkBase,
+          state.gridEdgeEnabled,
+          state.gridEdgeFaulted
+        )
       : undefined;
 
     const allGenerationOutputs = buildings.getBuildings()
