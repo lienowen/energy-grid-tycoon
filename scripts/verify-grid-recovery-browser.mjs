@@ -9,21 +9,34 @@ await mkdir(outputDir, { recursive: true });
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
 
-const requiredProductAssets = [
+const requiredCityAssets = [
   'terrain_riverfront_base',
   'terrain_road_bridge_base',
   'terrain_harbor_pier_base',
   'terrain_beach_open_base',
   'terrain_forest_base',
-  'terrain_road_crossroad_base',
+  'terrain_park_plaza_base',
+  'district_residential_base',
+  'district_commercial_base',
   'district_industrial_base',
+  'district_public_base',
+  'district_old_town_base',
+  'facility_solar_farm_base',
+  'facility_wind_farm_base',
   'facility_main_substation_base',
-  'icon_maintenance_worker',
-  'icon_driver',
+  'facility_distribution_node_base',
   'vehicle_sedan',
   'vehicle_sedan_mirrored',
   'vehicle_repair_truck',
   'vehicle_repair_truck_mirrored'
+];
+
+const requiredDiagnosticAssets = [
+  'facility_main_substation_base',
+  'facility_distribution_node_base',
+  'icon_maintenance_worker',
+  'icon_grid_technician',
+  'icon_driver'
 ];
 
 const text = async (selector) => (await page.locator(selector).innerText()).trim();
@@ -46,6 +59,18 @@ const loadedProductAssets = async () => page.locator('[data-hologram-canvas]').e
     .map((value) => value.trim())
     .filter(Boolean)
 );
+
+const waitForAssets = async (required) => page.waitForFunction((assetIds) => {
+  const host = document.querySelector('[data-hologram-canvas]');
+  if (host?.getAttribute('data-world-renderer') !== 'city01-product') return false;
+  const loaded = new Set(
+    (host.getAttribute('data-product-assets-loaded') ?? '')
+      .split(',')
+      .map((value) => value.trim())
+      .filter(Boolean)
+  );
+  return assetIds.every((assetId) => loaded.has(assetId));
+}, required, { timeout: 30000 });
 
 const snapshot = async (name) => {
   const direct = edgeRow('east-to-industrial');
@@ -86,30 +111,30 @@ try {
   await clickCurrent('.hologram-speed [data-speed="0"]');
   await page.waitForFunction(() => document.querySelector('.hologram-speed [data-speed="0"]')?.classList.contains('active'));
 
-  await page.waitForFunction((required) => {
-    const host = document.querySelector('[data-hologram-canvas]');
-    if (host?.getAttribute('data-world-renderer') !== 'city01-product') return false;
-    const loaded = new Set(
-      (host.getAttribute('data-product-assets-loaded') ?? '')
-        .split(',')
-        .map((value) => value.trim())
-        .filter(Boolean)
-    );
-    return required.every((assetId) => loaded.has(assetId));
-  }, requiredProductAssets, { timeout: 30000 });
+  await waitForAssets(requiredCityAssets);
+  const cityAssets = await loadedProductAssets();
+  for (const assetId of requiredCityAssets) {
+    assert.ok(cityAssets.includes(assetId), `城市视图没有加载核心素材：${assetId}`);
+  }
+  assert.ok(cityAssets.length >= 26, `城市视图核心素材数量异常：${cityAssets.length}`);
+  await page.screenshot({ path: `${outputDir}/00-city-composition.png`, fullPage: true });
 
   await page.waitForFunction(() => {
     const portraits = [...document.querySelectorAll('.grid-crew-roster img')];
     return portraits.length === 5
       && portraits.every((image) => image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0);
   }, { timeout: 15000 });
-
-  const productAssets = await loadedProductAssets();
-  for (const assetId of requiredProductAssets) {
-    assert.ok(productAssets.includes(assetId), `浏览器没有加载已提交素材：${assetId}`);
-  }
-  assert.equal(productAssets.length, 40, '沙盘必须实际加载 40 张地图、设施、人员图标和车辆素材');
   assert.equal(await page.locator('.grid-crew-roster img[data-product-portrait]').count(), 5);
+
+  await clickCurrent('[data-presentation-toggle="true"]');
+  await waitForAssets(requiredDiagnosticAssets);
+  const diagnosticAssets = await loadedProductAssets();
+  for (const assetId of requiredDiagnosticAssets) {
+    assert.ok(diagnosticAssets.includes(assetId), `电网诊断没有加载关键素材：${assetId}`);
+  }
+  await page.screenshot({ path: `${outputDir}/00-grid-diagnostic.png`, fullPage: true });
+  await clickCurrent('[data-presentation-toggle="true"]');
+  await waitForAssets(requiredCityAssets);
 
   await clickCurrent('[data-build-dock-toggle="true"]');
   await page.locator('.hologram-build-dock').waitFor({ state: 'visible' });
@@ -164,10 +189,13 @@ try {
   const report = {
     baseUrl,
     passed: true,
-    submittedAssetCount: 47,
-    productAssetCount: productAssets.length,
-    productAssets,
-    requiredProductAssets,
+    catalogAssetCount: 47,
+    cityAssetCount: cityAssets.length,
+    cityAssets,
+    diagnosticAssetCount: diagnosticAssets.length,
+    diagnosticAssets,
+    requiredCityAssets,
+    requiredDiagnosticAssets,
     crewPortraitCount: 5,
     buildPreviewCount: 2,
     buildPreviews: { gasPreview, batteryPreview },
