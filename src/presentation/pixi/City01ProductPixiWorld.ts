@@ -37,6 +37,30 @@ const TILE_WIDTH = 128;
 const TILE_HEIGHT = 64;
 const ELEVATION_HEIGHT = 11.5;
 
+const CITY_ISLAND_OUTER: readonly ScenePoint[] = [
+  { x: 13, z: 19, elevation: -0.16 },
+  { x: 42, z: 5, elevation: -0.16 },
+  { x: 78, z: 6, elevation: -0.16 },
+  { x: 103, z: 27, elevation: -0.16 },
+  { x: 101, z: 67, elevation: -0.16 },
+  { x: 78, z: 91, elevation: -0.16 },
+  { x: 39, z: 94, elevation: -0.16 },
+  { x: 13, z: 73, elevation: -0.16 },
+  { x: 7, z: 46, elevation: -0.16 }
+];
+
+const CITY_ISLAND_INNER: readonly ScenePoint[] = [
+  { x: 16, z: 21, elevation: -0.08 },
+  { x: 43, z: 9, elevation: -0.08 },
+  { x: 76, z: 10, elevation: -0.08 },
+  { x: 98, z: 29, elevation: -0.08 },
+  { x: 96, z: 64, elevation: -0.08 },
+  { x: 75, z: 86, elevation: -0.08 },
+  { x: 42, z: 88, elevation: -0.08 },
+  { x: 18, z: 70, elevation: -0.08 },
+  { x: 12, z: 46, elevation: -0.08 }
+];
+
 interface AnimatedProductVehicle {
   container: Container;
   sprite: Sprite;
@@ -80,6 +104,14 @@ const districtStatusColor = (district: DistrictPrefabSceneState): number => {
   return 0xff667f;
 };
 
+const districtGroundColor = (district: DistrictPrefabSceneState): number => {
+  if (district.kind === 'residential') return 0x678c67;
+  if (district.kind === 'commercial') return 0x617c83;
+  if (district.kind === 'industrial') return 0x756b57;
+  if (district.kind === 'public') return 0x668771;
+  return 0x806f5d;
+};
+
 const networkEdgeColor = (edge: EnergyNetworkEdgeSceneState): number => {
   if (edge.status === 'normal') return 0x45cfff;
   if (edge.status === 'overload') return 0xffb347;
@@ -95,13 +127,13 @@ const networkNodeColor = (node: EnergyNetworkNodeSceneState): number => {
 };
 
 const facilityWidth = (facility: FacilitySceneState): number => {
-  if (facility.configId.includes('solar')) return 150 * facility.scale;
-  if (facility.configId.includes('wind')) return 176 * facility.scale;
-  if (facility.configId.includes('gas')) return 166 * facility.scale;
+  if (facility.configId.includes('solar')) return 126 * facility.scale;
+  if (facility.configId.includes('wind')) return 142 * facility.scale;
+  if (facility.configId.includes('gas')) return 132 * facility.scale;
   if (facility.configId.includes('battery') || facility.configId.includes('storage')) {
-    return 158 * facility.scale;
+    return 120 * facility.scale;
   }
-  return 150 * facility.scale;
+  return 118 * facility.scale;
 };
 
 export class City01ProductPixiWorld implements WorldRenderSurface {
@@ -179,7 +211,7 @@ export class City01ProductPixiWorld implements WorldRenderSurface {
       resizeTo: this.host,
       resolution: Math.min(2, window.devicePixelRatio || 1),
       autoDensity: true,
-      backgroundColor: 0x07151b,
+      backgroundColor: 0x082937,
       antialias: true,
       preference: 'webgl',
       powerPreference: 'high-performance'
@@ -193,7 +225,7 @@ export class City01ProductPixiWorld implements WorldRenderSurface {
     canvas.className = 'hologram-sandbox-canvas pixi-world-canvas city01-product-world-canvas';
     canvas.tabIndex = 0;
     canvas.setAttribute('role', 'application');
-    canvas.setAttribute('aria-label', 'City-01 正式产品素材城市，可拖动、缩放和操作设施');
+    canvas.setAttribute('aria-label', 'City-01 连续海岸城市，可拖动、缩放和操作设施');
     this.host.replaceChildren(canvas);
     this.app.stage.addChild(this.layerManager.root);
     this.app.ticker.add((ticker) => this.animateVehicles(ticker.deltaTime));
@@ -221,14 +253,14 @@ export class City01ProductPixiWorld implements WorldRenderSurface {
     this.updateLoadedAssetDataset();
     this.layerManager.clear();
 
-    this.drawGround(state);
+    this.drawWorldBase(state);
     this.drawCommittedEnvironment(generation);
-    this.drawRoadConnectors(state.roads);
-    this.drawEnergyNetwork(state, generation);
+    this.drawRoadNetwork(state.roads);
     this.drawDistricts(state, generation);
     this.drawFacilities(state, generation);
+    this.drawEnergyNetwork(state, generation);
+    if (state.presentationMode !== 'grid') this.drawVehicles(generation);
     this.drawCrew(generation, state.presentationMode === 'grid');
-    this.drawVehicles(generation);
     this.drawPlots(state.plots, state.placement, generation);
     this.layerManager.sortDynamicLayers();
   }
@@ -246,6 +278,13 @@ export class City01ProductPixiWorld implements WorldRenderSurface {
     return Math.round((point.x + point.z) * 1000 + point.elevation * 100 + offset);
   }
 
+  private polygonPoints(points: readonly ScenePoint[]): number[] {
+    return points.flatMap((point) => {
+      const projected = this.project(point);
+      return [projected.x, projected.y];
+    });
+  }
+
   private diamondPoints(point: ScenePoint, radiusX: number, radiusZ: number): number[] {
     const points = [
       this.project({ ...point, x: point.x - radiusX }),
@@ -256,14 +295,46 @@ export class City01ProductPixiWorld implements WorldRenderSurface {
     return points.flatMap(({ x, y }) => [x, y]);
   }
 
-  private drawGround(state: CitySceneState): void {
+  private drawWorldBase(state: CitySceneState): void {
     const center = state.focus ?? state.city;
-    const ground = new Graphics()
-      .poly(this.diamondPoints(center, 112, 112))
-      .fill({ color: 0x18372e, alpha: 1 })
-      .stroke({ color: 0x83b8a0, alpha: 0.18, width: 2 });
-    ground.zIndex = -1000000;
-    this.layerManager.layers.terrain.addChild(ground);
+    const water = new Graphics()
+      .poly(this.diamondPoints(center, 138, 132))
+      .fill({ color: 0x0b5067, alpha: 1 });
+    water.zIndex = -1200000;
+    this.layerManager.layers.terrain.addChild(water);
+
+    const waterBands = [0, 1, 2, 3].map((index) => {
+      const band = new Graphics()
+        .poly(this.diamondPoints(
+          { ...center, elevation: -0.4 - index * 0.04 },
+          126 - index * 4,
+          120 - index * 4
+        ))
+        .stroke({ color: 0x5db7c9, alpha: 0.08 - index * 0.012, width: 2 });
+      band.zIndex = -1199900 + index;
+      return band;
+    });
+    this.layerManager.layers.terrain.addChild(...waterBands);
+
+    const beach = new Graphics()
+      .poly(this.polygonPoints(CITY_ISLAND_OUTER))
+      .fill({ color: 0xc1aa72, alpha: 1 })
+      .stroke({ color: 0xe5d29c, alpha: 0.42, width: 2 });
+    beach.zIndex = -1100000;
+    this.layerManager.layers.terrain.addChild(beach);
+
+    const island = new Graphics()
+      .poly(this.polygonPoints(CITY_ISLAND_INNER))
+      .fill({ color: 0x426f54, alpha: 1 })
+      .stroke({ color: 0x82aa85, alpha: 0.28, width: 2 });
+    island.zIndex = -1099900;
+    this.layerManager.layers.terrain.addChild(island);
+
+    const innerField = new Graphics()
+      .poly(this.diamondPoints({ x: 55, z: 49, elevation: -0.06 }, 39, 34))
+      .fill({ color: 0x55785d, alpha: 0.34 });
+    innerField.zIndex = -1099800;
+    this.layerManager.layers.terrain.addChild(innerField);
   }
 
   private drawCommittedEnvironment(generation: number): void {
@@ -288,72 +359,134 @@ export class City01ProductPixiWorld implements WorldRenderSurface {
     return this.layerManager.layers.terrain;
   }
 
-  private drawRoadConnectors(roads: readonly RoadSceneState[]): void {
+  private drawRoadNetwork(roads: readonly RoadSceneState[]): void {
     for (const road of roads) {
       if (road.points.length < 2) continue;
-      const projected = road.points.map((point) => this.project(point));
+      const projected = road.points.map((point) => this.project({ ...point, elevation: -0.02 }));
       const first = projected[0];
       if (!first) continue;
-      const underlay = new Graphics().moveTo(first.x, first.y);
-      for (const point of projected.slice(1)) underlay.lineTo(point.x, point.y);
-      underlay.stroke({
-        color: 0x172226,
-        alpha: 0.72,
-        width: road.laneCount === 2 ? 11 : 7,
+      const depth = this.depth(road.points[0]!, -460);
+      const sidewalkWidth = road.laneCount === 2 ? 20 : 14;
+      const asphaltWidth = road.laneCount === 2 ? 14 : 9;
+
+      const sidewalk = new Graphics().moveTo(first.x, first.y);
+      for (const point of projected.slice(1)) sidewalk.lineTo(point.x, point.y);
+      sidewalk.stroke({
+        color: 0xb0b39a,
+        alpha: 0.78,
+        width: sidewalkWidth,
         cap: 'round',
         join: 'round'
       });
-      underlay.zIndex = this.depth(road.points[0]!, -470);
-      this.layerManager.layers.roads.addChild(underlay);
+      sidewalk.zIndex = depth;
+      this.layerManager.layers.roads.addChild(sidewalk);
 
-      const center = new Graphics().moveTo(first.x, first.y);
-      for (const point of projected.slice(1)) center.lineTo(point.x, point.y);
-      center.stroke({
-        color: road.powered ? 0xe5c96c : 0x7b878c,
-        alpha: road.laneCount === 2 ? 0.3 : 0.18,
-        width: 1,
-        cap: 'round'
+      const asphalt = new Graphics().moveTo(first.x, first.y);
+      for (const point of projected.slice(1)) asphalt.lineTo(point.x, point.y);
+      asphalt.stroke({
+        color: 0x30373b,
+        alpha: 0.98,
+        width: asphaltWidth,
+        cap: 'round',
+        join: 'round'
       });
-      center.zIndex = this.depth(road.points[0]!, -469);
-      this.layerManager.layers.roads.addChild(center);
+      asphalt.zIndex = depth + 1;
+      this.layerManager.layers.roads.addChild(asphalt);
+
+      const edge = new Graphics().moveTo(first.x, first.y);
+      for (const point of projected.slice(1)) edge.lineTo(point.x, point.y);
+      edge.stroke({
+        color: road.powered ? 0xf1d36f : 0x8b9294,
+        alpha: road.laneCount === 2 ? 0.52 : 0.24,
+        width: 1,
+        cap: 'round',
+        join: 'round'
+      });
+      edge.zIndex = depth + 2;
+      this.layerManager.layers.roads.addChild(edge);
+
+      if (road.laneCount === 2) this.drawDashedRoadCenter(projected, depth + 3);
     }
+  }
+
+  private drawDashedRoadCenter(points: readonly { x: number; y: number }[], zIndex: number): void {
+    const graphics = new Graphics();
+    const dash = 7;
+    const gap = 6;
+    for (let index = 0; index < points.length - 1; index += 1) {
+      const from = points[index]!;
+      const to = points[index + 1]!;
+      const length = Math.hypot(to.x - from.x, to.y - from.y);
+      if (length <= 0) continue;
+      const dx = (to.x - from.x) / length;
+      const dy = (to.y - from.y) / length;
+      for (let offset = 0; offset < length; offset += dash + gap) {
+        const end = Math.min(length, offset + dash);
+        graphics
+          .moveTo(from.x + dx * offset, from.y + dy * offset)
+          .lineTo(from.x + dx * end, from.y + dy * end);
+      }
+    }
+    graphics.stroke({ color: 0xe6d9a4, alpha: 0.66, width: 1.2, cap: 'round' });
+    graphics.zIndex = zIndex;
+    this.layerManager.layers.roads.addChild(graphics);
   }
 
   private drawDistricts(state: CitySceneState, generation: number): void {
     for (const district of state.districtPrefabs ?? []) {
-      const width = district.width * 8.35 * district.scale;
-      const position = this.project(district);
-      const shadow = new Graphics()
-        .ellipse(position.x, position.y + 3, width * 0.36, width * 0.13)
-        .fill({ color: 0x000000, alpha: 0.24 });
-      shadow.zIndex = this.depth(district, -65);
-      this.layerManager.layers.buildingShadows.addChild(shadow);
-
+      this.drawDistrictPad(district);
+      const width = district.width * 6.5 * district.scale;
       this.addAssetSprite({
         assetId: city01DistrictAssetIds[district.kind],
-        point: { ...district, elevation: district.elevation + 0.36 },
+        point: { ...district, elevation: district.elevation + 0.28 },
         width,
         anchorY: 0.9115,
         generation,
         layer: this.layerManager.layers.buildings,
-        alpha: district.status === 'offline' ? 0.72 : 1,
+        alpha: district.status === 'offline' ? 0.7 : 1,
         tint: districtTint(district),
         placeholderColor: districtStatusColor(district)
       });
 
-      if (state.presentationMode === 'grid' || district.status !== 'normal') {
-        this.drawDistrictLabel(district);
-      }
+      if (district.status !== 'normal') this.drawDistrictWarning(district);
+      if (state.presentationMode === 'grid') this.drawDistrictLabel(district);
     }
+  }
+
+  private drawDistrictPad(district: DistrictPrefabSceneState): void {
+    const radiusX = district.width * 0.53;
+    const radiusZ = district.depth * 0.62;
+    const base = new Graphics()
+      .poly(this.diamondPoints({ ...district, elevation: -0.02 }, radiusX, radiusZ))
+      .fill({ color: districtGroundColor(district), alpha: 0.98 })
+      .stroke({ color: 0xd4d8bd, alpha: 0.58, width: 2 });
+    base.zIndex = this.depth(district, -180);
+    this.layerManager.layers.groundDecorations.addChild(base);
+
+    const inset = new Graphics()
+      .poly(this.diamondPoints({ ...district, elevation: -0.01 }, radiusX * 0.84, radiusZ * 0.82))
+      .fill({ color: 0x1f3128, alpha: 0.13 })
+      .stroke({ color: 0xffffff, alpha: 0.08, width: 1 });
+    inset.zIndex = this.depth(district, -170);
+    this.layerManager.layers.groundDecorations.addChild(inset);
+  }
+
+  private drawDistrictWarning(district: DistrictPrefabSceneState): void {
+    const position = this.project({ ...district, elevation: 1.25 });
+    const color = districtStatusColor(district);
+    const halo = new Graphics()
+      .circle(position.x, position.y - 24, 12)
+      .fill({ color, alpha: 0.12 })
+      .stroke({ color, alpha: 0.72, width: 2 });
+    halo.zIndex = this.depth(district, 260);
+    this.layerManager.layers.effects.addChild(halo);
   }
 
   private drawDistrictLabel(district: DistrictPrefabSceneState): void {
     const position = this.project({ ...district, elevation: 2.1 });
     const color = districtStatusColor(district);
-    const value = district.status === 'normal'
-      ? district.label
-      : `${district.label} · ${Math.round(district.powerRatio * 100)}%`;
-    this.drawLabel(value, position.x, position.y - 42, color, this.depth(district, 270));
+    const value = `${district.label} · ${Math.round(district.powerRatio * 100)}%`;
+    this.drawLabel(value, position.x, position.y - 38, color, this.depth(district, 340));
   }
 
   private drawFacilities(state: CitySceneState, generation: number): void {
@@ -371,16 +504,10 @@ export class City01ProductPixiWorld implements WorldRenderSurface {
       const assetId = directAssetId ?? fallbackVisual?.bodyAssetId;
       if (!assetId) continue;
       const width = facilityWidth(facility);
-      const position = this.project(facility);
-      const shadow = new Graphics()
-        .ellipse(position.x, position.y + 3, width * 0.28, width * 0.1)
-        .fill({ color: 0x000000, alpha: 0.26 });
-      shadow.zIndex = this.depth(facility, -30);
-      this.layerManager.layers.buildingShadows.addChild(shadow);
-
+      this.drawFacilityPad(facility, width);
       this.addAssetSprite({
         assetId,
-        point: facility,
+        point: { ...facility, elevation: facility.elevation + 0.2 },
         width,
         anchorY: directAssetId ? 0.9115 : 0.84,
         generation,
@@ -393,7 +520,20 @@ export class City01ProductPixiWorld implements WorldRenderSurface {
     }
   }
 
+  private drawFacilityPad(facility: FacilitySceneState, width: number): void {
+    const radius = clamp(width / 18, 6, 10);
+    const color = facility.category === 'storage' ? 0x4d6f70 : 0x5e684c;
+    const pad = new Graphics()
+      .poly(this.diamondPoints({ ...facility, elevation: -0.01 }, radius * 1.3, radius))
+      .fill({ color, alpha: 0.95 })
+      .stroke({ color: 0xd3d2b5, alpha: 0.48, width: 1.5 });
+    pad.zIndex = this.depth(facility, -145);
+    this.layerManager.layers.groundDecorations.addChild(pad);
+  }
+
   private drawEnergyNetwork(state: CitySceneState, generation: number): void {
+    if (state.presentationMode === 'grid') this.drawDiagnosticWash(state);
+
     for (const edge of state.networkEdges ?? []) {
       if (edge.points.length < 2) continue;
       const projected = edge.points.map((point) => this.project(point));
@@ -404,35 +544,35 @@ export class City01ProductPixiWorld implements WorldRenderSurface {
       for (const point of projected.slice(1)) glow.lineTo(point.x, point.y);
       glow.stroke({
         color,
-        alpha: state.presentationMode === 'grid' ? 0.18 : 0.07,
-        width: 6 + clamp(edge.loadRatio, 0, 1.4) * 2,
+        alpha: 0.22,
+        width: 7 + clamp(edge.loadRatio, 0, 1.4) * 2,
         cap: 'round',
         join: 'round'
       });
-      glow.zIndex = this.depth(edge.points[0]!, -80);
+      glow.zIndex = this.depth(edge.points[0]!, -20);
       this.layerManager.layers.effects.addChild(glow);
 
       const line = new Graphics().moveTo(first.x, first.y);
       for (const point of projected.slice(1)) line.lineTo(point.x, point.y);
       line.stroke({
         color,
-        alpha: edge.status === 'offline' ? 0.62 : 0.86,
-        width: 1.5 + clamp(edge.loadRatio, 0, 1.4) * 1.4,
+        alpha: edge.status === 'offline' ? 0.78 : 0.94,
+        width: 1.8 + clamp(edge.loadRatio, 0, 1.4) * 1.5,
         cap: 'round',
         join: 'round'
       });
-      line.zIndex = this.depth(edge.points[0]!, -79);
+      line.zIndex = this.depth(edge.points[0]!, -19);
       this.layerManager.layers.effects.addChild(line);
 
-      if (state.presentationMode === 'grid') {
+      if (state.presentationMode === 'grid' && (edge.status !== 'normal' || edge.loadRatio >= 0.82)) {
         const middle = projected[Math.floor(projected.length / 2)];
         if (middle) {
           this.drawLabel(
-            `${Math.round(edge.loadRatio * 100)}%`,
+            edge.status === 'offline' ? '线路故障' : `${Math.round(edge.loadRatio * 100)}%`,
             middle.x,
-            middle.y - 12,
+            middle.y - 14,
             color,
-            this.depth(edge.points[0]!, 310)
+            this.depth(edge.points[0]!, 350)
           );
         }
       }
@@ -443,10 +583,18 @@ export class City01ProductPixiWorld implements WorldRenderSurface {
       const assetId = node.kind === 'substation'
         ? 'facility_main_substation_base'
         : 'facility_distribution_node_base';
+      const width = node.kind === 'substation' ? 122 : 76;
+      const pad = new Graphics()
+        .poly(this.diamondPoints({ ...node, elevation: -0.01 }, node.kind === 'substation' ? 8 : 5.4, node.kind === 'substation' ? 6 : 4.2))
+        .fill({ color: 0x405d62, alpha: 0.96 })
+        .stroke({ color: networkNodeColor(node), alpha: 0.5, width: 1.5 });
+      pad.zIndex = this.depth(node, -120);
+      this.layerManager.layers.groundDecorations.addChild(pad);
+
       this.addAssetSprite({
         assetId,
-        point: { ...node, elevation: node.elevation + 0.45 },
-        width: node.kind === 'substation' ? 164 : 104,
+        point: { ...node, elevation: node.elevation + 0.25 },
+        width,
         anchorY: 0.9115,
         generation,
         layer: this.layerManager.layers.buildings,
@@ -458,42 +606,53 @@ export class City01ProductPixiWorld implements WorldRenderSurface {
     }
   }
 
+  private drawDiagnosticWash(state: CitySceneState): void {
+    const wash = new Graphics()
+      .poly(this.polygonPoints(CITY_ISLAND_OUTER))
+      .fill({ color: 0x03131c, alpha: 0.5 });
+    wash.zIndex = -900000;
+    this.layerManager.layers.effects.addChild(wash);
+
+    const titlePoint = this.project({ ...(state.focus ?? state.city), elevation: 2 });
+    this.drawLabel('电网诊断', titlePoint.x, titlePoint.y - 185, 0x55ddff, 900000);
+  }
+
   private drawNetworkNodeLabel(node: EnergyNetworkNodeSceneState): void {
     const position = this.project({ ...node, elevation: 1.6 });
     const color = networkNodeColor(node);
+    const offset = node.id === 'west-distribution'
+      ? { x: -48, y: 26 }
+      : node.id === 'east-distribution'
+        ? { x: 48, y: 26 }
+        : { x: 0, y: -32 };
     this.drawLabel(
       `${node.label} · ${Math.round(node.loadRatio * 100)}%`,
-      position.x,
-      position.y + 28,
+      position.x + offset.x,
+      position.y + offset.y,
       color,
-      this.depth(node, 330)
+      this.depth(node, 390)
     );
   }
 
   private drawCrew(generation: number, diagnostics: boolean): void {
-    for (const marker of city01CrewMarkers) {
+    if (!diagnostics) return;
+    for (const marker of city01CrewMarkers.filter((candidate) => candidate.worldVisible)) {
       this.addAssetSprite({
         assetId: marker.iconAssetId,
         point: marker.point,
-        width: diagnostics ? 46 : 38,
+        width: 30,
         anchorY: 1,
         generation,
         layer: this.layerManager.layers.overlays,
-        alpha: diagnostics ? 1 : 0.88,
-        zOffset: 420,
+        alpha: 0.96,
+        zOffset: 430,
         placeholderColor: 0x5ce1a3
       });
-      if (diagnostics) {
-        const position = this.project(marker.point);
-        this.drawLabel(marker.label, position.x, position.y + 12, 0x5ce1a3, this.depth(marker.point, 440));
-      }
     }
   }
 
   private drawVehicles(generation: number): void {
-    for (const definition of city01VehicleDefinitions) {
-      this.addVehicle(definition, generation);
-    }
+    for (const definition of city01VehicleDefinitions) this.addVehicle(definition, generation);
   }
 
   private addVehicle(definition: ProductVehicleDefinition, generation: number): void {
@@ -511,8 +670,8 @@ export class City01ProductPixiWorld implements WorldRenderSurface {
     holder.zIndex = 0;
     this.layerManager.layers.vehicles.addChild(holder);
     const placeholder = new Graphics()
-      .roundRect(-18, -6, 36, 12, 4)
-      .fill({ color: 0x6b8995, alpha: 0.46 });
+      .roundRect(-12, -4, 24, 8, 3)
+      .fill({ color: 0x6b8995, alpha: 0.32 });
     holder.addChild(placeholder);
 
     void Promise.all([
@@ -626,8 +785,8 @@ export class City01ProductPixiWorld implements WorldRenderSurface {
     options.layer.addChild(holder);
 
     const placeholder = new Graphics()
-      .ellipse(0, 0, options.width * 0.28, Math.max(8, options.width * 0.09))
-      .fill({ color: options.placeholderColor ?? 0x4ad7ff, alpha: 0.14 });
+      .circle(0, 0, Math.max(4, options.width * 0.045))
+      .fill({ color: options.placeholderColor ?? 0x4ad7ff, alpha: 0.16 });
     holder.addChild(placeholder);
 
     void this.assets.load(options.assetId).then((texture) => {
@@ -681,11 +840,11 @@ export class City01ProductPixiWorld implements WorldRenderSurface {
       }
     });
     text.anchor.set(0.5, 0.5);
-    const width = Math.max(60, text.width + 18);
+    const width = Math.max(62, text.width + 18);
     const panel = new Graphics()
       .roundRect(-width * 0.5, -11, width, 22, 7)
-      .fill({ color: 0x06131b, alpha: 0.8 })
-      .stroke({ color, alpha: 0.42, width: 1 });
+      .fill({ color: 0x06131b, alpha: 0.84 })
+      .stroke({ color, alpha: 0.48, width: 1 });
     const holder = new Container();
     holder.position.set(x, y);
     holder.zIndex = zIndex;
