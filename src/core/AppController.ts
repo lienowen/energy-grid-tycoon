@@ -146,7 +146,8 @@ export class AppController {
       onNext: () => this.startNextLevel()
     });
     this.gridOperations = new GridOperationsPanel(this.root, {
-      onToggleEdge: (edgeId) => this.game?.toggleGridEdge(edgeId) ?? this.notReady()
+      onToggleEdge: (edgeId) => this.game?.toggleGridEdge(edgeId) ?? this.notReady(),
+      onRepairEdge: (edgeId) => this.game?.repairGridEdge(edgeId) ?? this.notReady()
     });
     this.onboarding = new ReleaseOnboarding(this.root);
     this.recoveryFeedback = new CityRecoveryFeedback(this.root);
