@@ -6,6 +6,7 @@ import { CityMapSystem } from '../systems/CityMapSystem';
 import { EconomyResult } from '../systems/EconomySystem';
 import { ActiveEvent, EventConfig, EventSystem } from '../systems/EventSystem';
 import { GoalSystem } from '../systems/GoalSystem';
+import { GridNetworkRegistry } from '../systems/GridNetworkRegistry';
 import { LevelConfig, LevelLoader, LoadedLevel } from '../systems/LevelLoader';
 import { PolicyConfig, PolicySystem } from '../systems/PolicySystem';
 import { PowerResult } from '../systems/PowerSystem';
@@ -89,7 +90,7 @@ export class GameManager {
 
   start(): void {
     if (this.timer !== undefined) return;
-    this.emit();
+    this.recalculate();
     this.timer = window.setInterval(
       () => this.tick(),
       this.session.config.rules.tickIntervalMs
@@ -154,7 +155,7 @@ export class GameManager {
       instanceId: building.instanceId,
       plotId
     });
-    this.emit();
+    this.recalculate();
     return { ok: true };
   }
 
@@ -172,7 +173,7 @@ export class GameManager {
     BuildingUpgradeSystem.upgrade(building);
     this.refreshStorageState();
     this.domainEvents.emit('building.upgraded', { instanceId, level: building.level });
-    this.emit();
+    this.recalculate();
     return { ok: true };
   }
 
@@ -184,7 +185,23 @@ export class GameManager {
     building.enabled = !building.enabled;
     this.refreshStorageState();
     this.domainEvents.emit('building.toggled', { instanceId, enabled: building.enabled });
-    this.emit();
+    this.recalculate();
+    return { ok: true };
+  }
+
+  toggleGridEdge(edgeId: string): GameActionResult {
+    const state = this.session.state;
+    if (state.completed || state.failed) return { ok: false, reason: '本局已经结束' };
+    const network = GridNetworkRegistry.resolve(state.levelId);
+    const edge = network?.edges.find((candidate) => candidate.id === edgeId);
+    if (!edge) return { ok: false, reason: '没有找到这条电网线路' };
+
+    const enabled = state.gridEdgeEnabled?.[edgeId] ?? edge.enabled ?? true;
+    state.gridEdgeEnabled = {
+      ...(state.gridEdgeEnabled ?? {}),
+      [edgeId]: !enabled
+    };
+    this.recalculate();
     return { ok: true };
   }
 
@@ -200,7 +217,7 @@ export class GameManager {
     state.unlockedTechnologyIds = [...state.unlockedTechnologyIds, technology.id];
     this.refreshStorageState();
     this.domainEvents.emit('technology.researched', { technologyId });
-    this.emit();
+    this.recalculate();
     return { ok: true };
   }
 
@@ -210,7 +227,7 @@ export class GameManager {
     if (!policyId) {
       state.activePolicyId = undefined;
       this.domainEvents.emit('policy.changed', { policyId: undefined });
-      this.emit();
+      this.recalculate();
       return { ok: true };
     }
 
@@ -223,7 +240,7 @@ export class GameManager {
     state.activePolicyId = policy.id;
     this.refreshStorageState();
     this.domainEvents.emit('policy.changed', { policyId: policy.id });
-    this.emit();
+    this.recalculate();
     return { ok: true };
   }
 
@@ -235,7 +252,8 @@ export class GameManager {
       levelId: this.session.config.id,
       state: {
         ...this.session.state,
-        unlockedTechnologyIds: [...this.session.state.unlockedTechnologyIds]
+        unlockedTechnologyIds: [...this.session.state.unlockedTechnologyIds],
+        gridEdgeEnabled: { ...(this.session.state.gridEdgeEnabled ?? {}) }
       },
       buildings: this.session.buildings.toSnapshots(),
       activeEvent: this.eventSystem.getSnapshot(),
@@ -323,6 +341,45 @@ export class GameManager {
     this.emit();
   }
 
+  private recalculate(): void {
+    const state = this.session.state;
+    const snapshot = {
+      day: state.day,
+      hour: state.hour,
+      speed: state.speed,
+      money: state.money,
+      population: state.population,
+      score: state.score,
+      researchPoints: state.researchPoints,
+      totalRevenue: state.totalRevenue,
+      totalEnergyServed: state.totalEnergyServed,
+      totalShortage: state.totalShortage,
+      randomState: state.randomState,
+      activeEventId: state.activeEventId,
+      completed: state.completed,
+      failed: state.failed
+    };
+    const ruleModifiers = this.ruleEngine.evaluate({ state, deltaHours: 0 }).modifiers;
+    const result = SimulationSystem.tick(
+      state,
+      this.session.buildings,
+      this.eventSystem.getEffects(),
+      0,
+      this.getSimulationModifiers(ruleModifiers)
+    );
+
+    Object.assign(state, result.state, snapshot);
+    state.completed = GoalSystem.isCompleted(state, this.session.config);
+    state.failed = !state.completed && GoalSystem.isFailed(state, this.session.config);
+    if (state.completed || state.failed) state.speed = 0;
+
+    this.lastPower = result.power;
+    this.lastEconomy = result.economy;
+    this.lastStorage = result.storage;
+    this.gridOverloaded = state.supplyRatio < 0.9;
+    this.emit();
+  }
+
   private getAvailableTechnologies(): TechnologyConfig[] {
     return this.session.config.catalog.technologies
       .map((id) => this.technologies.find((item) => item.id === id))
@@ -386,7 +443,8 @@ export class GameManager {
     this.onChange({
       state: {
         ...this.session.state,
-        unlockedTechnologyIds: [...this.session.state.unlockedTechnologyIds]
+        unlockedTechnologyIds: [...this.session.state.unlockedTechnologyIds],
+        gridEdgeEnabled: { ...(this.session.state.gridEdgeEnabled ?? {}) }
       },
       level,
       availableBuildings,
