@@ -1,4 +1,4 @@
-import { ImmersivePixiWorld } from '../../presentation/pixi/ImmersivePixiWorld';
+import { ProductAssetWorld } from '../../presentation/pixi/ProductAssetWorld';
 import { PixiGameWorld } from '../../presentation/pixi/PixiGameWorld';
 import { HologramSandbox as LegacyHologramSandbox } from './LegacyHologramSandbox';
 import type { WorldRenderActions, WorldRenderSurface } from './WorldRenderSurface';
@@ -22,9 +22,10 @@ const resolveMode = (): WorldRendererMode => {
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (stored === 'legacy') return 'legacy';
-    if (stored === 'pixi' || stored === 'immersive') return 'immersive';
+    if (stored === 'pixi') return 'pixi';
+    if (stored === 'immersive') return 'immersive';
   } catch {
-    // Use the immersive renderer when storage is unavailable.
+    // Use the product-aware renderer when storage is unavailable.
   }
   return 'immersive';
 };
@@ -38,7 +39,7 @@ export class HologramSandbox implements WorldRenderSurface {
       ? new LegacyHologramSandbox(container, actions)
       : mode === 'pixi'
         ? new PixiGameWorld(container, actions)
-        : new ImmersivePixiWorld(container, actions);
+        : new ProductAssetWorld(container, actions);
   }
 
   mount(): void {
