@@ -1,9 +1,18 @@
-import type { CitySceneState } from '../CitySceneMapper';
+import type { CitySceneState, ScenePoint } from '../CitySceneMapper';
 import type { WorldRenderActions, WorldRenderSurface } from '../../ui/world/WorldRenderSurface';
 import { City01ProductPixiWorld } from './City01ProductPixiWorld';
 import { ImmersivePixiWorld } from './ImmersivePixiWorld';
 
 type ProductRendererMode = 'city01-product' | 'immersive';
+
+const CITY01_OFFSET_X = 55;
+const CITY01_OFFSET_Z = 49;
+
+const shiftPoint = <T extends ScenePoint>(point: T): T => ({
+  ...point,
+  x: point.x + CITY01_OFFSET_X,
+  z: point.z + CITY01_OFFSET_Z
+});
 
 export class ProductAssetWorld implements WorldRenderSurface {
   private renderer?: WorldRenderSurface;
@@ -56,6 +65,8 @@ export class ProductAssetWorld implements WorldRenderSurface {
     const diagnostics = next.presentationMode === 'grid';
     return {
       ...next,
+      city: shiftPoint(next.city),
+      focus: shiftPoint(next.focus ?? next.city),
       camera: {
         ...next.camera,
         startZoom: diagnostics ? 0.86 : 0.9,
@@ -66,19 +77,27 @@ export class ProductAssetWorld implements WorldRenderSurface {
         panLimitY: Math.max(next.camera.panLimitY ?? 120, 180)
       },
       districtPrefabs: next.districtPrefabs?.map((district) => ({
-        ...district,
+        ...shiftPoint(district),
         scale: district.scale * 1.04
       })),
-      facilities: next.facilities.map((facility) => ({
-        ...facility,
-        scale: facility.scale
+      facilities: next.facilities.map((facility) => shiftPoint(facility)),
+      plots: next.plots.map((plot) => shiftPoint(plot)),
+      roads: next.roads.map((road) => ({
+        ...road,
+        points: road.points.map((point) => shiftPoint(point))
       })),
+      networkNodes: next.networkNodes?.map((node) => shiftPoint(node)),
       networkEdges: diagnostics
-        ? next.networkEdges?.filter((edge) =>
-          edge.status === 'offline'
-          || edge.status === 'overload'
-          || edge.loadRatio > 0.025
-        )
+        ? next.networkEdges
+          ?.filter((edge) =>
+            edge.status === 'offline'
+            || edge.status === 'overload'
+            || edge.loadRatio > 0.025
+          )
+          .map((edge) => ({
+            ...edge,
+            points: edge.points.map((point) => shiftPoint(point))
+          }))
         : []
     };
   }
