@@ -16,8 +16,17 @@ const industrialSupplyRatio = (view: GameViewModel): number =>
     (district) => district.districtId === 'dawn-industrial'
   )?.supplyRatio ?? -1;
 
+const stableFields = (view: GameViewModel) => ({
+  day: view.state.day,
+  hour: view.state.hour,
+  score: view.state.score,
+  totalRevenue: view.state.totalRevenue,
+  totalEnergyServed: view.state.totalEnergyServed,
+  totalShortage: view.state.totalShortage
+});
+
 describe('GameManager grid operations', () => {
-  it('restores an isolated industrial district without advancing time or economy', () => {
+  it('uses a limited tie line before repairing the faulted industrial feeder', () => {
     const level = levelData[0] as unknown as LevelConfig;
     let latestView: GameViewModel | undefined;
     const manager = new GameManager(
@@ -32,44 +41,52 @@ describe('GameManager grid operations', () => {
     expect(manager.build('gas_basic', 'west-industry')).toEqual({ ok: true });
     const isolatedView = latestView!;
     expect(isolatedView.state.gridEdgeEnabled?.['east-to-industrial']).toBe(false);
+    expect(isolatedView.state.gridEdgeFaulted?.['east-to-industrial']).toBe(true);
+    expect(isolatedView.state.gridEdgeEnabled?.['west-to-industrial-tie']).toBe(false);
     expect(industrialSupplyRatio(isolatedView)).toBe(0);
-    expect(
-      isolatedView.lastPower?.gridDispatch?.edges.find(
-        (edge) => edge.edgeId === 'east-to-industrial'
-      )?.status
-    ).toBe('offline');
+    expect(manager.toggleGridEdge('east-to-industrial')).toEqual({
+      ok: false,
+      reason: '线路仍在故障，需先抢修'
+    });
 
-    const beforeOperation = {
-      day: isolatedView.state.day,
-      hour: isolatedView.state.hour,
-      money: isolatedView.state.money,
-      score: isolatedView.state.score,
-      totalRevenue: isolatedView.state.totalRevenue,
-      totalEnergyServed: isolatedView.state.totalEnergyServed,
-      totalShortage: isolatedView.state.totalShortage
-    };
+    const beforeTransfer = stableFields(isolatedView);
+    const moneyBeforeTransfer = isolatedView.state.money;
+    expect(manager.toggleGridEdge('west-to-industrial-tie')).toEqual({ ok: true });
+    const transferView = latestView!;
+    const transferRatio = industrialSupplyRatio(transferView);
+    expect(transferView.state.gridEdgeEnabled?.['west-to-industrial-tie']).toBe(true);
+    expect(transferRatio).toBeGreaterThan(0);
+    expect(transferRatio).toBeLessThan(1);
+    expect(stableFields(transferView)).toEqual(beforeTransfer);
+    expect(transferView.state.money).toBe(moneyBeforeTransfer);
 
-    expect(manager.toggleGridEdge('east-to-industrial')).toEqual({ ok: true });
-    const restoredView = latestView!;
-    expect(restoredView.state.gridEdgeEnabled?.['east-to-industrial']).toBe(true);
-    expect(industrialSupplyRatio(restoredView)).toBeGreaterThan(0);
-    expect(
-      restoredView.lastPower?.gridDispatch?.edges.find(
-        (edge) => edge.edgeId === 'east-to-industrial'
-      )?.status
-    ).not.toBe('offline');
-    expect({
-      day: restoredView.state.day,
-      hour: restoredView.state.hour,
-      money: restoredView.state.money,
-      score: restoredView.state.score,
-      totalRevenue: restoredView.state.totalRevenue,
-      totalEnergyServed: restoredView.state.totalEnergyServed,
-      totalShortage: restoredView.state.totalShortage
-    }).toEqual(beforeOperation);
+    const moneyBeforeRepair = transferView.state.money;
+    expect(manager.repairGridEdge('east-to-industrial')).toEqual({ ok: true });
+    const repairedView = latestView!;
+    expect(repairedView.state.gridEdgeFaulted?.['east-to-industrial']).toBe(false);
+    expect(repairedView.state.gridEdgeEnabled?.['east-to-industrial']).toBe(true);
+    expect(industrialSupplyRatio(repairedView)).toBeGreaterThan(transferRatio);
+    expect(repairedView.state.money).toBe(moneyBeforeRepair - 320);
+    expect(stableFields(repairedView)).toEqual(beforeTransfer);
 
     const save = manager.createSave();
+    expect(save.state.gridEdgeEnabled?.['west-to-industrial-tie']).toBe(true);
     expect(save.state.gridEdgeEnabled?.['east-to-industrial']).toBe(true);
+    expect(save.state.gridEdgeFaulted?.['east-to-industrial']).toBe(false);
+
+    const restored = new GameManager(
+      level,
+      buildingData as unknown as BuildingConfig[],
+      eventData as unknown as EventConfig[],
+      technologyData as unknown as TechnologyConfig[],
+      policyData as unknown as PolicyConfig[],
+      () => undefined,
+      save
+    );
+    expect(restored.repairGridEdge('east-to-industrial')).toEqual({
+      ok: false,
+      reason: '线路当前没有故障'
+    });
   });
 
   it('rejects unknown lines without changing the network state', () => {
@@ -83,11 +100,17 @@ describe('GameManager grid operations', () => {
       () => undefined
     );
 
-    const before = manager.createSave().state.gridEdgeEnabled;
+    const before = manager.createSave().state;
     expect(manager.toggleGridEdge('missing-edge')).toEqual({
       ok: false,
       reason: '没有找到这条电网线路'
     });
-    expect(manager.createSave().state.gridEdgeEnabled).toEqual(before);
+    expect(manager.repairGridEdge('missing-edge')).toEqual({
+      ok: false,
+      reason: '没有找到这条电网线路'
+    });
+    const after = manager.createSave().state;
+    expect(after.gridEdgeEnabled).toEqual(before.gridEdgeEnabled);
+    expect(after.gridEdgeFaulted).toEqual(before.gridEdgeFaulted);
   });
 });
