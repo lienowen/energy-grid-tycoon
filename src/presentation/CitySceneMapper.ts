@@ -1,6 +1,7 @@
 import type { BuildingBase, BuildingConfig } from '../buildings/BuildingBase';
 import type { CityPlotConfig } from '../core/CityMapConfig';
 import type { GameViewModel } from '../core/GameManager';
+import type { GridDispatchResult } from '../systems/GridGraphSystem';
 import { CityMapSystem } from '../systems/CityMapSystem';
 import { LevelLoader } from '../systems/LevelLoader';
 import {
@@ -184,14 +185,20 @@ const statusForPower = (powerRatio: number): DistrictPrefabStatus => {
 
 const mapDistrictPrefabs = (
   layout: LevelSceneLayout,
-  supplyRatio: number
+  supplyRatio: number,
+  gridDispatch?: GridDispatchResult
 ): DistrictPrefabSceneState[] => {
   const order = [...layout.districts]
     .sort((left, right) => left.priority - right.priority)
     .map((district) => district.id);
+  const actualByDistrict = new Map(
+    (gridDispatch?.districts ?? []).map((district) => [district.districtId, district])
+  );
+
   return layout.districts.map((district) => {
     const rank = Math.max(0, order.indexOf(district.id));
-    const powerRatio = clamp(supplyRatio * layout.districts.length - rank, 0, 1);
+    const fallbackPowerRatio = clamp(supplyRatio * layout.districts.length - rank, 0, 1);
+    const powerRatio = actualByDistrict.get(district.id)?.supplyRatio ?? fallbackPowerRatio;
     return {
       ...toScenePoint(district),
       id: district.id,
@@ -246,14 +253,42 @@ const mapEnergyNetwork = (
   facilities: readonly FacilitySceneState[],
   districts: readonly DistrictPrefabSceneState[],
   supplyRatio: number,
-  demandRatio: number
+  demandRatio: number,
+  gridDispatch?: GridDispatchResult
 ): {
   nodes: EnergyNetworkNodeSceneState[];
   edges: EnergyNetworkEdgeSceneState[];
 } => {
   const pressure = demandRatio / Math.max(0.2, supplyRatio);
+  const actualNodeById = new Map(
+    (gridDispatch?.nodes ?? []).map((node) => [node.nodeId, node])
+  );
+  const actualEdgeById = new Map(
+    (gridDispatch?.edges ?? []).map((edge) => [edge.edgeId, edge])
+  );
+
   const nodes = layout.energyNetwork.nodes.map((node): EnergyNetworkNodeSceneState => {
     const point = toScenePoint(node);
+    const matchingFacilities = facilities.filter((facility) =>
+      Boolean(node.plotIds?.includes(facility.plotId))
+      || Boolean(node.facilityConfigIds?.includes(facility.configId))
+    );
+    const actual = actualNodeById.get(node.id);
+
+    if (actual) {
+      return {
+        ...point,
+        id: node.id,
+        label: node.label,
+        kind: node.kind,
+        status: actual.status,
+        capacity: actual.capacity,
+        loadRatio: actual.loadRatio,
+        districtId: node.districtId,
+        facilityId: matchingFacilities[0]?.instanceId
+      };
+    }
+
     if (node.districtId) {
       const district = districts.find((candidate) => candidate.id === node.districtId);
       const status = district ? districtNodeStatus(district) : 'offline';
@@ -269,10 +304,6 @@ const mapEnergyNetwork = (
       };
     }
 
-    const matchingFacilities = facilities.filter((facility) =>
-      Boolean(node.plotIds?.includes(facility.plotId))
-      || Boolean(node.facilityConfigIds?.includes(facility.configId))
-    );
     if (matchingFacilities.length > 0) {
       const activeFacilities = matchingFacilities.filter((facility) => facility.enabled);
       const totalOutput = activeFacilities.reduce((sum, facility) => sum + facility.output, 0);
@@ -328,12 +359,13 @@ const mapEnergyNetwork = (
     if (!from || !to) {
       throw new Error(`Invalid authored energy edge ${edge.id}: ${edge.from} -> ${edge.to}`);
     }
-    const loadRatio = clamp(pressure / Math.max(0.2, edge.capacity), 0, 1.6);
-    const status = from.status === 'planned' || to.status === 'planned'
+    const actual = actualEdgeById.get(edge.id);
+    const fallbackLoadRatio = clamp(pressure / Math.max(0.2, edge.capacity), 0, 1.6);
+    const fallbackStatus = from.status === 'planned' || to.status === 'planned'
       ? 'planned'
       : from.status === 'offline' || to.status === 'offline'
         ? 'offline'
-        : loadRatio > 1.02
+        : fallbackLoadRatio > 1.02
           ? 'overload'
           : 'normal';
     return {
@@ -343,9 +375,9 @@ const mapEnergyNetwork = (
       points: edge.points?.length
         ? edge.points.map((point) => ({ ...toScenePoint(point), elevation: 0.18 }))
         : [from, to].map((point) => ({ x: point.x, z: point.z, elevation: 0.18 })),
-      capacity: edge.capacity,
-      loadRatio,
-      status
+      capacity: actual?.capacity ?? edge.capacity,
+      loadRatio: actual?.loadRatio ?? fallbackLoadRatio,
+      status: actual?.status ?? fallbackStatus
     };
   });
 
@@ -388,9 +420,12 @@ export class CitySceneMapper {
       view.state.hour,
       demandRatio
     );
-    const districtPrefabs = layout ? mapDistrictPrefabs(layout, supplyRatio) : undefined;
+    const gridDispatch = view.lastPower?.gridDispatch;
+    const districtPrefabs = layout
+      ? mapDistrictPrefabs(layout, supplyRatio, gridDispatch)
+      : undefined;
     const energyNetwork = layout && districtPrefabs
-      ? mapEnergyNetwork(layout, facilities, districtPrefabs, supplyRatio, demandRatio)
+      ? mapEnergyNetwork(layout, facilities, districtPrefabs, supplyRatio, demandRatio, gridDispatch)
       : undefined;
     const roads = layout
       ? mapAuthoredRoads(layout, view.state.population, supplyRatio)
