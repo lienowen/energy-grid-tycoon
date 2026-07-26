@@ -7,6 +7,7 @@ export type DawnCityExperienceTone = 'calm' | 'warning' | 'danger' | 'success';
 export type DawnCityExperienceAction =
   | { type: 'build'; buildingId: string }
   | { type: 'openPanel'; panel: 'market' | 'research' | 'policy' | 'fleet' | 'analytics' }
+  | { type: 'gridOperation'; edgeId: string; operation: 'toggle' | 'repair' }
   | { type: 'wait' };
 
 export type DawnCityExperienceBeatId = 'stabilize' | 'store' | 'develop' | 'prosper';
@@ -53,6 +54,57 @@ export class DawnCityExperienceSystem {
     const { state } = context;
     if (state.levelId !== 'city-01' || state.completed || state.failed) return undefined;
 
+    const industrialFaulted = state.gridEdgeFaulted?.['east-to-industrial'] ?? false;
+    const tieEnabled = state.gridEdgeEnabled?.['west-to-industrial-tie'] ?? false;
+
+    if (industrialFaulted && !tieEnabled) {
+      return {
+        id: 'stabilize',
+        stage: 1,
+        totalStages: 4,
+        tone: 'danger',
+        title: '工业区主线路故障，先做临时转供',
+        message: '东部配电到工业区的主线已经故障。先投入西部备用联络线，恢复部分工业负荷，再安排永久抢修。',
+        consequence: '备用线容量有限，只能降低停电损失，不能代替主线路。',
+        actionLabel: '投入备用联络线',
+        action: { type: 'gridOperation', edgeId: 'west-to-industrial-tie', operation: 'toggle' },
+        progress: 0.12,
+        nextPromise: '解锁工业主线抢修'
+      };
+    }
+
+    if (industrialFaulted && tieEnabled) {
+      return {
+        id: 'stabilize',
+        stage: 1,
+        totalStages: 4,
+        tone: 'warning',
+        title: '临时转供已接通，立即抢修主线路',
+        message: '工业区已经恢复部分供电，但备用线路容量很小。支付抢修费用，恢复东部配电到工业区的额定通道。',
+        consequence: '抢修将扣除 ¥320，但不会推进游戏时间，也不会额外结算收入。',
+        actionLabel: '抢修主线路 ¥320',
+        action: { type: 'gridOperation', edgeId: 'east-to-industrial', operation: 'repair' },
+        progress: 0.34,
+        nextPromise: '恢复工业区主供电'
+      };
+    }
+
+    if (!industrialFaulted && tieEnabled) {
+      return {
+        id: 'stabilize',
+        stage: 1,
+        totalStages: 4,
+        tone: 'success',
+        title: '主线路已恢复，退出临时转供',
+        message: '工业主线已经重新送电。现在断开备用联络线，恢复正常运行方式，避免两条线路长期并列。',
+        consequence: '备用联络线退出后仍保留为下一次故障的应急通道。',
+        actionLabel: '断开备用联络线',
+        action: { type: 'gridOperation', edgeId: 'west-to-industrial-tie', operation: 'toggle' },
+        progress: 0.55,
+        nextPromise: '进入全城稳定供电任务'
+      };
+    }
+
     if (state.supplyRatio < 0.98) {
       const gas = context.buildings.find((building) => building.config.id === 'gas_basic');
       const config = findAvailable(context, 'gas_basic');
@@ -76,12 +128,12 @@ export class DawnCityExperienceSystem {
         stage: 1,
         totalStages: 4,
         tone: state.supplyRatio < 0.82 ? 'danger' : 'warning',
-        title: '先把全城从停电边缘拉回来',
-        message: '东部老城区和工业区正在轮流失压。优先补上稳定电源，让主变电站重新覆盖全部城区。',
+        title: '线路已经恢复，补足全城稳定电源',
+        message: '电网通道已经正常，但现有发电仍不足。建设稳定电源，让主变电站重新覆盖全部城区。',
         consequence: '供电恢复到 98% 后，城市才会稳定积累发展点和居民信心。',
         actionLabel,
         action,
-        progress: clamp01(state.supplyRatio / 0.98),
+        progress: 0.55 + clamp01(state.supplyRatio / 0.98) * 0.45,
         nextPromise: '解锁“把白天的电留到夜晚”储能任务'
       };
     }
