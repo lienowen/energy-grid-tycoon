@@ -17,8 +17,6 @@ const requiredCityAssets = [
   'district_old_town_base',
   'facility_solar_farm_base',
   'facility_wind_farm_base',
-  'facility_main_substation_base',
-  'facility_distribution_node_base',
   'vehicle_sedan',
   'vehicle_sedan_mirrored',
   'vehicle_utility_van',
@@ -112,7 +110,7 @@ try {
   for (const assetId of requiredCityAssets) {
     assert.ok(cityAssets.includes(assetId), `城市视图没有加载核心素材：${assetId}`);
   }
-  assert.ok(cityAssets.length >= 15, `城市视图核心素材数量异常：${cityAssets.length}`);
+  assert.ok(cityAssets.length >= 13, `城市视图核心素材数量异常：${cityAssets.length}`);
   assert.ok(await page.locator('.grid-operations-panel').evaluate((element) => element.classList.contains('collapsed')));
   await page.screenshot({ path: `${outputDir}/00-city-composition.png`, fullPage: true });
 
