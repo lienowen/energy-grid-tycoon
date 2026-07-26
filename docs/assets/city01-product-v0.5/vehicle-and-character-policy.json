@@ -1,0 +1,20 @@
+{
+  "vehicleRendering": {
+    "baseUsage": "static props and routes matching the source isometric axis",
+    "mirrorUsage": "opposite direction on the same isometric axis",
+    "pixiAnchor": {
+      "x": 0.5,
+      "y": 0.9
+    },
+    "doNot": [
+      "rotate raster vehicles continuously through arbitrary angles",
+      "use portraits as walking world sprites"
+    ],
+    "futureAnimationPack": [
+      "engineer full-body idle/walk",
+      "maintenance worker full-body idle/walk/repair",
+      "driver full-body idle/walk",
+      "vehicles rendered in four isometric directions"
+    ]
+  }
+}

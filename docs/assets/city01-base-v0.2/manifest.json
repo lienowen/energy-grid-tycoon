@@ -1,0 +1,307 @@
+{
+  "package": "energy-grid-city01-complete-base-assets",
+  "version": "0.2.0",
+  "status": "complete-base-pack",
+  "completeForCity01Base": true,
+  "canvas": {
+    "width": 1024,
+    "height": 768
+  },
+  "defaultAnchor": {
+    "x": 0.5,
+    "y": 0.9115
+  },
+  "entries": [
+    {
+      "file": "sprites/district-residential-base.png",
+      "category": "district",
+      "canvas": {
+        "width": 1024,
+        "height": 768
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "anchorPx": {
+        "x": 512,
+        "y": 700
+      },
+      "visibleBounds": {
+        "x": 112,
+        "y": 12,
+        "width": 800,
+        "height": 688
+      },
+      "transparentBackground": true,
+      "perspective": "2:1 isometric",
+      "lightDirection": "upper-left",
+      "stateStrategy": "base image + PixiJS tint/alpha/glow"
+    },
+    {
+      "file": "sprites/district-commercial-base.png",
+      "category": "district",
+      "canvas": {
+        "width": 1024,
+        "height": 768
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "anchorPx": {
+        "x": 512,
+        "y": 700
+      },
+      "visibleBounds": {
+        "x": 112,
+        "y": 236,
+        "width": 800,
+        "height": 464
+      },
+      "transparentBackground": true,
+      "perspective": "2:1 isometric",
+      "lightDirection": "upper-left",
+      "stateStrategy": "base image + PixiJS tint/alpha/glow"
+    },
+    {
+      "file": "sprites/district-industrial-base.png",
+      "category": "district",
+      "canvas": {
+        "width": 1024,
+        "height": 768
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "anchorPx": {
+        "x": 512,
+        "y": 700
+      },
+      "visibleBounds": {
+        "x": 112,
+        "y": 255,
+        "width": 800,
+        "height": 445
+      },
+      "transparentBackground": true,
+      "perspective": "2:1 isometric",
+      "lightDirection": "upper-left",
+      "stateStrategy": "base image + PixiJS tint/alpha/glow"
+    },
+    {
+      "file": "sprites/district-public-base.png",
+      "category": "district",
+      "canvas": {
+        "width": 1024,
+        "height": 768
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "anchorPx": {
+        "x": 512,
+        "y": 700
+      },
+      "visibleBounds": {
+        "x": 112,
+        "y": 36,
+        "width": 800,
+        "height": 664
+      },
+      "transparentBackground": true,
+      "perspective": "2:1 isometric",
+      "lightDirection": "upper-left",
+      "stateStrategy": "base image + PixiJS tint/alpha/glow"
+    },
+    {
+      "file": "sprites/district-old-town-base.png",
+      "category": "district",
+      "canvas": {
+        "width": 1024,
+        "height": 768
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "anchorPx": {
+        "x": 512,
+        "y": 700
+      },
+      "visibleBounds": {
+        "x": 124,
+        "y": 12,
+        "width": 776,
+        "height": 688
+      },
+      "transparentBackground": true,
+      "perspective": "2:1 isometric",
+      "lightDirection": "upper-left",
+      "stateStrategy": "base image + PixiJS tint/alpha/glow"
+    },
+    {
+      "file": "sprites/facility-solar-farm-base.png",
+      "category": "facility",
+      "canvas": {
+        "width": 1024,
+        "height": 768
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "anchorPx": {
+        "x": 512,
+        "y": 700
+      },
+      "visibleBounds": {
+        "x": 112,
+        "y": 75,
+        "width": 800,
+        "height": 625
+      },
+      "transparentBackground": true,
+      "perspective": "2:1 isometric",
+      "lightDirection": "upper-left",
+      "stateStrategy": "base image + PixiJS tint/alpha/glow"
+    },
+    {
+      "file": "sprites/facility-wind-farm-base.png",
+      "category": "facility",
+      "canvas": {
+        "width": 1024,
+        "height": 768
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "anchorPx": {
+        "x": 512,
+        "y": 700
+      },
+      "visibleBounds": {
+        "x": 112,
+        "y": 225,
+        "width": 800,
+        "height": 475
+      },
+      "transparentBackground": true,
+      "perspective": "2:1 isometric",
+      "lightDirection": "upper-left",
+      "stateStrategy": "base image + PixiJS tint/alpha/glow"
+    },
+    {
+      "file": "sprites/facility-gas-peaker-base.png",
+      "category": "facility",
+      "canvas": {
+        "width": 1024,
+        "height": 768
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "anchorPx": {
+        "x": 512,
+        "y": 700
+      },
+      "visibleBounds": {
+        "x": 162,
+        "y": 12,
+        "width": 701,
+        "height": 688
+      },
+      "transparentBackground": true,
+      "perspective": "2:1 isometric",
+      "lightDirection": "upper-left",
+      "stateStrategy": "base image + PixiJS tint/alpha/glow"
+    },
+    {
+      "file": "sprites/facility-battery-storage-base.png",
+      "category": "facility",
+      "canvas": {
+        "width": 1024,
+        "height": 768
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "anchorPx": {
+        "x": 512,
+        "y": 700
+      },
+      "visibleBounds": {
+        "x": 112,
+        "y": 241,
+        "width": 800,
+        "height": 459
+      },
+      "transparentBackground": true,
+      "perspective": "2:1 isometric",
+      "lightDirection": "upper-left",
+      "stateStrategy": "base image + PixiJS tint/alpha/glow"
+    },
+    {
+      "file": "sprites/facility-main-substation-base.png",
+      "category": "facility",
+      "canvas": {
+        "width": 1024,
+        "height": 768
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "anchorPx": {
+        "x": 512,
+        "y": 700
+      },
+      "visibleBounds": {
+        "x": 131,
+        "y": 12,
+        "width": 763,
+        "height": 688
+      },
+      "transparentBackground": true,
+      "perspective": "2:1 isometric",
+      "lightDirection": "upper-left",
+      "stateStrategy": "base image + PixiJS tint/alpha/glow"
+    },
+    {
+      "file": "sprites/facility-distribution-node-base.png",
+      "category": "facility",
+      "canvas": {
+        "width": 1024,
+        "height": 768
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "anchorPx": {
+        "x": 512,
+        "y": 700
+      },
+      "visibleBounds": {
+        "x": 112,
+        "y": 265,
+        "width": 800,
+        "height": 434
+      },
+      "transparentBackground": true,
+      "perspective": "2:1 isometric",
+      "lightDirection": "upper-left",
+      "stateStrategy": "base image + PixiJS tint/alpha/glow"
+    }
+  ],
+  "optionalFutureEnhancements": [
+    "district/facility lights masks for localized blackout animation",
+    "construction overlays",
+    "maintenance or overload decals"
+  ]
+}

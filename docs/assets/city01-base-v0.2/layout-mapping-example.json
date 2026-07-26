@@ -1,0 +1,19 @@
+{
+  "city01PrefabAssets": {
+    "districts": {
+      "residential": "commercial_district_residential_base",
+      "commercial": "commercial_district_commercial_base",
+      "industrial": "commercial_district_industrial_base",
+      "public": "commercial_district_public_base",
+      "oldTown": "commercial_district_old_town_base"
+    },
+    "facilities": {
+      "solarFarm": "facility_solar_farm_base",
+      "windFarm": "facility_wind_farm_base",
+      "gasPeaker": "facility_gas_peaker_base",
+      "batteryStorage": "facility_battery_storage_base",
+      "mainSubstation": "facility_main_substation_base",
+      "distributionNode": "facility_distribution_node_base"
+    }
+  }
+}

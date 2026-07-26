@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "commercial_district_residential_base",
+      "kind": "image",
+      "src": "/assets/city01/base/district-residential-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "district",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "commercial_district_commercial_base",
+      "kind": "image",
+      "src": "/assets/city01/base/district-commercial-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "district",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "commercial_district_industrial_base",
+      "kind": "image",
+      "src": "/assets/city01/base/district-industrial-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "district",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "commercial_district_public_base",
+      "kind": "image",
+      "src": "/assets/city01/base/district-public-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "district",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "commercial_district_old_town_base",
+      "kind": "image",
+      "src": "/assets/city01/base/district-old-town-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "district",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "facility_solar_farm_base",
+      "kind": "image",
+      "src": "/assets/city01/base/facility-solar-farm-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "facility",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "facility_wind_farm_base",
+      "kind": "image",
+      "src": "/assets/city01/base/facility-wind-farm-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "facility",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "facility_gas_peaker_base",
+      "kind": "image",
+      "src": "/assets/city01/base/facility-gas-peaker-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "facility",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "facility_battery_storage_base",
+      "kind": "image",
+      "src": "/assets/city01/base/facility-battery-storage-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "facility",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "facility_main_substation_base",
+      "kind": "image",
+      "src": "/assets/city01/base/facility-main-substation-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "facility",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "facility_distribution_node_base",
+      "kind": "image",
+      "src": "/assets/city01/base/facility-distribution-node-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "facility",
+        "isometric",
+        "base"
+      ]
+    }
+  ]
+}

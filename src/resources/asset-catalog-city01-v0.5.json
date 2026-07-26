@@ -1,0 +1,804 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "district_commercial_base",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-commercial-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "district"
+      ]
+    },
+    {
+      "id": "district_industrial_base",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-industrial-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "district"
+      ]
+    },
+    {
+      "id": "district_old_town_base",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-old-town-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "district"
+      ]
+    },
+    {
+      "id": "district_public_base",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-public-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "district"
+      ]
+    },
+    {
+      "id": "district_residential_base",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-residential-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "district"
+      ]
+    },
+    {
+      "id": "facility_battery_storage_base",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-battery-storage-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "facility"
+      ]
+    },
+    {
+      "id": "facility_distribution_node_base",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-distribution-node-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "facility"
+      ]
+    },
+    {
+      "id": "facility_gas_peaker_base",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-gas-peaker-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "facility"
+      ]
+    },
+    {
+      "id": "facility_main_substation_base",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-main-substation-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "facility"
+      ]
+    },
+    {
+      "id": "facility_solar_farm_base",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-solar-farm-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "facility"
+      ]
+    },
+    {
+      "id": "facility_wind_farm_base",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-wind-farm-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "facility"
+      ]
+    },
+    {
+      "id": "terrain_forest_base",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/base/terrain-forest-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "environment-base"
+      ]
+    },
+    {
+      "id": "terrain_park_plaza_base",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/base/terrain-park-plaza-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "environment-base"
+      ]
+    },
+    {
+      "id": "terrain_riverfront_base",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/base/terrain-riverfront-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "environment-base"
+      ]
+    },
+    {
+      "id": "terrain_road_corner_base",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/base/terrain-road-corner-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "environment-base"
+      ]
+    },
+    {
+      "id": "terrain_road_crossroad_base",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/base/terrain-road-crossroad-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "environment-base"
+      ]
+    },
+    {
+      "id": "terrain_road_straight_base",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/base/terrain-road-straight-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "environment-base"
+      ]
+    },
+    {
+      "id": "terrain_road_t_junction_base",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/base/terrain-road-t-junction-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "environment-base"
+      ]
+    },
+    {
+      "id": "terrain_rocky_hill_base",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/base/terrain-rocky-hill-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "environment-base"
+      ]
+    },
+    {
+      "id": "terrain_seafront_base",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/base/terrain-seafront-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "environment-base"
+      ]
+    },
+    {
+      "id": "terrain_road_dead_end_base",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/extended/terrain-road-dead-end-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "environment-extended"
+      ]
+    },
+    {
+      "id": "terrain_road_bridge_base",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/extended/terrain-road-bridge-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "environment-extended"
+      ]
+    },
+    {
+      "id": "terrain_coast_cliff_base",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/extended/terrain-coast-cliff-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "environment-extended"
+      ]
+    },
+    {
+      "id": "terrain_harbor_pier_base",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/extended/terrain-harbor-pier-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "environment-extended"
+      ]
+    },
+    {
+      "id": "terrain_small_park_base",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/extended/terrain-small-park-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "environment-extended"
+      ]
+    },
+    {
+      "id": "terrain_empty_grasslot_base",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/extended/terrain-empty-grasslot-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "environment-extended"
+      ]
+    },
+    {
+      "id": "terrain_beach_open_base",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/extended/terrain-beach-open-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "environment-extended"
+      ]
+    },
+    {
+      "id": "portrait_engineer_male",
+      "kind": "image",
+      "src": "/assets/city01/product/characters/portraits/portrait-engineer-male.png",
+      "version": 1,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 1.0
+      },
+      "tags": [
+        "city-01",
+        "character-portrait"
+      ]
+    },
+    {
+      "id": "icon_engineer_male",
+      "kind": "image",
+      "src": "/assets/city01/product/characters/icons/icon-engineer-male.png",
+      "version": 1,
+      "preload": "level",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 1.0
+      },
+      "tags": [
+        "city-01",
+        "character-icon"
+      ]
+    },
+    {
+      "id": "portrait_engineer_female",
+      "kind": "image",
+      "src": "/assets/city01/product/characters/portraits/portrait-engineer-female.png",
+      "version": 1,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 1.0
+      },
+      "tags": [
+        "city-01",
+        "character-portrait"
+      ]
+    },
+    {
+      "id": "icon_engineer_female",
+      "kind": "image",
+      "src": "/assets/city01/product/characters/icons/icon-engineer-female.png",
+      "version": 1,
+      "preload": "level",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 1.0
+      },
+      "tags": [
+        "city-01",
+        "character-icon"
+      ]
+    },
+    {
+      "id": "portrait_maintenance_worker",
+      "kind": "image",
+      "src": "/assets/city01/product/characters/portraits/portrait-maintenance-worker.png",
+      "version": 1,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 1.0
+      },
+      "tags": [
+        "city-01",
+        "character-portrait"
+      ]
+    },
+    {
+      "id": "icon_maintenance_worker",
+      "kind": "image",
+      "src": "/assets/city01/product/characters/icons/icon-maintenance-worker.png",
+      "version": 1,
+      "preload": "level",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 1.0
+      },
+      "tags": [
+        "city-01",
+        "character-icon"
+      ]
+    },
+    {
+      "id": "portrait_grid_technician",
+      "kind": "image",
+      "src": "/assets/city01/product/characters/portraits/portrait-grid-technician.png",
+      "version": 1,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 1.0
+      },
+      "tags": [
+        "city-01",
+        "character-portrait"
+      ]
+    },
+    {
+      "id": "icon_grid_technician",
+      "kind": "image",
+      "src": "/assets/city01/product/characters/icons/icon-grid-technician.png",
+      "version": 1,
+      "preload": "level",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 1.0
+      },
+      "tags": [
+        "city-01",
+        "character-icon"
+      ]
+    },
+    {
+      "id": "portrait_driver",
+      "kind": "image",
+      "src": "/assets/city01/product/characters/portraits/portrait-driver.png",
+      "version": 1,
+      "preload": "level",
+      "width": 512,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 1.0
+      },
+      "tags": [
+        "city-01",
+        "character-portrait"
+      ]
+    },
+    {
+      "id": "icon_driver",
+      "kind": "image",
+      "src": "/assets/city01/product/characters/icons/icon-driver.png",
+      "version": 1,
+      "preload": "level",
+      "width": 128,
+      "height": 128,
+      "anchor": {
+        "x": 0.5,
+        "y": 1.0
+      },
+      "tags": [
+        "city-01",
+        "character-icon"
+      ]
+    },
+    {
+      "id": "vehicle_sedan",
+      "kind": "image",
+      "src": "/assets/city01/product/vehicles/base/vehicle-sedan.png",
+      "version": 1,
+      "preload": "level",
+      "width": 768,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9
+      },
+      "tags": [
+        "city-01",
+        "vehicle"
+      ]
+    },
+    {
+      "id": "vehicle_sedan_mirrored",
+      "kind": "image",
+      "src": "/assets/city01/product/vehicles/mirrored/vehicle-sedan-mirrored.png",
+      "version": 1,
+      "preload": "level",
+      "width": 768,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9
+      },
+      "tags": [
+        "city-01",
+        "vehicle-mirrored"
+      ]
+    },
+    {
+      "id": "vehicle_cargo_truck",
+      "kind": "image",
+      "src": "/assets/city01/product/vehicles/base/vehicle-cargo-truck.png",
+      "version": 1,
+      "preload": "level",
+      "width": 768,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9
+      },
+      "tags": [
+        "city-01",
+        "vehicle"
+      ]
+    },
+    {
+      "id": "vehicle_cargo_truck_mirrored",
+      "kind": "image",
+      "src": "/assets/city01/product/vehicles/mirrored/vehicle-cargo-truck-mirrored.png",
+      "version": 1,
+      "preload": "level",
+      "width": 768,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9
+      },
+      "tags": [
+        "city-01",
+        "vehicle-mirrored"
+      ]
+    },
+    {
+      "id": "vehicle_utility_van",
+      "kind": "image",
+      "src": "/assets/city01/product/vehicles/base/vehicle-utility-van.png",
+      "version": 1,
+      "preload": "level",
+      "width": 768,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9
+      },
+      "tags": [
+        "city-01",
+        "vehicle"
+      ]
+    },
+    {
+      "id": "vehicle_utility_van_mirrored",
+      "kind": "image",
+      "src": "/assets/city01/product/vehicles/mirrored/vehicle-utility-van-mirrored.png",
+      "version": 1,
+      "preload": "level",
+      "width": 768,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9
+      },
+      "tags": [
+        "city-01",
+        "vehicle-mirrored"
+      ]
+    },
+    {
+      "id": "vehicle_repair_truck",
+      "kind": "image",
+      "src": "/assets/city01/product/vehicles/base/vehicle-repair-truck.png",
+      "version": 1,
+      "preload": "level",
+      "width": 768,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9
+      },
+      "tags": [
+        "city-01",
+        "vehicle"
+      ]
+    },
+    {
+      "id": "vehicle_repair_truck_mirrored",
+      "kind": "image",
+      "src": "/assets/city01/product/vehicles/mirrored/vehicle-repair-truck-mirrored.png",
+      "version": 1,
+      "preload": "level",
+      "width": 768,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9
+      },
+      "tags": [
+        "city-01",
+        "vehicle-mirrored"
+      ]
+    },
+    {
+      "id": "vehicle_work_truck",
+      "kind": "image",
+      "src": "/assets/city01/product/vehicles/base/vehicle-work-truck.png",
+      "version": 1,
+      "preload": "level",
+      "width": 768,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9
+      },
+      "tags": [
+        "city-01",
+        "vehicle"
+      ]
+    },
+    {
+      "id": "vehicle_work_truck_mirrored",
+      "kind": "image",
+      "src": "/assets/city01/product/vehicles/mirrored/vehicle-work-truck-mirrored.png",
+      "version": 1,
+      "preload": "level",
+      "width": 768,
+      "height": 512,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9
+      },
+      "tags": [
+        "city-01",
+        "vehicle-mirrored"
+      ]
+    }
+  ]
+}

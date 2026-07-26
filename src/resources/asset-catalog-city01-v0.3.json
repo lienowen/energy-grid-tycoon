@@ -1,0 +1,365 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "district_commercial_base",
+      "kind": "image",
+      "src": "/assets/city01/full/district-commercial-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "district_industrial_base",
+      "kind": "image",
+      "src": "/assets/city01/full/district-industrial-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "district_old_town_base",
+      "kind": "image",
+      "src": "/assets/city01/full/district-old-town-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "district_public_base",
+      "kind": "image",
+      "src": "/assets/city01/full/district-public-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "district_residential_base",
+      "kind": "image",
+      "src": "/assets/city01/full/district-residential-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "facility_battery_storage_base",
+      "kind": "image",
+      "src": "/assets/city01/full/facility-battery-storage-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "facility_distribution_node_base",
+      "kind": "image",
+      "src": "/assets/city01/full/facility-distribution-node-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "facility_gas_peaker_base",
+      "kind": "image",
+      "src": "/assets/city01/full/facility-gas-peaker-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "facility_main_substation_base",
+      "kind": "image",
+      "src": "/assets/city01/full/facility-main-substation-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "facility_solar_farm_base",
+      "kind": "image",
+      "src": "/assets/city01/full/facility-solar-farm-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "facility_wind_farm_base",
+      "kind": "image",
+      "src": "/assets/city01/full/facility-wind-farm-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "isometric",
+        "base"
+      ]
+    },
+    {
+      "id": "terrain_road_straight_base",
+      "kind": "image",
+      "src": "/assets/city01/full/terrain-road-straight-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "isometric",
+        "environment"
+      ]
+    },
+    {
+      "id": "terrain_road_corner_base",
+      "kind": "image",
+      "src": "/assets/city01/full/terrain-road-corner-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "isometric",
+        "environment"
+      ]
+    },
+    {
+      "id": "terrain_road_t_junction_base",
+      "kind": "image",
+      "src": "/assets/city01/full/terrain-road-t-junction-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "isometric",
+        "environment"
+      ]
+    },
+    {
+      "id": "terrain_road_crossroad_base",
+      "kind": "image",
+      "src": "/assets/city01/full/terrain-road-crossroad-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "isometric",
+        "environment"
+      ]
+    },
+    {
+      "id": "terrain_riverfront_base",
+      "kind": "image",
+      "src": "/assets/city01/full/terrain-riverfront-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "isometric",
+        "environment"
+      ]
+    },
+    {
+      "id": "terrain_seafront_base",
+      "kind": "image",
+      "src": "/assets/city01/full/terrain-seafront-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "isometric",
+        "environment"
+      ]
+    },
+    {
+      "id": "terrain_park_plaza_base",
+      "kind": "image",
+      "src": "/assets/city01/full/terrain-park-plaza-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "isometric",
+        "environment"
+      ]
+    },
+    {
+      "id": "terrain_forest_base",
+      "kind": "image",
+      "src": "/assets/city01/full/terrain-forest-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "isometric",
+        "environment"
+      ]
+    },
+    {
+      "id": "terrain_rocky_hill_base",
+      "kind": "image",
+      "src": "/assets/city01/full/terrain-rocky-hill-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9115
+      },
+      "tags": [
+        "city-01",
+        "isometric",
+        "environment"
+      ]
+    }
+  ]
+}
