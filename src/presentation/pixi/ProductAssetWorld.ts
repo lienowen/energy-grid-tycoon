@@ -16,11 +16,11 @@ const DISTRICT_PAD_WIDTH = 1;
 const DISTRICT_PAD_DEPTH = 1;
 
 const CITY01_DISTRICT_POSITIONS: Readonly<Record<string, Pick<ScenePoint, 'x' | 'z'>>> = {
-  'dawn-commercial': { x: 51, z: 48 },
-  'dawn-residential': { x: 67, z: 36 },
-  'dawn-public': { x: 33, z: 55 },
-  'dawn-industrial': { x: 69, z: 58 },
-  'dawn-old-town': { x: 46, z: 68 }
+  'dawn-commercial': { x: 53, z: 50 },
+  'dawn-residential': { x: 69, z: 39 },
+  'dawn-public': { x: 34, z: 56 },
+  'dawn-industrial': { x: 70, z: 64 },
+  'dawn-old-town': { x: 46, z: 70 }
 };
 
 const CITY01_GRID_DISTRICT_POSITIONS: Readonly<Record<string, Pick<ScenePoint, 'x' | 'z'>>> = {
@@ -32,14 +32,14 @@ const CITY01_GRID_DISTRICT_POSITIONS: Readonly<Record<string, Pick<ScenePoint, '
 };
 
 const CITY01_PLOT_POSITIONS: Readonly<Record<string, Pick<ScenePoint, 'x' | 'z'>>> = {
-  'sunrise-neighborhood': { x: 29, z: 40 },
-  'south-outskirts': { x: 40, z: 39 },
-  'north-outskirts': { x: 52, z: 26 },
-  'east-coast': { x: 79, z: 36 },
-  'west-industry': { x: 24, z: 70 },
-  'south-neighborhood': { x: 39, z: 78 },
-  'central-utility': { x: 82, z: 43 },
-  'east-industry': { x: 87, z: 58 }
+  'sunrise-neighborhood': { x: 31, z: 42 },
+  'south-outskirts': { x: 43, z: 38 },
+  'north-outskirts': { x: 54, z: 27 },
+  'east-coast': { x: 79, z: 37 },
+  'west-industry': { x: 25, z: 70 },
+  'south-neighborhood': { x: 39, z: 80 },
+  'central-utility': { x: 82, z: 45 },
+  'east-industry': { x: 87, z: 61 }
 };
 
 const shiftPoint = <T extends ScenePoint>(point: T): T => ({
@@ -57,32 +57,25 @@ const roadPoint = (x: number, z: number): ScenePoint => ({ x, z, elevation: -0.0
 
 const city01Roads = (powered: boolean): RoadSceneState[] => [
   {
-    id: 'city01-west-generation-link',
-    laneCount: 1,
-    traffic: 0.32,
-    powered,
-    points: [roadPoint(29, 40), roadPoint(40, 43), roadPoint(51, 48)]
-  },
-  {
-    id: 'city01-east-generation-link',
+    id: 'city01-west-energy-link',
     laneCount: 1,
     traffic: 0.3,
     powered,
-    points: [roadPoint(79, 36), roadPoint(68, 40), roadPoint(57, 46)]
+    points: [roadPoint(31, 42), roadPoint(42, 46), roadPoint(53, 50)]
   },
   {
-    id: 'city01-industrial-corridor',
-    laneCount: 2,
-    traffic: 0.68,
-    powered,
-    points: [roadPoint(51, 48), roadPoint(69, 58), roadPoint(87, 58)]
-  },
-  {
-    id: 'city01-south-service-link',
+    id: 'city01-east-energy-link',
     laneCount: 1,
-    traffic: 0.38,
+    traffic: 0.28,
     powered,
-    points: [roadPoint(39, 78), roadPoint(46, 68), roadPoint(69, 58)]
+    points: [roadPoint(79, 37), roadPoint(68, 43), roadPoint(57, 49)]
+  },
+  {
+    id: 'city01-industrial-access',
+    laneCount: 2,
+    traffic: 0.62,
+    powered,
+    points: [roadPoint(53, 50), roadPoint(70, 64), roadPoint(87, 61)]
   }
 ];
 
@@ -168,33 +161,36 @@ export class ProductAssetWorld implements WorldRenderSurface {
         ...shifted,
         width: DISTRICT_PAD_WIDTH,
         depth: DISTRICT_PAD_DEPTH,
-        scale: originalVisualWidth * (diagnostics ? 0.98 : 1.22) / DISTRICT_PAD_WIDTH
+        scale: originalVisualWidth * (diagnostics ? 0.98 : 1.2) / DISTRICT_PAD_WIDTH
       };
     });
     const primaryByKind = new Map(primaryDistricts.map((district) => [district.kind, district]));
     const fillerDistricts = diagnostics ? [] : [
-      visualDistrict(primaryByKind.get('residential'), 'city01-visual-residential', 57, 42, 0.52),
-      visualDistrict(primaryByKind.get('commercial'), 'city01-visual-commercial', 42, 58, 0.46),
-      visualDistrict(primaryByKind.get('public'), 'city01-visual-public', 59, 65, 0.44)
+      visualDistrict(primaryByKind.get('residential'), 'city01-visual-residential-a', 57, 43, 0.48),
+      visualDistrict(primaryByKind.get('commercial'), 'city01-visual-commercial-a', 43, 60, 0.42),
+      visualDistrict(primaryByKind.get('public'), 'city01-visual-public-a', 59, 68, 0.4),
+      visualDistrict(primaryByKind.get('old_town'), 'city01-visual-old-town-a', 34, 70, 0.36),
+      visualDistrict(primaryByKind.get('residential'), 'city01-visual-residential-b', 73, 49, 0.38),
+      visualDistrict(primaryByKind.get('commercial'), 'city01-visual-commercial-b', 55, 75, 0.34)
     ].filter((district): district is DistrictPrefabSceneState => Boolean(district));
 
     return {
       ...next,
       city: shiftPoint(next.city),
-      focus: { x: 55, z: diagnostics ? 52 : 52, elevation: 0 },
+      focus: { x: 55, z: diagnostics ? 52 : 56, elevation: 0 },
       camera: {
         ...next.camera,
         startZoom: diagnostics ? 0.94 : 1.08,
         minZoom: Math.min(next.camera.minZoom, 0.68),
-        startOffsetX: diagnostics ? 55 : 72,
-        startOffsetY: 18,
+        startOffsetX: diagnostics ? 55 : 76,
+        startOffsetY: 12,
         panLimitX: Math.max(next.camera.panLimitX ?? 170, 230),
         panLimitY: Math.max(next.camera.panLimitY ?? 120, 180)
       },
       districtPrefabs: [...primaryDistricts, ...fillerDistricts],
       facilities: next.facilities.map((facility) => ({
         ...placeAt(shiftPoint(facility), CITY01_PLOT_POSITIONS[facility.plotId]),
-        scale: facility.scale * 0.78
+        scale: facility.scale * 0.62
       })),
       plots: shiftedPlots,
       roads: diagnostics ? [] : city01Roads(next.supplyRatio > 0.35),
