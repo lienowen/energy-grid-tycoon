@@ -36,30 +36,7 @@ const SCENE_UNITS_PER_GRID = 10;
 const TILE_WIDTH = 128;
 const TILE_HEIGHT = 64;
 const ELEVATION_HEIGHT = 11.5;
-
-const CITY_ISLAND_OUTER: readonly ScenePoint[] = [
-  { x: 13, z: 19, elevation: -0.16 },
-  { x: 42, z: 5, elevation: -0.16 },
-  { x: 78, z: 6, elevation: -0.16 },
-  { x: 103, z: 27, elevation: -0.16 },
-  { x: 101, z: 67, elevation: -0.16 },
-  { x: 78, z: 91, elevation: -0.16 },
-  { x: 39, z: 94, elevation: -0.16 },
-  { x: 13, z: 73, elevation: -0.16 },
-  { x: 7, z: 46, elevation: -0.16 }
-];
-
-const CITY_ISLAND_INNER: readonly ScenePoint[] = [
-  { x: 16, z: 21, elevation: -0.08 },
-  { x: 43, z: 9, elevation: -0.08 },
-  { x: 76, z: 10, elevation: -0.08 },
-  { x: 98, z: 29, elevation: -0.08 },
-  { x: 96, z: 64, elevation: -0.08 },
-  { x: 75, z: 86, elevation: -0.08 },
-  { x: 42, z: 88, elevation: -0.08 },
-  { x: 18, z: 70, elevation: -0.08 },
-  { x: 12, z: 46, elevation: -0.08 }
-];
+const CITY_CENTER: ScenePoint = { x: 55, z: 49, elevation: -0.08 };
 
 interface AnimatedProductVehicle {
   container: Container;
@@ -278,13 +255,6 @@ export class City01ProductPixiWorld implements WorldRenderSurface {
     return Math.round((point.x + point.z) * 1000 + point.elevation * 100 + offset);
   }
 
-  private polygonPoints(points: readonly ScenePoint[]): number[] {
-    return points.flatMap((point) => {
-      const projected = this.project(point);
-      return [projected.x, projected.y];
-    });
-  }
-
   private diamondPoints(point: ScenePoint, radiusX: number, radiusZ: number): number[] {
     const points = [
       this.project({ ...point, x: point.x - radiusX }),
@@ -303,7 +273,7 @@ export class City01ProductPixiWorld implements WorldRenderSurface {
     water.zIndex = -1200000;
     this.layerManager.layers.terrain.addChild(water);
 
-    const waterBands = [0, 1, 2, 3].map((index) => {
+    for (let index = 0; index < 4; index += 1) {
       const band = new Graphics()
         .poly(this.diamondPoints(
           { ...center, elevation: -0.4 - index * 0.04 },
@@ -312,27 +282,27 @@ export class City01ProductPixiWorld implements WorldRenderSurface {
         ))
         .stroke({ color: 0x5db7c9, alpha: 0.08 - index * 0.012, width: 2 });
       band.zIndex = -1199900 + index;
-      return band;
-    });
-    this.layerManager.layers.terrain.addChild(...waterBands);
+      this.layerManager.layers.terrain.addChild(band);
+    }
 
     const beach = new Graphics()
-      .poly(this.polygonPoints(CITY_ISLAND_OUTER))
-      .fill({ color: 0xc1aa72, alpha: 1 })
-      .stroke({ color: 0xe5d29c, alpha: 0.42, width: 2 });
+      .poly(this.diamondPoints(CITY_CENTER, 57, 51))
+      .fill({ color: 0xc3ad76, alpha: 1 })
+      .stroke({ color: 0xe8d7a1, alpha: 0.46, width: 2 });
     beach.zIndex = -1100000;
     this.layerManager.layers.terrain.addChild(beach);
 
     const island = new Graphics()
-      .poly(this.polygonPoints(CITY_ISLAND_INNER))
-      .fill({ color: 0x426f54, alpha: 1 })
-      .stroke({ color: 0x82aa85, alpha: 0.28, width: 2 });
+      .poly(this.diamondPoints({ ...CITY_CENTER, elevation: -0.02 }, 52, 46))
+      .fill({ color: 0x467357, alpha: 1 })
+      .stroke({ color: 0x8ab28c, alpha: 0.32, width: 2 });
     island.zIndex = -1099900;
     this.layerManager.layers.terrain.addChild(island);
 
     const innerField = new Graphics()
-      .poly(this.diamondPoints({ x: 55, z: 49, elevation: -0.06 }, 39, 34))
-      .fill({ color: 0x55785d, alpha: 0.34 });
+      .poly(this.diamondPoints({ ...CITY_CENTER, elevation: 0 }, 41, 35))
+      .fill({ color: 0x5a7e61, alpha: 0.3 })
+      .stroke({ color: 0xb8d0b3, alpha: 0.08, width: 1 });
     innerField.zIndex = -1099800;
     this.layerManager.layers.terrain.addChild(innerField);
   }
@@ -608,7 +578,7 @@ export class City01ProductPixiWorld implements WorldRenderSurface {
 
   private drawDiagnosticWash(state: CitySceneState): void {
     const wash = new Graphics()
-      .poly(this.polygonPoints(CITY_ISLAND_OUTER))
+      .poly(this.diamondPoints({ ...CITY_CENTER, elevation: 0.02 }, 57, 51))
       .fill({ color: 0x03131c, alpha: 0.5 });
     wash.zIndex = -900000;
     this.layerManager.layers.effects.addChild(wash);
@@ -652,7 +622,9 @@ export class City01ProductPixiWorld implements WorldRenderSurface {
   }
 
   private drawVehicles(generation: number): void {
-    for (const definition of city01VehicleDefinitions) this.addVehicle(definition, generation);
+    for (const definition of city01VehicleDefinitions.filter((candidate) => candidate.worldVisible)) {
+      this.addVehicle(definition, generation);
+    }
   }
 
   private addVehicle(definition: ProductVehicleDefinition, generation: number): void {
