@@ -59,115 +59,115 @@ export const city01FacilityAssetFor = (configId: string): string | undefined => 
 export const city01EnvironmentPlacements: readonly ProductAssetPlacement[] = [
   {
     assetId: 'terrain_riverfront_base',
-    point: { x: 4, z: 50, elevation: -0.52 },
-    width: 300,
+    point: { x: 8, z: 47, elevation: -0.48 },
+    width: 238,
     layer: 'terrain',
     alpha: 0.98,
     zOffset: -950
   },
   {
     assetId: 'terrain_road_bridge_base',
-    point: { x: 12, z: 50, elevation: -0.38 },
-    width: 172,
+    point: { x: 15, z: 44, elevation: -0.34 },
+    width: 136,
     layer: 'roads',
     zOffset: -620
   },
   {
     assetId: 'terrain_seafront_base',
-    point: { x: 52, z: 94, elevation: -0.58 },
-    width: 430,
+    point: { x: 50, z: 79, elevation: -0.5 },
+    width: 312,
     layer: 'terrain',
     alpha: 0.98,
     zOffset: -940
   },
   {
     assetId: 'terrain_beach_open_base',
-    point: { x: 70, z: 91, elevation: -0.34 },
-    width: 230,
+    point: { x: 70, z: 73, elevation: -0.28 },
+    width: 168,
     layer: 'terrain',
     zOffset: -700
   },
   {
     assetId: 'terrain_harbor_pier_base',
-    point: { x: 22, z: 88, elevation: -0.25 },
-    width: 220,
+    point: { x: 27, z: 70, elevation: -0.2 },
+    width: 164,
     layer: 'groundDecorations',
     zOffset: -260
   },
   {
     assetId: 'terrain_coast_cliff_base',
-    point: { x: 93, z: 18, elevation: -0.18 },
-    width: 245,
+    point: { x: 87, z: 21, elevation: -0.14 },
+    width: 184,
     layer: 'terrain',
     zOffset: -760
   },
   {
     assetId: 'terrain_rocky_hill_base',
-    point: { x: 63, z: 4, elevation: -0.12 },
-    width: 285,
+    point: { x: 70, z: 9, elevation: -0.1 },
+    width: 204,
     layer: 'terrain',
     zOffset: -720
   },
   {
     assetId: 'terrain_forest_base',
-    point: { x: 33, z: 8, elevation: -0.12 },
-    width: 255,
+    point: { x: 31, z: 13, elevation: -0.1 },
+    width: 188,
     layer: 'terrain',
     zOffset: -710
   },
   {
     assetId: 'terrain_park_plaza_base',
-    point: { x: 57, z: 39, elevation: -0.06 },
-    width: 154,
+    point: { x: 56, z: 41, elevation: -0.04 },
+    width: 124,
     layer: 'groundDecorations',
     zOffset: -130
   },
   {
     assetId: 'terrain_small_park_base',
-    point: { x: 42, z: 75, elevation: -0.04 },
-    width: 132,
+    point: { x: 42, z: 62, elevation: -0.03 },
+    width: 104,
     layer: 'groundDecorations',
     zOffset: -120
   },
   {
     assetId: 'terrain_empty_grasslot_base',
-    point: { x: 15, z: 77, elevation: -0.08 },
-    width: 138,
+    point: { x: 18, z: 61, elevation: -0.06 },
+    width: 108,
     layer: 'terrain',
     zOffset: -520
   },
   {
     assetId: 'terrain_road_straight_base',
-    point: { x: 49, z: 45, elevation: -0.24 },
-    width: 154,
+    point: { x: 50, z: 46, elevation: -0.2 },
+    width: 118,
     layer: 'roads',
     zOffset: -340
   },
   {
     assetId: 'terrain_road_corner_base',
-    point: { x: 30, z: 48, elevation: -0.23 },
-    width: 135,
+    point: { x: 31, z: 48, elevation: -0.2 },
+    width: 106,
     layer: 'roads',
     zOffset: -330
   },
   {
     assetId: 'terrain_road_t_junction_base',
-    point: { x: 47, z: 64, elevation: -0.23 },
-    width: 138,
+    point: { x: 48, z: 61, elevation: -0.2 },
+    width: 108,
     layer: 'roads',
     zOffset: -330
   },
   {
     assetId: 'terrain_road_crossroad_base',
-    point: { x: 69, z: 50, elevation: -0.23 },
-    width: 142,
+    point: { x: 68, z: 50, elevation: -0.2 },
+    width: 110,
     layer: 'roads',
     zOffset: -330
   },
   {
     assetId: 'terrain_road_dead_end_base',
-    point: { x: 87, z: 66, elevation: -0.22 },
-    width: 128,
+    point: { x: 84, z: 61, elevation: -0.19 },
+    width: 98,
     layer: 'roads',
     zOffset: -320
   }
@@ -190,19 +190,19 @@ export const city01CrewMarkers: readonly ProductCrewMarker[] = [
     id: 'maintenance-worker',
     label: '线路维修工',
     iconAssetId: 'icon_maintenance_worker',
-    point: { x: 77, z: 55, elevation: 1.05 }
+    point: { x: 75, z: 53, elevation: 1.05 }
   },
   {
     id: 'grid-technician',
     label: '电网技术员',
     iconAssetId: 'icon_grid_technician',
-    point: { x: 69, z: 52, elevation: 1.05 }
+    point: { x: 68, z: 51, elevation: 1.05 }
   },
   {
     id: 'driver',
     label: '抢修司机',
     iconAssetId: 'icon_driver',
-    point: { x: 25, z: 84, elevation: 1.05 }
+    point: { x: 29, z: 68, elevation: 1.05 }
   }
 ];
 
@@ -220,13 +220,13 @@ export const city01VehicleDefinitions: readonly ProductVehicleDefinition[] = [
     label: '巡检轿车',
     baseAssetId: 'vehicle_sedan',
     mirroredAssetId: 'vehicle_sedan_mirrored',
-    width: 72,
+    width: 46,
     speed: 0.025,
     phase: 0.08,
     path: [
-      { x: 31, z: 59, elevation: 0.18 },
-      { x: 48, z: 42, elevation: 0.18 },
-      { x: 67, z: 23, elevation: 0.18 }
+      { x: 32, z: 58, elevation: 0.16 },
+      { x: 48, z: 42, elevation: 0.16 },
+      { x: 65, z: 25, elevation: 0.16 }
     ]
   },
   {
@@ -234,13 +234,13 @@ export const city01VehicleDefinitions: readonly ProductVehicleDefinition[] = [
     label: '货运卡车',
     baseAssetId: 'vehicle_cargo_truck',
     mirroredAssetId: 'vehicle_cargo_truck_mirrored',
-    width: 88,
+    width: 60,
     speed: 0.016,
     phase: 0.36,
     path: [
-      { x: 58, z: 73, elevation: 0.18 },
-      { x: 73, z: 58, elevation: 0.18 },
-      { x: 88, z: 43, elevation: 0.18 }
+      { x: 57, z: 65, elevation: 0.16 },
+      { x: 69, z: 53, elevation: 0.16 },
+      { x: 81, z: 41, elevation: 0.16 }
     ]
   },
   {
@@ -248,13 +248,13 @@ export const city01VehicleDefinitions: readonly ProductVehicleDefinition[] = [
     label: '市政工具车',
     baseAssetId: 'vehicle_utility_van',
     mirroredAssetId: 'vehicle_utility_van_mirrored',
-    width: 82,
+    width: 54,
     speed: 0.021,
     phase: 0.58,
     path: [
-      { x: 31, z: 65, elevation: 0.18 },
-      { x: 47, z: 49, elevation: 0.18 },
-      { x: 65, z: 31, elevation: 0.18 }
+      { x: 34, z: 61, elevation: 0.16 },
+      { x: 48, z: 47, elevation: 0.16 },
+      { x: 62, z: 33, elevation: 0.16 }
     ]
   },
   {
@@ -262,13 +262,13 @@ export const city01VehicleDefinitions: readonly ProductVehicleDefinition[] = [
     label: '电网抢修车',
     baseAssetId: 'vehicle_repair_truck',
     mirroredAssetId: 'vehicle_repair_truck_mirrored',
-    width: 92,
+    width: 62,
     speed: 0.019,
     phase: 0.74,
     path: [
-      { x: 50, z: 76, elevation: 0.2 },
-      { x: 63, z: 63, elevation: 0.2 },
-      { x: 77, z: 49, elevation: 0.2 }
+      { x: 50, z: 66, elevation: 0.18 },
+      { x: 62, z: 54, elevation: 0.18 },
+      { x: 75, z: 41, elevation: 0.18 }
     ]
   },
   {
@@ -276,13 +276,13 @@ export const city01VehicleDefinitions: readonly ProductVehicleDefinition[] = [
     label: '工程作业车',
     baseAssetId: 'vehicle_work_truck',
     mirroredAssetId: 'vehicle_work_truck_mirrored',
-    width: 90,
+    width: 60,
     speed: 0.017,
     phase: 0.9,
     path: [
-      { x: 38, z: 58, elevation: 0.18 },
-      { x: 55, z: 41, elevation: 0.18 },
-      { x: 70, z: 26, elevation: 0.18 }
+      { x: 39, z: 57, elevation: 0.16 },
+      { x: 53, z: 43, elevation: 0.16 },
+      { x: 67, z: 29, elevation: 0.16 }
     ]
   }
 ];
