@@ -75,6 +75,10 @@
   image-rendering: auto;
 }
 
+.hologram-stage:has([data-world-renderer="city01-product"]) .hologram-table-shell {
+  display: none;
+}
+
 @media (max-width: 760px) {
   .grid-crew-roster > div {
     grid-template-columns: repeat(5, 46px);
