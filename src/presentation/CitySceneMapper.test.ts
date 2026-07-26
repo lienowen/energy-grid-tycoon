@@ -47,7 +47,7 @@ describe('CitySceneMapper', () => {
     expect(scene.districtPrefabs).toHaveLength(5);
     expect(scene.districtPrefabs?.every((district) => Boolean(district.prefabAssetId))).toBe(true);
     expect(scene.networkNodes?.length).toBeGreaterThanOrEqual(10);
-    expect(scene.networkEdges?.length).toBeGreaterThanOrEqual(10);
+    expect(scene.networkEdges?.some((edge) => edge.id === 'west-to-industrial-tie')).toBe(true);
     expect(scene.networkNodes?.some((node) => node.status === 'planned')).toBe(true);
     expect(scene.ambientBlocks).toHaveLength(0);
   });
@@ -94,7 +94,8 @@ describe('CitySceneMapper', () => {
         ],
         edges: [
           { edgeId: 'main-to-west', flow: 40, capacity: 80, loadRatio: 0.5, status: 'normal' },
-          { edgeId: 'east-to-industrial', flow: 5, capacity: 5, loadRatio: 1, status: 'overload' }
+          { edgeId: 'east-to-industrial', flow: 0, capacity: 0, loadRatio: 0, status: 'offline' },
+          { edgeId: 'west-to-industrial-tie', flow: 5, capacity: 8, loadRatio: 0.625, status: 'normal' }
         ]
       }
     };
@@ -109,8 +110,13 @@ describe('CitySceneMapper', () => {
       loadRatio: 0.2
     });
     expect(scene.networkEdges?.find((edge) => edge.id === 'east-to-industrial')).toMatchObject({
-      status: 'overload',
-      loadRatio: 1
+      status: 'offline',
+      loadRatio: 0
+    });
+    expect(scene.networkEdges?.find((edge) => edge.id === 'west-to-industrial-tie')).toMatchObject({
+      status: 'normal',
+      loadRatio: 0.625,
+      capacity: 8
     });
   });
 
