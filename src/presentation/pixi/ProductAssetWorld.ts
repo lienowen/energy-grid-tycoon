@@ -58,13 +58,21 @@ export class ProductAssetWorld implements WorldRenderSurface {
       ...next,
       camera: {
         ...next.camera,
-        startZoom: diagnostics ? 0.8 : 0.82,
+        startZoom: diagnostics ? 0.84 : 0.87,
         minZoom: Math.min(next.camera.minZoom, 0.62),
         startOffsetX: 8,
-        startOffsetY: 12,
+        startOffsetY: 18,
         panLimitX: Math.max(next.camera.panLimitX ?? 170, 230),
         panLimitY: Math.max(next.camera.panLimitY ?? 120, 180)
       },
+      districtPrefabs: next.districtPrefabs?.map((district) => ({
+        ...district,
+        scale: district.scale * 1.18
+      })),
+      facilities: next.facilities.map((facility) => ({
+        ...facility,
+        scale: facility.scale * 1.12
+      })),
       networkEdges: diagnostics
         ? next.networkEdges?.filter((edge) =>
           edge.status === 'offline'
