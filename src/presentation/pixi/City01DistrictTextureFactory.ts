@@ -1,12 +1,73 @@
 import { CanvasSource, Texture } from 'pixi.js';
 
-const residentialAssetIds = new Set([
-  'commercial_district_residential_night',
-  'commercial_district_residential_blackout'
+type DistrictIntegrationKind = 'residential' | 'commercial';
+type RectSpec = readonly [x: number, y: number, width: number, height: number, radius: number];
+type PointSpec = readonly [x: number, y: number];
+type EllipseSpec = readonly [x: number, y: number, width: number, height: number];
+type CutRectSpec = readonly [x: number, y: number, width: number, height: number];
+
+interface DistrictMaskConfig {
+  structureRects: readonly RectSpec[];
+  corePolygon: readonly PointSpec[];
+  vegetationExpandPx: number;
+  vegetationBlurPx: number;
+  featherPx: number;
+  cutEllipses?: readonly EllipseSpec[];
+  cutRects?: readonly CutRectSpec[];
+}
+
+const districtKinds = new Map<string, DistrictIntegrationKind>([
+  ['commercial_district_residential_night', 'residential'],
+  ['commercial_district_residential_blackout', 'residential'],
+  ['commercial_district_commercial_night', 'commercial'],
+  ['commercial_district_commercial_blackout', 'commercial']
 ]);
 
+const maskConfigs: Record<DistrictIntegrationKind, DistrictMaskConfig> = {
+  residential: {
+    structureRects: [
+      [225, 120, 210, 205, 24],
+      [500, 120, 235, 205, 24]
+    ],
+    corePolygon: [
+      [512, 190],
+      [800, 345],
+      [512, 480],
+      [224, 345]
+    ],
+    vegetationExpandPx: 4,
+    vegetationBlurPx: 2,
+    featherPx: 3
+  },
+  commercial: {
+    structureRects: [
+      [230, 220, 230, 280, 24],
+      [500, 235, 350, 270, 24],
+      [425, 405, 230, 165, 22]
+    ],
+    corePolygon: [
+      [512, 300],
+      [790, 455],
+      [512, 535],
+      [230, 455]
+    ],
+    vegetationExpandPx: 2,
+    vegetationBlurPx: 1,
+    featherPx: 3,
+    cutEllipses: [
+      [570, 565, 120, 100]
+    ],
+    cutRects: [
+      [0, 625, 1024, 143],
+      [875, 520, 149, 248]
+    ]
+  }
+};
+
+const generatedTextures = new Map<string, Promise<Texture | undefined>>();
+
 export const shouldGenerateCity01DistrictTexture = (assetId: string): boolean =>
-  residentialAssetIds.has(assetId);
+  districtKinds.has(assetId);
 
 export const isCity01VegetationPixel = (
   red: number,
@@ -38,12 +99,9 @@ const drawScaledRoundedRect = (
   context: CanvasRenderingContext2D,
   scaleX: number,
   scaleY: number,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-  radius: number
+  spec: RectSpec
 ): void => {
+  const [x, y, width, height, radius] = spec;
   context.beginPath();
   context.roundRect(
     x * scaleX,
@@ -55,7 +113,27 @@ const drawScaledRoundedRect = (
   context.fill();
 };
 
-const makeVegetationMask = (sourceCanvas: HTMLCanvasElement): HTMLCanvasElement => {
+const drawScaledPolygon = (
+  context: CanvasRenderingContext2D,
+  scaleX: number,
+  scaleY: number,
+  points: readonly PointSpec[]
+): void => {
+  const first = points[0];
+  if (!first) return;
+  context.beginPath();
+  context.moveTo(first[0] * scaleX, first[1] * scaleY);
+  for (const point of points.slice(1)) {
+    context.lineTo(point[0] * scaleX, point[1] * scaleY);
+  }
+  context.closePath();
+  context.fill();
+};
+
+const makeVegetationMask = (
+  sourceCanvas: HTMLCanvasElement,
+  config: DistrictMaskConfig
+): HTMLCanvasElement => {
   const { width, height } = sourceCanvas;
   const sourceContext = sourceCanvas.getContext('2d', { willReadFrequently: true });
   const rawMask = makeCanvas(width, height);
@@ -81,50 +159,81 @@ const makeVegetationMask = (sourceCanvas: HTMLCanvasElement): HTMLCanvasElement 
   const expanded = makeCanvas(width, height);
   const expandedContext = expanded.getContext('2d');
   if (!expandedContext) return rawMask;
-  const radius = Math.max(2, Math.round(width / 256));
+  const scale = width / 1024;
+  const radius = Math.max(1, Math.round(config.vegetationExpandPx * scale));
   for (let y = -radius; y <= radius; y += radius) {
     for (let x = -radius; x <= radius; x += radius) {
       expandedContext.drawImage(rawMask, x, y);
     }
   }
-  expandedContext.filter = `blur(${Math.max(1, width / 512)}px)`;
+  expandedContext.filter = `blur(${Math.max(1, config.vegetationBlurPx * scale)}px)`;
   expandedContext.drawImage(expanded, 0, 0);
   expandedContext.filter = 'none';
   return expanded;
 };
 
+const cutMaskArtifacts = (
+  context: CanvasRenderingContext2D,
+  scaleX: number,
+  scaleY: number,
+  config: DistrictMaskConfig
+): void => {
+  if (!config.cutEllipses?.length && !config.cutRects?.length) return;
+  context.save();
+  context.globalCompositeOperation = 'destination-out';
+  context.fillStyle = '#fff';
+  for (const [x, y, width, height] of config.cutEllipses ?? []) {
+    context.beginPath();
+    context.ellipse(
+      (x + width * 0.5) * scaleX,
+      (y + height * 0.5) * scaleY,
+      width * scaleX * 0.5,
+      height * scaleY * 0.5,
+      0,
+      0,
+      Math.PI * 2
+    );
+    context.fill();
+  }
+  for (const [x, y, width, height] of config.cutRects ?? []) {
+    context.fillRect(x * scaleX, y * scaleY, width * scaleX, height * scaleY);
+  }
+  context.restore();
+};
+
 const makeIntegrationMask = (
-  sourceCanvas: HTMLCanvasElement
+  sourceCanvas: HTMLCanvasElement,
+  kind: DistrictIntegrationKind
 ): HTMLCanvasElement => {
   const { width, height } = sourceCanvas;
   const scaleX = width / 1024;
   const scaleY = height / 768;
+  const config = maskConfigs[kind];
   const structures = makeCanvas(width, height);
   const structureContext = structures.getContext('2d');
   if (!structureContext) return structures;
 
   structureContext.fillStyle = '#fff';
-  drawScaledRoundedRect(structureContext, scaleX, scaleY, 225, 120, 210, 205, 24);
-  drawScaledRoundedRect(structureContext, scaleX, scaleY, 500, 120, 235, 205, 24);
-  structureContext.beginPath();
-  structureContext.moveTo(512 * scaleX, 190 * scaleY);
-  structureContext.lineTo(800 * scaleX, 345 * scaleY);
-  structureContext.lineTo(512 * scaleX, 480 * scaleY);
-  structureContext.lineTo(224 * scaleX, 345 * scaleY);
-  structureContext.closePath();
-  structureContext.fill();
-  structureContext.drawImage(makeVegetationMask(sourceCanvas), 0, 0);
+  for (const rect of config.structureRects) {
+    drawScaledRoundedRect(structureContext, scaleX, scaleY, rect);
+  }
+  drawScaledPolygon(structureContext, scaleX, scaleY, config.corePolygon);
+  structureContext.drawImage(makeVegetationMask(sourceCanvas, config), 0, 0);
+  cutMaskArtifacts(structureContext, scaleX, scaleY, config);
 
   const feathered = makeCanvas(width, height);
   const featheredContext = feathered.getContext('2d');
   if (!featheredContext) return structures;
-  featheredContext.filter = `blur(${Math.max(2, width / 341)}px)`;
+  featheredContext.filter = `blur(${Math.max(1, config.featherPx * (width / 1024))}px)`;
   featheredContext.drawImage(structures, 0, 0);
   featheredContext.filter = 'none';
   return feathered;
 };
 
-export const createCity01DistrictTexture = async (source: string): Promise<Texture | undefined> => {
+const buildTexture = async (
+  source: string,
+  kind: DistrictIntegrationKind
+): Promise<Texture | undefined> => {
   if (typeof document === 'undefined' || typeof Image === 'undefined') return undefined;
 
   const image = await loadImage(source);
@@ -142,10 +251,24 @@ export const createCity01DistrictTexture = async (source: string): Promise<Textu
   if (!outputContext) return undefined;
   outputContext.drawImage(sourceCanvas, 0, 0);
   outputContext.globalCompositeOperation = 'destination-in';
-  outputContext.drawImage(makeIntegrationMask(sourceCanvas), 0, 0);
+  outputContext.drawImage(makeIntegrationMask(sourceCanvas, kind), 0, 0);
   outputContext.globalCompositeOperation = 'source-over';
 
   const canvasSource = new CanvasSource({ resource: output });
   canvasSource.scaleMode = 'linear';
   return new Texture({ source: canvasSource });
+};
+
+export const createCity01DistrictTexture = (
+  assetId: string,
+  source: string
+): Promise<Texture | undefined> => {
+  const kind = districtKinds.get(assetId);
+  if (!kind) return Promise.resolve(undefined);
+  const key = `${kind}:${source}`;
+  const existing = generatedTextures.get(key);
+  if (existing) return existing;
+  const request = buildTexture(source, kind);
+  generatedTextures.set(key, request);
+  return request;
 };
