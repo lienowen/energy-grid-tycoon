@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Generate City-01 runtime district PNGs without altering source artwork.
+"""Build the City-01 residential runtime PNG from the immutable product source.
 
-The source product PNG remains immutable. This script adds only the runtime
-integration layers required by the art specification: lower-footprint terrain
-bleed, contact shadow and an authored access-road mouth.
+The product image is a complete square road block. For the authored city map we
+retain its buildings, vegetation and internal streets, while feathering away the
+outer perimeter road in the lower half so it reads as an open neighbourhood.
 """
 
 from __future__ import annotations
@@ -11,169 +11,69 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from typing import Iterable
 
 from PIL import Image, ImageChops, ImageDraw, ImageFilter
 
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SOURCE = ROOT / "public/assets/city01/product/districts/district-residential-base.png"
-DEFAULT_OUTPUT = ROOT / "public/assets/city01/product/districts/runtime/district-residential-grounded.png"
+DEFAULT_OUTPUT = ROOT / "public/assets/city01/product/districts/runtime/district-residential-integrated.png"
 
 
-def clamp_byte(value: float) -> int:
-    return max(0, min(255, round(value)))
-
-
-def vertical_ground_mask(alpha: Image.Image) -> Image.Image:
-    """Keep grounding effects near the district footprint, not tower roofs."""
-    width, height = alpha.size
-    gradient = Image.new("L", (width, height), 0)
-    pixels = gradient.load()
-    start = height * 0.48
-    full = height * 0.84
-    for y in range(height):
-        factor = 0 if y <= start else 1 if y >= full else (y - start) / (full - start)
-        value = clamp_byte(255 * factor)
-        for x in range(width):
-            pixels[x, y] = value
-    return ImageChops.multiply(alpha, gradient)
-
-
-def vertical_fade(size: tuple[int, int], hold_until: int, fade_until: int) -> Image.Image:
+def make_integration_mask(size: tuple[int, int]) -> Image.Image:
     width, height = size
+    if size != (1024, 768):
+        raise ValueError(f"Residential source must be 1024x768, got {width}x{height}")
+
     mask = Image.new("L", size, 0)
-    pixels = mask.load()
-    for y in range(height):
-        if y <= hold_until:
-            value = 255
-        elif y >= fade_until:
-            value = 0
-        else:
-            value = clamp_byte(255 * (fade_until - y) / max(1, fade_until - hold_until))
-        for x in range(width):
-            pixels[x, y] = value
-    return mask
+    draw = ImageDraw.Draw(mask)
+
+    # Preserve towers, trees and the upper internal streets without modification.
+    draw.rectangle((0, 0, width, 335), fill=255)
+
+    # Preserve the populated core below that line, but remove the outer road ring
+    # and its thin raised curb. A small blur prevents a cut-out cardboard edge.
+    draw.polygon(
+        [(512, 185), (830, 354), (512, 488), (194, 354)],
+        fill=255,
+    )
+    return mask.filter(ImageFilter.GaussianBlur(4))
 
 
-def shifted(mask: Image.Image, dx: int, dy: int) -> Image.Image:
-    output = Image.new("L", mask.size, 0)
-    output.paste(mask, (dx, dy))
-    return output
-
-
-def colorize(mask: Image.Image, color: tuple[int, int, int], opacity: float) -> Image.Image:
-    layer = Image.new("RGBA", mask.size, (*color, 0))
-    layer.putalpha(mask.point(lambda value: clamp_byte(value * opacity)))
-    return layer
-
-
-def cubic_points(
-    start: tuple[float, float],
-    control_a: tuple[float, float],
-    control_b: tuple[float, float],
-    end: tuple[float, float],
-    samples: int = 36,
-) -> list[tuple[float, float]]:
-    points: list[tuple[float, float]] = []
-    for index in range(samples + 1):
-        t = index / samples
-        inverse = 1 - t
-        x = (
-            inverse**3 * start[0]
-            + 3 * inverse**2 * t * control_a[0]
-            + 3 * inverse * t**2 * control_b[0]
-            + t**3 * end[0]
-        )
-        y = (
-            inverse**3 * start[1]
-            + 3 * inverse**2 * t * control_a[1]
-            + 3 * inverse * t**2 * control_b[1]
-            + t**3 * end[1]
-        )
-        points.append((x, y))
-    return points
-
-
-def dashed_polyline(
-    draw: ImageDraw.ImageDraw,
-    points: Iterable[tuple[float, float]],
-    fill: tuple[int, int, int, int],
-    width: int,
-    dash: float,
-    gap: float,
-) -> None:
-    sequence = list(points)
-    for start, end in zip(sequence, sequence[1:]):
-        dx = end[0] - start[0]
-        dy = end[1] - start[1]
-        length = (dx * dx + dy * dy) ** 0.5
-        if length <= 0:
-            continue
-        cursor = 0.0
-        while cursor < length:
-            segment_end = min(length, cursor + dash)
-            x1 = start[0] + dx * cursor / length
-            y1 = start[1] + dy * cursor / length
-            x2 = start[0] + dx * segment_end / length
-            y2 = start[1] + dy * segment_end / length
-            draw.line((x1, y1, x2, y2), fill=fill, width=width)
-            cursor += dash + gap
+def border_opaque_ratio(alpha: Image.Image, border_width: int = 4) -> float:
+    width, height = alpha.size
+    border = Image.new("L", alpha.size, 0)
+    draw = ImageDraw.Draw(border)
+    draw.rectangle((0, 0, width - 1, height - 1), outline=255, width=border_width)
+    opaque = ImageChops.multiply(alpha.point(lambda value: 255 if value > 16 else 0), border)
+    opaque_pixels = sum(1 for value in opaque.getdata() if value > 0)
+    border_pixels = sum(1 for value in border.getdata() if value > 0)
+    return opaque_pixels / max(1, border_pixels)
 
 
 def generate_residential(source_path: Path, output_path: Path) -> dict[str, object]:
     source = Image.open(source_path).convert("RGBA")
-    width, height = source.size
-    if (width, height) != (1024, 768):
-        raise ValueError(f"Residential source must be 1024x768, got {width}x{height}")
+    source_alpha = source.getchannel("A")
+    integration_mask = make_integration_mask(source.size)
+    output_alpha = ImageChops.multiply(source_alpha, integration_mask)
 
-    alpha = source.getchannel("A")
-    lower_alpha = vertical_ground_mask(alpha)
-    canvas = Image.new("RGBA", source.size, (0, 0, 0, 0))
-
-    # The source covers the upper section, so only a short access mouth remains
-    # visible below the baked front road at normal game scale.
-    road = Image.new("RGBA", source.size, (0, 0, 0, 0))
-    road_draw = ImageDraw.Draw(road, "RGBA")
-    route = cubic_points((512, 500), (514, 542), (506, 590), (496, 644))
-    road_draw.line(route, fill=(5, 14, 17, 140), width=30, joint="curve")
-    road_draw.line(route, fill=(49, 64, 67, 208), width=20, joint="curve")
-    dashed_polyline(road_draw, route[9:], (215, 190, 105, 48), 2, 9, 8)
-    road = road.filter(ImageFilter.GaussianBlur(1.0))
-    road_alpha = ImageChops.multiply(road.getchannel("A"), vertical_fade(source.size, 590, 670))
-    road.putalpha(road_alpha)
-    canvas = Image.alpha_composite(canvas, road)
-
-    # Only a narrow, lower-silhouette bleed is retained. No generic ellipse is
-    # drawn, because it looked like a second floating island in the real scene.
-    expanded = lower_alpha.filter(ImageFilter.MaxFilter(27)).filter(ImageFilter.GaussianBlur(10))
-    halo = colorize(shifted(expanded, 0, 5), (25, 58, 48), 0.13)
-    canvas = Image.alpha_composite(canvas, halo)
-
-    contact = lower_alpha.filter(ImageFilter.MaxFilter(9)).filter(ImageFilter.GaussianBlur(6))
-    shadow = colorize(shifted(contact, 0, 4), (2, 8, 10), 0.16)
-    canvas = Image.alpha_composite(canvas, shadow)
-
-    canvas = Image.alpha_composite(canvas, source)
+    output = source.copy()
+    output.putalpha(output_alpha)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    canvas.save(output_path, format="PNG", optimize=True)
-
-    result_alpha = canvas.getchannel("A")
-    border_width = 4
-    border = Image.new("L", source.size, 0)
-    border_draw = ImageDraw.Draw(border)
-    border_draw.rectangle((0, 0, width - 1, height - 1), outline=255, width=border_width)
-    opaque_border = ImageChops.multiply(result_alpha.point(lambda value: 255 if value > 16 else 0), border)
-    border_opaque_pixels = sum(1 for value in opaque_border.getdata() if value > 0)
-    border_pixels = sum(1 for value in border.getdata() if value > 0)
+    output.save(output_path, format="PNG", optimize=True)
 
     return {
         "source": str(source_path.relative_to(ROOT)),
         "output": str(output_path.relative_to(ROOT)) if output_path.is_relative_to(ROOT) else str(output_path),
-        "size": [width, height],
-        "source_alpha_bbox": alpha.getbbox(),
-        "output_alpha_bbox": result_alpha.getbbox(),
-        "border_opaque_ratio": border_opaque_pixels / max(1, border_pixels),
+        "size": list(source.size),
+        "source_alpha_bbox": source_alpha.getbbox(),
+        "output_alpha_bbox": output_alpha.getbbox(),
+        "border_opaque_ratio": border_opaque_ratio(output_alpha),
+        "integration": {
+            "preserve_above_y": 335,
+            "lower_core_polygon": [[512, 185], [830, 354], [512, 488], [194, 354]],
+            "edge_feather_px": 4,
+        },
     }
 
 
@@ -189,6 +89,7 @@ def main() -> None:
     diagnostics = generate_residential(source, output)
     payload = json.dumps(diagnostics, ensure_ascii=False, indent=2)
     print(payload)
+
     if args.diagnostics:
         diagnostics_path = args.diagnostics if args.diagnostics.is_absolute() else ROOT / args.diagnostics
         diagnostics_path.parent.mkdir(parents=True, exist_ok=True)
