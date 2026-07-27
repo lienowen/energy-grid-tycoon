@@ -16,11 +16,17 @@ export interface City01MapPlacement {
 const TILE_WIDTH = 328;
 const EDGE_TILE_WIDTH = 336;
 
+const toScenePoint = (x: number, y: number, elevation: number): ScenePoint => ({
+  x: (x - 50) * 1.02,
+  z: (y - 50) * 0.78,
+  elevation
+});
+
 const tile = (
   id: string,
   assetId: string,
   x: number,
-  z: number,
+  y: number,
   width: number,
   layer: City01MapLayer,
   alpha = 1,
@@ -28,7 +34,7 @@ const tile = (
 ): City01MapPlacement => ({
   id,
   assetId,
-  point: { x, z, elevation: -0.22 },
+  point: toScenePoint(x, y, -0.22),
   width,
   anchorY: 0.9115,
   layer,
@@ -40,12 +46,12 @@ const vehicle = (
   id: string,
   assetId: string,
   x: number,
-  z: number,
+  y: number,
   width: number
 ): City01MapPlacement => ({
   id,
   assetId,
-  point: { x, z, elevation: 0.18 },
+  point: toScenePoint(x, y, 0.18),
   width,
   anchorY: 0.9,
   layer: 'vehicles',
@@ -53,9 +59,11 @@ const vehicle = (
 });
 
 /**
- * The product tiles have an 800px authored footprint inside a 1024px canvas.
- * At a 20-unit isometric grid step, a 328px display width makes neighbouring
- * diamond footprints meet edge-to-edge instead of floating as separate cards.
+ * Product tiles are authored in the same 0–100 map coordinate space as the
+ * level layout. They must be converted to scene coordinates before projection;
+ * otherwise every environment tile is displaced from districts and facilities.
+ * The 800px authored footprint inside a 1024px canvas maps to a 328px display
+ * width at the 20-unit City-01 grid step.
  */
 export const city01MapPlacements: readonly City01MapPlacement[] = [
   tile('north-forest', 'terrain_forest_base', 55, 4, EDGE_TILE_WIDTH, 'terrain', 1, 0.42),
