@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1024" height="768" viewBox="0 0 1024 768">
+  <defs>
+    <linearGradient id="access-surface" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#435154"/>
+      <stop offset="1" stop-color="#263538"/>
+    </linearGradient>
+    <radialGradient id="terrain-contact" cx="50%" cy="48%" rx="50%" ry="50%">
+      <stop offset="0" stop-color="#29493d" stop-opacity=".46"/>
+      <stop offset=".62" stop-color="#203b32" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#183128" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="subject-grounding" x="-18%" y="-25%" width="136%" height="160%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="13" result="blur"/>
+      <feOffset in="blur" dy="8" result="offsetBlur"/>
+      <feFlood flood-color="#18352c" flood-opacity=".34" result="terrainColor"/>
+      <feComposite in="terrainColor" in2="offsetBlur" operator="in" result="terrainHalo"/>
+      <feGaussianBlur in="SourceAlpha" stdDeviation="4.5" result="contactBlur"/>
+      <feOffset in="contactBlur" dy="5" result="contactOffset"/>
+      <feFlood flood-color="#02090b" flood-opacity=".32" result="shadowColor"/>
+      <feComposite in="shadowColor" in2="contactOffset" operator="in" result="contactShadow"/>
+      <feMerge>
+        <feMergeNode in="terrainHalo"/>
+        <feMergeNode in="contactShadow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="soft-road" x="-25%" y="-40%" width="150%" height="190%">
+      <feGaussianBlur stdDeviation="2.2"/>
+    </filter>
+  </defs>
+
+  <!-- Residential-only terrain bridge. It extends just beyond the baked block
+       and stays low contrast so it reads as map terrain instead of another tile. -->
+  <ellipse cx="512" cy="654" rx="296" ry="74" fill="url(#terrain-contact)"/>
+
+  <!-- Bottom-centre access road, aligned with the authored boulevard beneath the
+       residential district in City-01. The end fades before the sprite boundary. -->
+  <g fill="none" stroke-linecap="round" filter="url(#soft-road)">
+    <path d="M512 646 C512 676 506 705 496 742" stroke="#0b1518" stroke-width="30" opacity=".72"/>
+    <path d="M512 646 C512 676 506 705 496 742" stroke="url(#access-surface)" stroke-width="21" opacity=".92"/>
+    <path d="M512 662 C509 690 504 715 496 742" stroke="#d6bd69" stroke-width="1.8" stroke-dasharray="10 9" opacity=".24"/>
+  </g>
+
+  <image href="/assets/city01/product/districts/district-residential-base.png"
+         xlink:href="/assets/city01/product/districts/district-residential-base.png"
+         x="0" y="0" width="1024" height="768"
+         preserveAspectRatio="xMidYMid meet"
+         filter="url(#subject-grounding)"/>
+</svg>
