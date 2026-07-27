@@ -1,1 +1,50 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="768" viewBox="0 0 1024 768"><defs><filter id="b"><feGaussianBlur stdDeviation="18"/></filter></defs><ellipse cx="512" cy="648" rx="250" ry="54" fill="#02080b" opacity=".42" filter="url(#b)"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="768" viewBox="0 0 1024 768">
+  <defs>
+    <radialGradient id="terrain-blend" cx="50%" cy="74%" rx="42%" ry="20%">
+      <stop offset="0" stop-color="#243a34" stop-opacity=".42"/>
+      <stop offset=".52" stop-color="#172b27" stop-opacity=".24"/>
+      <stop offset="1" stop-color="#0d211e" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="contact-shadow" cx="50%" cy="50%" rx="50%" ry="50%">
+      <stop offset="0" stop-color="#010608" stop-opacity=".58"/>
+      <stop offset=".62" stop-color="#02080b" stop-opacity=".34"/>
+      <stop offset="1" stop-color="#02080b" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="road-fade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#28383b" stop-opacity="0"/>
+      <stop offset=".28" stop-color="#28383b" stop-opacity=".42"/>
+      <stop offset=".72" stop-color="#28383b" stop-opacity=".42"/>
+      <stop offset="1" stop-color="#28383b" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="terrain-blur" x="-20%" y="-50%" width="140%" height="200%">
+      <feGaussianBlur stdDeviation="22"/>
+    </filter>
+    <filter id="shadow-blur" x="-25%" y="-80%" width="150%" height="260%">
+      <feGaussianBlur stdDeviation="16"/>
+    </filter>
+    <filter id="road-blur" x="-30%" y="-80%" width="160%" height="260%">
+      <feGaussianBlur stdDeviation="7"/>
+    </filter>
+    <mask id="edge-feather">
+      <ellipse cx="512" cy="628" rx="330" ry="106" fill="white" filter="url(#terrain-blur)"/>
+    </mask>
+  </defs>
+
+  <!-- Soft terrain colour bridge: hides rectangular source-canvas edges without
+       replacing the district artwork itself. -->
+  <ellipse cx="512" cy="626" rx="330" ry="102" fill="url(#terrain-blend)" mask="url(#edge-feather)"/>
+
+  <!-- Short neutral access-road seams. They fade before reaching the asset edge,
+       so authored roads can overlap them without a visible hard junction. -->
+  <g fill="none" stroke="url(#road-fade)" stroke-linecap="round" filter="url(#road-blur)" opacity=".72">
+    <path d="M512 644 L512 714" stroke-width="28"/>
+    <path d="M392 634 L322 672" stroke-width="22"/>
+    <path d="M632 634 L702 672" stroke-width="22"/>
+  </g>
+
+  <!-- Tight contact shadow directly below the district footprint. -->
+  <ellipse cx="512" cy="648" rx="258" ry="56" fill="url(#contact-shadow)" filter="url(#shadow-blur)"/>
+
+  <!-- Small near-ground occlusion keeps the visual mass attached at normal zoom. -->
+  <ellipse cx="512" cy="642" rx="214" ry="31" fill="#02070a" opacity=".23"/>
+</svg>
