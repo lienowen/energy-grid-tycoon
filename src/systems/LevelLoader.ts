@@ -6,6 +6,7 @@ import { createInitialState, GameState } from '../core/GameState';
 import type { BuildingSnapshot } from '../core/SaveSchema';
 import type { RuleComponentConfig } from '../rules/RuleTypes';
 import { CityMapSystem } from './CityMapSystem';
+import { GridNetworkRegistry } from './GridNetworkRegistry';
 import type { ScenarioConditionGroup } from './ScenarioConditionSystem';
 import type { SimulationModifiers } from './SimulationModifiers';
 
@@ -153,7 +154,9 @@ export class LevelLoader {
       satisfaction: level.initial.satisfaction,
       researchPoints: level.initial.researchPoints,
       unlockedTechnologyIds: level.initial.technologies,
-      randomSeed: level.rules.seed
+      randomSeed: level.rules.seed,
+      gridEdgeEnabled: GridNetworkRegistry.getInitialEdgeStates(level.id),
+      gridEdgeFaulted: GridNetworkRegistry.getInitialFaultStates(level.id)
     });
 
     state.storageEnergy = buildings.getTotalStoredEnergy();
@@ -186,7 +189,9 @@ export class LevelLoader {
       satisfaction: level.initial.satisfaction,
       researchPoints: level.initial.researchPoints,
       unlockedTechnologyIds: level.initial.technologies,
-      randomSeed: level.rules.seed
+      randomSeed: level.rules.seed,
+      gridEdgeEnabled: GridNetworkRegistry.getInitialEdgeStates(level.id),
+      gridEdgeFaulted: GridNetworkRegistry.getInitialFaultStates(level.id)
     });
     const state: GameState = {
       ...defaults,
@@ -195,6 +200,14 @@ export class LevelLoader {
       cityName: level.name,
       randomState: savedState.randomState ?? defaults.randomState,
       unlockedTechnologyIds: [...new Set(savedState.unlockedTechnologyIds ?? defaults.unlockedTechnologyIds)],
+      gridEdgeEnabled: {
+        ...(defaults.gridEdgeEnabled ?? {}),
+        ...(savedState.gridEdgeEnabled ?? {})
+      },
+      gridEdgeFaulted: {
+        ...(defaults.gridEdgeFaulted ?? {}),
+        ...(savedState.gridEdgeFaulted ?? {})
+      },
       storageEnergy: buildings.getTotalStoredEnergy(),
       storageCapacity: buildings.getTotalStorageCapacity()
     };

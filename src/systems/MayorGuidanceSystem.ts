@@ -8,6 +8,7 @@ export type MayorGuidePanel = 'market' | 'research' | 'policy' | 'fleet' | 'anal
 export type MayorGuideAction =
   | { type: 'build'; buildingId: string }
   | { type: 'openPanel'; panel: MayorGuidePanel }
+  | { type: 'gridOperation'; edgeId: string; operation: 'toggle' | 'repair' }
   | { type: 'wait' };
 
 export interface MayorGuidance {
@@ -82,7 +83,7 @@ export class MayorGuidanceSystem {
         tone: dawnBeat.tone,
         headline: dawnBeat.title,
         message: dawnBeat.message,
-        consequence: `${dawnBeat.consequence} 完成后：${dawnBeat.nextPromise}`, 
+        consequence: `${dawnBeat.consequence} 完成后：${dawnBeat.nextPromise}`,
         actionLabel: dawnBeat.actionLabel,
         action: dawnBeat.action
       };

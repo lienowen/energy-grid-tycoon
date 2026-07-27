@@ -47,9 +47,77 @@ describe('CitySceneMapper', () => {
     expect(scene.districtPrefabs).toHaveLength(5);
     expect(scene.districtPrefabs?.every((district) => Boolean(district.prefabAssetId))).toBe(true);
     expect(scene.networkNodes?.length).toBeGreaterThanOrEqual(10);
-    expect(scene.networkEdges?.length).toBeGreaterThanOrEqual(10);
+    expect(scene.networkEdges?.some((edge) => edge.id === 'west-to-industrial-tie')).toBe(true);
     expect(scene.networkNodes?.some((node) => node.status === 'planned')).toBe(true);
     expect(scene.ambientBlocks).toHaveLength(0);
+  });
+
+  it('uses real grid dispatch for district and line presentation', () => {
+    const view = makeView();
+    view.lastPower = {
+      grossSupply: 100,
+      netSupply: 96,
+      demand: 100,
+      supplyRatio: 0.6,
+      shortage: 40,
+      surplus: 36,
+      energyServed: 60,
+      stable: false,
+      gridDispatch: {
+        servedDemand: 60,
+        shortage: 40,
+        supplyRatio: 0.6,
+        availableSupply: 96,
+        curtailedSupply: 36,
+        districts: [
+          {
+            nodeId: 'public-load',
+            districtId: 'dawn-public',
+            priority: 0,
+            demand: 20,
+            served: 20,
+            supplyRatio: 1
+          },
+          {
+            nodeId: 'industrial-load',
+            districtId: 'dawn-industrial',
+            priority: 3,
+            demand: 25,
+            served: 5,
+            supplyRatio: 0.2
+          }
+        ],
+        nodes: [
+          { nodeId: 'main-substation', flow: 60, capacity: 80, loadRatio: 0.75, status: 'active' },
+          { nodeId: 'public-load', flow: 20, capacity: 20, loadRatio: 1, status: 'active' },
+          { nodeId: 'industrial-load', flow: 5, capacity: 25, loadRatio: 0.2, status: 'warning' }
+        ],
+        edges: [
+          { edgeId: 'main-to-west', flow: 40, capacity: 80, loadRatio: 0.5, status: 'normal' },
+          { edgeId: 'east-to-industrial', flow: 0, capacity: 0, loadRatio: 0, status: 'offline' },
+          { edgeId: 'west-to-industrial-tie', flow: 5, capacity: 8, loadRatio: 0.625, status: 'normal' }
+        ]
+      }
+    };
+
+    const scene = CitySceneMapper.map(view, undefined, 'grid');
+    expect(scene.districtPrefabs?.find((district) => district.id === 'dawn-public')?.powerRatio)
+      .toBe(1);
+    expect(scene.districtPrefabs?.find((district) => district.id === 'dawn-industrial')?.powerRatio)
+      .toBe(0.2);
+    expect(scene.networkNodes?.find((node) => node.id === 'industrial-load')).toMatchObject({
+      status: 'warning',
+      loadRatio: 0.2
+    });
+    expect(scene.networkEdges?.find((edge) => edge.id === 'east-to-industrial')).toMatchObject({
+      status: 'offline',
+      loadRatio: 0
+    });
+    expect(scene.networkEdges?.find((edge) => edge.id === 'west-to-industrial-tie')).toMatchObject({
+      status: 'normal',
+      loadRatio: 0.625,
+      capacity: 8
+    });
   });
 
   it('uses authored plot anchors for facilities and build targets', () => {

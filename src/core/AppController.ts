@@ -1,12 +1,14 @@
 import type { BuildingConfig } from '../buildings/BuildingBase';
 import { AssetManager } from '../resources/AssetManager';
 import { LevelAssetPlanner } from '../resources/LevelAssetPlanner';
+import { DawnCityExperienceSystem } from '../systems/DawnCityExperienceSystem';
 import type { EventConfig } from '../systems/EventSystem';
 import type { LevelConfig } from '../systems/LevelLoader';
 import { LevelProgressionSystem } from '../systems/LevelProgressionSystem';
 import type { PolicyConfig } from '../systems/PolicySystem';
 import type { TechnologyConfig } from '../systems/ResearchSystem';
 import { CityRecoveryFeedback } from '../ui/CityRecoveryFeedback';
+import { GridOperationsPanel } from '../ui/GridOperationsPanel';
 import { LevelSelect } from '../ui/LevelSelect';
 import { LoadingScreen } from '../ui/LoadingScreen';
 import { MayorDashboard } from '../ui/MayorDashboard';
@@ -14,12 +16,19 @@ import { ReleaseOnboarding } from '../ui/ReleaseOnboarding';
 import { GameManager, type GameActionResult, type GameViewModel } from './GameManager';
 import { SaveManager } from './SaveManager';
 
+interface GridGuideAction {
+  edgeId: string;
+  operation: 'toggle' | 'repair';
+}
+
 export class AppController {
   private game?: GameManager;
   private dashboard?: MayorDashboard;
+  private gridOperations?: GridOperationsPanel;
   private onboarding?: ReleaseOnboarding;
   private recoveryFeedback?: CityRecoveryFeedback;
   private currentLevelId?: string;
+  private currentGridGuideAction?: GridGuideAction;
   private lastAutoSaveDay = 0;
   private completionRecorded = false;
   private loadGeneration = 0;
@@ -36,6 +45,7 @@ export class AppController {
 
   start(): void {
     this.showCampaign();
+    this.root.addEventListener('click', this.handleGridGuideClick, true);
     window.addEventListener('pagehide', this.handlePageHide);
     document.addEventListener('visibilitychange', this.handleVisibilityChange);
     window.addEventListener('beforeunload', this.handleBeforeUnload);
@@ -48,15 +58,18 @@ export class AppController {
 
   private showCampaign(): void {
     this.loadGeneration += 1;
+    this.gridOperations?.destroy();
     this.recoveryFeedback?.destroy();
     this.onboarding?.destroy();
     this.dashboard?.destroy();
     this.game?.destroy();
+    this.gridOperations = undefined;
     this.recoveryFeedback = undefined;
     this.onboarding = undefined;
     this.game = undefined;
     this.dashboard = undefined;
     this.currentLevelId = undefined;
+    this.currentGridGuideAction = undefined;
 
     const profile = SaveManager.loadProfile();
     const save = SaveManager.loadGame();
@@ -80,14 +93,17 @@ export class AppController {
     if (!level) return;
 
     const generation = ++this.loadGeneration;
+    this.gridOperations?.destroy();
     this.recoveryFeedback?.destroy();
     this.onboarding?.destroy();
     this.dashboard?.destroy();
     this.game?.destroy();
+    this.gridOperations = undefined;
     this.recoveryFeedback = undefined;
     this.onboarding = undefined;
     this.game = undefined;
     this.dashboard = undefined;
+    this.currentGridGuideAction = undefined;
     this.currentLevelId = level.id;
     this.lastAutoSaveDay = 0;
     this.completionRecorded = false;
@@ -139,6 +155,10 @@ export class AppController {
       onRetry: () => this.retryCurrentLevel(),
       onNext: () => this.startNextLevel()
     });
+    this.gridOperations = new GridOperationsPanel(this.root, {
+      onToggleEdge: (edgeId) => this.game?.toggleGridEdge(edgeId) ?? this.notReady(),
+      onRepairEdge: (edgeId) => this.game?.repairGridEdge(edgeId) ?? this.notReady()
+    });
     this.onboarding = new ReleaseOnboarding(this.root);
     this.recoveryFeedback = new CityRecoveryFeedback(this.root);
 
@@ -163,13 +183,35 @@ export class AppController {
       this.saveCurrentGame();
       this.lastAutoSaveDay = view.state.day;
     }
+
     this.dashboard?.render(view);
+    this.bindGridGuideAction(view);
+    this.gridOperations?.render(view);
     this.onboarding?.render(view);
     this.recoveryFeedback?.render(view);
     if (this.pendingSystemNotice) {
       this.onboarding?.announce(this.pendingSystemNotice);
       this.pendingSystemNotice = '';
     }
+  }
+
+  private bindGridGuideAction(view: GameViewModel): void {
+    const beat = DawnCityExperienceSystem.evaluate({
+      state: view.state,
+      buildings: view.buildings,
+      availableBuildings: view.availableBuildings,
+      technologies: view.technologies,
+      goalProgress: view.goalProgress
+    });
+    this.currentGridGuideAction = beat?.action.type === 'gridOperation'
+      ? { edgeId: beat.action.edgeId, operation: beat.action.operation }
+      : undefined;
+
+    const button = this.root.querySelector<HTMLButtonElement>('.hologram-secretary > button');
+    if (!button || !this.currentGridGuideAction) return;
+    button.removeAttribute('data-speed');
+    button.dataset.gridGuideOperation = this.currentGridGuideAction.operation;
+    button.dataset.gridGuideEdge = this.currentGridGuideAction.edgeId;
   }
 
   private saveCurrentGame(): { ok: boolean; message: string } {
@@ -204,6 +246,21 @@ export class AppController {
     return { ok: false, reason: '城市还没有准备好' };
   }
 
+  private readonly handleGridGuideClick = (event: Event): void => {
+    const target = event.target;
+    if (!(target instanceof Element) || !this.currentGridGuideAction) return;
+    const button = target.closest<HTMLButtonElement>('.hologram-secretary > button');
+    if (!button) return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    const action = this.currentGridGuideAction;
+    const result = action.operation === 'repair'
+      ? this.game?.repairGridEdge(action.edgeId) ?? this.notReady()
+      : this.game?.toggleGridEdge(action.edgeId) ?? this.notReady();
+    if (!result.ok) this.onboarding?.announce(result.reason ?? '电网调度操作失败');
+  };
+
   private readonly handlePageHide = (): void => {
     this.emergencySave();
   };
@@ -214,6 +271,8 @@ export class AppController {
 
   private readonly handleBeforeUnload = (): void => {
     this.emergencySave();
+    this.root.removeEventListener('click', this.handleGridGuideClick, true);
+    this.gridOperations?.destroy();
     this.recoveryFeedback?.destroy();
     this.onboarding?.destroy();
     this.dashboard?.destroy();

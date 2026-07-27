@@ -9,6 +9,8 @@ import './ui/dawn-city-experience.css';
 import './ui/city-recovery-feedback.css';
 import './ui/immersive-world.css';
 import './ui/product-first-reset.css';
+import './ui/grid-operations.css';
+import './ui/product-assets.css';
 import buildingData from './data/buildings.json';
 import eventData from './data/events.json';
 import levelData from './data/levels.json';
@@ -64,6 +66,11 @@ const registerServiceWorker = async (): Promise<void> => {
   }
 };
 
+const setImageVariable = (variable: string, assetId: string): void => {
+  const source = AssetManager.get(assetId, '');
+  if (source) document.documentElement.style.setProperty(variable, `url("${source}")`);
+};
+
 const bootstrap = async (): Promise<void> => {
   LoadingScreen.render(root, '正在启动全息城市沙盘', '准备城市模型、可建设区域和居民生活状态。');
   AssetManager.load(globalAssetCatalog);
@@ -89,6 +96,11 @@ const bootstrap = async (): Promise<void> => {
 
   const gridPattern = AssetManager.get('ui_grid_pattern', '');
   if (gridPattern) document.documentElement.style.setProperty('--ui-grid-pattern', `url("${gridPattern}")`);
+  setImageVariable('--city01-secretary-avatar', 'icon_engineer_female');
+  setImageVariable('--city01-planner-avatar', 'icon_engineer_male');
+  setImageVariable('--city01-maintenance-avatar', 'icon_maintenance_worker');
+  setImageVariable('--city01-driver-avatar', 'icon_driver');
+  setImageVariable('--city01-repair-truck', 'vehicle_repair_truck');
 
   controller = new AppController(root, levels, buildings, events, technologies, policies);
   controller.start();

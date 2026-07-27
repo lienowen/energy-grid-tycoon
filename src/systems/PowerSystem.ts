@@ -1,7 +1,11 @@
+import type { GridDispatchResult } from './GridGraphSystem';
+
 export interface PowerInput {
   supply: number;
   demand: number;
   gridLossRate?: number;
+  deliveredSupply?: number;
+  gridDispatch?: GridDispatchResult;
 }
 
 export interface PowerResult {
@@ -13,6 +17,7 @@ export interface PowerResult {
   surplus: number;
   energyServed: number;
   stable: boolean;
+  gridDispatch?: GridDispatchResult;
 }
 
 export class PowerSystem {
@@ -21,18 +26,23 @@ export class PowerSystem {
     const grossSupply = Math.max(0, input.supply);
     const demand = Math.max(0, input.demand);
     const netSupply = grossSupply * (1 - lossRate);
-    const energyServed = Math.min(netSupply, demand);
-    const supplyRatio = demand === 0 ? 1 : Math.min(netSupply / demand, 1.5);
-
-    return {
+    const deliveredSupply = input.deliveredSupply === undefined
+      ? netSupply
+      : Math.min(netSupply, Math.max(0, input.deliveredSupply));
+    const energyServed = Math.min(deliveredSupply, demand);
+    const supplyRatio = demand === 0 ? 1 : Math.min(energyServed / demand, 1.5);
+    const result: PowerResult = {
       grossSupply,
       netSupply,
       demand,
       supplyRatio,
-      shortage: Math.max(demand - netSupply, 0),
-      surplus: Math.max(netSupply - demand, 0),
+      shortage: Math.max(demand - energyServed, 0),
+      surplus: Math.max(netSupply - energyServed, 0),
       energyServed,
       stable: supplyRatio >= 0.98
     };
+
+    if (input.gridDispatch) result.gridDispatch = input.gridDispatch;
+    return result;
   }
 }
