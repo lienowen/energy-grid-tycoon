@@ -17,15 +17,26 @@ describe('GlobalAssetCatalog', () => {
       .toBe('/assets/city01/product/districts/district-old-town-base.png');
   });
 
-  it('keeps the shared district grounding layer available at the same authored anchor', () => {
+  it('loads the complete City-01 environment and vehicle kit', () => {
     const entries = new Map(globalAssetCatalog.entries.map((entry) => [entry.id, entry]));
-    const grounding = entries.get('commercial_district_shadow');
+    expect(entries.get('terrain_road_crossroad_base')?.src)
+      .toBe('/assets/city01/product/environment/base/terrain-road-crossroad-base.png');
+    expect(entries.get('terrain_harbor_pier_base')?.src)
+      .toBe('/assets/city01/product/environment/extended/terrain-harbor-pier-base.png');
+    expect(entries.get('vehicle_utility_van')?.src)
+      .toBe('/assets/city01/product/vehicles/base/vehicle-utility-van.png');
+  });
 
-    expect(grounding?.src).toBe('/assets/commercial/districts/shadow.svg');
-    expect(grounding?.width).toBe(1024);
-    expect(grounding?.height).toBe(768);
-    expect(grounding?.anchor).toEqual({ x: 0.5, y: 0.86 });
-    expect(grounding?.preload).toBe('level');
+  it('corrects the mislabeled product facility files through semantic runtime ids', () => {
+    const entries = new Map(globalAssetCatalog.entries.map((entry) => [entry.id, entry]));
+    expect(entries.get('commercial_facility_solar_active')?.src)
+      .toBe('/assets/city01/product/facilities/facility-distribution-node-base.png');
+    expect(entries.get('commercial_facility_wind_active')?.src)
+      .toBe('/assets/city01/product/facilities/facility-gas-peaker-base.png');
+    expect(entries.get('commercial_facility_gas_active')?.src)
+      .toBe('/assets/city01/product/facilities/facility-main-substation-base.png');
+    expect(entries.get('commercial_facility_substation_active')?.src)
+      .toBe('/assets/city01/product/facilities/facility-solar-farm-base.png');
   });
 
   it('keeps runtime asset ids unique after all catalogs are merged', () => {
