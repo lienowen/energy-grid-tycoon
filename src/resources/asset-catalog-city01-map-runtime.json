@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 10,
+  "budgetBytes": 4000000,
+  "entries": [
+    {
+      "id": "city01_ocean_water_base",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/runtime/ocean-water-base.svg",
+      "version": 10,
+      "preload": "level",
+      "width": 2048,
+      "height": 1536,
+      "anchor": { "x": 0.5, "y": 0.5 },
+      "tags": ["city-01", "environment", "ocean", "runtime"]
+    }
+  ]
+}
