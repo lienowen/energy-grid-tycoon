@@ -111,6 +111,116 @@
       "height": 768,
       "anchor": { "x": 0.5, "y": 0.9115 },
       "tags": ["city-01", "district", "runtime", "blackout-base"]
+    },
+    {
+      "id": "commercial_facility_solar_active",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-solar-farm-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "runtime", "solar", "active"]
+    },
+    {
+      "id": "commercial_facility_solar_offline",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-solar-farm-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "runtime", "solar", "offline-base"]
+    },
+    {
+      "id": "commercial_facility_wind_active",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-wind-farm-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "runtime", "wind", "active"]
+    },
+    {
+      "id": "commercial_facility_wind_offline",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-wind-farm-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "runtime", "wind", "offline-base"]
+    },
+    {
+      "id": "commercial_facility_gas_active",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-gas-peaker-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "runtime", "gas", "active"]
+    },
+    {
+      "id": "commercial_facility_gas_offline",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-gas-peaker-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "runtime", "gas", "offline-base"]
+    },
+    {
+      "id": "commercial_facility_battery_active",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-battery-storage-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "runtime", "battery", "active"]
+    },
+    {
+      "id": "commercial_facility_battery_offline",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-battery-storage-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "runtime", "battery", "offline-base"]
+    },
+    {
+      "id": "commercial_facility_substation_active",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-main-substation-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "runtime", "substation", "active"]
+    },
+    {
+      "id": "commercial_facility_substation_offline",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-main-substation-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "runtime", "substation", "offline-base"]
     }
   ]
 }
