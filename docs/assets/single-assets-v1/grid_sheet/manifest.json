@@ -1,0 +1,126 @@
+{
+  "sheet": "未来能源网格资产表.png",
+  "asset_count": 10,
+  "assets": [
+    {
+      "file": "grid_sheet__01__line-normal-with-towers.png",
+      "bbox": [
+        103,
+        80,
+        684,
+        206
+      ],
+      "width": 581,
+      "height": 126,
+      "label": "line-normal-with-towers"
+    },
+    {
+      "file": "grid_sheet__02__line-overload-with-towers.png",
+      "bbox": [
+        848,
+        80,
+        1446,
+        207
+      ],
+      "width": 598,
+      "height": 127,
+      "label": "line-overload-with-towers"
+    },
+    {
+      "file": "grid_sheet__03__line-offline-with-towers.png",
+      "bbox": [
+        90,
+        243,
+        684,
+        373
+      ],
+      "width": 594,
+      "height": 130,
+      "label": "line-offline-with-towers"
+    },
+    {
+      "file": "grid_sheet__04__line-highload.png",
+      "bbox": [
+        826,
+        280,
+        1460,
+        346
+      ],
+      "width": 634,
+      "height": 66,
+      "label": "line-highload"
+    },
+    {
+      "file": "grid_sheet__05__line-highload-b.png",
+      "bbox": [
+        97,
+        404,
+        680,
+        534
+      ],
+      "width": 583,
+      "height": 130,
+      "label": "line-highload-b"
+    },
+    {
+      "file": "grid_sheet__06__line-restore.png",
+      "bbox": [
+        827,
+        428,
+        1462,
+        497
+      ],
+      "width": 635,
+      "height": 69,
+      "label": "line-restore"
+    },
+    {
+      "file": "grid_sheet__07__selection-ring-grid.png",
+      "bbox": [
+        172,
+        577,
+        595,
+        706
+      ],
+      "width": 423,
+      "height": 129,
+      "label": "selection-ring-grid"
+    },
+    {
+      "file": "grid_sheet__08__line-flow.png",
+      "bbox": [
+        736,
+        588,
+        1494,
+        663
+      ],
+      "width": 758,
+      "height": 75,
+      "label": "line-flow"
+    },
+    {
+      "file": "grid_sheet__09__warning-panel.png",
+      "bbox": [
+        848,
+        741,
+        1457,
+        869
+      ],
+      "width": 609,
+      "height": 128,
+      "label": "warning-panel"
+    },
+    {
+      "file": "grid_sheet__10__flow-arc.png",
+      "bbox": [
+        84,
+        744,
+        683,
+        891
+      ],
+      "width": 599,
+      "height": 147,
+      "label": "flow-arc"
+    }
+  ]
+}

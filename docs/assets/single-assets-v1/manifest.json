@@ -1,0 +1,1321 @@
+{
+  "version": "1.0",
+  "packages": [
+    {
+      "package": "solar_sheet",
+      "source": "未来城市太阳能设备图标.png",
+      "asset_count": 7,
+      "folder": "solar_sheet",
+      "assets": [
+        {
+          "file": "solar_sheet__01__base-main.png",
+          "bbox": [
+            111,
+            102,
+            592,
+            422
+          ],
+          "width": 481,
+          "height": 320,
+          "label": "base-main"
+        },
+        {
+          "file": "solar_sheet__02__construction.png",
+          "bbox": [
+            1087,
+            163,
+            1496,
+            406
+          ],
+          "width": 409,
+          "height": 243,
+          "label": "construction"
+        },
+        {
+          "file": "solar_sheet__03__offline.png",
+          "bbox": [
+            608,
+            169,
+            1043,
+            416
+          ],
+          "width": 435,
+          "height": 247,
+          "label": "offline"
+        },
+        {
+          "file": "solar_sheet__04__fault-or-limited.png",
+          "bbox": [
+            115,
+            486,
+            578,
+            771
+          ],
+          "width": 463,
+          "height": 285,
+          "label": "fault-or-limited"
+        },
+        {
+          "file": "solar_sheet__05__selection-ring.png",
+          "bbox": [
+            1163,
+            521,
+            1437,
+            717
+          ],
+          "width": 274,
+          "height": 196,
+          "label": "selection-ring"
+        },
+        {
+          "file": "solar_sheet__06__thumbnail.png",
+          "bbox": [
+            635,
+            550,
+            980,
+            730
+          ],
+          "width": 345,
+          "height": 180,
+          "label": "thumbnail"
+        },
+        {
+          "file": "solar_sheet__07__menu-icon.png",
+          "bbox": [
+            1209,
+            767,
+            1433,
+            948
+          ],
+          "width": 224,
+          "height": 181,
+          "label": "menu-icon"
+        }
+      ]
+    },
+    {
+      "package": "wind_sheet",
+      "source": "未来风力设施资源集.png",
+      "asset_count": 7,
+      "folder": "wind_sheet",
+      "assets": [
+        {
+          "file": "wind_sheet__01__base-main.png",
+          "bbox": [
+            159,
+            54,
+            565,
+            540
+          ],
+          "width": 406,
+          "height": 486,
+          "label": "base-main"
+        },
+        {
+          "file": "wind_sheet__02__rotor-detail.png",
+          "bbox": [
+            1119,
+            128,
+            1336,
+            453
+          ],
+          "width": 217,
+          "height": 325,
+          "label": "rotor-detail"
+        },
+        {
+          "file": "wind_sheet__03__tower-detail.png",
+          "bbox": [
+            615,
+            130,
+            894,
+            450
+          ],
+          "width": 279,
+          "height": 320,
+          "label": "tower-detail"
+        },
+        {
+          "file": "wind_sheet__04__construction.png",
+          "bbox": [
+            132,
+            568,
+            504,
+            991
+          ],
+          "width": 372,
+          "height": 423,
+          "label": "construction"
+        },
+        {
+          "file": "wind_sheet__05__fault-or-limited.png",
+          "bbox": [
+            565,
+            578,
+            940,
+            998
+          ],
+          "width": 375,
+          "height": 420,
+          "label": "fault-or-limited"
+        },
+        {
+          "file": "wind_sheet__06__selection-ring.png",
+          "bbox": [
+            1266,
+            688,
+            1468,
+            978
+          ],
+          "width": 202,
+          "height": 290,
+          "label": "selection-ring"
+        },
+        {
+          "file": "wind_sheet__07__menu-icon.png",
+          "bbox": [
+            965,
+            851,
+            1209,
+            964
+          ],
+          "width": 244,
+          "height": 113,
+          "label": "menu-icon"
+        }
+      ]
+    },
+    {
+      "package": "gas_sheet",
+      "source": "未来能源电站资产集.png",
+      "asset_count": 11,
+      "folder": "gas_sheet",
+      "assets": [
+        {
+          "file": "gas_sheet__01__base-main.png",
+          "bbox": [
+            1074,
+            71,
+            1528,
+            435
+          ],
+          "width": 454,
+          "height": 364,
+          "label": "base-main"
+        },
+        {
+          "file": "gas_sheet__02__construction.png",
+          "bbox": [
+            75,
+            74,
+            544,
+            437
+          ],
+          "width": 469,
+          "height": 363,
+          "label": "construction"
+        },
+        {
+          "file": "gas_sheet__03__offline.png",
+          "bbox": [
+            575,
+            138,
+            1052,
+            435
+          ],
+          "width": 477,
+          "height": 297,
+          "label": "offline"
+        },
+        {
+          "file": "gas_sheet__04__base-variant.png",
+          "bbox": [
+            1052,
+            430,
+            1465,
+            741
+          ],
+          "width": 413,
+          "height": 311,
+          "label": "base-variant"
+        },
+        {
+          "file": "gas_sheet__05__fault-or-limited.png",
+          "bbox": [
+            629,
+            460,
+            1065,
+            745
+          ],
+          "width": 436,
+          "height": 285,
+          "label": "fault-or-limited"
+        },
+        {
+          "file": "gas_sheet__06__smoke-white.png",
+          "bbox": [
+            381,
+            461,
+            615,
+            699
+          ],
+          "width": 234,
+          "height": 238,
+          "label": "smoke-white"
+        },
+        {
+          "file": "gas_sheet__07__smoke-dark.png",
+          "bbox": [
+            168,
+            468,
+            339,
+            692
+          ],
+          "width": 171,
+          "height": 224,
+          "label": "smoke-dark"
+        },
+        {
+          "file": "gas_sheet__08__selection-ring.png",
+          "bbox": [
+            1286,
+            759,
+            1497,
+            964
+          ],
+          "width": 211,
+          "height": 205,
+          "label": "selection-ring"
+        },
+        {
+          "file": "gas_sheet__09__smoke-small.png",
+          "bbox": [
+            893,
+            787,
+            1160,
+            941
+          ],
+          "width": 267,
+          "height": 154,
+          "label": "smoke-small"
+        },
+        {
+          "file": "gas_sheet__10__smoke-small-dark.png",
+          "bbox": [
+            124,
+            796,
+            456,
+            946
+          ],
+          "width": 332,
+          "height": 150,
+          "label": "smoke-small-dark"
+        },
+        {
+          "file": "gas_sheet__11__menu-icon.png",
+          "bbox": [
+            552,
+            808,
+            762,
+            937
+          ],
+          "width": 210,
+          "height": 129,
+          "label": "menu-icon"
+        }
+      ]
+    },
+    {
+      "package": "battery_sheet",
+      "source": "未来城市电池站精灵图.png",
+      "asset_count": 9,
+      "folder": "battery_sheet",
+      "assets": [
+        {
+          "file": "battery_sheet__01__base-main.png",
+          "bbox": [
+            63,
+            86,
+            580,
+            414
+          ],
+          "width": 517,
+          "height": 328,
+          "label": "base-main"
+        },
+        {
+          "file": "battery_sheet__02__construction.png",
+          "bbox": [
+            583,
+            96,
+            1056,
+            404
+          ],
+          "width": 473,
+          "height": 308,
+          "label": "construction"
+        },
+        {
+          "file": "battery_sheet__03__offline.png",
+          "bbox": [
+            1076,
+            136,
+            1508,
+            393
+          ],
+          "width": 432,
+          "height": 257,
+          "label": "offline"
+        },
+        {
+          "file": "battery_sheet__04__fault-or-limited.png",
+          "bbox": [
+            600,
+            451,
+            1021,
+            691
+          ],
+          "width": 421,
+          "height": 240,
+          "label": "fault-or-limited"
+        },
+        {
+          "file": "battery_sheet__05__warning-icon.png",
+          "bbox": [
+            152,
+            463,
+            512,
+            643
+          ],
+          "width": 360,
+          "height": 180,
+          "label": "warning-icon"
+        },
+        {
+          "file": "battery_sheet__06__selection-ring-cyan.png",
+          "bbox": [
+            1134,
+            466,
+            1391,
+            629
+          ],
+          "width": 257,
+          "height": 163,
+          "label": "selection-ring-cyan"
+        },
+        {
+          "file": "battery_sheet__07__selection-ring-green.png",
+          "bbox": [
+            1144,
+            693,
+            1414,
+            907
+          ],
+          "width": 270,
+          "height": 214,
+          "label": "selection-ring-green"
+        },
+        {
+          "file": "battery_sheet__08__selection-ring-soft.png",
+          "bbox": [
+            149,
+            700,
+            543,
+            885
+          ],
+          "width": 394,
+          "height": 185,
+          "label": "selection-ring-soft"
+        },
+        {
+          "file": "battery_sheet__09__menu-icon.png",
+          "bbox": [
+            626,
+            733,
+            1004,
+            888
+          ],
+          "width": 378,
+          "height": 155,
+          "label": "menu-icon"
+        }
+      ]
+    },
+    {
+      "package": "battery_utility_sheet",
+      "source": "未来电池存储中心资产合集.png",
+      "asset_count": 10,
+      "folder": "battery_utility_sheet",
+      "assets": [
+        {
+          "file": "battery_utility_sheet__01__base-main.png",
+          "bbox": [
+            40,
+            59,
+            616,
+            403
+          ],
+          "width": 576,
+          "height": 344,
+          "label": "base-main"
+        },
+        {
+          "file": "battery_utility_sheet__02__construction.png",
+          "bbox": [
+            611,
+            68,
+            1096,
+            386
+          ],
+          "width": 485,
+          "height": 318,
+          "label": "construction"
+        },
+        {
+          "file": "battery_utility_sheet__03__offline.png",
+          "bbox": [
+            1100,
+            96,
+            1514,
+            353
+          ],
+          "width": 414,
+          "height": 257,
+          "label": "offline"
+        },
+        {
+          "file": "battery_utility_sheet__04__base-variant.png",
+          "bbox": [
+            47,
+            390,
+            603,
+            696
+          ],
+          "width": 556,
+          "height": 306,
+          "label": "base-variant"
+        },
+        {
+          "file": "battery_utility_sheet__05__fault-or-limited.png",
+          "bbox": [
+            599,
+            408,
+            1098,
+            681
+          ],
+          "width": 499,
+          "height": 273,
+          "label": "fault-or-limited"
+        },
+        {
+          "file": "battery_utility_sheet__06__warning-icon.png",
+          "bbox": [
+            1101,
+            416,
+            1532,
+            671
+          ],
+          "width": 431,
+          "height": 255,
+          "label": "warning-icon"
+        },
+        {
+          "file": "battery_utility_sheet__07__menu-icon.png",
+          "bbox": [
+            1289,
+            751,
+            1474,
+            944
+          ],
+          "width": 185,
+          "height": 193,
+          "label": "menu-icon"
+        },
+        {
+          "file": "battery_utility_sheet__08__selection-ring-green.png",
+          "bbox": [
+            420,
+            764,
+            756,
+            944
+          ],
+          "width": 336,
+          "height": 180,
+          "label": "selection-ring-green"
+        },
+        {
+          "file": "battery_utility_sheet__09__selection-ring-soft.png",
+          "bbox": [
+            61,
+            772,
+            375,
+            943
+          ],
+          "width": 314,
+          "height": 171,
+          "label": "selection-ring-soft"
+        },
+        {
+          "file": "battery_utility_sheet__10__selection-ring-cyan.png",
+          "bbox": [
+            804,
+            772,
+            1161,
+            947
+          ],
+          "width": 357,
+          "height": 175,
+          "label": "selection-ring-cyan"
+        }
+      ]
+    },
+    {
+      "package": "substation_sheet",
+      "source": "未来城市建设电站资产图.png",
+      "asset_count": 7,
+      "folder": "substation_sheet",
+      "assets": [
+        {
+          "file": "substation_sheet__01__base-main.png",
+          "bbox": [
+            495,
+            47,
+            1050,
+            362
+          ],
+          "width": 555,
+          "height": 315,
+          "label": "base-main"
+        },
+        {
+          "file": "substation_sheet__02__offline.png",
+          "bbox": [
+            1018,
+            272,
+            1521,
+            590
+          ],
+          "width": 503,
+          "height": 318,
+          "label": "offline"
+        },
+        {
+          "file": "substation_sheet__03__construction.png",
+          "bbox": [
+            96,
+            300,
+            659,
+            608
+          ],
+          "width": 563,
+          "height": 308,
+          "label": "construction"
+        },
+        {
+          "file": "substation_sheet__04__energize-fx.png",
+          "bbox": [
+            614,
+            408,
+            941,
+            703
+          ],
+          "width": 327,
+          "height": 295,
+          "label": "energize-fx"
+        },
+        {
+          "file": "substation_sheet__05__fault-or-limited.png",
+          "bbox": [
+            81,
+            608,
+            643,
+            928
+          ],
+          "width": 562,
+          "height": 320,
+          "label": "fault-or-limited"
+        },
+        {
+          "file": "substation_sheet__06__selection-ring.png",
+          "bbox": [
+            1186,
+            669,
+            1433,
+            894
+          ],
+          "width": 247,
+          "height": 225,
+          "label": "selection-ring"
+        },
+        {
+          "file": "substation_sheet__07__menu-icon.png",
+          "bbox": [
+            700,
+            766,
+            1062,
+            923
+          ],
+          "width": 362,
+          "height": 157,
+          "label": "menu-icon"
+        }
+      ]
+    },
+    {
+      "package": "tower_sheet",
+      "source": "能源传输塔精灵图.png",
+      "asset_count": 9,
+      "folder": "tower_sheet",
+      "assets": [
+        {
+          "file": "tower_sheet__01__base-main.png",
+          "bbox": [
+            131,
+            60,
+            461,
+            424
+          ],
+          "width": 330,
+          "height": 364,
+          "label": "base-main"
+        },
+        {
+          "file": "tower_sheet__02__offline.png",
+          "bbox": [
+            1121,
+            80,
+            1423,
+            414
+          ],
+          "width": 302,
+          "height": 334,
+          "label": "offline"
+        },
+        {
+          "file": "tower_sheet__03__fault-or-limited.png",
+          "bbox": [
+            599,
+            100,
+            950,
+            423
+          ],
+          "width": 351,
+          "height": 323,
+          "label": "fault-or-limited"
+        },
+        {
+          "file": "tower_sheet__04__base-variant.png",
+          "bbox": [
+            130,
+            432,
+            456,
+            782
+          ],
+          "width": 326,
+          "height": 350,
+          "label": "base-variant"
+        },
+        {
+          "file": "tower_sheet__05__selection-ring-main.png",
+          "bbox": [
+            600,
+            514,
+            954,
+            684
+          ],
+          "width": 354,
+          "height": 170,
+          "label": "selection-ring-main"
+        },
+        {
+          "file": "tower_sheet__06__spark-fx.png",
+          "bbox": [
+            1120,
+            523,
+            1426,
+            642
+          ],
+          "width": 306,
+          "height": 119,
+          "label": "spark-fx"
+        },
+        {
+          "file": "tower_sheet__07__selection-ring-secondary.png",
+          "bbox": [
+            1258,
+            762,
+            1477,
+            986
+          ],
+          "width": 219,
+          "height": 224,
+          "label": "selection-ring-secondary"
+        },
+        {
+          "file": "tower_sheet__08__selection-ring-soft.png",
+          "bbox": [
+            628,
+            816,
+            938,
+            959
+          ],
+          "width": 310,
+          "height": 143,
+          "label": "selection-ring-soft"
+        },
+        {
+          "file": "tower_sheet__09__menu-icon.png",
+          "bbox": [
+            120,
+            822,
+            452,
+            952
+          ],
+          "width": 332,
+          "height": 130,
+          "label": "menu-icon"
+        }
+      ]
+    },
+    {
+      "package": "grid_sheet",
+      "source": "未来能源网格资产表.png",
+      "asset_count": 10,
+      "folder": "grid_sheet",
+      "assets": [
+        {
+          "file": "grid_sheet__01__line-normal-with-towers.png",
+          "bbox": [
+            103,
+            80,
+            684,
+            206
+          ],
+          "width": 581,
+          "height": 126,
+          "label": "line-normal-with-towers"
+        },
+        {
+          "file": "grid_sheet__02__line-overload-with-towers.png",
+          "bbox": [
+            848,
+            80,
+            1446,
+            207
+          ],
+          "width": 598,
+          "height": 127,
+          "label": "line-overload-with-towers"
+        },
+        {
+          "file": "grid_sheet__03__line-offline-with-towers.png",
+          "bbox": [
+            90,
+            243,
+            684,
+            373
+          ],
+          "width": 594,
+          "height": 130,
+          "label": "line-offline-with-towers"
+        },
+        {
+          "file": "grid_sheet__04__line-highload.png",
+          "bbox": [
+            826,
+            280,
+            1460,
+            346
+          ],
+          "width": 634,
+          "height": 66,
+          "label": "line-highload"
+        },
+        {
+          "file": "grid_sheet__05__line-highload-b.png",
+          "bbox": [
+            97,
+            404,
+            680,
+            534
+          ],
+          "width": 583,
+          "height": 130,
+          "label": "line-highload-b"
+        },
+        {
+          "file": "grid_sheet__06__line-restore.png",
+          "bbox": [
+            827,
+            428,
+            1462,
+            497
+          ],
+          "width": 635,
+          "height": 69,
+          "label": "line-restore"
+        },
+        {
+          "file": "grid_sheet__07__selection-ring-grid.png",
+          "bbox": [
+            172,
+            577,
+            595,
+            706
+          ],
+          "width": 423,
+          "height": 129,
+          "label": "selection-ring-grid"
+        },
+        {
+          "file": "grid_sheet__08__line-flow.png",
+          "bbox": [
+            736,
+            588,
+            1494,
+            663
+          ],
+          "width": 758,
+          "height": 75,
+          "label": "line-flow"
+        },
+        {
+          "file": "grid_sheet__09__warning-panel.png",
+          "bbox": [
+            848,
+            741,
+            1457,
+            869
+          ],
+          "width": 609,
+          "height": 128,
+          "label": "warning-panel"
+        },
+        {
+          "file": "grid_sheet__10__flow-arc.png",
+          "bbox": [
+            84,
+            744,
+            683,
+            891
+          ],
+          "width": 599,
+          "height": 147,
+          "label": "flow-arc"
+        }
+      ]
+    },
+    {
+      "package": "ground_sheet",
+      "source": "未来城市地面基础设计.png",
+      "asset_count": 12,
+      "folder": "ground_sheet",
+      "assets": [
+        {
+          "file": "ground_sheet__01__grass-lot.png",
+          "bbox": [
+            93,
+            88,
+            483,
+            303
+          ],
+          "width": 390,
+          "height": 215,
+          "label": "grass-lot"
+        },
+        {
+          "file": "ground_sheet__02__paved-lot-a.png",
+          "bbox": [
+            591,
+            97,
+            986,
+            296
+          ],
+          "width": 395,
+          "height": 199,
+          "label": "paved-lot-a"
+        },
+        {
+          "file": "ground_sheet__03__paved-lot-b.png",
+          "bbox": [
+            1086,
+            110,
+            1478,
+            300
+          ],
+          "width": 392,
+          "height": 190,
+          "label": "paved-lot-b"
+        },
+        {
+          "file": "ground_sheet__04__paved-lot-c.png",
+          "bbox": [
+            84,
+            350,
+            466,
+            553
+          ],
+          "width": 382,
+          "height": 203,
+          "label": "paved-lot-c"
+        },
+        {
+          "file": "ground_sheet__05__paved-lot-d.png",
+          "bbox": [
+            592,
+            358,
+            983,
+            549
+          ],
+          "width": 391,
+          "height": 191,
+          "label": "paved-lot-d"
+        },
+        {
+          "file": "ground_sheet__06__gravel-lot-a.png",
+          "bbox": [
+            1074,
+            363,
+            1481,
+            553
+          ],
+          "width": 407,
+          "height": 190,
+          "label": "gravel-lot-a"
+        },
+        {
+          "file": "ground_sheet__07__paved-lot-e.png",
+          "bbox": [
+            87,
+            584,
+            477,
+            788
+          ],
+          "width": 390,
+          "height": 204,
+          "label": "paved-lot-e"
+        },
+        {
+          "file": "ground_sheet__08__lot-mask-rounded.png",
+          "bbox": [
+            600,
+            605,
+            979,
+            785
+          ],
+          "width": 379,
+          "height": 180,
+          "label": "lot-mask-rounded"
+        },
+        {
+          "file": "ground_sheet__09__gravel-lot-b.png",
+          "bbox": [
+            1069,
+            606,
+            1493,
+            790
+          ],
+          "width": 424,
+          "height": 184,
+          "label": "gravel-lot-b"
+        },
+        {
+          "file": "ground_sheet__10__rough-lot-a.png",
+          "bbox": [
+            80,
+            824,
+            477,
+            1008
+          ],
+          "width": 397,
+          "height": 184,
+          "label": "rough-lot-a"
+        },
+        {
+          "file": "ground_sheet__11__gravel-lot-c.png",
+          "bbox": [
+            1074,
+            824,
+            1478,
+            1001
+          ],
+          "width": 404,
+          "height": 177,
+          "label": "gravel-lot-c"
+        },
+        {
+          "file": "ground_sheet__12__rough-lot-b.png",
+          "bbox": [
+            590,
+            827,
+            992,
+            1002
+          ],
+          "width": 402,
+          "height": 175,
+          "label": "rough-lot-b"
+        }
+      ]
+    },
+    {
+      "package": "build_sheet",
+      "source": "未来城市建设游戏元素.png",
+      "asset_count": 21,
+      "folder": "build_sheet",
+      "assets": [
+        {
+          "file": "build_sheet__01__build-base.png",
+          "bbox": [
+            87,
+            50,
+            516,
+            339
+          ],
+          "width": 429,
+          "height": 289,
+          "label": "build-base"
+        },
+        {
+          "file": "build_sheet__02__build-construction-main.png",
+          "bbox": [
+            531,
+            94,
+            955,
+            336
+          ],
+          "width": 424,
+          "height": 242,
+          "label": "build-construction-main"
+        },
+        {
+          "file": "build_sheet__03__build-offline.png",
+          "bbox": [
+            1053,
+            96,
+            1468,
+            335
+          ],
+          "width": 415,
+          "height": 239,
+          "label": "build-offline"
+        },
+        {
+          "file": "build_sheet__04__small-bar-a.png",
+          "bbox": [
+            177,
+            336,
+            272,
+            395
+          ],
+          "width": 95,
+          "height": 59,
+          "label": "small-bar-a"
+        },
+        {
+          "file": "build_sheet__05__small-bar-b.png",
+          "bbox": [
+            249,
+            336,
+            416,
+            395
+          ],
+          "width": 167,
+          "height": 59,
+          "label": "small-bar-b"
+        },
+        {
+          "file": "build_sheet__06__small-bar-c.png",
+          "bbox": [
+            624,
+            336,
+            725,
+            395
+          ],
+          "width": 101,
+          "height": 59,
+          "label": "small-bar-c"
+        },
+        {
+          "file": "build_sheet__07__small-bar-d.png",
+          "bbox": [
+            702,
+            336,
+            870,
+            395
+          ],
+          "width": 168,
+          "height": 59,
+          "label": "small-bar-d"
+        },
+        {
+          "file": "build_sheet__08__build-mid-a.png",
+          "bbox": [
+            1099,
+            336,
+            1424,
+            395
+          ],
+          "width": 325,
+          "height": 59,
+          "label": "build-mid-a"
+        },
+        {
+          "file": "build_sheet__09__warning-icon.png",
+          "bbox": [
+            564,
+            412,
+            957,
+            597
+          ],
+          "width": 393,
+          "height": 185,
+          "label": "warning-icon"
+        },
+        {
+          "file": "build_sheet__10__small-bar-e.png",
+          "bbox": [
+            1083,
+            416,
+            1440,
+            595
+          ],
+          "width": 357,
+          "height": 179,
+          "label": "small-bar-e"
+        },
+        {
+          "file": "build_sheet__11__small-bar-f.png",
+          "bbox": [
+            142,
+            417,
+            488,
+            594
+          ],
+          "width": 346,
+          "height": 177,
+          "label": "small-bar-f"
+        },
+        {
+          "file": "build_sheet__12__small-bar-g.png",
+          "bbox": [
+            1078,
+            595,
+            1453,
+            655
+          ],
+          "width": 375,
+          "height": 60,
+          "label": "small-bar-g"
+        },
+        {
+          "file": "build_sheet__13__small-bar-h.png",
+          "bbox": [
+            180,
+            596,
+            447,
+            656
+          ],
+          "width": 267,
+          "height": 60,
+          "label": "small-bar-h"
+        },
+        {
+          "file": "build_sheet__14__small-bar-i.png",
+          "bbox": [
+            624,
+            596,
+            725,
+            655
+          ],
+          "width": 101,
+          "height": 59,
+          "label": "small-bar-i"
+        },
+        {
+          "file": "build_sheet__15__build-large-a.png",
+          "bbox": [
+            702,
+            596,
+            893,
+            655
+          ],
+          "width": 191,
+          "height": 59,
+          "label": "build-large-a"
+        },
+        {
+          "file": "build_sheet__16__menu-icon.png",
+          "bbox": [
+            70,
+            672,
+            508,
+            898
+          ],
+          "width": 438,
+          "height": 226,
+          "label": "menu-icon"
+        },
+        {
+          "file": "build_sheet__17__build-large-b.png",
+          "bbox": [
+            1150,
+            689,
+            1446,
+            874
+          ],
+          "width": 296,
+          "height": 185,
+          "label": "build-large-b"
+        },
+        {
+          "file": "build_sheet__18__small-bar-j.png",
+          "bbox": [
+            604,
+            692,
+            973,
+            893
+          ],
+          "width": 369,
+          "height": 201,
+          "label": "small-bar-j"
+        },
+        {
+          "file": "build_sheet__19__small-bar-k.png",
+          "bbox": [
+            139,
+            899,
+            432,
+            958
+          ],
+          "width": 293,
+          "height": 59,
+          "label": "small-bar-k"
+        },
+        {
+          "file": "build_sheet__20__small-bar-l.png",
+          "bbox": [
+            619,
+            899,
+            910,
+            958
+          ],
+          "width": 291,
+          "height": 59,
+          "label": "small-bar-l"
+        },
+        {
+          "file": "build_sheet__21__asset-21.png",
+          "bbox": [
+            1064,
+            899,
+            1519,
+            966
+          ],
+          "width": 455,
+          "height": 67,
+          "label": "asset-21"
+        }
+      ]
+    }
+  ]
+}

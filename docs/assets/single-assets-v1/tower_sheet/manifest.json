@@ -1,0 +1,114 @@
+{
+  "sheet": "能源传输塔精灵图.png",
+  "asset_count": 9,
+  "assets": [
+    {
+      "file": "tower_sheet__01__base-main.png",
+      "bbox": [
+        131,
+        60,
+        461,
+        424
+      ],
+      "width": 330,
+      "height": 364,
+      "label": "base-main"
+    },
+    {
+      "file": "tower_sheet__02__offline.png",
+      "bbox": [
+        1121,
+        80,
+        1423,
+        414
+      ],
+      "width": 302,
+      "height": 334,
+      "label": "offline"
+    },
+    {
+      "file": "tower_sheet__03__fault-or-limited.png",
+      "bbox": [
+        599,
+        100,
+        950,
+        423
+      ],
+      "width": 351,
+      "height": 323,
+      "label": "fault-or-limited"
+    },
+    {
+      "file": "tower_sheet__04__base-variant.png",
+      "bbox": [
+        130,
+        432,
+        456,
+        782
+      ],
+      "width": 326,
+      "height": 350,
+      "label": "base-variant"
+    },
+    {
+      "file": "tower_sheet__05__selection-ring-main.png",
+      "bbox": [
+        600,
+        514,
+        954,
+        684
+      ],
+      "width": 354,
+      "height": 170,
+      "label": "selection-ring-main"
+    },
+    {
+      "file": "tower_sheet__06__spark-fx.png",
+      "bbox": [
+        1120,
+        523,
+        1426,
+        642
+      ],
+      "width": 306,
+      "height": 119,
+      "label": "spark-fx"
+    },
+    {
+      "file": "tower_sheet__07__selection-ring-secondary.png",
+      "bbox": [
+        1258,
+        762,
+        1477,
+        986
+      ],
+      "width": 219,
+      "height": 224,
+      "label": "selection-ring-secondary"
+    },
+    {
+      "file": "tower_sheet__08__selection-ring-soft.png",
+      "bbox": [
+        628,
+        816,
+        938,
+        959
+      ],
+      "width": 310,
+      "height": 143,
+      "label": "selection-ring-soft"
+    },
+    {
+      "file": "tower_sheet__09__menu-icon.png",
+      "bbox": [
+        120,
+        822,
+        452,
+        952
+      ],
+      "width": 332,
+      "height": 130,
+      "label": "menu-icon"
+    }
+  ]
+}

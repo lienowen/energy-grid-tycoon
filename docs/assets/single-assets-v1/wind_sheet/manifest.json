@@ -1,0 +1,90 @@
+{
+  "sheet": "未来风力设施资源集.png",
+  "asset_count": 7,
+  "assets": [
+    {
+      "file": "wind_sheet__01__base-main.png",
+      "bbox": [
+        159,
+        54,
+        565,
+        540
+      ],
+      "width": 406,
+      "height": 486,
+      "label": "base-main"
+    },
+    {
+      "file": "wind_sheet__02__rotor-detail.png",
+      "bbox": [
+        1119,
+        128,
+        1336,
+        453
+      ],
+      "width": 217,
+      "height": 325,
+      "label": "rotor-detail"
+    },
+    {
+      "file": "wind_sheet__03__tower-detail.png",
+      "bbox": [
+        615,
+        130,
+        894,
+        450
+      ],
+      "width": 279,
+      "height": 320,
+      "label": "tower-detail"
+    },
+    {
+      "file": "wind_sheet__04__construction.png",
+      "bbox": [
+        132,
+        568,
+        504,
+        991
+      ],
+      "width": 372,
+      "height": 423,
+      "label": "construction"
+    },
+    {
+      "file": "wind_sheet__05__fault-or-limited.png",
+      "bbox": [
+        565,
+        578,
+        940,
+        998
+      ],
+      "width": 375,
+      "height": 420,
+      "label": "fault-or-limited"
+    },
+    {
+      "file": "wind_sheet__06__selection-ring.png",
+      "bbox": [
+        1266,
+        688,
+        1468,
+        978
+      ],
+      "width": 202,
+      "height": 290,
+      "label": "selection-ring"
+    },
+    {
+      "file": "wind_sheet__07__menu-icon.png",
+      "bbox": [
+        965,
+        851,
+        1209,
+        964
+      ],
+      "width": 244,
+      "height": 113,
+      "label": "menu-icon"
+    }
+  ]
+}

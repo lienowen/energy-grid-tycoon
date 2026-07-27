@@ -1,0 +1,258 @@
+{
+  "sheet": "未来城市建设游戏元素.png",
+  "asset_count": 21,
+  "assets": [
+    {
+      "file": "build_sheet__01__build-base.png",
+      "bbox": [
+        87,
+        50,
+        516,
+        339
+      ],
+      "width": 429,
+      "height": 289,
+      "label": "build-base"
+    },
+    {
+      "file": "build_sheet__02__build-construction-main.png",
+      "bbox": [
+        531,
+        94,
+        955,
+        336
+      ],
+      "width": 424,
+      "height": 242,
+      "label": "build-construction-main"
+    },
+    {
+      "file": "build_sheet__03__build-offline.png",
+      "bbox": [
+        1053,
+        96,
+        1468,
+        335
+      ],
+      "width": 415,
+      "height": 239,
+      "label": "build-offline"
+    },
+    {
+      "file": "build_sheet__04__small-bar-a.png",
+      "bbox": [
+        177,
+        336,
+        272,
+        395
+      ],
+      "width": 95,
+      "height": 59,
+      "label": "small-bar-a"
+    },
+    {
+      "file": "build_sheet__05__small-bar-b.png",
+      "bbox": [
+        249,
+        336,
+        416,
+        395
+      ],
+      "width": 167,
+      "height": 59,
+      "label": "small-bar-b"
+    },
+    {
+      "file": "build_sheet__06__small-bar-c.png",
+      "bbox": [
+        624,
+        336,
+        725,
+        395
+      ],
+      "width": 101,
+      "height": 59,
+      "label": "small-bar-c"
+    },
+    {
+      "file": "build_sheet__07__small-bar-d.png",
+      "bbox": [
+        702,
+        336,
+        870,
+        395
+      ],
+      "width": 168,
+      "height": 59,
+      "label": "small-bar-d"
+    },
+    {
+      "file": "build_sheet__08__build-mid-a.png",
+      "bbox": [
+        1099,
+        336,
+        1424,
+        395
+      ],
+      "width": 325,
+      "height": 59,
+      "label": "build-mid-a"
+    },
+    {
+      "file": "build_sheet__09__warning-icon.png",
+      "bbox": [
+        564,
+        412,
+        957,
+        597
+      ],
+      "width": 393,
+      "height": 185,
+      "label": "warning-icon"
+    },
+    {
+      "file": "build_sheet__10__small-bar-e.png",
+      "bbox": [
+        1083,
+        416,
+        1440,
+        595
+      ],
+      "width": 357,
+      "height": 179,
+      "label": "small-bar-e"
+    },
+    {
+      "file": "build_sheet__11__small-bar-f.png",
+      "bbox": [
+        142,
+        417,
+        488,
+        594
+      ],
+      "width": 346,
+      "height": 177,
+      "label": "small-bar-f"
+    },
+    {
+      "file": "build_sheet__12__small-bar-g.png",
+      "bbox": [
+        1078,
+        595,
+        1453,
+        655
+      ],
+      "width": 375,
+      "height": 60,
+      "label": "small-bar-g"
+    },
+    {
+      "file": "build_sheet__13__small-bar-h.png",
+      "bbox": [
+        180,
+        596,
+        447,
+        656
+      ],
+      "width": 267,
+      "height": 60,
+      "label": "small-bar-h"
+    },
+    {
+      "file": "build_sheet__14__small-bar-i.png",
+      "bbox": [
+        624,
+        596,
+        725,
+        655
+      ],
+      "width": 101,
+      "height": 59,
+      "label": "small-bar-i"
+    },
+    {
+      "file": "build_sheet__15__build-large-a.png",
+      "bbox": [
+        702,
+        596,
+        893,
+        655
+      ],
+      "width": 191,
+      "height": 59,
+      "label": "build-large-a"
+    },
+    {
+      "file": "build_sheet__16__menu-icon.png",
+      "bbox": [
+        70,
+        672,
+        508,
+        898
+      ],
+      "width": 438,
+      "height": 226,
+      "label": "menu-icon"
+    },
+    {
+      "file": "build_sheet__17__build-large-b.png",
+      "bbox": [
+        1150,
+        689,
+        1446,
+        874
+      ],
+      "width": 296,
+      "height": 185,
+      "label": "build-large-b"
+    },
+    {
+      "file": "build_sheet__18__small-bar-j.png",
+      "bbox": [
+        604,
+        692,
+        973,
+        893
+      ],
+      "width": 369,
+      "height": 201,
+      "label": "small-bar-j"
+    },
+    {
+      "file": "build_sheet__19__small-bar-k.png",
+      "bbox": [
+        139,
+        899,
+        432,
+        958
+      ],
+      "width": 293,
+      "height": 59,
+      "label": "small-bar-k"
+    },
+    {
+      "file": "build_sheet__20__small-bar-l.png",
+      "bbox": [
+        619,
+        899,
+        910,
+        958
+      ],
+      "width": 291,
+      "height": 59,
+      "label": "small-bar-l"
+    },
+    {
+      "file": "build_sheet__21__asset-21.png",
+      "bbox": [
+        1064,
+        899,
+        1519,
+        966
+      ],
+      "width": 455,
+      "height": 67,
+      "label": "asset-21"
+    }
+  ]
+}

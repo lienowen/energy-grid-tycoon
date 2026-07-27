@@ -1,0 +1,150 @@
+{
+  "sheet": "未来城市地面基础设计.png",
+  "asset_count": 12,
+  "assets": [
+    {
+      "file": "ground_sheet__01__grass-lot.png",
+      "bbox": [
+        93,
+        88,
+        483,
+        303
+      ],
+      "width": 390,
+      "height": 215,
+      "label": "grass-lot"
+    },
+    {
+      "file": "ground_sheet__02__paved-lot-a.png",
+      "bbox": [
+        591,
+        97,
+        986,
+        296
+      ],
+      "width": 395,
+      "height": 199,
+      "label": "paved-lot-a"
+    },
+    {
+      "file": "ground_sheet__03__paved-lot-b.png",
+      "bbox": [
+        1086,
+        110,
+        1478,
+        300
+      ],
+      "width": 392,
+      "height": 190,
+      "label": "paved-lot-b"
+    },
+    {
+      "file": "ground_sheet__04__paved-lot-c.png",
+      "bbox": [
+        84,
+        350,
+        466,
+        553
+      ],
+      "width": 382,
+      "height": 203,
+      "label": "paved-lot-c"
+    },
+    {
+      "file": "ground_sheet__05__paved-lot-d.png",
+      "bbox": [
+        592,
+        358,
+        983,
+        549
+      ],
+      "width": 391,
+      "height": 191,
+      "label": "paved-lot-d"
+    },
+    {
+      "file": "ground_sheet__06__gravel-lot-a.png",
+      "bbox": [
+        1074,
+        363,
+        1481,
+        553
+      ],
+      "width": 407,
+      "height": 190,
+      "label": "gravel-lot-a"
+    },
+    {
+      "file": "ground_sheet__07__paved-lot-e.png",
+      "bbox": [
+        87,
+        584,
+        477,
+        788
+      ],
+      "width": 390,
+      "height": 204,
+      "label": "paved-lot-e"
+    },
+    {
+      "file": "ground_sheet__08__lot-mask-rounded.png",
+      "bbox": [
+        600,
+        605,
+        979,
+        785
+      ],
+      "width": 379,
+      "height": 180,
+      "label": "lot-mask-rounded"
+    },
+    {
+      "file": "ground_sheet__09__gravel-lot-b.png",
+      "bbox": [
+        1069,
+        606,
+        1493,
+        790
+      ],
+      "width": 424,
+      "height": 184,
+      "label": "gravel-lot-b"
+    },
+    {
+      "file": "ground_sheet__10__rough-lot-a.png",
+      "bbox": [
+        80,
+        824,
+        477,
+        1008
+      ],
+      "width": 397,
+      "height": 184,
+      "label": "rough-lot-a"
+    },
+    {
+      "file": "ground_sheet__11__gravel-lot-c.png",
+      "bbox": [
+        1074,
+        824,
+        1478,
+        1001
+      ],
+      "width": 404,
+      "height": 177,
+      "label": "gravel-lot-c"
+    },
+    {
+      "file": "ground_sheet__12__rough-lot-b.png",
+      "bbox": [
+        590,
+        827,
+        992,
+        1002
+      ],
+      "width": 402,
+      "height": 175,
+      "label": "rough-lot-b"
+    }
+  ]
+}

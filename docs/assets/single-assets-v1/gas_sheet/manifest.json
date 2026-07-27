@@ -1,0 +1,138 @@
+{
+  "sheet": "未来能源电站资产集.png",
+  "asset_count": 11,
+  "assets": [
+    {
+      "file": "gas_sheet__01__base-main.png",
+      "bbox": [
+        1074,
+        71,
+        1528,
+        435
+      ],
+      "width": 454,
+      "height": 364,
+      "label": "base-main"
+    },
+    {
+      "file": "gas_sheet__02__construction.png",
+      "bbox": [
+        75,
+        74,
+        544,
+        437
+      ],
+      "width": 469,
+      "height": 363,
+      "label": "construction"
+    },
+    {
+      "file": "gas_sheet__03__offline.png",
+      "bbox": [
+        575,
+        138,
+        1052,
+        435
+      ],
+      "width": 477,
+      "height": 297,
+      "label": "offline"
+    },
+    {
+      "file": "gas_sheet__04__base-variant.png",
+      "bbox": [
+        1052,
+        430,
+        1465,
+        741
+      ],
+      "width": 413,
+      "height": 311,
+      "label": "base-variant"
+    },
+    {
+      "file": "gas_sheet__05__fault-or-limited.png",
+      "bbox": [
+        629,
+        460,
+        1065,
+        745
+      ],
+      "width": 436,
+      "height": 285,
+      "label": "fault-or-limited"
+    },
+    {
+      "file": "gas_sheet__06__smoke-white.png",
+      "bbox": [
+        381,
+        461,
+        615,
+        699
+      ],
+      "width": 234,
+      "height": 238,
+      "label": "smoke-white"
+    },
+    {
+      "file": "gas_sheet__07__smoke-dark.png",
+      "bbox": [
+        168,
+        468,
+        339,
+        692
+      ],
+      "width": 171,
+      "height": 224,
+      "label": "smoke-dark"
+    },
+    {
+      "file": "gas_sheet__08__selection-ring.png",
+      "bbox": [
+        1286,
+        759,
+        1497,
+        964
+      ],
+      "width": 211,
+      "height": 205,
+      "label": "selection-ring"
+    },
+    {
+      "file": "gas_sheet__09__smoke-small.png",
+      "bbox": [
+        893,
+        787,
+        1160,
+        941
+      ],
+      "width": 267,
+      "height": 154,
+      "label": "smoke-small"
+    },
+    {
+      "file": "gas_sheet__10__smoke-small-dark.png",
+      "bbox": [
+        124,
+        796,
+        456,
+        946
+      ],
+      "width": 332,
+      "height": 150,
+      "label": "smoke-small-dark"
+    },
+    {
+      "file": "gas_sheet__11__menu-icon.png",
+      "bbox": [
+        552,
+        808,
+        762,
+        937
+      ],
+      "width": 210,
+      "height": 129,
+      "label": "menu-icon"
+    }
+  ]
+}
