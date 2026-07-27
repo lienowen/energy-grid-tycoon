@@ -21,11 +21,11 @@ describe('City01MapComposition', () => {
     }
   });
 
-  it('keeps the island and its coast details inside the City-01 camera bounds', () => {
+  it('keeps the tightened island and connected coast inside the City-01 camera bounds', () => {
     expect(city01IslandBoundary.length).toBeGreaterThanOrEqual(8);
     for (const point of city01IslandBoundary) {
-      expect(Math.abs(point.x)).toBeLessThanOrEqual(54);
-      expect(Math.abs(point.z)).toBeLessThanOrEqual(36);
+      expect(Math.abs(point.x)).toBeLessThanOrEqual(50);
+      expect(Math.abs(point.z)).toBeLessThanOrEqual(32);
     }
     for (const placement of city01MapPlacements) {
       expect(Math.abs(placement.point.x)).toBeLessThanOrEqual(55);
