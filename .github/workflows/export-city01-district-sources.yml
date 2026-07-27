@@ -6,6 +6,11 @@ on:
       - feat/commercial-standard-recovery-v1
     paths:
       - .github/workflows/export-city01-district-sources.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/export-city01-district-sources.yml
 
 permissions:
   contents: read
