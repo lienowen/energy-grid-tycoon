@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "budgetBytes": 50000000,
+  "entries": [
+    {
+      "id": "commercial_district_residential_night",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-residential-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "district", "runtime", "powered"]
+    },
+    {
+      "id": "commercial_district_residential_blackout",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-residential-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "district", "runtime", "blackout-base"]
+    },
+    {
+      "id": "commercial_district_commercial_night",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-commercial-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "district", "runtime", "powered"]
+    },
+    {
+      "id": "commercial_district_commercial_blackout",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-commercial-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "district", "runtime", "blackout-base"]
+    },
+    {
+      "id": "commercial_district_industrial_night",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-industrial-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "district", "runtime", "powered"]
+    },
+    {
+      "id": "commercial_district_industrial_blackout",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-industrial-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "district", "runtime", "blackout-base"]
+    },
+    {
+      "id": "commercial_district_public_night",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-public-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "district", "runtime", "powered"]
+    },
+    {
+      "id": "commercial_district_public_blackout",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-public-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "district", "runtime", "blackout-base"]
+    },
+    {
+      "id": "commercial_district_old_town_night",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-old-town-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "district", "runtime", "powered"]
+    },
+    {
+      "id": "commercial_district_old_town_blackout",
+      "kind": "image",
+      "src": "/assets/city01/product/districts/district-old-town-base.png",
+      "version": 1,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "district", "runtime", "blackout-base"]
+    }
+  ]
+}
