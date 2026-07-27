@@ -63,7 +63,7 @@ jobs:
           target=public/assets/city01/product/districts/runtime/district-residential-integrated.png
           mkdir -p "$(dirname "$target")"
           cp generated/city01/district-residential-integrated.png "$target"
-          if git diff --quiet -- "$target"; then
+          if [ -z "$(git status --porcelain -- "$target")" ]; then
             echo "Generated residential PNG is unchanged."
             exit 0
           fi
