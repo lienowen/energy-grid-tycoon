@@ -88,8 +88,8 @@ const vehicle = (
 /**
  * One continuous island sits below the product pieces. Coast water is tone
  * matched at runtime to the shared ocean while retaining authored foam and
- * shallow-water detail. The island edge deliberately hugs the authored tiles
- * so it does not read as a large green display board.
+ * shallow-water detail. The island edge hugs the authored tiles without moving
+ * the coast pieces away from their road and district joins.
  */
 export const city01IslandBoundary: readonly ScenePoint[] = [
   city01MapToScenePoint(20, 18, -0.34),
@@ -107,16 +107,16 @@ export const city01IslandBoundary: readonly ScenePoint[] = [
  * real crop of the product straight-road PNG, never a newly drawn gray panel.
  */
 export const city01MapPlacements: readonly City01MapPlacement[] = [
-  tile('north-west-beach', 'terrain_beach_open_base', 13, 24, EDGE_TILE_WIDTH, 'terrain', 1, 0.34),
+  tile('north-west-beach', 'terrain_beach_open_base', 15, 25, EDGE_TILE_WIDTH, 'terrain', 1, 0.34),
   tile('north-west-forest', 'terrain_forest_base', 41, 9, EDGE_TILE_WIDTH, 'terrain', 1, 0.32),
   tile('north-park', 'terrain_small_park_base', 61, 15, TILE_WIDTH, 'groundDecorations', 1, 0.34),
   tile('north-east-ridge', 'terrain_rocky_hill_base', 94, 28, EDGE_TILE_WIDTH, 'terrain', 1, 0.3),
-  tile('west-seafront', 'terrain_seafront_base', 7, 51, EDGE_TILE_WIDTH, 'terrain', 1, 0.32),
-  tile('west-harbor', 'terrain_harbor_pier_base', 11, 73, EDGE_TILE_WIDTH, 'terrain', 1, 0.3),
-  tile('east-coast', 'terrain_coast_cliff_base', 101, 54, EDGE_TILE_WIDTH, 'terrain', 1, 0.28),
-  tile('south-west-coast', 'terrain_coast_cliff_base', 30, 93, EDGE_TILE_WIDTH, 'terrain', 1, 0.28, true),
-  tile('south-beach', 'terrain_beach_open_base', 58, 96, EDGE_TILE_WIDTH, 'terrain', 1, 0.28, true),
-  tile('south-east-coast', 'terrain_coast_cliff_base', 87, 89, EDGE_TILE_WIDTH, 'terrain', 1, 0.28),
+  tile('west-seafront', 'terrain_seafront_base', 9, 51, EDGE_TILE_WIDTH, 'terrain', 1, 0.32),
+  tile('west-harbor', 'terrain_harbor_pier_base', 14, 73, EDGE_TILE_WIDTH, 'terrain', 1, 0.3),
+  tile('east-coast', 'terrain_coast_cliff_base', 99, 54, EDGE_TILE_WIDTH, 'terrain', 1, 0.28),
+  tile('south-west-coast', 'terrain_coast_cliff_base', 32, 91, EDGE_TILE_WIDTH, 'terrain', 1, 0.28, true),
+  tile('south-beach', 'terrain_beach_open_base', 58, 94, EDGE_TILE_WIDTH, 'terrain', 1, 0.28, true),
+  tile('south-east-coast', 'terrain_coast_cliff_base', 85, 87, EDGE_TILE_WIDTH, 'terrain', 1, 0.28),
   tile('solar-lot', 'terrain_empty_grasslot_base', 28, 22, TILE_WIDTH, 'terrain', 1, 0.34),
   tile('residential-green', 'terrain_small_park_base', 76, 21, TILE_WIDTH, 'groundDecorations', 0.94, 0.34),
   tile('central-civic-green', 'terrain_park_plaza_base', 53, 58, TILE_WIDTH, 'groundDecorations', 0.96, 0.34),
