@@ -12,7 +12,9 @@ describe('City01DistrictTextureFactory', () => {
     expect(shouldGenerateCity01DistrictTexture('commercial_district_commercial_blackout')).toBe(true);
     expect(shouldGenerateCity01DistrictTexture('commercial_district_industrial_night')).toBe(true);
     expect(shouldGenerateCity01DistrictTexture('commercial_district_industrial_blackout')).toBe(true);
-    expect(shouldGenerateCity01DistrictTexture('commercial_district_public_night')).toBe(false);
+    expect(shouldGenerateCity01DistrictTexture('commercial_district_public_night')).toBe(true);
+    expect(shouldGenerateCity01DistrictTexture('commercial_district_public_blackout')).toBe(true);
+    expect(shouldGenerateCity01DistrictTexture('commercial_district_old_town_night')).toBe(false);
     expect(shouldGenerateCity01DistrictTexture('world_building_res_tower_a_night')).toBe(false);
   });
 
