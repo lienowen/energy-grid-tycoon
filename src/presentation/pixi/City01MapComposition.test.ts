@@ -21,25 +21,25 @@ describe('City01MapComposition', () => {
     }
   });
 
-  it('keeps the island inside gameplay bounds while allowing coast tiles to extend into ocean', () => {
+  it('keeps the island and its coast details inside the City-01 camera bounds', () => {
     expect(city01IslandBoundary.length).toBeGreaterThanOrEqual(8);
     for (const point of city01IslandBoundary) {
-      expect(Math.abs(point.x)).toBeLessThanOrEqual(50);
-      expect(Math.abs(point.z)).toBeLessThanOrEqual(33);
+      expect(Math.abs(point.x)).toBeLessThanOrEqual(54);
+      expect(Math.abs(point.z)).toBeLessThanOrEqual(36);
     }
     for (const placement of city01MapPlacements) {
-      expect(Math.abs(placement.point.x)).toBeLessThanOrEqual(58);
-      expect(Math.abs(placement.point.z)).toBeLessThanOrEqual(43);
+      expect(Math.abs(placement.point.x)).toBeLessThanOrEqual(55);
+      expect(Math.abs(placement.point.z)).toBeLessThanOrEqual(40);
     }
   });
 
-  it('uses road art only as connected junction and short-link detail', () => {
+  it('uses product road art with only two cropped short-link details', () => {
     const roads = city01MapPlacements.filter((placement) => placement.layer === 'roads');
-    expect(roads.length).toBeGreaterThanOrEqual(9);
+    expect(roads.length).toBeGreaterThanOrEqual(8);
     expect(roads.every((placement) => placement.assetId.includes('road'))).toBe(true);
-    const shortLinks = roads.filter((placement) => placement.assetId === 'city01_road_connector_diagonal_base');
-    expect(shortLinks).toHaveLength(3);
-    expect(shortLinks.every((placement) => placement.width <= 200)).toBe(true);
+    const shortLinks = roads.filter((placement) => placement.assetId === 'city01_road_connector_short');
+    expect(shortLinks).toHaveLength(2);
+    expect(shortLinks.every((placement) => placement.width <= 180)).toBe(true);
   });
 
   it('adds product vehicles without turning the map into a traffic layer', () => {
