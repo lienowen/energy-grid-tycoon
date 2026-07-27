@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import type { CitySceneState } from './CitySceneTypes';
-import { planCommercialCityLife } from './CommercialCityLifePlanner';
+import {
+  isDistrictAccessRoad,
+  planCommercialCityLife
+} from './CommercialCityLifePlanner';
 
 const makeState = (overrides: Partial<CitySceneState> = {}): CitySceneState => ({
   levelId: 'city-01',
@@ -81,6 +84,16 @@ const makeState = (overrides: Partial<CitySceneState> = {}): CitySceneState => (
       laneCount: 2,
       traffic: 0.55,
       powered: false
+    },
+    {
+      id: 'dawn-access-residential',
+      points: [
+        { x: 55, z: 25, elevation: -0.2 },
+        { x: 49, z: 25, elevation: -0.2 }
+      ],
+      laneCount: 1,
+      traffic: 0.3,
+      powered: true
     }
   ],
   ambientBlocks: [],
@@ -95,6 +108,14 @@ describe('CommercialCityLifePlanner', () => {
     expect(plan.vehicles.length).toBeGreaterThan(0);
     expect(plan.vehicles.length).toBeLessThanOrEqual(11);
     expect(plan.streetLights.some((light) => light.lit)).toBe(true);
+  });
+
+  it('keeps short district access roads free of lights and moving vehicles', () => {
+    const plan = planCommercialCityLife(makeState());
+    expect(isDistrictAccessRoad({ id: 'dawn-access-residential' })).toBe(true);
+    expect(isDistrictAccessRoad({ id: 'dawn-central-boulevard' })).toBe(false);
+    expect(plan.streetLights.some((light) => light.id.startsWith('dawn-access-'))).toBe(false);
+    expect(plan.vehicles.some((vehicle) => vehicle.id.startsWith('dawn-access-'))).toBe(false);
   });
 
   it('removes moving traffic from diagnostics', () => {
