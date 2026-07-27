@@ -47,11 +47,14 @@ const interpolate = (from: ScenePoint, to: ScenePoint, progress: number): SceneP
   elevation: from.elevation + (to.elevation - from.elevation) * progress
 });
 
+export const isDistrictAccessRoad = (road: Pick<RoadSceneState, 'id'>): boolean =>
+  road.id.startsWith('dawn-access-');
+
 const makeStreetLights = (roads: readonly RoadSceneState[], lit: boolean): CommercialStreetLightPlan[] => {
   const lights: CommercialStreetLightPlan[] = [];
   for (let roadIndex = 0; roadIndex < roads.length; roadIndex += 1) {
     const road = roads[roadIndex];
-    if (!road) continue;
+    if (!road || isDistrictAccessRoad(road)) continue;
     for (let segmentIndex = 0; segmentIndex < road.points.length - 1; segmentIndex += 1) {
       const from = road.points[segmentIndex];
       const to = road.points[segmentIndex + 1];
@@ -82,7 +85,7 @@ const makeVehicles = (roads: readonly RoadSceneState[], headlights: boolean, dia
   if (diagnostics) return [];
   const vehicles: CommercialVehiclePlan[] = [];
   roads.forEach((road, roadIndex) => {
-    if (road.points.length < 2 || road.traffic < 0.08) return;
+    if (isDistrictAccessRoad(road) || road.points.length < 2 || road.traffic < 0.08) return;
     const count = road.laneCount === 2 && road.traffic > 0.35 ? 2 : 1;
     for (let index = 0; index < count; index += 1) {
       vehicles.push({
