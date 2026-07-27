@@ -20,6 +20,11 @@ export interface LayoutPoint {
   elevation?: number;
 }
 
+export interface DistrictAccessRoadConfig {
+  points: LayoutPoint[];
+  laneCount?: 1 | 2;
+}
+
 export interface DistrictPrefabConfig extends LayoutPoint {
   id: string;
   label: string;
@@ -30,6 +35,7 @@ export interface DistrictPrefabConfig extends LayoutPoint {
   buildingCount?: number;
   priority: number;
   variant?: number;
+  accessRoad?: DistrictAccessRoadConfig;
 }
 
 export interface EnvironmentPrefabConfig extends LayoutPoint {
