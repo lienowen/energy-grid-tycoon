@@ -1,6 +1,6 @@
 import { CanvasSource, Texture } from 'pixi.js';
 
-type DistrictIntegrationKind = 'residential' | 'commercial' | 'industrial';
+type DistrictIntegrationKind = 'residential' | 'commercial' | 'industrial' | 'public';
 type RectSpec = readonly [x: number, y: number, width: number, height: number, radius: number];
 type PointSpec = readonly [x: number, y: number];
 type EllipseSpec = readonly [x: number, y: number, width: number, height: number];
@@ -22,7 +22,9 @@ const districtKinds = new Map<string, DistrictIntegrationKind>([
   ['commercial_district_commercial_night', 'commercial'],
   ['commercial_district_commercial_blackout', 'commercial'],
   ['commercial_district_industrial_night', 'industrial'],
-  ['commercial_district_industrial_blackout', 'industrial']
+  ['commercial_district_industrial_blackout', 'industrial'],
+  ['commercial_district_public_night', 'public'],
+  ['commercial_district_public_blackout', 'public']
 ]);
 
 const maskConfigs: Record<DistrictIntegrationKind, DistrictMaskConfig> = {
@@ -86,6 +88,34 @@ const maskConfigs: Record<DistrictIntegrationKind, DistrictMaskConfig> = {
       [0, 390, 180, 378],
       [855, 390, 169, 378],
       [755, 540, 269, 228]
+    ]
+  },
+  public: {
+    structureRects: [
+      [185, 125, 300, 260, 24],
+      [535, 205, 330, 205, 24]
+    ],
+    corePolygon: [
+      [512, 230],
+      [780, 355],
+      [720, 390],
+      [610, 410],
+      [610, 470],
+      [512, 520],
+      [400, 470],
+      [400, 410],
+      [310, 395],
+      [230, 360]
+    ],
+    vegetationExpandPx: 3,
+    vegetationBlurPx: 2,
+    featherPx: 3,
+    cutRects: [
+      [0, 530, 1024, 238],
+      [0, 360, 145, 408],
+      [875, 360, 149, 408],
+      [270, 400, 90, 65],
+      [625, 400, 90, 65]
     ]
   }
 };
