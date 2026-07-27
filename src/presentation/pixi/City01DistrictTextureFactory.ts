@@ -54,50 +54,34 @@ const makeLowerHalo = (
   return canvas;
 };
 
-const drawResidentialAccessRoad = (
-  context: CanvasRenderingContext2D,
-  width: number,
-  height: number
-): void => {
-  const scaleX = width / 1024;
-  const scaleY = height / 768;
-  const lineScale = Math.min(scaleX, scaleY);
+const makeSoftenedLowerSource = (
+  image: HTMLImageElement,
+  blur: number,
+  clipRatio: number
+): HTMLCanvasElement => {
+  const width = image.naturalWidth;
+  const height = image.naturalHeight;
+  const sourceCanvas = makeCanvas(width, height);
+  const sourceContext = sourceCanvas.getContext('2d');
+  if (!sourceContext) return sourceCanvas;
+  sourceContext.drawImage(image, 0, 0, width, height);
 
-  context.save();
-  context.scale(scaleX, scaleY);
-  context.lineCap = 'round';
-  context.lineJoin = 'round';
+  const alphaMask = makeCanvas(width, height);
+  const maskContext = alphaMask.getContext('2d');
+  if (!maskContext) return sourceCanvas;
+  maskContext.filter = `blur(${blur}px)`;
+  maskContext.drawImage(image, 0, 0, width, height);
+  maskContext.filter = 'none';
 
-  const makeRoute = (): void => {
-    context.beginPath();
-    context.moveTo(512, 500);
-    context.bezierCurveTo(514, 542, 506, 590, 496, 644);
-  };
-
-  makeRoute();
-  context.strokeStyle = 'rgba(5, 14, 17, 0.55)';
-  context.lineWidth = 30 * lineScale;
-  context.stroke();
-
-  const roadGradient = context.createLinearGradient(0, 500, 0, 670);
-  roadGradient.addColorStop(0, 'rgba(49, 64, 67, 0.86)');
-  roadGradient.addColorStop(0.72, 'rgba(49, 64, 67, 0.72)');
-  roadGradient.addColorStop(1, 'rgba(49, 64, 67, 0)');
-  makeRoute();
-  context.strokeStyle = roadGradient;
-  context.lineWidth = 20 * lineScale;
-  context.stroke();
-
-  const centerGradient = context.createLinearGradient(0, 520, 0, 666);
-  centerGradient.addColorStop(0, 'rgba(215, 190, 105, 0.20)');
-  centerGradient.addColorStop(0.72, 'rgba(215, 190, 105, 0.14)');
-  centerGradient.addColorStop(1, 'rgba(215, 190, 105, 0)');
-  makeRoute();
-  context.setLineDash([9, 8]);
-  context.strokeStyle = centerGradient;
-  context.lineWidth = 2 * lineScale;
-  context.stroke();
-  context.restore();
+  const clipY = height * clipRatio;
+  sourceContext.save();
+  sourceContext.beginPath();
+  sourceContext.rect(0, clipY, width, height - clipY);
+  sourceContext.clip();
+  sourceContext.globalCompositeOperation = 'destination-in';
+  sourceContext.drawImage(alphaMask, 0, 0);
+  sourceContext.restore();
+  return sourceCanvas;
 };
 
 export const createCity01DistrictTexture = async (source: string): Promise<Texture | undefined> => {
@@ -112,26 +96,30 @@ export const createCity01DistrictTexture = async (source: string): Promise<Textu
   const context = canvas.getContext('2d');
   if (!context) return undefined;
 
-  drawResidentialAccessRoad(context, width, height);
-
   const terrainHalo = makeLowerHalo(
     image,
-    'rgba(25, 58, 48, 0.13)',
-    Math.max(4, width * 0.01),
-    Math.max(2, height * 0.0065),
+    'rgba(25, 58, 48, 0.12)',
+    Math.max(4, width * 0.009),
+    Math.max(2, height * 0.005),
     0.48
   );
   context.drawImage(terrainHalo, 0, 0);
 
   const contactShadow = makeLowerHalo(
     image,
-    'rgba(2, 8, 10, 0.16)',
-    Math.max(3, width * 0.006),
-    Math.max(2, height * 0.005),
-    0.56
+    'rgba(2, 8, 10, 0.12)',
+    Math.max(3, width * 0.005),
+    Math.max(2, height * 0.004),
+    0.58
   );
   context.drawImage(contactShadow, 0, 0);
-  context.drawImage(image, 0, 0, width, height);
+
+  const softenedSource = makeSoftenedLowerSource(
+    image,
+    Math.max(2, width * 0.003),
+    0.56
+  );
+  context.drawImage(softenedSource, 0, 0);
 
   const canvasSource = new CanvasSource({ resource: canvas });
   canvasSource.scaleMode = 'linear';
