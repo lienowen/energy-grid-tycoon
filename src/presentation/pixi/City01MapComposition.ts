@@ -49,6 +49,24 @@ const tile = (
   flipX
 });
 
+const inlet = (
+  id: string,
+  x: number,
+  y: number,
+  width: number,
+  flipX = false
+): City01MapPlacement => ({
+  id,
+  assetId: 'city01_ocean_inlet_patch',
+  point: city01MapToScenePoint(x, y, -0.3),
+  width,
+  anchorY: 0.5,
+  layer: 'terrain',
+  alpha: 1,
+  diagnosticsAlpha: 0.62,
+  flipX
+});
+
 const connector = (
   id: string,
   x: number,
@@ -87,7 +105,8 @@ const vehicle = (
 
 /**
  * One continuous island sits below the product pieces. Coast images are cut at
- * runtime so their original cyan water becomes transparent over the common sea.
+ * runtime so their original cyan water becomes transparent over shared ocean
+ * inlet patches rather than exposing the green island base.
  */
 export const city01IslandBoundary: readonly ScenePoint[] = [
   city01MapToScenePoint(18, 14, -0.34),
@@ -105,6 +124,13 @@ export const city01IslandBoundary: readonly ScenePoint[] = [
  * real crop of the product straight-road PNG, never a newly drawn gray panel.
  */
 export const city01MapPlacements: readonly City01MapPlacement[] = [
+  inlet('north-west-beach-water', 13, 28, 280),
+  inlet('west-seafront-water', 7, 54, 264),
+  inlet('west-harbor-water', 11, 76, 250),
+  inlet('east-coast-water', 101, 57, 258, true),
+  inlet('south-west-coast-water', 30, 94, 260, true),
+  inlet('south-beach-water', 58, 97, 286, true),
+  inlet('south-east-coast-water', 87, 90, 250),
   tile('north-west-beach', 'terrain_beach_open_base', 15, 25, EDGE_TILE_WIDTH, 'terrain', 1, 0.34),
   tile('north-west-forest', 'terrain_forest_base', 41, 9, EDGE_TILE_WIDTH, 'terrain', 1, 0.32),
   tile('north-park', 'terrain_small_park_base', 61, 15, TILE_WIDTH, 'groundDecorations', 1, 0.34),
@@ -169,5 +195,6 @@ export const city01RequiredLiveAssetIds = [
   'terrain_road_bridge_base',
   'terrain_road_dead_end_base',
   'terrain_small_park_base',
+  'city01_ocean_inlet_patch',
   'city01_road_connector_short'
 ] as const;
