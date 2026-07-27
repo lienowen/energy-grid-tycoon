@@ -1,12 +1,12 @@
 {
-  "schemaVersion": 11,
+  "schemaVersion": 12,
   "budgetBytes": 5000000,
   "entries": [
     {
       "id": "city01_ocean_water_base",
       "kind": "image",
       "src": "/assets/city01/product/environment/runtime/ocean-water-base.svg",
-      "version": 11,
+      "version": 12,
       "preload": "level",
       "width": 2048,
       "height": 1536,
@@ -14,15 +14,15 @@
       "tags": ["city-01", "environment", "ocean", "runtime"]
     },
     {
-      "id": "city01_road_connector_diagonal_base",
+      "id": "city01_road_connector_short",
       "kind": "image",
-      "src": "/assets/city01/product/environment/runtime/road-connector-diagonal-base.svg",
-      "version": 11,
+      "src": "/assets/city01/product/environment/base/terrain-road-straight-base.png",
+      "version": 12,
       "preload": "level",
-      "width": 640,
-      "height": 320,
+      "width": 1024,
+      "height": 768,
       "anchor": { "x": 0.5, "y": 0.5 },
-      "tags": ["city-01", "environment", "road", "connector", "runtime"]
+      "tags": ["city-01", "environment", "road", "connector", "runtime-crop"]
     }
   ]
 }
