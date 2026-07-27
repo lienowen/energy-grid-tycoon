@@ -1,0 +1,44 @@
+name: Build City-01 grounded assets
+
+on:
+  push:
+    branches:
+      - feat/commercial-standard-recovery-v1
+    paths:
+      - scripts/generate-city01-grounded-assets.py
+      - .github/workflows/build-city01-grounded-assets.yml
+      - public/assets/city01/product/districts/district-residential-base.png
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Pillow
+        run: python -m pip install --disable-pip-version-check pillow==11.3.0
+
+      - name: Generate residential grounded PNG
+        run: |
+          mkdir -p generated/city01
+          python scripts/generate-city01-grounded-assets.py \
+            --output generated/city01/district-residential-grounded.png \
+            --diagnostics generated/city01/diagnostics.json
+
+      - name: Upload generated asset
+        uses: actions/upload-artifact@v4
+        with:
+          name: city01-grounded-assets-${{ github.sha }}
+          path: generated/city01
+          if-no-files-found: error
+          retention-days: 14
