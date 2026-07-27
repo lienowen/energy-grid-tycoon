@@ -1,5 +1,9 @@
 import { Assets, Texture } from 'pixi.js';
 import { AssetManager } from '../../resources/AssetManager';
+import {
+  city01RuntimeTextureKind,
+  createCity01RuntimeTexture
+} from './City01RuntimeTextureFactory';
 
 export class PixiAssetLoader {
   private readonly requests = new Map<string, Promise<Texture | undefined>>();
@@ -15,7 +19,11 @@ export class PixiAssetLoader {
       return missing;
     }
 
-    const request = Assets.load<Texture>({ alias: assetId, src: source }).catch((error: unknown) => {
+    const request = (
+      city01RuntimeTextureKind(assetId)
+        ? createCity01RuntimeTexture(assetId, source)
+        : Assets.load<Texture>({ alias: assetId, src: source })
+    ).catch((error: unknown) => {
       console.warn(`Pixi texture failed to load: ${assetId}`, error);
       return undefined;
     });
