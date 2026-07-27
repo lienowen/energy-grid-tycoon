@@ -147,6 +147,51 @@ const dawnCityLayout: LevelSceneLayout = {
         { x: 77, y: 57 },
         { x: 85, y: 65 }
       ]
+    },
+    {
+      id: 'dawn-access-residential',
+      laneCount: 1,
+      points: [
+        { x: 55, y: 25 },
+        { x: 52, y: 25 },
+        { x: 49, y: 25 }
+      ]
+    },
+    {
+      id: 'dawn-access-commercial',
+      laneCount: 1,
+      points: [
+        { x: 35, y: 45 },
+        { x: 34.5, y: 47.5 },
+        { x: 34, y: 50 }
+      ]
+    },
+    {
+      id: 'dawn-access-industrial',
+      laneCount: 1,
+      points: [
+        { x: 77, y: 57 },
+        { x: 76, y: 55.5 },
+        { x: 75, y: 54 }
+      ]
+    },
+    {
+      id: 'dawn-access-public',
+      laneCount: 1,
+      points: [
+        { x: 58, y: 72 },
+        { x: 56, y: 72 },
+        { x: 54, y: 72 }
+      ]
+    },
+    {
+      id: 'dawn-access-old-town',
+      laneCount: 1,
+      points: [
+        { x: 85, y: 65 },
+        { x: 84.5, y: 67 },
+        { x: 84, y: 69 }
+      ]
     }
   ],
   environment: [
