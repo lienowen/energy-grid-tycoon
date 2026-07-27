@@ -13,6 +13,9 @@ export interface City01MapPlacement {
   diagnosticsAlpha?: number;
 }
 
+const TILE_WIDTH = 328;
+const EDGE_TILE_WIDTH = 336;
+
 const tile = (
   id: string,
   assetId: string,
@@ -50,30 +53,34 @@ const vehicle = (
 });
 
 /**
- * City-01 is authored as a compact isometric tile mosaic. These placements use
- * the product environment kit as the actual city floor instead of drawing a
- * large empty island and overlaying free-floating district samples.
+ * The product tiles have an 800px authored footprint inside a 1024px canvas.
+ * At a 20-unit isometric grid step, a 328px display width makes neighbouring
+ * diamond footprints meet edge-to-edge instead of floating as separate cards.
  */
 export const city01MapPlacements: readonly City01MapPlacement[] = [
-  tile('north-forest', 'terrain_forest_base', 55, 4, 278, 'terrain', 1, 0.42),
-  tile('north-solar-lot', 'terrain_empty_grasslot_base', 35, 20, 252, 'terrain', 1, 0.42),
-  tile('north-park', 'terrain_small_park_base', 55, 20, 252, 'terrain', 1, 0.45),
-  tile('north-road-corner', 'terrain_road_corner_base', 75, 20, 254, 'roads', 1, 0.58),
-  tile('east-ridge', 'terrain_rocky_hill_base', 95, 28, 252, 'terrain', 1, 0.4),
+  tile('north-forest', 'terrain_forest_base', 55, 4, EDGE_TILE_WIDTH, 'terrain', 1, 0.42),
+  tile('north-solar-lot', 'terrain_empty_grasslot_base', 35, 20, TILE_WIDTH, 'terrain', 1, 0.42),
+  tile('north-park', 'terrain_small_park_base', 55, 20, TILE_WIDTH, 'terrain', 1, 0.45),
+  tile('north-road-corner', 'terrain_road_corner_base', 75, 20, TILE_WIDTH, 'roads', 1, 0.58),
+  tile('east-ridge', 'terrain_rocky_hill_base', 95, 28, EDGE_TILE_WIDTH, 'terrain', 1, 0.4),
 
-  tile('west-beach', 'terrain_beach_open_base', 15, 38, 268, 'terrain', 1, 0.42),
-  tile('west-main-road', 'terrain_road_straight_base', 35, 40, 254, 'roads', 1, 0.58),
-  tile('central-crossroad', 'terrain_road_crossroad_base', 55, 40, 260, 'roads', 1, 0.62),
-  tile('east-junction', 'terrain_road_t_junction_base', 75, 40, 258, 'roads', 1, 0.6),
-  tile('east-cliff', 'terrain_coast_cliff_base', 95, 47, 270, 'terrain', 1, 0.42),
+  tile('west-beach', 'terrain_beach_open_base', 15, 38, EDGE_TILE_WIDTH, 'terrain', 1, 0.42),
+  tile('west-main-road', 'terrain_road_straight_base', 35, 40, TILE_WIDTH, 'roads', 1, 0.58),
+  tile('central-crossroad', 'terrain_road_crossroad_base', 55, 40, TILE_WIDTH, 'roads', 1, 0.62),
+  tile('east-junction', 'terrain_road_t_junction_base', 75, 40, TILE_WIDTH, 'roads', 1, 0.6),
+  tile('east-cliff', 'terrain_coast_cliff_base', 95, 47, EDGE_TILE_WIDTH, 'terrain', 1, 0.42),
 
-  tile('west-seafront', 'terrain_seafront_base', 15, 60, 270, 'terrain', 1, 0.42),
-  tile('west-riverfront', 'terrain_riverfront_base', 35, 60, 252, 'terrain', 1, 0.48),
-  tile('central-civic-park', 'terrain_park_plaza_base', 55, 60, 260, 'groundDecorations', 1, 0.48),
-  tile('east-bridge', 'terrain_road_bridge_base', 75, 60, 264, 'roads', 1, 0.58),
+  tile('west-seafront', 'terrain_seafront_base', 15, 60, EDGE_TILE_WIDTH, 'terrain', 1, 0.42),
+  tile('west-riverfront', 'terrain_riverfront_base', 35, 60, TILE_WIDTH, 'terrain', 1, 0.48),
+  tile('central-civic-park', 'terrain_park_plaza_base', 55, 60, TILE_WIDTH, 'groundDecorations', 1, 0.48),
+  tile('east-bridge', 'terrain_road_bridge_base', 75, 60, TILE_WIDTH, 'roads', 1, 0.58),
+  tile('east-forest', 'terrain_forest_base', 95, 67, EDGE_TILE_WIDTH, 'terrain', 1, 0.36),
 
-  tile('south-harbor', 'terrain_harbor_pier_base', 15, 82, 270, 'terrain', 1, 0.38),
-  tile('south-dead-end', 'terrain_road_dead_end_base', 35, 80, 252, 'roads', 1, 0.5),
+  tile('south-harbor', 'terrain_harbor_pier_base', 15, 82, EDGE_TILE_WIDTH, 'terrain', 1, 0.38),
+  tile('south-dead-end', 'terrain_road_dead_end_base', 35, 80, TILE_WIDTH, 'roads', 1, 0.5),
+  tile('south-park', 'terrain_small_park_base', 55, 80, TILE_WIDTH, 'groundDecorations', 1, 0.42),
+  tile('south-storage-lot', 'terrain_empty_grasslot_base', 75, 80, TILE_WIDTH, 'terrain', 1, 0.4),
+  tile('south-east-coast', 'terrain_coast_cliff_base', 95, 84, EDGE_TILE_WIDTH, 'terrain', 1, 0.34),
 
   vehicle('city-sedan', 'vehicle_sedan', 56, 39, 43),
   vehicle('civic-utility-van', 'vehicle_utility_van', 55, 61, 47),
