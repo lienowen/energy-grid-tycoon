@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 2,
+  "budgetBytes": 25000000,
+  "entries": [
+    {
+      "id": "commercial_facility_solar_active",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-distribution-node-base.png",
+      "version": 2,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "solar", "semantic-remap"]
+    },
+    {
+      "id": "commercial_facility_solar_offline",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-distribution-node-base.png",
+      "version": 2,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "solar", "offline", "semantic-remap"]
+    },
+    {
+      "id": "commercial_facility_wind_active",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-gas-peaker-base.png",
+      "version": 2,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "wind", "semantic-remap"]
+    },
+    {
+      "id": "commercial_facility_wind_offline",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-gas-peaker-base.png",
+      "version": 2,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "wind", "offline", "semantic-remap"]
+    },
+    {
+      "id": "commercial_facility_gas_active",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-main-substation-base.png",
+      "version": 2,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "gas", "semantic-remap"]
+    },
+    {
+      "id": "commercial_facility_gas_offline",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-main-substation-base.png",
+      "version": 2,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "gas", "offline", "semantic-remap"]
+    },
+    {
+      "id": "commercial_facility_battery_active",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-battery-storage-base.png",
+      "version": 2,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "battery", "semantic-remap"]
+    },
+    {
+      "id": "commercial_facility_battery_offline",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-battery-storage-base.png",
+      "version": 2,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "battery", "offline", "semantic-remap"]
+    },
+    {
+      "id": "commercial_facility_substation_active",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-solar-farm-base.png",
+      "version": 2,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "substation", "semantic-remap"]
+    },
+    {
+      "id": "commercial_facility_substation_offline",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-solar-farm-base.png",
+      "version": 2,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "substation", "offline", "semantic-remap"]
+    },
+    {
+      "id": "world_facility_grid_node_active",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-wind-farm-base.png",
+      "version": 2,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "distribution", "semantic-remap"]
+    },
+    {
+      "id": "world_facility_grid_node_overload",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-wind-farm-base.png",
+      "version": 2,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "distribution", "overload", "semantic-remap"]
+    },
+    {
+      "id": "world_facility_grid_node_offline",
+      "kind": "image",
+      "src": "/assets/city01/product/facilities/facility-wind-farm-base.png",
+      "version": 2,
+      "preload": "level",
+      "width": 1024,
+      "height": 768,
+      "anchor": { "x": 0.5, "y": 0.9115 },
+      "tags": ["city-01", "facility", "distribution", "offline", "semantic-remap"]
+    }
+  ]
+}
