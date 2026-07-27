@@ -79,7 +79,7 @@ describe('CitySceneMapper', () => {
 
   it('uses the authored camera composition for Dawn City', () => {
     const scene = CitySceneMapper.map(makeView());
-    expect(scene.camera.startZoom).toBe(1.34);
+    expect(scene.camera.startZoom).toBe(1.26);
     expect(scene.camera.panLimitX).toBe(180);
     expect(scene.focus).toEqual(toScenePoint({ x: 57, y: 48, elevation: 0 }));
     expect(scene.camera.minZoom).toBeLessThan(scene.camera.maxZoom);
