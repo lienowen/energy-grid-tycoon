@@ -55,20 +55,27 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      - name: Publish generated PNG to development branch
+      - name: Publish generated PNG through Contents API
         if: github.event_name == 'pull_request' || github.event_name == 'push'
         env:
+          GH_TOKEN: ${{ github.token }}
           TARGET_BRANCH: ${{ github.head_ref || github.ref_name }}
         run: |
           target=public/assets/city01/product/districts/runtime/district-residential-integrated.png
-          mkdir -p "$(dirname "$target")"
-          cp generated/city01/district-residential-integrated.png "$target"
-          if [ -z "$(git status --porcelain -- "$target")" ]; then
-            echo "Generated residential PNG is unchanged."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$target"
-          git commit -m "art: publish City-01 residential integrated PNG [skip ci]"
-          git push origin "HEAD:${TARGET_BRANCH}"
+          python - <<'PY'
+          import base64
+          import json
+          import os
+          from pathlib import Path
+
+          source = Path('generated/city01/district-residential-integrated.png')
+          payload = {
+              'message': 'art: publish City-01 residential integrated PNG [skip ci]',
+              'content': base64.b64encode(source.read_bytes()).decode('ascii'),
+              'branch': os.environ['TARGET_BRANCH'],
+          }
+          Path('/tmp/residential-publish.json').write_text(json.dumps(payload), encoding='utf-8')
+          PY
+          gh api --method PUT \
+            "repos/${GITHUB_REPOSITORY}/contents/${target}" \
+            --input /tmp/residential-publish.json
