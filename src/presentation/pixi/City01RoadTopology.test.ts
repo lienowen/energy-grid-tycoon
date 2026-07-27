@@ -66,23 +66,16 @@ const state = {
 } as unknown as CitySceneState;
 
 describe('City01RoadTopology', () => {
-  it('adds one connected access road for every district and facility', () => {
+  it('keeps only short access roads and rejects long facility connectors', () => {
     const access = buildCity01AccessRoads(state);
-    expect(access).toHaveLength(2);
-    expect(access.map((road) => road.id)).toEqual([
-      'district-access-district-a',
-      'facility-access-facility-a'
-    ]);
-    expect(access.every((road) => road.points.length === 2)).toBe(true);
+    expect(access).toHaveLength(1);
+    expect(access[0]?.id).toBe('district-access-district-a');
+    expect(access[0]?.points).toHaveLength(2);
   });
 
-  it('anchors each access road to an existing backbone point', () => {
-    const backboneKeys = new Set(
-      state.roads.flatMap((road) => road.points.map((point) => `${point.x}:${point.z}`))
-    );
-    for (const road of buildCity01AccessRoads(state)) {
-      const start = road.points[0]!;
-      expect(backboneKeys.has(`${start.x}:${start.z}`)).toBe(true);
-    }
+  it('projects access roads onto a real backbone segment instead of a distant vertex', () => {
+    const access = buildCity01AccessRoads(state);
+    const start = access[0]?.points[0];
+    expect(start).toMatchObject({ x: 18, z: 0 });
   });
 });
