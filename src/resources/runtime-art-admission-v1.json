@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 1,
+  "policy": {
+    "candidateAssetsMayEnterRuntimeCatalog": false,
+    "approvedAssetsRequireTransparentBorder": true,
+    "approvedAssetsRequireScreenshotReview": true,
+    "approvedAssetsRequireStateAlignment": true,
+    "maximumBorderOpaqueRatio": 0.01,
+    "minimumSubjectCoverage": 0.08,
+    "maximumSubjectCoverage": 0.86
+  },
+  "facilities": [
+    {
+      "id": "solar_basic",
+      "admission": "candidate",
+      "category": "generation",
+      "footprint": { "width": 2, "height": 2 },
+      "anchor": { "x": 0.5, "y": 0.88 },
+      "connectionPoint": { "x": 0.55, "y": 0.54 },
+      "fxPoints": {
+        "warning": { "x": 0.5, "y": 0.18 },
+        "energize": { "x": 0.54, "y": 0.5 }
+      },
+      "assets": {
+        "base": "public/assets/single/v1/solar_sheet/solar_sheet__01__base-main.png",
+        "construction": "public/assets/single/v1/solar_sheet/solar_sheet__02__construction.png",
+        "offline": "public/assets/single/v1/solar_sheet/solar_sheet__03__offline.png",
+        "fault": "public/assets/single/v1/solar_sheet/solar_sheet__04__fault-or-limited.png",
+        "selection": "public/assets/single/v1/solar_sheet/solar_sheet__05__selection-ring.png",
+        "menuIcon": "public/assets/single/v1/solar_sheet/solar_sheet__07__menu-icon.png"
+      },
+      "blockers": [
+        "transparent-border review not completed",
+        "anchor and nominal scale not validated in the real City-01 screenshot",
+        "state sprites have not been normalized to one canvas and one ground line"
+      ]
+    },
+    {
+      "id": "wind_basic",
+      "admission": "candidate",
+      "category": "generation",
+      "footprint": { "width": 1, "height": 2 },
+      "anchor": { "x": 0.5, "y": 0.94 },
+      "connectionPoint": { "x": 0.5, "y": 0.66 },
+      "fxPoints": {
+        "rotor": { "x": 0.5, "y": 0.23 },
+        "warning": { "x": 0.5, "y": 0.12 }
+      },
+      "assets": {
+        "base": "public/assets/single/v1/wind_sheet/wind_sheet__01__base-main.png",
+        "rotor": "public/assets/single/v1/wind_sheet/wind_sheet__02__rotor-detail.png",
+        "tower": "public/assets/single/v1/wind_sheet/wind_sheet__03__tower-detail.png",
+        "construction": "public/assets/single/v1/wind_sheet/wind_sheet__04__construction.png",
+        "fault": "public/assets/single/v1/wind_sheet/wind_sheet__05__fault-or-limited.png",
+        "selection": "public/assets/single/v1/wind_sheet/wind_sheet__06__selection-ring.png",
+        "menuIcon": "public/assets/single/v1/wind_sheet/wind_sheet__07__menu-icon.png"
+      },
+      "blockers": [
+        "offline state is missing",
+        "rotor and tower pivot alignment is not validated",
+        "transparent-border and final map scale review not completed"
+      ]
+    },
+    {
+      "id": "gas_basic",
+      "admission": "candidate",
+      "category": "generation",
+      "footprint": { "width": 3, "height": 3 },
+      "anchor": { "x": 0.5, "y": 0.89 },
+      "connectionPoint": { "x": 0.58, "y": 0.55 },
+      "fxPoints": {
+        "smoke": { "x": 0.58, "y": 0.17 },
+        "warning": { "x": 0.5, "y": 0.13 }
+      },
+      "assets": {
+        "base": "public/assets/single/v1/gas_sheet/gas_sheet__01__base-main.png",
+        "construction": "public/assets/single/v1/gas_sheet/gas_sheet__02__construction.png",
+        "offline": "public/assets/single/v1/gas_sheet/gas_sheet__03__offline.png",
+        "fault": "public/assets/single/v1/gas_sheet/gas_sheet__05__fault-or-limited.png",
+        "smoke": "public/assets/single/v1/gas_sheet/gas_sheet__06__smoke-white.png",
+        "faultSmoke": "public/assets/single/v1/gas_sheet/gas_sheet__07__smoke-dark.png",
+        "selection": "public/assets/single/v1/gas_sheet/gas_sheet__08__selection-ring.png",
+        "menuIcon": "public/assets/single/v1/gas_sheet/gas_sheet__11__menu-icon.png"
+      },
+      "blockers": [
+        "smoke textures must be separated from any sheet background",
+        "three facility states do not share a verified ground line",
+        "real map semantic recognition and footprint review not completed"
+      ]
+    },
+    {
+      "id": "battery_basic",
+      "admission": "candidate",
+      "category": "storage",
+      "footprint": { "width": 2, "height": 2 },
+      "anchor": { "x": 0.5, "y": 0.89 },
+      "connectionPoint": { "x": 0.54, "y": 0.55 },
+      "fxPoints": {
+        "charge": { "x": 0.52, "y": 0.38 },
+        "warning": { "x": 0.5, "y": 0.16 }
+      },
+      "assets": {
+        "base": "public/assets/single/v1/battery_sheet/battery_sheet__01__base-main.png",
+        "construction": "public/assets/single/v1/battery_sheet/battery_sheet__02__construction.png",
+        "offline": "public/assets/single/v1/battery_sheet/battery_sheet__03__offline.png",
+        "fault": "public/assets/single/v1/battery_sheet/battery_sheet__04__fault-or-limited.png",
+        "warning": "public/assets/single/v1/battery_sheet/battery_sheet__05__warning-icon.png",
+        "selection": "public/assets/single/v1/battery_sheet/battery_sheet__06__selection-ring-cyan.png",
+        "menuIcon": "public/assets/single/v1/battery_sheet/battery_sheet__09__menu-icon.png"
+      },
+      "blockers": [
+        "charge and discharge visual states are missing",
+        "state canvas normalization and transparent-border review not completed",
+        "storage level feedback must be driven by code rather than baked into the sprite"
+      ]
+    },
+    {
+      "id": "battery_utility",
+      "admission": "candidate",
+      "category": "storage",
+      "footprint": { "width": 3, "height": 3 },
+      "anchor": { "x": 0.5, "y": 0.9 },
+      "connectionPoint": { "x": 0.55, "y": 0.57 },
+      "fxPoints": {
+        "charge": { "x": 0.5, "y": 0.4 },
+        "warning": { "x": 0.5, "y": 0.14 }
+      },
+      "assets": {
+        "base": "public/assets/single/v1/battery_utility_sheet/battery_utility_sheet__01__base-main.png",
+        "construction": "public/assets/single/v1/battery_utility_sheet/battery_utility_sheet__02__construction.png",
+        "offline": "public/assets/single/v1/battery_utility_sheet/battery_utility_sheet__03__offline.png",
+        "fault": "public/assets/single/v1/battery_utility_sheet/battery_utility_sheet__05__fault-or-limited.png",
+        "warning": "public/assets/single/v1/battery_utility_sheet/battery_utility_sheet__06__warning-icon.png",
+        "selection": "public/assets/single/v1/battery_utility_sheet/battery_utility_sheet__10__selection-ring-cyan.png",
+        "menuIcon": "public/assets/single/v1/battery_utility_sheet/battery_utility_sheet__07__menu-icon.png"
+      },
+      "blockers": [
+        "large facility scale has not been validated against City-03 and City-01 utility plots",
+        "charge and discharge effects are missing",
+        "transparent border and state ground-line alignment not completed"
+      ]
+    },
+    {
+      "id": "main_substation",
+      "admission": "candidate",
+      "category": "grid",
+      "footprint": { "width": 3, "height": 2 },
+      "anchor": { "x": 0.5, "y": 0.89 },
+      "connectionPoint": { "x": 0.5, "y": 0.5 },
+      "fxPoints": {
+        "energize": { "x": 0.5, "y": 0.42 },
+        "warning": { "x": 0.5, "y": 0.12 }
+      },
+      "assets": {
+        "base": "public/assets/single/v1/substation_sheet/substation_sheet__01__base-main.png",
+        "offline": "public/assets/single/v1/substation_sheet/substation_sheet__02__offline.png",
+        "construction": "public/assets/single/v1/substation_sheet/substation_sheet__03__construction.png",
+        "energize": "public/assets/single/v1/substation_sheet/substation_sheet__04__energize-fx.png",
+        "fault": "public/assets/single/v1/substation_sheet/substation_sheet__05__fault-or-limited.png",
+        "selection": "public/assets/single/v1/substation_sheet/substation_sheet__06__selection-ring.png",
+        "menuIcon": "public/assets/single/v1/substation_sheet/substation_sheet__07__menu-icon.png"
+      },
+      "blockers": [
+        "business meaning and scale were previously rejected in the real screenshot",
+        "connection point and line overlap are not revalidated",
+        "transparent border and state alignment review not completed"
+      ]
+    },
+    {
+      "id": "transmission_node",
+      "admission": "candidate",
+      "category": "grid",
+      "footprint": { "width": 1, "height": 1 },
+      "anchor": { "x": 0.5, "y": 0.95 },
+      "connectionPoint": { "x": 0.5, "y": 0.4 },
+      "fxPoints": {
+        "spark": { "x": 0.5, "y": 0.23 },
+        "warning": { "x": 0.5, "y": 0.13 }
+      },
+      "assets": {
+        "base": "public/assets/single/v1/tower_sheet/tower_sheet__01__base-main.png",
+        "offline": "public/assets/single/v1/tower_sheet/tower_sheet__02__offline.png",
+        "fault": "public/assets/single/v1/tower_sheet/tower_sheet__03__fault-or-limited.png",
+        "spark": "public/assets/single/v1/tower_sheet/tower_sheet__06__spark-fx.png",
+        "selection": "public/assets/single/v1/tower_sheet/tower_sheet__05__selection-ring-main.png",
+        "menuIcon": "public/assets/single/v1/tower_sheet/tower_sheet__09__menu-icon.png"
+      },
+      "blockers": [
+        "tower silhouette and line attachment points are not validated at game scale",
+        "construction state is missing",
+        "transparent border and shadow direction review not completed"
+      ]
+    }
+  ],
+  "shared": [
+    {
+      "id": "grid_state_pack",
+      "admission": "candidate",
+      "assets": {
+        "normal": "public/assets/single/v1/grid_sheet/grid_sheet__01__line-normal-with-towers.png",
+        "overload": "public/assets/single/v1/grid_sheet/grid_sheet__02__line-overload-with-towers.png",
+        "offline": "public/assets/single/v1/grid_sheet/grid_sheet__03__line-offline-with-towers.png",
+        "highLoad": "public/assets/single/v1/grid_sheet/grid_sheet__04__line-highload.png",
+        "restore": "public/assets/single/v1/grid_sheet/grid_sheet__06__line-restore.png",
+        "flow": "public/assets/single/v1/grid_sheet/grid_sheet__08__line-flow.png",
+        "warning": "public/assets/single/v1/grid_sheet/grid_sheet__09__warning-panel.png"
+      },
+      "blockers": [
+        "line textures include tower compositions and are not yet modular",
+        "directional stretching and route curvature have not been validated",
+        "grid state colors must remain readable for color-vision deficiencies"
+      ]
+    },
+    {
+      "id": "ground_lot_pack",
+      "admission": "candidate",
+      "assets": {
+        "grass": "public/assets/single/v1/ground_sheet/ground_sheet__01__grass-lot.png",
+        "paved": "public/assets/single/v1/ground_sheet/ground_sheet__02__paved-lot-a.png",
+        "gravel": "public/assets/single/v1/ground_sheet/ground_sheet__06__gravel-lot-a.png",
+        "mask": "public/assets/single/v1/ground_sheet/ground_sheet__08__lot-mask-rounded.png"
+      },
+      "blockers": [
+        "lot assets have not been matched to authored road perspective",
+        "edge transparency and repetition visibility have not been reviewed"
+      ]
+    },
+    {
+      "id": "construction_feedback_pack",
+      "admission": "candidate",
+      "assets": {
+        "foundation": "public/assets/single/v1/build_sheet/build_sheet__01__build-base.png",
+        "construction": "public/assets/single/v1/build_sheet/build_sheet__02__build-construction-main.png",
+        "offline": "public/assets/single/v1/build_sheet/build_sheet__03__build-offline.png",
+        "warning": "public/assets/single/v1/build_sheet/build_sheet__09__warning-icon.png",
+        "menuIcon": "public/assets/single/v1/build_sheet/build_sheet__16__menu-icon.png"
+      },
+      "blockers": [
+        "generic construction stages are not aligned with every facility footprint",
+        "small-bar fragments need semantic classification before runtime use"
+      ]
+    }
+  ]
+}
