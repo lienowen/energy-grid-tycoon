@@ -4,50 +4,83 @@ import type {
   ScenePoint
 } from '../CitySceneTypes';
 
+interface SegmentProjection {
+  point: ScenePoint;
+  distanceSquared: number;
+}
+
 const pointDistanceSquared = (left: ScenePoint, right: ScenePoint): number => {
   const dx = left.x - right.x;
   const dz = left.z - right.z;
   return dx * dx + dz * dz;
 };
 
-export const buildCity01AccessRoads = (state: CitySceneState): RoadSceneState[] => {
-  const backbonePoints = state.roads.flatMap((road) => road.points);
-  if (backbonePoints.length === 0) return [];
-
-  const nearestBackbonePoint = (target: ScenePoint): ScenePoint => {
-    let nearest = backbonePoints[0]!;
-    let nearestDistance = Number.POSITIVE_INFINITY;
-    for (const point of backbonePoints) {
-      const distance = pointDistanceSquared(point, target);
-      if (distance < nearestDistance) {
-        nearest = point;
-        nearestDistance = distance;
-      }
-    }
-    return nearest;
+const projectToSegment = (
+  target: ScenePoint,
+  start: ScenePoint,
+  end: ScenePoint
+): SegmentProjection => {
+  const dx = end.x - start.x;
+  const dz = end.z - start.z;
+  const lengthSquared = dx * dx + dz * dz;
+  if (lengthSquared <= 0.0001) {
+    return { point: start, distanceSquared: pointDistanceSquared(target, start) };
+  }
+  const t = Math.min(1, Math.max(0,
+    ((target.x - start.x) * dx + (target.z - start.z) * dz) / lengthSquared
+  ));
+  const point: ScenePoint = {
+    x: start.x + dx * t,
+    z: start.z + dz * t,
+    elevation: 0.02
   };
+  return { point, distanceSquared: pointDistanceSquared(target, point) };
+};
 
-  const districtRoads = (state.districtPrefabs ?? []).map((district): RoadSceneState => ({
-    id: `district-access-${district.id}`,
-    points: [
-      nearestBackbonePoint(district),
-      { x: district.x, z: district.z, elevation: 0.02 }
-    ],
-    laneCount: district.kind === 'industrial' || district.kind === 'commercial' ? 2 : 1,
-    traffic: state.trafficDensity,
-    powered: district.powerRatio > 0.05
-  }));
+const nearestBackboneProjection = (
+  roads: readonly RoadSceneState[],
+  target: ScenePoint
+): SegmentProjection | undefined => {
+  let nearest: SegmentProjection | undefined;
+  for (const road of roads) {
+    for (let index = 0; index < road.points.length - 1; index += 1) {
+      const start = road.points[index];
+      const end = road.points[index + 1];
+      if (!start || !end) continue;
+      const projection = projectToSegment(target, start, end);
+      if (!nearest || projection.distanceSquared < nearest.distanceSquared) nearest = projection;
+    }
+  }
+  return nearest;
+};
 
-  const facilityRoads = state.facilities.map((facility): RoadSceneState => ({
-    id: `facility-access-${facility.instanceId}`,
-    points: [
-      nearestBackbonePoint(facility),
-      { x: facility.x, z: facility.z, elevation: 0.02 }
-    ],
-    laneCount: 1,
-    traffic: state.trafficDensity * 0.45,
-    powered: facility.enabled
-  }));
+export const buildCity01AccessRoads = (state: CitySceneState): RoadSceneState[] => {
+  if (state.roads.every((road) => road.points.length < 2)) return [];
 
-  return [...districtRoads, ...facilityRoads];
+  const accessRoads: RoadSceneState[] = [];
+  for (const district of state.districtPrefabs ?? []) {
+    const projection = nearestBackboneProjection(state.roads, district);
+    if (!projection || projection.distanceSquared > 13 * 13) continue;
+    accessRoads.push({
+      id: `district-access-${district.id}`,
+      points: [projection.point, { x: district.x, z: district.z, elevation: 0.02 }],
+      laneCount: 1,
+      traffic: state.trafficDensity * 0.5,
+      powered: district.powerRatio > 0.05
+    });
+  }
+
+  for (const facility of state.facilities) {
+    const projection = nearestBackboneProjection(state.roads, facility);
+    if (!projection || projection.distanceSquared > 6 * 6) continue;
+    accessRoads.push({
+      id: `facility-access-${facility.instanceId}`,
+      points: [projection.point, { x: facility.x, z: facility.z, elevation: 0.02 }],
+      laneCount: 1,
+      traffic: state.trafficDensity * 0.2,
+      powered: facility.enabled
+    });
+  }
+
+  return accessRoads;
 };
