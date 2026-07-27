@@ -4,6 +4,7 @@ import commercialCatalogData from './asset-catalog-commercial.json';
 import city01ProductCatalogData from './asset-catalog-city01-v0.5.json';
 import city01RuntimeCatalogData from './asset-catalog-city01-runtime.json';
 import city01FacilityRuntimeCatalogData from './asset-catalog-city01-facility-runtime.json';
+import city01MapRuntimeCatalogData from './asset-catalog-city01-map-runtime.json';
 import type { AssetCatalog, AssetEntry } from './AssetManager';
 
 const legacyCatalog = legacyCatalogData as unknown as AssetCatalog;
@@ -12,6 +13,7 @@ const commercialCatalog = commercialCatalogData as unknown as AssetCatalog;
 const city01ProductCatalog = city01ProductCatalogData as unknown as AssetCatalog;
 const city01RuntimeCatalog = city01RuntimeCatalogData as unknown as AssetCatalog;
 const city01FacilityRuntimeCatalog = city01FacilityRuntimeCatalogData as unknown as AssetCatalog;
+const city01MapRuntimeCatalog = city01MapRuntimeCatalogData as unknown as AssetCatalog;
 
 const mergeEntries = (...catalogs: readonly AssetCatalog[]): AssetEntry[] => {
   const entries = new Map<string, AssetEntry>();
@@ -28,20 +30,23 @@ export const globalAssetCatalog: AssetCatalog = {
     commercialCatalog.schemaVersion,
     city01ProductCatalog.schemaVersion,
     city01RuntimeCatalog.schemaVersion,
-    city01FacilityRuntimeCatalog.schemaVersion
+    city01FacilityRuntimeCatalog.schemaVersion,
+    city01MapRuntimeCatalog.schemaVersion
   ),
   budgetBytes: (legacyCatalog.budgetBytes ?? 0)
     + (v5Catalog.budgetBytes ?? 100_000_000)
     + (commercialCatalog.budgetBytes ?? 40_000_000)
     + (city01ProductCatalog.budgetBytes ?? 80_000_000)
     + (city01RuntimeCatalog.budgetBytes ?? 50_000_000)
-    + (city01FacilityRuntimeCatalog.budgetBytes ?? 25_000_000),
+    + (city01FacilityRuntimeCatalog.budgetBytes ?? 25_000_000)
+    + (city01MapRuntimeCatalog.budgetBytes ?? 4_000_000),
   entries: mergeEntries(
     legacyCatalog,
     v5Catalog,
     commercialCatalog,
     city01ProductCatalog,
     city01RuntimeCatalog,
-    city01FacilityRuntimeCatalog
+    city01FacilityRuntimeCatalog,
+    city01MapRuntimeCatalog
   )
 };
