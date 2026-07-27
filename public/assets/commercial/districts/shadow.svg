@@ -1,50 +1,73 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="768" viewBox="0 0 1024 768">
   <defs>
-    <radialGradient id="terrain-blend" cx="50%" cy="74%" rx="42%" ry="20%">
-      <stop offset="0" stop-color="#243a34" stop-opacity=".42"/>
-      <stop offset=".52" stop-color="#172b27" stop-opacity=".24"/>
-      <stop offset="1" stop-color="#0d211e" stop-opacity="0"/>
-    </radialGradient>
+    <linearGradient id="apron" x1="250" y1="520" x2="790" y2="720">
+      <stop stop-color="#315246"/>
+      <stop offset=".48" stop-color="#244138"/>
+      <stop offset="1" stop-color="#172e29"/>
+    </linearGradient>
+    <linearGradient id="paving" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#405053"/>
+      <stop offset="1" stop-color="#253437"/>
+    </linearGradient>
     <radialGradient id="contact-shadow" cx="50%" cy="50%" rx="50%" ry="50%">
-      <stop offset="0" stop-color="#010608" stop-opacity=".58"/>
-      <stop offset=".62" stop-color="#02080b" stop-opacity=".34"/>
+      <stop offset="0" stop-color="#010608" stop-opacity=".62"/>
+      <stop offset=".64" stop-color="#02080b" stop-opacity=".38"/>
       <stop offset="1" stop-color="#02080b" stop-opacity="0"/>
     </radialGradient>
-    <linearGradient id="road-fade" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#28383b" stop-opacity="0"/>
-      <stop offset=".28" stop-color="#28383b" stop-opacity=".42"/>
-      <stop offset=".72" stop-color="#28383b" stop-opacity=".42"/>
-      <stop offset="1" stop-color="#28383b" stop-opacity="0"/>
-    </linearGradient>
-    <filter id="terrain-blur" x="-20%" y="-50%" width="140%" height="200%">
-      <feGaussianBlur stdDeviation="22"/>
+    <filter id="outer-feather" x="-20%" y="-40%" width="140%" height="180%">
+      <feGaussianBlur stdDeviation="12"/>
     </filter>
     <filter id="shadow-blur" x="-25%" y="-80%" width="150%" height="260%">
-      <feGaussianBlur stdDeviation="16"/>
+      <feGaussianBlur stdDeviation="15"/>
     </filter>
-    <filter id="road-blur" x="-30%" y="-80%" width="160%" height="260%">
-      <feGaussianBlur stdDeviation="7"/>
+    <filter id="soft" x="-20%" y="-40%" width="140%" height="180%">
+      <feGaussianBlur stdDeviation="3"/>
     </filter>
-    <mask id="edge-feather">
-      <ellipse cx="512" cy="628" rx="330" ry="106" fill="white" filter="url(#terrain-blur)"/>
-    </mask>
   </defs>
 
-  <!-- Soft terrain colour bridge: hides rectangular source-canvas edges without
-       replacing the district artwork itself. -->
-  <ellipse cx="512" cy="626" rx="330" ry="102" fill="url(#terrain-blend)" mask="url(#edge-feather)"/>
+  <!-- A broad irregular land apron extends beyond the baked rectangular district
+       platform. It is intentionally shared by all five City-01 districts so the
+       existing subject artwork remains untouched. -->
+  <path d="M210 616 C242 570 312 548 381 550 C426 520 508 516 570 536 C643 526 727 554 792 602 C820 628 810 674 770 698 C704 724 632 720 572 714 C500 735 405 728 344 710 C276 710 221 682 210 646Z"
+        fill="#10251f" opacity=".32" filter="url(#outer-feather)"/>
+  <path d="M226 614 C262 574 324 558 390 559 C442 535 507 533 565 550 C642 540 712 562 782 610 C798 632 786 660 756 680 C689 706 627 700 565 696 C496 716 420 708 356 692 C298 696 245 672 226 642Z"
+        fill="url(#apron)" opacity=".94" stroke="#58776b" stroke-opacity=".20" stroke-width="3"/>
 
-  <!-- Short neutral access-road seams. They fade before reaching the asset edge,
-       so authored roads can overlap them without a visible hard junction. -->
-  <g fill="none" stroke="url(#road-fade)" stroke-linecap="round" filter="url(#road-blur)" opacity=".72">
-    <path d="M512 644 L512 714" stroke-width="28"/>
-    <path d="M392 634 L322 672" stroke-width="22"/>
-    <path d="M632 634 L702 672" stroke-width="22"/>
+  <!-- Break up the apron so it reads as terrain, not another clean rectangular tile. -->
+  <path d="M252 617 C310 585 365 580 420 586 C376 614 346 645 324 681 C276 678 244 654 252 617Z"
+        fill="#365b49" opacity=".42" filter="url(#soft)"/>
+  <path d="M620 562 C687 563 741 586 774 616 C748 620 708 634 675 655 C660 617 643 588 620 562Z"
+        fill="#1a342e" opacity=".46" filter="url(#soft)"/>
+  <path d="M382 682 C438 664 505 669 565 690 C516 708 446 711 382 695Z"
+        fill="#2f4b3e" opacity=".40" filter="url(#soft)"/>
+
+  <!-- Three short access-road mouths remain visible outside the district sprite.
+       Authored main roads can overlap these neutral seams from any side. -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M512 640 L512 735" stroke="#10191c" stroke-width="34" opacity=".78"/>
+    <path d="M512 640 L512 735" stroke="url(#paving)" stroke-width="24" opacity=".96"/>
+    <path d="M512 658 L512 735" stroke="#d4bd70" stroke-width="2" stroke-dasharray="9 8" opacity=".30"/>
+
+    <path d="M388 628 L285 690" stroke="#10191c" stroke-width="28" opacity=".72"/>
+    <path d="M388 628 L285 690" stroke="url(#paving)" stroke-width="19" opacity=".92"/>
+
+    <path d="M636 628 L739 690" stroke="#10191c" stroke-width="28" opacity=".72"/>
+    <path d="M636 628 L739 690" stroke="url(#paving)" stroke-width="19" opacity=".92"/>
   </g>
 
-  <!-- Tight contact shadow directly below the district footprint. -->
-  <ellipse cx="512" cy="648" rx="258" ry="56" fill="url(#contact-shadow)" filter="url(#shadow-blur)"/>
+  <!-- Tight occlusion and soft shadow attach the baked platform to the apron. -->
+  <ellipse cx="512" cy="647" rx="268" ry="58" fill="url(#contact-shadow)" filter="url(#shadow-blur)"/>
+  <ellipse cx="512" cy="641" rx="220" ry="31" fill="#02070a" opacity=".24"/>
 
-  <!-- Small near-ground occlusion keeps the visual mass attached at normal zoom. -->
-  <ellipse cx="512" cy="642" rx="214" ry="31" fill="#02070a" opacity=".23"/>
+  <!-- Sparse edge details keep the shared apron organic at normal game zoom. -->
+  <g fill="#4b7659" opacity=".58">
+    <circle cx="275" cy="613" r="9"/><circle cx="296" cy="596" r="6"/>
+    <circle cx="735" cy="615" r="8"/><circle cx="714" cy="590" r="5"/>
+    <circle cx="347" cy="692" r="6"/><circle cx="670" cy="690" r="7"/>
+  </g>
+  <g fill="#6b7468" opacity=".32">
+    <ellipse cx="313" cy="662" rx="18" ry="5"/>
+    <ellipse cx="702" cy="661" rx="20" ry="5"/>
+    <ellipse cx="591" cy="696" rx="15" ry="4"/>
+  </g>
 </svg>
