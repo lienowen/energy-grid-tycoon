@@ -1,4 +1,4 @@
-import { ImmersivePixiWorld } from '../../presentation/pixi/ImmersivePixiWorld';
+import { AdaptiveImmersiveWorld } from '../../presentation/pixi/AdaptiveImmersiveWorld';
 import { PixiGameWorld } from '../../presentation/pixi/PixiGameWorld';
 import { HologramSandbox as LegacyHologramSandbox } from './LegacyHologramSandbox';
 import type { WorldRenderActions, WorldRenderSurface } from './WorldRenderSurface';
@@ -38,7 +38,7 @@ export class HologramSandbox implements WorldRenderSurface {
       ? new LegacyHologramSandbox(container, actions)
       : mode === 'pixi'
         ? new PixiGameWorld(container, actions)
-        : new ImmersivePixiWorld(container, actions);
+        : new AdaptiveImmersiveWorld(container, actions);
   }
 
   mount(): void {
