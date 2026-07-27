@@ -17,6 +17,13 @@ describe('City01MapComposition', () => {
     }
   });
 
+  it('projects map coordinates into the same bounded scene space as districts', () => {
+    for (const placement of city01MapPlacements) {
+      expect(Math.abs(placement.point.x)).toBeLessThanOrEqual(55);
+      expect(Math.abs(placement.point.z)).toBeLessThanOrEqual(40);
+    }
+  });
+
   it('adds product vehicles without turning the map into a traffic layer', () => {
     const vehicles = city01MapPlacements.filter((placement) => placement.layer === 'vehicles');
     expect(vehicles).toHaveLength(3);
