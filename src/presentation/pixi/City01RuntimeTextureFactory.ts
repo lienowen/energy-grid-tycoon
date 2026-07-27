@@ -1,6 +1,6 @@
 import { CanvasSource, Texture } from 'pixi.js';
 
-type RuntimeTextureKind = 'coast-cutout' | 'road-crop';
+type RuntimeTextureKind = 'coast-blend' | 'road-crop';
 
 const coastAssetIds = new Set([
   'terrain_riverfront_base',
@@ -14,9 +14,12 @@ const coastAssetIds = new Set([
 const ROAD_CONNECTOR_ID = 'city01_road_connector_short';
 const requests = new Map<string, Promise<Texture | undefined>>();
 
+const clamp = (value: number, minimum: number, maximum: number): number =>
+  Math.min(maximum, Math.max(minimum, value));
+
 export const city01RuntimeTextureKind = (assetId: string): RuntimeTextureKind | undefined => {
   if (assetId === ROAD_CONNECTOR_ID) return 'road-crop';
-  if (coastAssetIds.has(assetId)) return 'coast-cutout';
+  if (coastAssetIds.has(assetId)) return 'coast-blend';
   return undefined;
 };
 
@@ -31,6 +34,22 @@ export const isCity01WaterPixel = (
   && blue > red * 1.18
   && green > red * 1.08
   && blue + green - red * 2 > 45;
+
+export const matchCity01WaterColor = (
+  red: number,
+  green: number,
+  blue: number,
+  alpha: number
+): readonly [number, number, number, number] => {
+  if (!isCity01WaterPixel(red, green, blue, alpha)) return [red, green, blue, alpha];
+  const light = clamp((green + blue) * 0.5 - 105, -25, 110);
+  return [
+    Math.round(clamp(6 + light * 0.1, 0, 255)),
+    Math.round(clamp(65 + light * 0.38, 0, 255)),
+    Math.round(clamp(80 + light * 0.5, 0, 255)),
+    Math.round(clamp(alpha * 0.92, 0, 255))
+  ];
+};
 
 const makeCanvas = (width: number, height: number): HTMLCanvasElement => {
   const canvas = document.createElement('canvas');
@@ -54,7 +73,7 @@ const textureFromCanvas = (canvas: HTMLCanvasElement): Texture => {
   return new Texture({ source });
 };
 
-const cutCoastWater = (image: HTMLImageElement): Texture | undefined => {
+const blendCoastWater = (image: HTMLImageElement): Texture | undefined => {
   const width = image.naturalWidth;
   const height = image.naturalHeight;
   if (width <= 0 || height <= 0) return undefined;
@@ -68,7 +87,11 @@ const cutCoastWater = (image: HTMLImageElement): Texture | undefined => {
     const green = pixels.data[offset + 1] ?? 0;
     const blue = pixels.data[offset + 2] ?? 0;
     const alpha = pixels.data[offset + 3] ?? 0;
-    if (isCity01WaterPixel(red, green, blue, alpha)) pixels.data[offset + 3] = 0;
+    const matched = matchCity01WaterColor(red, green, blue, alpha);
+    pixels.data[offset] = matched[0];
+    pixels.data[offset + 1] = matched[1];
+    pixels.data[offset + 2] = matched[2];
+    pixels.data[offset + 3] = matched[3];
   }
   context.putImageData(pixels, 0, 0);
   return textureFromCanvas(canvas);
@@ -106,8 +129,8 @@ const buildRuntimeTexture = async (
 ): Promise<Texture | undefined> => {
   if (typeof document === 'undefined' || typeof Image === 'undefined') return undefined;
   const image = await loadImage(source);
-  return kind === 'coast-cutout'
-    ? cutCoastWater(image)
+  return kind === 'coast-blend'
+    ? blendCoastWater(image)
     : cropRoadConnector(image);
 };
 
