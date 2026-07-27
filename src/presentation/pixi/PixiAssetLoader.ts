@@ -21,7 +21,7 @@ export class PixiAssetLoader {
 
     const request = (
       shouldGenerateCity01DistrictTexture(assetId)
-        ? createCity01DistrictTexture(source)
+        ? createCity01DistrictTexture(assetId, source)
         : Assets.load<Texture>({ alias: assetId, src: source })
     ).catch((error: unknown) => {
       console.warn(`Pixi texture failed to load: ${assetId}`, error);
