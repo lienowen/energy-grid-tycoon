@@ -6,6 +6,11 @@ on:
       - feat/commercial-standard-recovery-v1
     paths:
       - .github/workflows/export-city01-all-assets.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/export-city01-all-assets.yml
   workflow_dispatch:
 
 permissions:
