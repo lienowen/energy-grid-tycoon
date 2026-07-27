@@ -8,6 +8,13 @@ on:
       - scripts/generate-city01-grounded-assets.py
       - .github/workflows/build-city01-grounded-assets.yml
       - public/assets/city01/product/districts/district-residential-base.png
+  pull_request:
+    branches:
+      - main
+    paths:
+      - scripts/generate-city01-grounded-assets.py
+      - .github/workflows/build-city01-grounded-assets.yml
+      - public/assets/city01/product/districts/district-residential-base.png
   workflow_dispatch:
 
 permissions:
