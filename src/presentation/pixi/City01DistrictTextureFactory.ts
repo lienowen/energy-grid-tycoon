@@ -8,6 +8,16 @@ const residentialAssetIds = new Set([
 export const shouldGenerateCity01DistrictTexture = (assetId: string): boolean =>
   residentialAssetIds.has(assetId);
 
+export const isCity01VegetationPixel = (
+  red: number,
+  green: number,
+  blue: number,
+  alpha: number
+): boolean => alpha > 16
+  && green > 55
+  && green > red * 1.12
+  && green > blue * 1.05;
+
 const loadImage = (source: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
     const image = new Image();
@@ -24,64 +34,94 @@ const makeCanvas = (width: number, height: number): HTMLCanvasElement => {
   return canvas;
 };
 
-const makeLowerHalo = (
-  image: HTMLImageElement,
-  color: string,
-  blur: number,
-  offsetY: number,
-  clipRatio: number
-): HTMLCanvasElement => {
-  const width = image.naturalWidth;
-  const height = image.naturalHeight;
-  const canvas = makeCanvas(width, height);
-  const context = canvas.getContext('2d');
-  if (!context) return canvas;
-
-  const clipY = height * clipRatio;
-  context.save();
+const drawScaledRoundedRect = (
+  context: CanvasRenderingContext2D,
+  scaleX: number,
+  scaleY: number,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number
+): void => {
   context.beginPath();
-  context.rect(0, clipY, width, height - clipY);
-  context.clip();
-  context.filter = `blur(${blur}px)`;
-  context.drawImage(image, 0, offsetY, width, height);
-  context.filter = 'none';
-  context.globalCompositeOperation = 'source-in';
-  context.fillStyle = color;
-  context.fillRect(0, clipY, width, height - clipY);
-  context.globalCompositeOperation = 'destination-out';
-  context.drawImage(image, 0, 0, width, height);
-  context.restore();
-  return canvas;
+  context.roundRect(
+    x * scaleX,
+    y * scaleY,
+    width * scaleX,
+    height * scaleY,
+    Math.min(scaleX, scaleY) * radius
+  );
+  context.fill();
 };
 
-const makeSoftenedLowerSource = (
-  image: HTMLImageElement,
-  blur: number,
-  clipRatio: number
+const makeVegetationMask = (sourceCanvas: HTMLCanvasElement): HTMLCanvasElement => {
+  const { width, height } = sourceCanvas;
+  const sourceContext = sourceCanvas.getContext('2d', { willReadFrequently: true });
+  const rawMask = makeCanvas(width, height);
+  const rawContext = rawMask.getContext('2d');
+  if (!sourceContext || !rawContext) return rawMask;
+
+  const sourceData = sourceContext.getImageData(0, 0, width, height);
+  const maskData = rawContext.createImageData(width, height);
+  for (let offset = 0; offset < sourceData.data.length; offset += 4) {
+    if (!isCity01VegetationPixel(
+      sourceData.data[offset] ?? 0,
+      sourceData.data[offset + 1] ?? 0,
+      sourceData.data[offset + 2] ?? 0,
+      sourceData.data[offset + 3] ?? 0
+    )) continue;
+    maskData.data[offset] = 255;
+    maskData.data[offset + 1] = 255;
+    maskData.data[offset + 2] = 255;
+    maskData.data[offset + 3] = 255;
+  }
+  rawContext.putImageData(maskData, 0, 0);
+
+  const expanded = makeCanvas(width, height);
+  const expandedContext = expanded.getContext('2d');
+  if (!expandedContext) return rawMask;
+  const radius = Math.max(2, Math.round(width / 256));
+  for (let y = -radius; y <= radius; y += radius) {
+    for (let x = -radius; x <= radius; x += radius) {
+      expandedContext.drawImage(rawMask, x, y);
+    }
+  }
+  expandedContext.filter = `blur(${Math.max(1, width / 512)}px)`;
+  expandedContext.drawImage(expanded, 0, 0);
+  expandedContext.filter = 'none';
+  return expanded;
+};
+
+const makeIntegrationMask = (
+  sourceCanvas: HTMLCanvasElement
 ): HTMLCanvasElement => {
-  const width = image.naturalWidth;
-  const height = image.naturalHeight;
-  const sourceCanvas = makeCanvas(width, height);
-  const sourceContext = sourceCanvas.getContext('2d');
-  if (!sourceContext) return sourceCanvas;
-  sourceContext.drawImage(image, 0, 0, width, height);
+  const { width, height } = sourceCanvas;
+  const scaleX = width / 1024;
+  const scaleY = height / 768;
+  const structures = makeCanvas(width, height);
+  const structureContext = structures.getContext('2d');
+  if (!structureContext) return structures;
 
-  const alphaMask = makeCanvas(width, height);
-  const maskContext = alphaMask.getContext('2d');
-  if (!maskContext) return sourceCanvas;
-  maskContext.filter = `blur(${blur}px)`;
-  maskContext.drawImage(image, 0, 0, width, height);
-  maskContext.filter = 'none';
+  structureContext.fillStyle = '#fff';
+  drawScaledRoundedRect(structureContext, scaleX, scaleY, 225, 120, 210, 205, 24);
+  drawScaledRoundedRect(structureContext, scaleX, scaleY, 500, 120, 235, 205, 24);
+  structureContext.beginPath();
+  structureContext.moveTo(512 * scaleX, 190 * scaleY);
+  structureContext.lineTo(800 * scaleX, 345 * scaleY);
+  structureContext.lineTo(512 * scaleX, 480 * scaleY);
+  structureContext.lineTo(224 * scaleX, 345 * scaleY);
+  structureContext.closePath();
+  structureContext.fill();
+  structureContext.drawImage(makeVegetationMask(sourceCanvas), 0, 0);
 
-  const clipY = height * clipRatio;
-  sourceContext.save();
-  sourceContext.beginPath();
-  sourceContext.rect(0, clipY, width, height - clipY);
-  sourceContext.clip();
-  sourceContext.globalCompositeOperation = 'destination-in';
-  sourceContext.drawImage(alphaMask, 0, 0);
-  sourceContext.restore();
-  return sourceCanvas;
+  const feathered = makeCanvas(width, height);
+  const featheredContext = feathered.getContext('2d');
+  if (!featheredContext) return structures;
+  featheredContext.filter = `blur(${Math.max(2, width / 341)}px)`;
+  featheredContext.drawImage(structures, 0, 0);
+  featheredContext.filter = 'none';
+  return feathered;
 };
 
 export const createCity01DistrictTexture = async (source: string): Promise<Texture | undefined> => {
@@ -92,36 +132,20 @@ export const createCity01DistrictTexture = async (source: string): Promise<Textu
   const height = image.naturalHeight;
   if (width <= 0 || height <= 0) return undefined;
 
-  const canvas = makeCanvas(width, height);
-  const context = canvas.getContext('2d');
-  if (!context) return undefined;
+  const sourceCanvas = makeCanvas(width, height);
+  const sourceContext = sourceCanvas.getContext('2d', { willReadFrequently: true });
+  if (!sourceContext) return undefined;
+  sourceContext.drawImage(image, 0, 0, width, height);
 
-  const terrainHalo = makeLowerHalo(
-    image,
-    'rgba(25, 58, 48, 0.12)',
-    Math.max(4, width * 0.009),
-    Math.max(2, height * 0.005),
-    0.48
-  );
-  context.drawImage(terrainHalo, 0, 0);
+  const output = makeCanvas(width, height);
+  const outputContext = output.getContext('2d');
+  if (!outputContext) return undefined;
+  outputContext.drawImage(sourceCanvas, 0, 0);
+  outputContext.globalCompositeOperation = 'destination-in';
+  outputContext.drawImage(makeIntegrationMask(sourceCanvas), 0, 0);
+  outputContext.globalCompositeOperation = 'source-over';
 
-  const contactShadow = makeLowerHalo(
-    image,
-    'rgba(2, 8, 10, 0.12)',
-    Math.max(3, width * 0.005),
-    Math.max(2, height * 0.004),
-    0.58
-  );
-  context.drawImage(contactShadow, 0, 0);
-
-  const softenedSource = makeSoftenedLowerSource(
-    image,
-    Math.max(2, width * 0.003),
-    0.56
-  );
-  context.drawImage(softenedSource, 0, 0);
-
-  const canvasSource = new CanvasSource({ resource: canvas });
+  const canvasSource = new CanvasSource({ resource: output });
   canvasSource.scaleMode = 'linear';
   return new Texture({ source: canvasSource });
 };
