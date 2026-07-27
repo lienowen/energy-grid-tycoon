@@ -5,7 +5,7 @@ import {
 } from './City01DistrictTextureFactory';
 
 describe('City01DistrictTextureFactory', () => {
-  it('post-processes only the approved City-01 district runtime states', () => {
+  it('post-processes all City-01 district runtime states and no unrelated world assets', () => {
     expect(shouldGenerateCity01DistrictTexture('commercial_district_residential_night')).toBe(true);
     expect(shouldGenerateCity01DistrictTexture('commercial_district_residential_blackout')).toBe(true);
     expect(shouldGenerateCity01DistrictTexture('commercial_district_commercial_night')).toBe(true);
@@ -14,7 +14,8 @@ describe('City01DistrictTextureFactory', () => {
     expect(shouldGenerateCity01DistrictTexture('commercial_district_industrial_blackout')).toBe(true);
     expect(shouldGenerateCity01DistrictTexture('commercial_district_public_night')).toBe(true);
     expect(shouldGenerateCity01DistrictTexture('commercial_district_public_blackout')).toBe(true);
-    expect(shouldGenerateCity01DistrictTexture('commercial_district_old_town_night')).toBe(false);
+    expect(shouldGenerateCity01DistrictTexture('commercial_district_old_town_night')).toBe(true);
+    expect(shouldGenerateCity01DistrictTexture('commercial_district_old_town_blackout')).toBe(true);
     expect(shouldGenerateCity01DistrictTexture('world_building_res_tower_a_night')).toBe(false);
   });
 
