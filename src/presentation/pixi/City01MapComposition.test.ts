@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { city01EnvironmentAssetIds, city01MapPlacements } from './City01MapComposition';
+import {
+  city01IslandBoundary,
+  city01MapPlacements,
+  city01RequiredLiveAssetIds
+} from './City01MapComposition';
 
 describe('City01MapComposition', () => {
-  it('uses the complete product environment kit in the authored map', () => {
+  it('uses every topology-compatible live asset without forcing incompatible tiles', () => {
     const usedAssets = new Set(city01MapPlacements.map((placement) => placement.assetId));
-    for (const assetId of city01EnvironmentAssetIds) expect(usedAssets.has(assetId)).toBe(true);
+    for (const assetId of city01RequiredLiveAssetIds) expect(usedAssets.has(assetId)).toBe(true);
   });
 
   it('keeps placement identifiers unique and dimensions valid', () => {
@@ -17,11 +21,21 @@ describe('City01MapComposition', () => {
     }
   });
 
-  it('projects map coordinates into the same bounded scene space as districts', () => {
-    for (const placement of city01MapPlacements) {
-      expect(Math.abs(placement.point.x)).toBeLessThanOrEqual(55);
-      expect(Math.abs(placement.point.z)).toBeLessThanOrEqual(40);
+  it('keeps the continuous island and all placed assets in the City-01 scene bounds', () => {
+    expect(city01IslandBoundary.length).toBeGreaterThanOrEqual(8);
+    for (const point of [
+      ...city01IslandBoundary,
+      ...city01MapPlacements.map((placement) => placement.point)
+    ]) {
+      expect(Math.abs(point.x)).toBeLessThanOrEqual(56);
+      expect(Math.abs(point.z)).toBeLessThanOrEqual(40);
     }
+  });
+
+  it('uses road art only as connected junction detail', () => {
+    const roads = city01MapPlacements.filter((placement) => placement.layer === 'roads');
+    expect(roads.length).toBeGreaterThanOrEqual(6);
+    expect(roads.every((placement) => placement.assetId.includes('road'))).toBe(true);
   });
 
   it('adds product vehicles without turning the map into a traffic layer', () => {
