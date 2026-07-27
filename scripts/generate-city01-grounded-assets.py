@@ -2,8 +2,8 @@
 """Build the City-01 residential runtime PNG from the immutable product source.
 
 The product image is a complete square road block. For the authored city map we
-retain its buildings, vegetation and internal streets, while feathering away the
-outer perimeter road in the lower half so it reads as an open neighbourhood.
+retain its buildings, vegetation and internal streets, while removing the outer
+perimeter road and raised curb so it reads as an open neighbourhood.
 """
 
 from __future__ import annotations
@@ -28,13 +28,13 @@ def make_integration_mask(size: tuple[int, int]) -> Image.Image:
     mask = Image.new("L", size, 0)
     draw = ImageDraw.Draw(mask)
 
-    # Preserve towers, trees and the upper internal streets without modification.
-    draw.rectangle((0, 0, width, 335), fill=255)
+    # Towers and their tree canopy extend above the road block and remain intact.
+    draw.rectangle((0, 0, width, 270), fill=255)
 
-    # Preserve the populated core below that line, but remove the outer road ring
-    # and its thin raised curb. A small blur prevents a cut-out cardboard edge.
+    # Retain the populated neighbourhood core and internal streets. The tighter
+    # diamond removes the full perimeter road, thin raised curb and corner pads.
     draw.polygon(
-        [(512, 185), (830, 354), (512, 488), (194, 354)],
+        [(512, 185), (790, 345), (512, 470), (234, 345)],
         fill=255,
     )
     return mask.filter(ImageFilter.GaussianBlur(4))
@@ -70,9 +70,10 @@ def generate_residential(source_path: Path, output_path: Path) -> dict[str, obje
         "output_alpha_bbox": output_alpha.getbbox(),
         "border_opaque_ratio": border_opaque_ratio(output_alpha),
         "integration": {
-            "preserve_above_y": 335,
-            "lower_core_polygon": [[512, 185], [830, 354], [512, 488], [194, 354]],
+            "preserve_above_y": 270,
+            "neighbourhood_core_polygon": [[512, 185], [790, 345], [512, 470], [234, 345]],
             "edge_feather_px": 4,
+            "removed": ["perimeter-road", "raised-curb", "corner-pads"],
         },
     }
 
