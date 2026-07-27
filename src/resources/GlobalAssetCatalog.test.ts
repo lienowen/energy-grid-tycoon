@@ -6,7 +6,9 @@ describe('GlobalAssetCatalog', () => {
     const entries = new Map(globalAssetCatalog.entries.map((entry) => [entry.id, entry]));
 
     expect(entries.get('commercial_district_residential_night')?.src)
-      .toBe('/assets/city01/product/districts/district-residential-base.png');
+      .toBe('/assets/city01/product/districts/runtime/district-residential-grounded.svg');
+    expect(entries.get('commercial_district_residential_blackout')?.src)
+      .toBe('/assets/city01/product/districts/runtime/district-residential-grounded.svg');
     expect(entries.get('commercial_district_commercial_night')?.src)
       .toBe('/assets/city01/product/districts/district-commercial-base.png');
     expect(entries.get('commercial_district_industrial_blackout')?.src)
