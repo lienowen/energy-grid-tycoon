@@ -1,12 +1,12 @@
 {
-  "schemaVersion": 12,
-  "budgetBytes": 5000000,
+  "schemaVersion": 13,
+  "budgetBytes": 6000000,
   "entries": [
     {
       "id": "city01_ocean_water_base",
       "kind": "image",
       "src": "/assets/city01/product/environment/runtime/ocean-water-base.svg",
-      "version": 12,
+      "version": 13,
       "preload": "level",
       "width": 2048,
       "height": 1536,
@@ -14,10 +14,21 @@
       "tags": ["city-01", "environment", "ocean", "runtime"]
     },
     {
+      "id": "city01_ocean_inlet_patch",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/runtime/ocean-inlet-patch.svg",
+      "version": 13,
+      "preload": "level",
+      "width": 720,
+      "height": 420,
+      "anchor": { "x": 0.5, "y": 0.5 },
+      "tags": ["city-01", "environment", "ocean", "inlet", "runtime"]
+    },
+    {
       "id": "city01_road_connector_short",
       "kind": "image",
       "src": "/assets/city01/product/environment/base/terrain-road-straight-base.png",
-      "version": 12,
+      "version": 13,
       "preload": "level",
       "width": 1024,
       "height": 768,
