@@ -13,20 +13,12 @@
       <stop stop-color="#42565A"/>
       <stop offset="1" stop-color="#243136"/>
     </linearGradient>
-    <linearGradient id="residentialApron" x1="568" y1="248" x2="730" y2="326" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#3B504F"/>
-      <stop offset="0.58" stop-color="#304443"/>
-      <stop offset="1" stop-color="#243836"/>
-    </linearGradient>
     <radialGradient id="cityGlow" cx="0" cy="0" r="1" gradientTransform="translate(526 394) rotate(90) scale(222 356)" gradientUnits="userSpaceOnUse">
       <stop stop-color="#57D4E8" stop-opacity="0.10"/>
       <stop offset="1" stop-color="#57D4E8" stop-opacity="0"/>
     </radialGradient>
     <filter id="softShadow" x="-20%" y="-30%" width="140%" height="170%">
       <feGaussianBlur stdDeviation="9"/>
-    </filter>
-    <filter id="apronFeather" x="-20%" y="-40%" width="140%" height="180%">
-      <feGaussianBlur stdDeviation="5"/>
     </filter>
     <g id="tree">
       <ellipse cy="3" rx="6" ry="2.4" fill="#06120E" fill-opacity="0.34"/>
@@ -51,18 +43,6 @@
     <polygon points="628,333 776,394 743,475 576,456 524,365" fill="#3D3B34" stroke="#9C8A70" stroke-opacity="0.11"/>
     <polygon points="371,347 519,407 474,488 300,472 242,372" fill="#2A4B46" stroke="#7C9D92" stroke-opacity="0.12"/>
     <polygon points="563,437 718,506 654,584 486,578 434,474" fill="#383238" stroke="#8D7A86" stroke-opacity="0.12"/>
-  </g>
-
-  <!-- Residential integration pad. The product district sits over this layer;
-       the slightly larger paved diamond and driveway make its baked road edge
-       read as part of the authored city instead of a detached square tile. -->
-  <g>
-    <polygon points="650,225 764,280 650,342 536,286" fill="#10221F" fill-opacity="0.30" filter="url(#apronFeather)"/>
-    <polygon points="650,233 752,282 650,334 548,286" fill="url(#residentialApron)" fill-opacity="0.60" stroke="#718A84" stroke-opacity="0.18" stroke-width="1.5"/>
-    <path d="M650 332C662 327 674 323 684 320" stroke="#071014" stroke-width="16" stroke-linecap="round"/>
-    <path d="M650 332C662 327 674 323 684 320" stroke="url(#road)" stroke-width="10" stroke-linecap="round"/>
-    <path d="M650 332C662 327 674 323 684 320" stroke="#E4C96F" stroke-opacity="0.24" stroke-width="1" stroke-linecap="round" stroke-dasharray="8 7"/>
-    <path d="M566 286L650 246L736 286" stroke="#78928B" stroke-opacity="0.18" stroke-width="2" stroke-linecap="round"/>
   </g>
 
   <g opacity="0.52" stroke="#5D827A" stroke-width="1">
