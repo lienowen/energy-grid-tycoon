@@ -40,6 +40,22 @@ def vertical_ground_mask(alpha: Image.Image) -> Image.Image:
     return ImageChops.multiply(alpha, gradient)
 
 
+def vertical_fade(size: tuple[int, int], hold_until: int, fade_until: int) -> Image.Image:
+    width, height = size
+    mask = Image.new("L", size, 0)
+    pixels = mask.load()
+    for y in range(height):
+        if y <= hold_until:
+            value = 255
+        elif y >= fade_until:
+            value = 0
+        else:
+            value = clamp_byte(255 * (fade_until - y) / max(1, fade_until - hold_until))
+        for x in range(width):
+            pixels[x, y] = value
+    return mask
+
+
 def shifted(mask: Image.Image, dx: int, dy: int) -> Image.Image:
     output = Image.new("L", mask.size, 0)
     output.paste(mask, (dx, dy))
@@ -116,32 +132,36 @@ def generate_residential(source_path: Path, output_path: Path) -> dict[str, obje
 
     canvas = Image.new("RGBA", source.size, (0, 0, 0, 0))
 
-    # Low-contrast terrain bridge below the baked district platform.
+    # A restrained terrain bridge remains close to the baked platform. The first
+    # iteration used a broad ellipse and read as a separate island at game scale.
     terrain = Image.new("RGBA", source.size, (0, 0, 0, 0))
     terrain_draw = ImageDraw.Draw(terrain, "RGBA")
-    terrain_draw.ellipse((170, 554, 854, 755), fill=(34, 70, 57, 34))
-    terrain_draw.ellipse((232, 584, 792, 731), fill=(40, 78, 62, 22))
-    terrain = terrain.filter(ImageFilter.GaussianBlur(12))
+    terrain_draw.ellipse((214, 520, 810, 690), fill=(34, 70, 57, 15))
+    terrain_draw.ellipse((282, 550, 742, 660), fill=(40, 78, 62, 10))
+    terrain = terrain.filter(ImageFilter.GaussianBlur(16))
     canvas = Image.alpha_composite(canvas, terrain)
 
-    # Access-road mouth aligned to the residential boulevard beneath the prefab.
+    # The road begins beneath the district's own front road. The source image
+    # covers the upper segment, leaving a short, connected mouth outside the lot.
     road = Image.new("RGBA", source.size, (0, 0, 0, 0))
     road_draw = ImageDraw.Draw(road, "RGBA")
-    route = cubic_points((512, 642), (512, 686), (500, 724), (481, 768))
-    road_draw.line(route, fill=(5, 14, 17, 188), width=34, joint="curve")
-    road_draw.line(route, fill=(49, 64, 67, 232), width=22, joint="curve")
-    dashed_polyline(road_draw, route[5:], (215, 190, 105, 68), 2, 10, 9)
-    road = road.filter(ImageFilter.GaussianBlur(1.2))
+    route = cubic_points((512, 500), (518, 555), (506, 625), (488, 700))
+    road_draw.line(route, fill=(5, 14, 17, 154), width=32, joint="curve")
+    road_draw.line(route, fill=(49, 64, 67, 218), width=21, joint="curve")
+    dashed_polyline(road_draw, route[8:], (215, 190, 105, 54), 2, 10, 9)
+    road = road.filter(ImageFilter.GaussianBlur(1.1))
+    road_alpha = ImageChops.multiply(road.getchannel("A"), vertical_fade(source.size, 628, 716))
+    road.putalpha(road_alpha)
     canvas = Image.alpha_composite(canvas, road)
 
     # Expand only the lower silhouette so the platform colour bleeds into terrain
     # while roofs and upper building silhouettes stay crisp.
-    expanded = lower_alpha.filter(ImageFilter.MaxFilter(35)).filter(ImageFilter.GaussianBlur(13))
-    halo = colorize(shifted(expanded, 0, 7), (25, 58, 48), 0.28)
+    expanded = lower_alpha.filter(ImageFilter.MaxFilter(31)).filter(ImageFilter.GaussianBlur(12))
+    halo = colorize(shifted(expanded, 0, 6), (25, 58, 48), 0.18)
     canvas = Image.alpha_composite(canvas, halo)
 
-    contact = lower_alpha.filter(ImageFilter.MaxFilter(13)).filter(ImageFilter.GaussianBlur(8))
-    shadow = colorize(shifted(contact, 0, 6), (2, 8, 10), 0.30)
+    contact = lower_alpha.filter(ImageFilter.MaxFilter(11)).filter(ImageFilter.GaussianBlur(7))
+    shadow = colorize(shifted(contact, 0, 5), (2, 8, 10), 0.22)
     canvas = Image.alpha_composite(canvas, shadow)
 
     canvas = Image.alpha_composite(canvas, source)
