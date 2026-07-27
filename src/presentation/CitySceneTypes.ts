@@ -34,6 +34,11 @@ export interface DistrictSceneState extends ScenePoint {
 
 export type DistrictPrefabStatus = 'normal' | 'warning' | 'blackout' | 'offline';
 
+export interface DistrictAccessRoadSceneState {
+  points: ScenePoint[];
+  laneCount: 1 | 2;
+}
+
 export interface DistrictPrefabSceneState extends ScenePoint {
   id: string;
   label: string;
@@ -46,6 +51,7 @@ export interface DistrictPrefabSceneState extends ScenePoint {
   prefabAssetId?: string;
   powerRatio: number;
   status: DistrictPrefabStatus;
+  accessRoad?: DistrictAccessRoadSceneState;
 }
 
 export interface EnvironmentPrefabSceneState extends ScenePoint {
