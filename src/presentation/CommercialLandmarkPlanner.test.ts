@@ -20,6 +20,8 @@ const facility = (
   scale: 1,
   output,
   storageRatio: 0,
+  constructionProgress: 1,
+  underConstruction: false,
   x,
   z,
   elevation: 1
@@ -41,7 +43,9 @@ describe('CommercialLandmarkPlanner', () => {
       x: 15,
       z: 25,
       output: 360,
-      scale: 1.08
+      scale: 1.08,
+      constructionProgress: 1,
+      underConstruction: false
     });
     expect(planned[0]?.scale).toBeLessThan(1.15);
     expect(planned[1]?.configId).toBe('wind_basic');
