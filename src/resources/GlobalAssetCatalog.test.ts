@@ -17,23 +17,30 @@ describe('GlobalAssetCatalog', () => {
       .toBe('/assets/city01/product/districts/district-old-town-base.png');
   });
 
-  it('loads the aligned City-01 base map and road network assets', () => {
+  it('loads aligned City-01 base, road and decoration layers', () => {
     const entries = new Map(globalAssetCatalog.entries.map((entry) => [entry.id, entry]));
     const baseMap = entries.get('city01_map_base');
     const roadNetwork = entries.get('city01_road_network_base');
+    const groundDetails = entries.get('city01_ground_details_base');
 
     expect(baseMap?.src)
       .toBe('/assets/city01/product/environment/runtime/city01-map-base.svg');
     expect(roadNetwork?.src)
       .toBe('/assets/city01/product/environment/runtime/city01-road-network.svg');
+    expect(groundDetails?.src)
+      .toBe('/assets/city01/product/environment/runtime/city01-ground-details.svg');
     expect(baseMap?.width).toBe(2048);
     expect(baseMap?.height).toBe(1536);
     expect(roadNetwork?.width).toBe(baseMap?.width);
     expect(roadNetwork?.height).toBe(baseMap?.height);
+    expect(groundDetails?.width).toBe(baseMap?.width);
+    expect(groundDetails?.height).toBe(baseMap?.height);
     expect(baseMap?.anchor).toEqual({ x: 0.5, y: 0.5 });
     expect(roadNetwork?.anchor).toEqual(baseMap?.anchor);
+    expect(groundDetails?.anchor).toEqual(baseMap?.anchor);
     expect(baseMap?.preload).toBe('level');
     expect(roadNetwork?.preload).toBe('level');
+    expect(groundDetails?.preload).toBe('level');
   });
 
   it('keeps source environment and vehicle assets available for later layers', () => {
