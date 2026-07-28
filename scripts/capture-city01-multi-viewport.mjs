@@ -26,10 +26,14 @@ try {
     });
 
     await page.goto(baseUrl, { waitUntil: 'networkidle' });
+    const startButton = page.locator('[data-start="city-01"]');
+    await startButton.waitFor({ state: 'visible', timeout: 30000 });
+    await startButton.click();
     await page.waitForSelector('canvas.city01-integrated-canvas', { timeout: 30000 });
 
     if (captureCase.mode === 'grid') {
       const gridButton = page.getByRole('button', { name: /电网/ }).first();
+      await gridButton.waitFor({ state: 'visible', timeout: 15000 });
       await gridButton.click();
       await page.waitForFunction(() =>
         document.querySelector('[data-world-renderer="city01-integrated"]')
