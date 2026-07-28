@@ -17,7 +17,21 @@ describe('GlobalAssetCatalog', () => {
       .toBe('/assets/city01/product/districts/district-old-town-base.png');
   });
 
-  it('loads the City-01 environment, ocean and vehicle kit', () => {
+  it('loads the single City-01 base map and road runtime assets', () => {
+    const entries = new Map(globalAssetCatalog.entries.map((entry) => [entry.id, entry]));
+    const baseMap = entries.get('city01_map_base');
+
+    expect(baseMap?.src)
+      .toBe('/assets/city01/product/environment/runtime/city01-map-base.svg');
+    expect(baseMap?.width).toBe(2048);
+    expect(baseMap?.height).toBe(1536);
+    expect(baseMap?.anchor).toEqual({ x: 0.5, y: 0.5 });
+    expect(baseMap?.preload).toBe('level');
+    expect(entries.get('city01_road_connector_short')?.src)
+      .toBe('/assets/city01/product/environment/base/terrain-road-straight-base.png');
+  });
+
+  it('keeps source environment and vehicle assets available for later layers', () => {
     const entries = new Map(globalAssetCatalog.entries.map((entry) => [entry.id, entry]));
     expect(entries.get('terrain_road_crossroad_base')?.src)
       .toBe('/assets/city01/product/environment/base/terrain-road-crossroad-base.png');
@@ -25,10 +39,6 @@ describe('GlobalAssetCatalog', () => {
       .toBe('/assets/city01/product/environment/extended/terrain-harbor-pier-base.png');
     expect(entries.get('vehicle_utility_van')?.src)
       .toBe('/assets/city01/product/vehicles/base/vehicle-utility-van.png');
-    expect(entries.get('city01_ocean_water_base')?.src)
-      .toBe('/assets/city01/product/environment/runtime/ocean-water-base.svg');
-    expect(entries.get('city01_road_connector_short')?.src)
-      .toBe('/assets/city01/product/environment/base/terrain-road-straight-base.png');
   });
 
   it('corrects the mislabeled product facility files through semantic runtime ids', () => {
