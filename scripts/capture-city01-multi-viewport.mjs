@@ -6,8 +6,10 @@ const outputDir = process.env.CITY01_CAPTURE_DIR ?? 'artifacts/city01-multi-view
 
 const cases = [
   { id: 'desktop-city', width: 1440, height: 1080, mode: 'city' },
+  { id: 'desktop-placement', width: 1440, height: 1080, mode: 'city', action: 'placement' },
   { id: 'narrow-city', width: 1024, height: 900, mode: 'city' },
   { id: 'mobile-city', width: 430, height: 932, mode: 'city' },
+  { id: 'mobile-placement', width: 430, height: 932, mode: 'city', action: 'placement' },
   { id: 'mobile-grid', width: 430, height: 932, mode: 'grid' }
 ];
 
@@ -15,6 +17,26 @@ await mkdir(outputDir, { recursive: true });
 const browser = await chromium.launch({ headless: true });
 const results = [];
 let failed = false;
+
+const enterCity = async (page) => {
+  await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
+  const startButton = page.locator('[data-start="city-01"]');
+  await startButton.waitFor({ state: 'visible', timeout: 30000 });
+  await startButton.click();
+  await page.waitForSelector('canvas.city01-integrated-canvas', { timeout: 30000 });
+  await page.waitForTimeout(900);
+};
+
+const enterPlacement = async (page) => {
+  const buildToggle = page.locator('[data-build-dock-toggle="true"]').first();
+  await buildToggle.waitFor({ state: 'visible', timeout: 15000 });
+  await buildToggle.click();
+  const gasButton = page.locator('[data-select-build="gas_basic"]');
+  await gasButton.waitFor({ state: 'visible', timeout: 15000 });
+  await gasButton.click();
+  await page.waitForSelector('.hologram-secretary.placement', { timeout: 15000 });
+  await page.waitForTimeout(900);
+};
 
 try {
   for (const captureCase of cases) {
@@ -25,11 +47,9 @@ try {
       hasTouch: captureCase.width <= 480
     });
 
-    await page.goto(baseUrl, { waitUntil: 'networkidle' });
-    const startButton = page.locator('[data-start="city-01"]');
-    await startButton.waitFor({ state: 'visible', timeout: 30000 });
-    await startButton.click();
-    await page.waitForSelector('canvas.city01-integrated-canvas', { timeout: 30000 });
+    await enterCity(page);
+
+    if (captureCase.action === 'placement') await enterPlacement(page);
 
     if (captureCase.mode === 'grid') {
       const gridButton = page.getByRole('button', { name: /电网/ }).first();
@@ -41,16 +61,22 @@ try {
       );
     }
 
-    await page.waitForTimeout(1200);
-    const diagnostics = await page.evaluate(() => {
+    await page.waitForTimeout(900);
+    const diagnostics = await page.evaluate(({ expectedMode, expectedPlacement }) => {
       const canvas = document.querySelector('canvas.city01-integrated-canvas');
       const host = document.querySelector('[data-world-renderer="city01-integrated"]');
       const canvasRect = canvas?.getBoundingClientRect();
       const documentElement = document.documentElement;
       const body = document.body;
+      const placementGuide = document.querySelector('.hologram-secretary.placement');
+      const selectedBuild = document.querySelector('[data-select-build].selected');
       return {
         renderer: host?.getAttribute('data-world-renderer') ?? null,
         presentationMode: host?.getAttribute('data-presentation-mode') ?? null,
+        placementGuideVisible: Boolean(placementGuide),
+        selectedBuildingId: selectedBuild?.getAttribute('data-select-build') ?? null,
+        expectedMode,
+        expectedPlacement,
         canvas: canvasRect ? {
           left: canvasRect.left,
           top: canvasRect.top,
@@ -70,12 +96,21 @@ try {
           clientHeight: documentElement.clientHeight
         }
       };
+    }, {
+      expectedMode: captureCase.mode,
+      expectedPlacement: captureCase.action === 'placement'
     });
 
     const issues = [];
     if (diagnostics.renderer !== 'city01-integrated') issues.push('City-01 renderer did not mount');
     if (diagnostics.presentationMode !== captureCase.mode) {
       issues.push(`Expected ${captureCase.mode} mode, received ${diagnostics.presentationMode}`);
+    }
+    if (captureCase.action === 'placement') {
+      if (!diagnostics.placementGuideVisible) issues.push('Placement guidance is not visible');
+      if (diagnostics.selectedBuildingId !== 'gas_basic') {
+        issues.push(`Expected gas_basic selection, received ${diagnostics.selectedBuildingId}`);
+      }
     }
     if (!diagnostics.canvas) issues.push('Canvas bounds are missing');
     if (diagnostics.scroll.width > diagnostics.scroll.clientWidth + 4) {
