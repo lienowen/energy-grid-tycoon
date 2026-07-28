@@ -38,6 +38,28 @@ describe('FacilityVisualRegistry', () => {
     expect(offline.lightAssetId).toBeUndefined();
   });
 
+  it('uses the approved cut state sprites for the commercial City-01 presentation', () => {
+    const construction = FacilityVisualRegistry.resolve({
+      configId: 'solar_basic',
+      category: 'generation',
+      enabled: true,
+      selected: false,
+      constructionProgress: 0.5,
+      presentation: 'commercial'
+    });
+    const utilityStorage = FacilityVisualRegistry.resolve({
+      configId: 'battery_utility',
+      category: 'storage',
+      enabled: true,
+      selected: false,
+      constructionProgress: 1,
+      presentation: 'commercial'
+    });
+
+    expect(construction.bodyAssetId).toBe('commercial_facility_solar_construction');
+    expect(utilityStorage.bodyAssetId).toBe('commercial_facility_battery_utility_active');
+  });
+
   it('falls back by category for future registered content', () => {
     const storage = FacilityVisualRegistry.resolve({
       configId: 'future_storage',
