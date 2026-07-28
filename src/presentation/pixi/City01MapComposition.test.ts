@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   city01BaseMapPlacement,
+  city01GroundDetailsPlacement,
   city01MapPlacements,
   city01RequiredLiveAssetIds,
   city01RoadNetworkPlacement
@@ -24,6 +25,16 @@ describe('City01MapComposition', () => {
     expect(city01RoadNetworkPlacement.width).toBe(city01BaseMapPlacement.width);
     expect(city01RoadNetworkPlacement.anchorY).toBe(city01BaseMapPlacement.anchorY);
     expect(city01RoadNetworkPlacement.point).toEqual(city01BaseMapPlacement.point);
+  });
+
+  it('uses one aligned decoration layer without changing map topology', () => {
+    const decorations = city01MapPlacements.filter((placement) => placement.layer === 'groundDecorations');
+
+    expect(decorations).toEqual([city01GroundDetailsPlacement]);
+    expect(city01GroundDetailsPlacement.assetId).toBe('city01_ground_details_base');
+    expect(city01GroundDetailsPlacement.width).toBe(city01BaseMapPlacement.width);
+    expect(city01GroundDetailsPlacement.anchorY).toBe(city01BaseMapPlacement.anchorY);
+    expect(city01GroundDetailsPlacement.point).toEqual(city01BaseMapPlacement.point);
   });
 
   it('does not assemble the island or road network from large external tiles', () => {
