@@ -5,6 +5,8 @@ export interface BuildingSnapshot {
   storedEnergy: number;
   level: number;
   placementId?: string;
+  constructionHoursTotal?: number;
+  constructionHoursRemaining?: number;
 }
 
 export interface ActiveEventSnapshot {
