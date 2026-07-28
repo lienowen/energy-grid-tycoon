@@ -22,7 +22,8 @@ export class BuildingFactory {
       upgradeCostFactor: Math.max(1.1, config.upgradeCostFactor ?? 1.65),
       upgradePowerBonus: Math.max(0, config.upgradePowerBonus ?? 0.22),
       upgradeMaintenanceBonus: Math.max(0, config.upgradeMaintenanceBonus ?? 0.12),
-      upgradeCapacityBonus: Math.max(0, config.upgradeCapacityBonus ?? 0.28)
+      upgradeCapacityBonus: Math.max(0, config.upgradeCapacityBonus ?? 0.28),
+      constructionHours: Math.max(1, config.constructionHours ?? 0)
     }, snapshot?.instanceId);
 
     if (snapshot) {
@@ -30,6 +31,13 @@ export class BuildingFactory {
       building.level = Math.min(building.getMaxLevel(), Math.max(1, Math.floor(snapshot.level ?? 1)));
       building.storedEnergy = Math.max(0, snapshot.storedEnergy);
       if (snapshot.placementId) building.place(snapshot.placementId);
+      const remaining = Math.max(0, snapshot.constructionHoursRemaining ?? 0);
+      if (remaining > 0) {
+        building.restoreConstruction(
+          Math.max(remaining, snapshot.constructionHoursTotal ?? remaining),
+          remaining
+        );
+      }
     }
 
     return building;
