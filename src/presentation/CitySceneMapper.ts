@@ -26,6 +26,7 @@ import type {
   EnvironmentPrefabSceneState,
   FacilitySceneState,
   HologramCameraConfig,
+  PlotPlacementTone,
   PlotSceneState,
   RoadSceneState
 } from './CitySceneTypes';
@@ -53,6 +54,7 @@ export type {
   ExpansionSiteSceneState,
   FacilitySceneState,
   HologramCameraConfig,
+  PlotPlacementTone,
   PlotSceneState,
   RoadSceneState,
   ScenePoint
@@ -65,6 +67,14 @@ const zoneLabels = {
   outskirts: '城市边缘',
   utility: '公共服务区'
 } as const;
+
+const groundAssetIds: Record<CityPlotConfig['zone'], string> = {
+  neighborhood: 'city01_ground_grass',
+  industrial: 'city01_ground_gravel',
+  coastal: 'city01_ground_grass',
+  outskirts: 'city01_ground_rough',
+  utility: 'city01_ground_paved'
+};
 
 const commercialDistrictAssetIds: Record<DistrictPrefabSceneState['kind'], string> = {
   residential: 'commercial_district_residential',
@@ -131,10 +141,23 @@ const mapFacilities = (
       level: building.level,
       scale: (anchor?.scale ?? plot.scale ?? 1) * (1 + (building.level - 1) * 0.06),
       output: getFacilityOutput(building, view),
-      storageRatio: getStorageRatio(building, view)
+      storageRatio: getStorageRatio(building, view),
+      constructionProgress: building.constructionProgress,
+      underConstruction: building.underConstruction
     };
   })
   .filter((facility): facility is FacilitySceneState => Boolean(facility));
+
+const placementTone = (
+  selected: BuildingConfig | undefined,
+  plot: CityPlotConfig,
+  ok: boolean
+): PlotPlacementTone | undefined => {
+  if (!selected) return undefined;
+  if (!ok) return 'invalid';
+  const preferred = selected.placementZones?.[0];
+  return preferred && preferred !== plot.zone ? 'warning' : 'valid';
+};
 
 const mapPlots = (
   view: GameViewModel,
@@ -159,7 +182,9 @@ const mapPlots = (
     available: Boolean(selected && check?.ok),
     blocked: Boolean(selected && !check?.ok),
     blockedReason: check?.ok ? undefined : check?.reason,
-    facilityId: occupant?.instanceId
+    facilityId: occupant?.instanceId,
+    groundAssetId: groundAssetIds[plot.zone],
+    placementTone: placementTone(selected, plot, Boolean(check?.ok))
   };
 });
 
@@ -171,8 +196,8 @@ const mapLinks = (
   id: `${facility.instanceId}-city`,
   from: facility,
   to: city,
-  active: facility.enabled,
-  intensity: facility.enabled ? clamp(supplyRatio, 0.25, 1) : 0.08
+  active: facility.enabled && !facility.underConstruction,
+  intensity: facility.enabled && !facility.underConstruction ? clamp(supplyRatio, 0.25, 1) : 0.08
 }));
 
 const statusForPower = (powerRatio: number): DistrictPrefabStatus => {
@@ -247,22 +272,18 @@ const mapEnergyNetwork = (
   districts: readonly DistrictPrefabSceneState[],
   supplyRatio: number,
   demandRatio: number
-): {
-  nodes: EnergyNetworkNodeSceneState[];
-  edges: EnergyNetworkEdgeSceneState[];
-} => {
+): { nodes: EnergyNetworkNodeSceneState[]; edges: EnergyNetworkEdgeSceneState[] } => {
   const pressure = demandRatio / Math.max(0.2, supplyRatio);
   const nodes = layout.energyNetwork.nodes.map((node): EnergyNetworkNodeSceneState => {
     const point = toScenePoint(node);
     if (node.districtId) {
       const district = districts.find((candidate) => candidate.id === node.districtId);
-      const status = district ? districtNodeStatus(district) : 'offline';
       return {
         ...point,
         id: node.id,
         label: node.label,
         kind: node.kind,
-        status,
+        status: district ? districtNodeStatus(district) : 'offline',
         capacity: node.capacity,
         loadRatio: clamp(demandRatio / Math.max(0.25, node.capacity), 0, 1.5),
         districtId: node.districtId
@@ -274,19 +295,16 @@ const mapEnergyNetwork = (
       || Boolean(node.facilityConfigIds?.includes(facility.configId))
     );
     if (matchingFacilities.length > 0) {
-      const activeFacilities = matchingFacilities.filter((facility) => facility.enabled);
+      const activeFacilities = matchingFacilities.filter((facility) =>
+        facility.enabled && !facility.underConstruction
+      );
       const totalOutput = activeFacilities.reduce((sum, facility) => sum + facility.output, 0);
-      const status: EnergyNetworkNodeStatus = activeFacilities.length === 0
-        ? 'offline'
-        : pressure > 1.02
-          ? 'warning'
-          : 'active';
       return {
         ...point,
         id: node.id,
         label: node.label,
         kind: node.kind,
-        status,
+        status: activeFacilities.length === 0 ? 'offline' : pressure > 1.02 ? 'warning' : 'active',
         capacity: node.capacity,
         loadRatio: clamp(totalOutput / Math.max(1, node.capacity * 620), 0, 1.5),
         facilityId: matchingFacilities[0]?.instanceId
@@ -294,17 +312,12 @@ const mapEnergyNetwork = (
     }
 
     if (node.alwaysOperational) {
-      const status: EnergyNetworkNodeStatus = supplyRatio < 0.16
-        ? 'offline'
-        : pressure > 1.02
-          ? 'warning'
-          : 'active';
       return {
         ...point,
         id: node.id,
         label: node.label,
         kind: node.kind,
-        status,
+        status: supplyRatio < 0.16 ? 'offline' : pressure > 1.02 ? 'warning' : 'active',
         capacity: node.capacity,
         loadRatio: clamp(pressure / node.capacity, 0, 1.5)
       };
@@ -325,9 +338,7 @@ const mapEnergyNetwork = (
   const edges = layout.energyNetwork.edges.map((edge): EnergyNetworkEdgeSceneState => {
     const from = nodeById.get(edge.from);
     const to = nodeById.get(edge.to);
-    if (!from || !to) {
-      throw new Error(`Invalid authored energy edge ${edge.id}: ${edge.from} -> ${edge.to}`);
-    }
+    if (!from || !to) throw new Error(`Invalid authored energy edge ${edge.id}: ${edge.from} -> ${edge.to}`);
     const loadRatio = clamp(pressure / Math.max(0.2, edge.capacity), 0, 1.6);
     const status = from.status === 'planned' || to.status === 'planned'
       ? 'planned'
