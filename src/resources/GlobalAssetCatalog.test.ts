@@ -68,6 +68,22 @@ describe('GlobalAssetCatalog', () => {
       .toBe('/assets/single/v1/tower_sheet/tower_sheet__01__base-main.png');
   });
 
+  it('registers only the approved ground placement and effect support cuts', () => {
+    const entries = new Map(globalAssetCatalog.entries.map((entry) => [entry.id, entry]));
+    expect(entries.get('city01_ground_grass')?.src)
+      .toBe('/assets/single/v1/ground_sheet/ground_sheet__01__grass-lot.png');
+    expect(entries.get('city01_ground_paved')?.src)
+      .toBe('/assets/single/v1/ground_sheet/ground_sheet__02__paved-lot-a.png');
+    expect(entries.get('city01_placement_valid')?.src)
+      .toBe('/assets/single/v1/build_sheet/build_sheet__11__small-bar-f.png');
+    expect(entries.get('city01_placement_invalid')?.src)
+      .toBe('/assets/single/v1/build_sheet/build_sheet__18__small-bar-j.png');
+    expect(entries.get('city01_fx_smoke_dark')?.src)
+      .toBe('/assets/single/v1/gas_sheet/gas_sheet__06__smoke-white.png');
+    expect(entries.get('city01_fx_energize')?.src)
+      .toBe('/assets/single/v1/substation_sheet/substation_sheet__04__energize-fx.png');
+  });
+
   it('removes the mislabeled legacy facility directory from the runtime catalog', () => {
     expect(globalAssetCatalog.entries.some((entry) =>
       entry.src.startsWith('/assets/city01/product/facilities/')
@@ -84,6 +100,18 @@ describe('GlobalAssetCatalog', () => {
       expect(facility.height).toBe(512);
       expect(facility.anchor).toEqual({ x: 0.5, y: 0.9115 });
       expect(facility.src.startsWith('/assets/single/v1/')).toBe(true);
+    }
+  });
+
+  it('gives support cuts their category-specific normalized canvas contract', () => {
+    const support = globalAssetCatalog.entries.filter((entry) =>
+      entry.tags?.includes('unified-support-v1')
+    );
+    expect(support).toHaveLength(12);
+    for (const entry of support) {
+      expect(entry.width).toBe(512);
+      expect([256, 512]).toContain(entry.height);
+      expect(entry.src.startsWith('/assets/single/v1/')).toBe(true);
     }
   });
 
