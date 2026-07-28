@@ -49,6 +49,30 @@ describe('SaveManager', () => {
     expect(loaded?.state.money).toBe(4400);
   });
 
+  it('preserves unfinished facility construction', () => {
+    const save = makeSave('construction-city', 3900);
+    save.buildings.push({
+      instanceId: 'gas-building',
+      configId: 'gas_basic',
+      enabled: false,
+      storedEnergy: 0,
+      level: 1,
+      placementId: 'west-industry',
+      constructionHoursTotal: 10,
+      constructionHoursRemaining: 6
+    });
+
+    expect(SaveManager.saveGame(save)).toBe(true);
+    const loaded = SaveManager.loadGame();
+    expect(loaded?.buildings[0]).toMatchObject({
+      instanceId: 'gas-building',
+      placementId: 'west-industry',
+      enabled: false,
+      constructionHoursTotal: 10,
+      constructionHoursRemaining: 6
+    });
+  });
+
   it('restores the previous verified backup when the primary save is corrupt', () => {
     SaveManager.saveGame(makeSave('starter-city', 3100));
     SaveManager.saveGame(makeSave('starter-city', 5200));
