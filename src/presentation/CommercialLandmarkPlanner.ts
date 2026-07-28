@@ -14,7 +14,9 @@ export const planCommercialFacilities = (
     x: solar.reduce((sum, facility) => sum + facility.x, 0) / solar.length,
     z: solar.reduce((sum, facility) => sum + facility.z, 0) / solar.length,
     elevation: Math.max(...solar.map((facility) => facility.elevation)),
-    scale: Math.max(...solar.map((facility) => facility.scale)) * 1.38,
+    // Two simulation units read as one landmark, but must remain subordinate to
+    // the district composition instead of becoming an oversized utility block.
+    scale: Math.max(...solar.map((facility) => facility.scale)) * 1.08,
     output: solar.reduce((sum, facility) => sum + facility.output, 0)
   };
 
