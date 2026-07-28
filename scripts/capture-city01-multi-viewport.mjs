@@ -18,54 +18,134 @@ const browser = await chromium.launch({ headless: true });
 const results = [];
 let failed = false;
 
+const clickVisible = async (page, selector) => page.evaluate((targetSelector) => {
+  const candidates = [...document.querySelectorAll(targetSelector)];
+  const target = candidates.find((candidate) => {
+    if (!(candidate instanceof HTMLElement)) return false;
+    const style = getComputedStyle(candidate);
+    const rect = candidate.getBoundingClientRect();
+    return style.display !== 'none'
+      && style.visibility !== 'hidden'
+      && Number(style.opacity || 1) > 0
+      && rect.width > 0
+      && rect.height > 0;
+  });
+  if (!(target instanceof HTMLElement)) return false;
+  target.click();
+  return true;
+}, selector);
+
 const enterCity = async (page) => {
   await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
   const startButton = page.locator('[data-start="city-01"]');
   await startButton.waitFor({ state: 'visible', timeout: 30000 });
   await startButton.click();
   await page.waitForSelector('canvas.city01-integrated-canvas', { timeout: 30000 });
-  await page.waitForTimeout(900);
+  await page.waitForTimeout(350);
 };
 
 const enterPlacement = async (page) => {
-  const guideBuild = page.locator('[data-guide-build="gas_basic"]').first();
-  if (await guideBuild.count()) {
-    await guideBuild.click({ force: true });
-  } else {
-    const buildToggle = page.locator('[data-build-dock-toggle="true"]').first();
-    await buildToggle.waitFor({ state: 'visible', timeout: 15000 });
-    await buildToggle.click({ force: true });
-    const gasButton = page.locator('[data-select-build="gas_basic"]');
-    await gasButton.waitFor({ state: 'attached', timeout: 15000 });
-    await gasButton.click({ force: true });
+  let clicked = await clickVisible(page, '[data-guide-build="gas_basic"]');
+  if (!clicked) {
+    clicked = await clickVisible(page, '[data-build-dock-toggle="true"]');
+    if (!clicked) throw new Error('No visible entry point for build placement');
+    await page.waitForTimeout(100);
+    clicked = await clickVisible(page, '[data-select-build="gas_basic"]');
   }
-  await page.waitForSelector('.hologram-secretary.placement', { timeout: 15000 });
-  await page.waitForTimeout(900);
+  if (!clicked) throw new Error('Unable to select gas_basic for placement');
+  await page.waitForFunction(() =>
+    Boolean(document.querySelector('.hologram-secretary.placement'))
+    || Boolean(document.querySelector('[data-cancel-build="true"]'))
+  );
+  await page.waitForTimeout(350);
+};
+
+const switchToGrid = async (page) => {
+  const clicked = await clickVisible(page, '[data-presentation-toggle="true"]');
+  if (!clicked) throw new Error('No visible grid presentation control');
+  await page.waitForFunction(() =>
+    document.querySelector('[data-world-renderer="city01-integrated"]')
+      ?.getAttribute('data-presentation-mode') === 'grid'
+  );
+};
+
+const rectFor = (element) => {
+  if (!(element instanceof HTMLElement)) return null;
+  const rect = element.getBoundingClientRect();
+  return {
+    left: rect.left,
+    top: rect.top,
+    right: rect.right,
+    bottom: rect.bottom,
+    width: rect.width,
+    height: rect.height
+  };
 };
 
 const inspectPage = async (page, captureCase) => page.evaluate(({ expectedMode, expectedPlacement }) => {
   const canvas = document.querySelector('canvas.city01-integrated-canvas');
   const host = document.querySelector('[data-world-renderer="city01-integrated"]');
-  const canvasRect = canvas?.getBoundingClientRect();
   const documentElement = document.documentElement;
   const body = document.body;
   const placementGuide = document.querySelector('.hologram-secretary.placement');
-  const placementName = placementGuide?.querySelector('strong')?.textContent?.trim() ?? null;
+  const cancelBuild = document.querySelector('[data-cancel-build="true"]');
+  const placementName = placementGuide?.querySelector('strong')?.textContent?.trim()
+    ?? document.querySelector('.release-onboarding-target')?.textContent?.trim()
+    ?? null;
+  const onboarding = document.querySelector('.release-onboarding');
+  const toolRail = document.querySelector('.hologram-tool-rail');
+  const presentationButton = [...document.querySelectorAll('[data-presentation-toggle="true"]')]
+    .find((candidate) => candidate instanceof HTMLElement && candidate.getBoundingClientRect().width > 0);
+  const presentationRect = presentationButton instanceof HTMLElement
+    ? presentationButton.getBoundingClientRect()
+    : null;
+  const topAtPresentationCenter = presentationRect
+    ? document.elementFromPoint(
+        presentationRect.left + presentationRect.width / 2,
+        presentationRect.top + presentationRect.height / 2
+      )
+    : null;
+  const presentationClickable = Boolean(
+    presentationButton
+    && topAtPresentationCenter
+    && (presentationButton === topAtPresentationCenter || presentationButton.contains(topAtPresentationCenter))
+  );
+  const onboardingRect = onboarding instanceof HTMLElement ? onboarding.getBoundingClientRect() : null;
+  const toolRailRect = toolRail instanceof HTMLElement ? toolRail.getBoundingClientRect() : null;
+  const onboardingOverlapsTools = Boolean(
+    onboardingRect
+    && toolRailRect
+    && onboardingRect.left < toolRailRect.right
+    && onboardingRect.right > toolRailRect.left
+    && onboardingRect.top < toolRailRect.bottom
+    && onboardingRect.bottom > toolRailRect.top
+  );
+
+  const toRect = (element) => {
+    if (!(element instanceof HTMLElement)) return null;
+    const rect = element.getBoundingClientRect();
+    return {
+      left: rect.left,
+      top: rect.top,
+      right: rect.right,
+      bottom: rect.bottom,
+      width: rect.width,
+      height: rect.height
+    };
+  };
+
   return {
     renderer: host?.getAttribute('data-world-renderer') ?? null,
     presentationMode: host?.getAttribute('data-presentation-mode') ?? null,
-    placementGuideVisible: Boolean(placementGuide),
+    placementGuideVisible: Boolean(placementGuide || cancelBuild),
     placementName,
     expectedMode,
     expectedPlacement,
-    canvas: canvasRect ? {
-      left: canvasRect.left,
-      top: canvasRect.top,
-      right: canvasRect.right,
-      bottom: canvasRect.bottom,
-      width: canvasRect.width,
-      height: canvasRect.height
-    } : null,
+    presentationClickable,
+    onboardingOverlapsTools,
+    onboarding: toRect(onboarding),
+    toolRail: toRect(toolRail),
+    canvas: toRect(canvas),
     viewport: {
       width: window.innerWidth,
       height: window.innerHeight
@@ -93,6 +173,10 @@ const validate = (diagnostics, captureCase) => {
     if (!diagnostics.placementName?.includes('燃气')) {
       issues.push(`Expected gas facility placement, received ${diagnostics.placementName}`);
     }
+  }
+  if (captureCase.width <= 480) {
+    if (!diagnostics.presentationClickable) issues.push('Mobile presentation control is visually occluded');
+    if (diagnostics.onboardingOverlapsTools) issues.push('Mobile action card overlaps the tool rail');
   }
   if (!diagnostics.canvas) issues.push('Canvas bounds are missing');
   if (diagnostics.scroll.width > diagnostics.scroll.clientWidth + 4) {
@@ -129,18 +213,9 @@ try {
     try {
       await enterCity(page);
       if (captureCase.action === 'placement') await enterPlacement(page);
+      if (captureCase.mode === 'grid') await switchToGrid(page);
 
-      if (captureCase.mode === 'grid') {
-        const gridButton = page.getByRole('button', { name: /电网/ }).first();
-        await gridButton.waitFor({ state: 'visible', timeout: 15000 });
-        await gridButton.click({ force: true });
-        await page.waitForFunction(() =>
-          document.querySelector('[data-world-renderer="city01-integrated"]')
-            ?.getAttribute('data-presentation-mode') === 'grid'
-        );
-      }
-
-      await page.waitForTimeout(900);
+      await page.waitForTimeout(450);
       diagnostics = await inspectPage(page, captureCase);
       issues.push(...validate(diagnostics, captureCase));
     } catch (error) {
