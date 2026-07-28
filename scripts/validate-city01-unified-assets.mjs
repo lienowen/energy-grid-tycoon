@@ -6,11 +6,14 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const policyPath = join(repoRoot, 'src/resources/city01-unified-runtime-asset-policy.json');
 const facilityCatalogPath = join(repoRoot, 'src/resources/City01UnifiedFacilityCatalog.ts');
 const supportCatalogPath = join(repoRoot, 'src/resources/City01UnifiedSupportCatalog.ts');
+const gridCatalogPath = join(repoRoot, 'src/resources/City01UnifiedGridCatalog.ts');
 const globalCatalogPath = join(repoRoot, 'src/resources/GlobalAssetCatalog.ts');
 const retiredCatalogPath = join(repoRoot, 'src/resources/asset-catalog-city01-facility-runtime.json');
+const retiredFacilityDirectory = join(repoRoot, 'public/assets/city01/product/facilities');
 const policy = JSON.parse(readFileSync(policyPath, 'utf8'));
 const facilityCatalogSource = readFileSync(facilityCatalogPath, 'utf8');
 const supportCatalogSource = readFileSync(supportCatalogPath, 'utf8');
+const gridCatalogSource = readFileSync(gridCatalogPath, 'utf8');
 const globalCatalogSource = readFileSync(globalCatalogPath, 'utf8');
 const errors = [];
 
@@ -63,6 +66,23 @@ for (const batchId of ['P0-ASSET-02', 'P0-ASSET-03', 'P0-ASSET-04']) {
   }
 }
 
+const gridBatch = batches.get('P0-ASSET-05');
+assert(gridBatch?.status === 'ACTIVE', 'P0-ASSET-05: grid line cut batch must be ACTIVE');
+assert(Array.isArray(gridBatch?.runtimeIds) && gridBatch.runtimeIds.length === 7,
+  'P0-ASSET-05: exactly seven modular grid runtime ids are required');
+assert(Array.isArray(gridBatch?.approvedSources) && gridBatch.approvedSources.length === 7,
+  'P0-ASSET-05: exactly seven grid source cuts are required');
+for (const runtimeId of gridBatch?.runtimeIds ?? []) {
+  assert(gridCatalogSource.includes(`'${runtimeId}'`),
+    `P0-ASSET-05: grid catalog is missing runtime id ${runtimeId}`);
+}
+for (const sourceStem of gridBatch?.approvedSources ?? []) {
+  const file = join(repoRoot, 'public/assets/single/v1/grid_sheet', `${sourceStem}.png`);
+  assert(existsSync(file), `P0-ASSET-05: grid source is missing: ${file.replace(`${repoRoot}/`, '')}`);
+  assert(gridCatalogSource.includes(sourceStem),
+    `P0-ASSET-05: grid catalog does not reference ${sourceStem}`);
+}
+
 const retiredRuntimeEntryPattern = /src\s*:\s*[`'\"]\/assets\/city01\/product\/facilities\//;
 assert(!retiredRuntimeEntryPattern.test(facilityCatalogSource),
   'unified facility catalog contains a runtime entry from the retired mislabeled directory');
@@ -72,13 +92,15 @@ assert(globalCatalogSource.includes('city01UnifiedFacilityCatalog'),
   'global catalog must merge the unified City-01 facility catalog');
 assert(globalCatalogSource.includes('city01UnifiedSupportCatalog'),
   'global catalog must merge the unified City-01 support catalog');
+assert(globalCatalogSource.includes('city01UnifiedGridCatalog'),
+  'global catalog must merge the unified City-01 grid catalog');
 assert(!globalCatalogSource.includes('asset-catalog-city01-facility-runtime.json'),
   'global catalog still imports the retired facility runtime JSON');
 assert(!existsSync(retiredCatalogPath),
   'retired asset-catalog-city01-facility-runtime.json must be deleted');
-
+assert(!existsSync(retiredFacilityDirectory),
+  'retired mislabeled facility image directory must be physically deleted');
 assert(batches.get('P0-ASSET-01')?.status === 'ACTIVE', 'facility cut batch must be ACTIVE');
-assert(batches.get('P0-ASSET-05')?.status === 'PENDING_CUT', 'grid line cut batch must remain PENDING_CUT');
 
 if (errors.length > 0) {
   console.error(`City-01 unified asset validation failed (${errors.length}):`);
@@ -87,5 +109,5 @@ if (errors.length > 0) {
 }
 
 console.log(
-  `City-01 unified assets: ${policy.approvedFamilies.length} facility families and 12 support cuts approved; old mislabeled runtime pack retired.`
+  `City-01 unified assets: ${policy.approvedFamilies.length} facility families, 12 support cuts and 7 modular grid lines approved; retired facility pack deleted.`
 );
