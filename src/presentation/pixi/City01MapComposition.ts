@@ -57,24 +57,6 @@ const roadTile = (
   flipX
 });
 
-const connector = (
-  id: string,
-  x: number,
-  y: number,
-  width: number,
-  flipX = false
-): City01MapPlacement => ({
-  id,
-  assetId: 'city01_road_connector_short',
-  point: city01MapToScenePoint(x, y, -0.02),
-  width,
-  anchorY: 0.5,
-  layer: 'roads',
-  alpha: 1,
-  diagnosticsAlpha: 0.45,
-  flipX
-});
-
 const vehicle = (
   id: string,
   assetId: string,
@@ -110,9 +92,9 @@ export const city01IslandBoundary: readonly ScenePoint[] = [
 ];
 
 /**
- * L0 is one complete base map. L1 contains only road art and small vehicles.
- * Coast, ocean, grass lots, parks and forests are no longer assembled from
- * separate large tiles in the live scene.
+ * L0 is one complete base map. L1 currently contains only the central road
+ * network whose full-size road tiles visibly touch each other. Isolated access
+ * roads are intentionally absent until P0-MAP-03 topology approval.
  */
 export const city01MapPlacements: readonly City01MapPlacement[] = [
   city01BaseMapPlacement,
@@ -122,9 +104,6 @@ export const city01MapPlacements: readonly City01MapPlacement[] = [
   roadTile('old-town-straight', 'terrain_road_straight_base', 35, 60, ROAD_TILE_WIDTH, 0.48),
   roadTile('central-t-junction', 'terrain_road_t_junction_base', 55, 60, ROAD_TILE_WIDTH, 0.5),
   roadTile('industrial-straight', 'terrain_road_straight_base', 75, 60, ROAD_TILE_WIDTH, 0.48),
-  roadTile('storage-dead-end', 'terrain_road_dead_end_base', 75, 80, ROAD_TILE_WIDTH, 0.46),
-  connector('industrial-short-link', 67, 68, 176),
-  connector('wind-farm-short-link', 88, 49, 148, true),
   vehicle('city-sedan', 'vehicle_sedan', 57, 39, 43),
   vehicle('civic-utility-van', 'vehicle_utility_van', 55, 61, 47, true),
   vehicle('industrial-cargo-truck', 'vehicle_cargo_truck', 74, 66, 54)
@@ -159,7 +138,5 @@ export const city01RequiredLiveAssetIds = [
   'terrain_road_corner_base',
   'terrain_road_crossroad_base',
   'terrain_road_straight_base',
-  'terrain_road_t_junction_base',
-  'terrain_road_dead_end_base',
-  'city01_road_connector_short'
+  'terrain_road_t_junction_base'
 ] as const;
