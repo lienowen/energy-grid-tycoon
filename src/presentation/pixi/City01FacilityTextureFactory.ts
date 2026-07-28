@@ -98,8 +98,8 @@ const weightedAlphaBounds = (
     for (let x = 0; x < width; x += 1) {
       const alpha = pixels[(y * width + x) * 4 + 3] ?? 0;
       if (alpha <= 8) continue;
-      columns[x] += alpha;
-      rows[y] += alpha;
+      columns[x] = (columns[x] ?? 0) + alpha;
+      rows[y] = (rows[y] ?? 0) + alpha;
       total += alpha;
     }
   }
