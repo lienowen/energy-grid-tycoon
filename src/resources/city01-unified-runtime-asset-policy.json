@@ -75,8 +75,27 @@
     {
       "id": "P0-ASSET-05",
       "name": "模块化电网线路",
-      "status": "PENDING_CUT",
-      "reason": "当前网格图包含线路与电塔组合，必须拆分为线段、转角、流向和塔体。"
+      "status": "ACTIVE",
+      "targetCanvas": { "width": 512, "height": 128 },
+      "runtimeIds": [
+        "city01_grid_line_normal",
+        "city01_grid_line_overload",
+        "city01_grid_line_offline",
+        "city01_grid_line_highload",
+        "city01_grid_line_restore",
+        "city01_grid_line_flow",
+        "city01_grid_line_arc"
+      ],
+      "approvedSources": [
+        "grid_sheet__01__line-normal-with-towers",
+        "grid_sheet__02__line-overload-with-towers",
+        "grid_sheet__03__line-offline-with-towers",
+        "grid_sheet__04__line-highload",
+        "grid_sheet__06__line-restore",
+        "grid_sheet__08__line-flow",
+        "grid_sheet__09__warning-panel"
+      ],
+      "runtimeRule": "前三张组合图首次加载时裁掉两端电塔，仅输出纯线段；独立塔体使用 tower_sheet。"
     }
   ]
 }
