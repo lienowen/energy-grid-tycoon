@@ -69,7 +69,11 @@ export interface FacilitySceneState extends ScenePoint {
   scale: number;
   output: number;
   storageRatio: number;
+  constructionProgress: number;
+  underConstruction: boolean;
 }
+
+export type PlotPlacementTone = 'valid' | 'warning' | 'invalid';
 
 export interface PlotSceneState extends ScenePoint {
   id: string;
@@ -82,6 +86,8 @@ export interface PlotSceneState extends ScenePoint {
   blocked: boolean;
   blockedReason?: string;
   facilityId?: string;
+  groundAssetId: string;
+  placementTone?: PlotPlacementTone;
 }
 
 export interface EnergyLinkSceneState {
