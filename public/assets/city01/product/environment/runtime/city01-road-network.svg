@@ -1,69 +1,39 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="2048" height="1536" viewBox="0 0 2048 1536">
   <defs>
-    <filter id="road-shadow" x="-20%" y="-45%" width="140%" height="190%">
-      <feGaussianBlur stdDeviation="5"/>
-    </filter>
-    <linearGradient id="asphalt" x1="0" y1="0" x2="1" y2="1">
-      <stop stop-color="#606666"/>
-      <stop offset=".55" stop-color="#4b5253"/>
-      <stop offset="1" stop-color="#3a4244"/>
-    </linearGradient>
-    <linearGradient id="curb" x1="0" y1="0" x2="1" y2="1">
-      <stop stop-color="#eee7d8"/>
-      <stop offset="1" stop-color="#c5b89f"/>
-    </linearGradient>
+    <filter id="road-shadow" x="-20%" y="-45%" width="140%" height="190%"><feGaussianBlur stdDeviation="5"/></filter>
+    <linearGradient id="asphalt" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#606666"/><stop offset=".55" stop-color="#4b5253"/><stop offset="1" stop-color="#3a4244"/></linearGradient>
+    <linearGradient id="curb" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eee7d8"/><stop offset="1" stop-color="#c5b89f"/></linearGradient>
   </defs>
 
-  <!-- Arterials: west-east routes. Coordinates are derived from the shared
-       City-01 map-to-scene transform, not adjusted by screenshot guesswork. -->
   <g fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M796.1 635.3 L1066.9 712.6 L1218.8 788.6 M798.8 694.8 L950.7 770.7 L1102.6 846.7"
-          stroke="#071115" stroke-opacity=".42" stroke-width="48" filter="url(#road-shadow)"/>
-    <path d="M796.1 635.3 L1066.9 712.6 L1218.8 788.6 M798.8 694.8 L950.7 770.7 L1102.6 846.7"
-          stroke="url(#curb)" stroke-width="42"/>
-    <path d="M796.1 635.3 L1066.9 712.6 L1218.8 788.6 M798.8 694.8 L950.7 770.7 L1102.6 846.7"
-          stroke="#252e30" stroke-width="36"/>
-    <path d="M796.1 635.3 L1066.9 712.6 L1218.8 788.6 M798.8 694.8 L950.7 770.7 L1102.6 846.7"
-          stroke="url(#asphalt)" stroke-width="30"/>
-    <path d="M796.1 635.3 L1066.9 712.6 L1218.8 788.6 M798.8 694.8 L950.7 770.7 L1102.6 846.7"
-          stroke="#e0c45e" stroke-opacity=".52" stroke-width="2.2" stroke-dasharray="15 13"/>
+    <path d="M796.1 635.3 L1066.9 712.6 L1218.8 788.6 M798.8 694.8 L950.7 770.7 L1102.6 846.7" stroke="#071115" stroke-opacity=".42" stroke-width="48" filter="url(#road-shadow)"/>
+    <path d="M796.1 635.3 L1066.9 712.6 L1218.8 788.6 M798.8 694.8 L950.7 770.7 L1102.6 846.7" stroke="url(#curb)" stroke-width="42"/>
+    <path d="M796.1 635.3 L1066.9 712.6 L1218.8 788.6 M798.8 694.8 L950.7 770.7 L1102.6 846.7" stroke="#252e30" stroke-width="36"/>
+    <path d="M796.1 635.3 L1066.9 712.6 L1218.8 788.6 M798.8 694.8 L950.7 770.7 L1102.6 846.7" stroke="url(#asphalt)" stroke-width="30"/>
+    <path d="M796.1 635.3 L1066.9 712.6 L1218.8 788.6 M798.8 694.8 L950.7 770.7 L1102.6 846.7" stroke="#e0c45e" stroke-opacity=".52" stroke-width="2.2" stroke-dasharray="15 13"/>
   </g>
 
-  <!-- Collectors connect the two arterials. -->
   <g fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M796.1 635.3 L798.8 694.8 M1066.9 712.6 L950.7 770.7 M1218.8 788.6 L1102.6 846.7"
-          stroke="#071115" stroke-opacity=".38" stroke-width="42" filter="url(#road-shadow)"/>
-    <path d="M796.1 635.3 L798.8 694.8 M1066.9 712.6 L950.7 770.7 M1218.8 788.6 L1102.6 846.7"
-          stroke="url(#curb)" stroke-width="36"/>
-    <path d="M796.1 635.3 L798.8 694.8 M1066.9 712.6 L950.7 770.7 M1218.8 788.6 L1102.6 846.7"
-          stroke="#252e30" stroke-width="30"/>
-    <path d="M796.1 635.3 L798.8 694.8 M1066.9 712.6 L950.7 770.7 M1218.8 788.6 L1102.6 846.7"
-          stroke="#4d5455" stroke-width="25"/>
+    <path d="M796.1 635.3 L798.8 694.8 M1066.9 712.6 L950.7 770.7 M1218.8 788.6 L1102.6 846.7" stroke="#071115" stroke-opacity=".38" stroke-width="42" filter="url(#road-shadow)"/>
+    <path d="M796.1 635.3 L798.8 694.8 M1066.9 712.6 L950.7 770.7 M1218.8 788.6 L1102.6 846.7" stroke="url(#curb)" stroke-width="36"/>
+    <path d="M796.1 635.3 L798.8 694.8 M1066.9 712.6 L950.7 770.7 M1218.8 788.6 L1102.6 846.7" stroke="#252e30" stroke-width="30"/>
+    <path d="M796.1 635.3 L798.8 694.8 M1066.9 712.6 L950.7 770.7 M1218.8 788.6 L1102.6 846.7" stroke="#4d5455" stroke-width="25"/>
   </g>
 
-  <!-- One short access edge per district. Butt caps avoid visible loop-shaped
-       terminals; district art covers the final few pixels. -->
+  <!-- Five access roads terminate beneath their matching district subjects. -->
   <g fill="none" stroke-linecap="butt" stroke-linejoin="round">
-    <path d="M1066.9 712.6 L981.6 664.1 M1218.8 788.6 L1279.1 743.2 M950.7 770.7 L966.4 755.3 M798.8 694.8 L766.6 771.6 M1102.6 846.7 L1075.4 867.9"
-          stroke="#071115" stroke-opacity=".34" stroke-width="32" filter="url(#road-shadow)"/>
-    <path d="M1066.9 712.6 L981.6 664.1 M1218.8 788.6 L1279.1 743.2 M950.7 770.7 L966.4 755.3 M798.8 694.8 L766.6 771.6 M1102.6 846.7 L1075.4 867.9"
-          stroke="url(#curb)" stroke-width="27"/>
-    <path d="M1066.9 712.6 L981.6 664.1 M1218.8 788.6 L1279.1 743.2 M950.7 770.7 L966.4 755.3 M798.8 694.8 L766.6 771.6 M1102.6 846.7 L1075.4 867.9"
-          stroke="#283133" stroke-width="22"/>
-    <path d="M1066.9 712.6 L981.6 664.1 M1218.8 788.6 L1279.1 743.2 M950.7 770.7 L966.4 755.3 M798.8 694.8 L766.6 771.6 M1102.6 846.7 L1075.4 867.9"
-          stroke="#505758" stroke-width="17"/>
+    <path d="M796.1 635.3 L936.4 618.3 M1218.8 788.6 L1303.7 761.3 M950.7 770.7 L985.6 753.3 M798.8 694.8 L710.3 708.6 M1102.6 846.7 L1040.5 885.3" stroke="#071115" stroke-opacity=".34" stroke-width="32" filter="url(#road-shadow)"/>
+    <path d="M796.1 635.3 L936.4 618.3 M1218.8 788.6 L1303.7 761.3 M950.7 770.7 L985.6 753.3 M798.8 694.8 L710.3 708.6 M1102.6 846.7 L1040.5 885.3" stroke="url(#curb)" stroke-width="27"/>
+    <path d="M796.1 635.3 L936.4 618.3 M1218.8 788.6 L1303.7 761.3 M950.7 770.7 L985.6 753.3 M798.8 694.8 L710.3 708.6 M1102.6 846.7 L1040.5 885.3" stroke="#283133" stroke-width="22"/>
+    <path d="M796.1 635.3 L936.4 618.3 M1218.8 788.6 L1303.7 761.3 M950.7 770.7 L985.6 753.3 M798.8 694.8 L710.3 708.6 M1102.6 846.7 L1040.5 885.3" stroke="#505758" stroke-width="17"/>
   </g>
 
-  <!-- Compact junction plates prevent pinholes without producing oversized
-       road-tile platforms. -->
   <g fill="url(#curb)">
-    <circle cx="796.1" cy="635.3" r="22"/><circle cx="1066.9" cy="712.6" r="22"/>
-    <circle cx="1218.8" cy="788.6" r="22"/><circle cx="798.8" cy="694.8" r="20"/>
-    <circle cx="950.7" cy="770.7" r="22"/><circle cx="1102.6" cy="846.7" r="20"/>
+    <circle cx="796.1" cy="635.3" r="22"/><circle cx="1066.9" cy="712.6" r="22"/><circle cx="1218.8" cy="788.6" r="22"/>
+    <circle cx="798.8" cy="694.8" r="20"/><circle cx="950.7" cy="770.7" r="22"/><circle cx="1102.6" cy="846.7" r="20"/>
   </g>
   <g fill="#4b5253" stroke="#252e30" stroke-width="4">
-    <circle cx="796.1" cy="635.3" r="17"/><circle cx="1066.9" cy="712.6" r="17"/>
-    <circle cx="1218.8" cy="788.6" r="17"/><circle cx="798.8" cy="694.8" r="15"/>
-    <circle cx="950.7" cy="770.7" r="17"/><circle cx="1102.6" cy="846.7" r="15"/>
+    <circle cx="796.1" cy="635.3" r="17"/><circle cx="1066.9" cy="712.6" r="17"/><circle cx="1218.8" cy="788.6" r="17"/>
+    <circle cx="798.8" cy="694.8" r="15"/><circle cx="950.7" cy="770.7" r="17"/><circle cx="1102.6" cy="846.7" r="15"/>
   </g>
 </svg>
