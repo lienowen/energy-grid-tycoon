@@ -14,8 +14,7 @@ export interface City01MapPlacement {
   flipX?: boolean;
 }
 
-const TILE_WIDTH = 328;
-const EDGE_TILE_WIDTH = 336;
+const ROAD_TILE_WIDTH = 328;
 
 export const city01MapToScenePoint = (
   x: number,
@@ -27,24 +26,33 @@ export const city01MapToScenePoint = (
   elevation
 });
 
-const tile = (
+export const city01BaseMapPlacement: City01MapPlacement = {
+  id: 'city01-base-map',
+  assetId: 'city01_map_base',
+  point: city01MapToScenePoint(57, 50, -1.4),
+  width: 1760,
+  anchorY: 0.5,
+  layer: 'terrain',
+  alpha: 1,
+  diagnosticsAlpha: 0.72
+};
+
+const roadTile = (
   id: string,
   assetId: string,
   x: number,
   y: number,
-  width: number,
-  layer: City01MapLayer,
-  alpha = 1,
-  diagnosticsAlpha = 0.46,
+  width = ROAD_TILE_WIDTH,
+  diagnosticsAlpha = 0.5,
   flipX = false
 ): City01MapPlacement => ({
   id,
   assetId,
-  point: city01MapToScenePoint(x, y, -0.22),
+  point: city01MapToScenePoint(x, y, -0.08),
   width,
   anchorY: 0.9115,
-  layer,
-  alpha,
+  layer: 'roads',
+  alpha: 1,
   diagnosticsAlpha,
   flipX
 });
@@ -58,7 +66,7 @@ const connector = (
 ): City01MapPlacement => ({
   id,
   assetId: 'city01_road_connector_short',
-  point: city01MapToScenePoint(x, y, -0.04),
+  point: city01MapToScenePoint(x, y, -0.02),
   width,
   anchorY: 0.5,
   layer: 'roads',
@@ -86,10 +94,9 @@ const vehicle = (
 });
 
 /**
- * One continuous island sits below the product pieces. Coast water is tone
- * matched at runtime to the shared ocean while retaining authored foam and
- * shallow-water detail. The island edge hugs the authored tiles without moving
- * the coast pieces away from their road and district joins.
+ * Temporary compatibility boundary for the legacy renderer underlay. The new
+ * visible L0 surface is city01BaseMapPlacement; no external coast or terrain
+ * tile is allowed to define the island silhouette.
  */
 export const city01IslandBoundary: readonly ScenePoint[] = [
   city01MapToScenePoint(20, 18, -0.34),
@@ -103,32 +110,19 @@ export const city01IslandBoundary: readonly ScenePoint[] = [
 ];
 
 /**
- * Full product road tiles provide the street network. Two remaining gaps use a
- * real crop of the product straight-road PNG, never a newly drawn gray panel.
+ * L0 is one complete base map. L1 contains only road art and small vehicles.
+ * Coast, ocean, grass lots, parks and forests are no longer assembled from
+ * separate large tiles in the live scene.
  */
 export const city01MapPlacements: readonly City01MapPlacement[] = [
-  tile('north-west-beach', 'terrain_beach_open_base', 15, 25, EDGE_TILE_WIDTH, 'terrain', 1, 0.34),
-  tile('north-west-forest', 'terrain_forest_base', 41, 9, EDGE_TILE_WIDTH, 'terrain', 1, 0.32),
-  tile('north-park', 'terrain_small_park_base', 61, 15, TILE_WIDTH, 'groundDecorations', 1, 0.34),
-  tile('north-east-ridge', 'terrain_rocky_hill_base', 94, 28, EDGE_TILE_WIDTH, 'terrain', 1, 0.3),
-  tile('west-seafront', 'terrain_seafront_base', 9, 51, EDGE_TILE_WIDTH, 'terrain', 1, 0.32),
-  tile('west-harbor', 'terrain_harbor_pier_base', 14, 73, EDGE_TILE_WIDTH, 'terrain', 1, 0.3),
-  tile('east-coast', 'terrain_coast_cliff_base', 99, 54, EDGE_TILE_WIDTH, 'terrain', 1, 0.28),
-  tile('south-west-coast', 'terrain_coast_cliff_base', 32, 91, EDGE_TILE_WIDTH, 'terrain', 1, 0.28, true),
-  tile('south-beach', 'terrain_beach_open_base', 58, 94, EDGE_TILE_WIDTH, 'terrain', 1, 0.28, true),
-  tile('south-east-coast', 'terrain_coast_cliff_base', 85, 87, EDGE_TILE_WIDTH, 'terrain', 1, 0.28),
-  tile('solar-lot', 'terrain_empty_grasslot_base', 28, 22, TILE_WIDTH, 'terrain', 1, 0.34),
-  tile('residential-green', 'terrain_small_park_base', 76, 21, TILE_WIDTH, 'groundDecorations', 0.94, 0.34),
-  tile('central-civic-green', 'terrain_park_plaza_base', 53, 58, TILE_WIDTH, 'groundDecorations', 0.96, 0.34),
-  tile('storage-lot', 'terrain_empty_grasslot_base', 79, 80, TILE_WIDTH, 'terrain', 1, 0.34),
-  tile('east-forest', 'terrain_forest_base', 94, 68, EDGE_TILE_WIDTH, 'terrain', 1, 0.28),
-  tile('west-bridge', 'terrain_road_bridge_base', 27, 50, TILE_WIDTH, 'roads', 1, 0.5),
-  tile('central-crossroad', 'terrain_road_crossroad_base', 55, 40, TILE_WIDTH, 'roads', 1, 0.52),
-  tile('north-east-corner', 'terrain_road_corner_base', 75, 40, TILE_WIDTH, 'roads', 1, 0.5, true),
-  tile('old-town-straight', 'terrain_road_straight_base', 35, 60, TILE_WIDTH, 'roads', 1, 0.5),
-  tile('central-t-junction', 'terrain_road_t_junction_base', 55, 60, TILE_WIDTH, 'roads', 1, 0.52),
-  tile('industrial-straight', 'terrain_road_straight_base', 75, 60, TILE_WIDTH, 'roads', 1, 0.5),
-  tile('storage-dead-end', 'terrain_road_dead_end_base', 75, 80, TILE_WIDTH, 'roads', 1, 0.48),
+  city01BaseMapPlacement,
+  roadTile('west-bridge', 'terrain_road_bridge_base', 27, 50, ROAD_TILE_WIDTH, 0.48),
+  roadTile('central-crossroad', 'terrain_road_crossroad_base', 55, 40, ROAD_TILE_WIDTH, 0.5),
+  roadTile('north-east-corner', 'terrain_road_corner_base', 75, 40, ROAD_TILE_WIDTH, 0.48, true),
+  roadTile('old-town-straight', 'terrain_road_straight_base', 35, 60, ROAD_TILE_WIDTH, 0.48),
+  roadTile('central-t-junction', 'terrain_road_t_junction_base', 55, 60, ROAD_TILE_WIDTH, 0.5),
+  roadTile('industrial-straight', 'terrain_road_straight_base', 75, 60, ROAD_TILE_WIDTH, 0.48),
+  roadTile('storage-dead-end', 'terrain_road_dead_end_base', 75, 80, ROAD_TILE_WIDTH, 0.46),
   connector('industrial-short-link', 67, 68, 176),
   connector('wind-farm-short-link', 88, 49, 148, true),
   vehicle('city-sedan', 'vehicle_sedan', 57, 39, 43),
@@ -136,6 +130,10 @@ export const city01MapPlacements: readonly City01MapPlacement[] = [
   vehicle('industrial-cargo-truck', 'vehicle_cargo_truck', 74, 66, 54)
 ];
 
+/**
+ * Source inventory remains registered for future cutting and decoration work.
+ * Presence here does not mean an asset must be placed in the live map.
+ */
 export const city01EnvironmentAssetIds = [
   'terrain_forest_base',
   'terrain_park_plaza_base',
@@ -156,20 +154,12 @@ export const city01EnvironmentAssetIds = [
 ] as const;
 
 export const city01RequiredLiveAssetIds = [
-  'terrain_forest_base',
-  'terrain_park_plaza_base',
+  'city01_map_base',
+  'terrain_road_bridge_base',
   'terrain_road_corner_base',
   'terrain_road_crossroad_base',
   'terrain_road_straight_base',
   'terrain_road_t_junction_base',
-  'terrain_rocky_hill_base',
-  'terrain_seafront_base',
-  'terrain_beach_open_base',
-  'terrain_coast_cliff_base',
-  'terrain_empty_grasslot_base',
-  'terrain_harbor_pier_base',
-  'terrain_road_bridge_base',
   'terrain_road_dead_end_base',
-  'terrain_small_park_base',
   'city01_road_connector_short'
 ] as const;
