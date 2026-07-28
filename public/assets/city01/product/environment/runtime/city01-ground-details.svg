@@ -1,67 +1,63 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="2048" height="1536" viewBox="0 0 2048 1536">
   <defs>
     <linearGradient id="park" x1="0" y1="0" x2="1" y2="1">
-      <stop stop-color="#66865f" stop-opacity=".82"/>
-      <stop offset="1" stop-color="#3e654a" stop-opacity=".82"/>
+      <stop stop-color="#62805e" stop-opacity=".38"/>
+      <stop offset="1" stop-color="#365b46" stop-opacity=".32"/>
     </linearGradient>
     <linearGradient id="path" x1="0" y1="0" x2="1" y2="1">
-      <stop stop-color="#d8cfb5" stop-opacity=".82"/>
-      <stop offset="1" stop-color="#b4a98e" stop-opacity=".72"/>
+      <stop stop-color="#d7cfb8" stop-opacity=".42"/>
+      <stop offset="1" stop-color="#a99d82" stop-opacity=".34"/>
     </linearGradient>
-    <radialGradient id="tree" cx="42%" cy="32%" r="65%">
-      <stop stop-color="#77a55d"/>
-      <stop offset=".55" stop-color="#3f724a"/>
-      <stop offset="1" stop-color="#214d38"/>
+    <radialGradient id="canopy" cx="38%" cy="30%" r="72%">
+      <stop stop-color="#72955f" stop-opacity=".8"/>
+      <stop offset=".58" stop-color="#3b6a49" stop-opacity=".82"/>
+      <stop offset="1" stop-color="#234b39" stop-opacity=".78"/>
     </radialGradient>
-    <filter id="soft-shadow" x="-30%" y="-70%" width="160%" height="240%">
-      <feGaussianBlur stdDeviation="5"/>
+    <filter id="soft-shadow" x="-35%" y="-90%" width="170%" height="280%">
+      <feGaussianBlur stdDeviation="4"/>
     </filter>
   </defs>
 
-  <!-- South-west neighbourhood park: fills open land without changing topology. -->
-  <g transform="translate(715 825)">
-    <ellipse cx="0" cy="18" rx="92" ry="28" fill="#0c211c" opacity=".28" filter="url(#soft-shadow)"/>
-    <path d="M-104 0 L-18 -42 L105 -4 L18 39 Z" fill="url(#park)" stroke="#8aaa7d" stroke-opacity=".34" stroke-width="3"/>
-    <path d="M-70 -2 L11 23 M-14 -31 L50 10" fill="none" stroke="url(#path)" stroke-width="9" stroke-linecap="round"/>
-    <g fill="url(#tree)" stroke="#173d2f" stroke-width="3">
-      <circle cx="-62" cy="-13" r="15"/><circle cx="-32" cy="9" r="13"/>
-      <circle cx="13" cy="-11" r="16"/><circle cx="52" cy="4" r="14"/>
-    </g>
-    <g fill="#705744"><rect x="-65" y="0" width="6" height="16"/><rect x="10" y="2" width="6" height="17"/></g>
-  </g>
-
-  <!-- South civic grove. -->
-  <g transform="translate(914 901)">
-    <ellipse cx="0" cy="12" rx="112" ry="25" fill="#0d211c" opacity=".22" filter="url(#soft-shadow)"/>
-    <path d="M-118 0 L-34 -38 L119 -5 L31 34 Z" fill="#416a4c" opacity=".58" stroke="#85a579" stroke-opacity=".22" stroke-width="3"/>
-    <g fill="url(#tree)" stroke="#173d2f" stroke-width="3">
-      <circle cx="-77" cy="-6" r="14"/><circle cx="-43" cy="8" r="17"/><circle cx="-8" cy="-14" r="13"/>
-      <circle cx="31" cy="5" r="16"/><circle cx="73" cy="-5" r="14"/>
+  <g transform="translate(724 824)" opacity=".68">
+    <ellipse cx="0" cy="12" rx="69" ry="18" fill="#0b1d19" opacity=".18" filter="url(#soft-shadow)"/>
+    <path d="M-78 0 L-16 -28 L79 -3 L18 26 Z" fill="url(#park)"/>
+    <path d="M-50 -1 L11 18 M-9 -21 L39 5" fill="none" stroke="url(#path)" stroke-width="5" stroke-linecap="round"/>
+    <g fill="url(#canopy)">
+      <ellipse cx="-46" cy="-8" rx="10" ry="8"/><ellipse cx="-22" cy="7" rx="9" ry="7"/>
+      <ellipse cx="12" cy="-7" rx="11" ry="8"/><ellipse cx="43" cy="3" rx="9" ry="7"/>
     </g>
   </g>
 
-  <!-- South-east utility buffer park. -->
-  <g transform="translate(1212 902)">
-    <ellipse cx="0" cy="14" rx="94" ry="24" fill="#0d211c" opacity=".24" filter="url(#soft-shadow)"/>
-    <path d="M-98 0 L-21 -36 L99 -3 L21 34 Z" fill="url(#park)" opacity=".72" stroke="#91ad82" stroke-opacity=".24" stroke-width="3"/>
-    <path d="M-63 1 L17 24 M-13 -24 L52 8" fill="none" stroke="url(#path)" stroke-width="8" stroke-linecap="round"/>
-    <g fill="url(#tree)" stroke="#173d2f" stroke-width="3">
-      <circle cx="-57" cy="-7" r="14"/><circle cx="-23" cy="9" r="13"/><circle cx="21" cy="-8" r="15"/><circle cx="58" cy="3" r="13"/>
+  <g transform="translate(895 900)" opacity=".6">
+    <ellipse cx="0" cy="10" rx="78" ry="16" fill="#0b1d19" opacity=".16" filter="url(#soft-shadow)"/>
+    <path d="M-87 0 L-24 -27 L88 -3 L23 24 Z" fill="#3e644b" opacity=".28"/>
+    <g fill="url(#canopy)">
+      <ellipse cx="-58" cy="-4" rx="10" ry="8"/><ellipse cx="-32" cy="7" rx="12" ry="9"/>
+      <ellipse cx="-4" cy="-9" rx="9" ry="7"/><ellipse cx="27" cy="4" rx="11" ry="8"/>
+      <ellipse cx="58" cy="-3" rx="9" ry="7"/>
     </g>
   </g>
 
-  <!-- Edge vegetation groups establish density without becoming new terrain tiles. -->
-  <g fill="url(#tree)" stroke="#173d2f" stroke-width="3" opacity=".9">
-    <circle cx="721" cy="612" r="16"/><circle cx="749" cy="599" r="13"/><circle cx="774" cy="614" r="15"/>
-    <circle cx="1355" cy="786" r="15"/><circle cx="1380" cy="800" r="12"/><circle cx="1329" cy="805" r="14"/>
-    <circle cx="628" cy="744" r="13"/><circle cx="650" cy="758" r="11"/>
-    <circle cx="1307" cy="875" r="13"/><circle cx="1332" cy="888" r="11"/>
+  <g transform="translate(1202 900)" opacity=".62">
+    <ellipse cx="0" cy="10" rx="68" ry="16" fill="#0b1d19" opacity=".17" filter="url(#soft-shadow)"/>
+    <path d="M-74 0 L-16 -26 L76 -3 L17 24 Z" fill="url(#park)"/>
+    <path d="M-46 0 L12 17 M-7 -18 L36 5" fill="none" stroke="url(#path)" stroke-width="5" stroke-linecap="round"/>
+    <g fill="url(#canopy)">
+      <ellipse cx="-42" cy="-6" rx="9" ry="7"/><ellipse cx="-18" cy="6" rx="9" ry="7"/>
+      <ellipse cx="16" cy="-6" rx="10" ry="8"/><ellipse cx="43" cy="2" rx="8" ry="7"/>
+    </g>
   </g>
 
-  <!-- Small waterfront details, kept away from roads and interaction zones. -->
-  <g fill="#a79b7d" opacity=".64" stroke="#324946" stroke-width="2">
-    <ellipse cx="579" cy="722" rx="18" ry="6" transform="rotate(-18 579 722)"/>
-    <ellipse cx="605" cy="735" rx="13" ry="5" transform="rotate(15 605 735)"/>
-    <ellipse cx="1377" cy="871" rx="16" ry="5" transform="rotate(-12 1377 871)"/>
+  <g fill="url(#canopy)" opacity=".54">
+    <ellipse cx="719" cy="611" rx="9" ry="7"/><ellipse cx="739" cy="602" rx="8" ry="6"/><ellipse cx="758" cy="611" rx="9" ry="7"/>
+    <ellipse cx="1344" cy="790" rx="9" ry="7"/><ellipse cx="1363" cy="799" rx="7" ry="6"/><ellipse cx="1325" cy="801" rx="8" ry="6"/>
+    <ellipse cx="635" cy="749" rx="8" ry="6"/><ellipse cx="651" cy="758" rx="7" ry="5"/>
+    <ellipse cx="1302" cy="873" rx="8" ry="6"/><ellipse cx="1320" cy="882" rx="7" ry="5"/>
+  </g>
+
+  <g fill="#a79b7d" opacity=".3">
+    <ellipse cx="583" cy="724" rx="11" ry="3" transform="rotate(-18 583 724)"/>
+    <ellipse cx="603" cy="735" rx="8" ry="3" transform="rotate(15 603 735)"/>
+    <ellipse cx="1370" cy="872" rx="10" ry="3" transform="rotate(-12 1370 872)"/>
   </g>
 </svg>
