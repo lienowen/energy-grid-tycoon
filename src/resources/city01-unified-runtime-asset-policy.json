@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "packId": "city01-unified-runtime-v1",
+  "facilityContract": {
+    "runtimeCanvas": { "width": 512, "height": 512 },
+    "anchor": { "x": 0.5, "y": 0.9115 },
+    "sourceRoot": "/assets/single/v1/",
+    "requiredStates": ["active", "construction", "offline", "fault"],
+    "rules": [
+      "NO_BAKED_TEXT",
+      "NO_SOURCE_SHEET_RUNTIME_REFERENCE",
+      "ONE_FAMILY_ONE_BASELINE",
+      "ONE_FAMILY_ONE_VISUAL_SCALE",
+      "TRANSPARENT_BORDER_REQUIRED"
+    ]
+  },
+  "approvedFamilies": [
+    { "id": "solar", "folder": "solar_sheet", "states": ["01__base-main", "02__construction", "03__offline", "04__fault-or-limited"] },
+    { "id": "wind", "folder": "wind_sheet", "states": ["01__base-main", "04__construction", "01__base-main:DERIVED_OFFLINE", "05__fault-or-limited"] },
+    { "id": "gas", "folder": "gas_sheet", "states": ["01__base-main", "02__construction", "03__offline", "04__base-variant"] },
+    { "id": "battery", "folder": "battery_sheet", "states": ["01__base-main", "02__construction", "03__offline", "04__fault-or-limited"] },
+    { "id": "battery_utility", "folder": "battery_utility_sheet", "states": ["01__base-main", "02__construction", "03__offline", "05__fault-or-limited"] },
+    { "id": "substation", "folder": "substation_sheet", "states": ["01__base-main", "03__construction", "02__offline", "05__fault-or-limited"] },
+    { "id": "grid_node", "folder": "tower_sheet", "states": ["01__base-main", "02__offline:OVERLOAD", "03__fault-or-limited:OFFLINE"] }
+  ],
+  "retiredRuntime": [
+    {
+      "prefix": "/assets/city01/product/facilities/",
+      "reason": "文件名与实际设施语义错位，只允许作为历史源素材，不得进入全局运行目录。"
+    },
+    {
+      "pattern": "*/未来*.png",
+      "reason": "整张精灵源图只用于切图，不得由运行时直接加载。"
+    },
+    {
+      "pattern": "build_sheet__04..08,12..15,19..21",
+      "reason": "包含烘焙英文、残缺文字或无法复用的碎片。"
+    },
+    {
+      "pattern": "family selection-ring/menu-icon source variants",
+      "reason": "画布、描边和尺寸不一致，后续统一生成。"
+    }
+  ],
+  "cutBatches": [
+    {
+      "id": "P0-ASSET-01",
+      "name": "设施主体与状态",
+      "status": "ACTIVE",
+      "families": ["solar", "wind", "gas", "battery", "battery_utility", "substation", "grid_node"]
+    },
+    {
+      "id": "P0-ASSET-02",
+      "name": "地块基础",
+      "status": "CUTTING",
+      "targetCanvas": { "width": 512, "height": 256 },
+      "approvedSources": ["ground_sheet__01__grass-lot", "ground_sheet__02__paved-lot-a", "ground_sheet__06__gravel-lot-a", "ground_sheet__10__rough-lot-a"]
+    },
+    {
+      "id": "P0-ASSET-03",
+      "name": "建设与选址反馈",
+      "status": "CUTTING",
+      "targetCanvas": { "width": 512, "height": 256 },
+      "approvedSources": ["build_sheet__10__small-bar-e", "build_sheet__11__small-bar-f", "build_sheet__16__menu-icon", "build_sheet__18__small-bar-j"]
+    },
+    {
+      "id": "P0-ASSET-04",
+      "name": "设施特效",
+      "status": "CUTTING",
+      "targetCanvas": { "width": 512, "height": 512 },
+      "approvedSources": ["gas_sheet__06__smoke-white", "gas_sheet__07__smoke-dark", "substation_sheet__04__energize-fx", "tower_sheet__06__spark-fx"]
+    },
+    {
+      "id": "P0-ASSET-05",
+      "name": "模块化电网线路",
+      "status": "PENDING_CUT",
+      "reason": "当前网格图包含线路与电塔组合，必须拆分为线段、转角、流向和塔体。"
+    }
+  ]
+}
