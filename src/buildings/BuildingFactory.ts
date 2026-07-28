@@ -7,7 +7,7 @@ export class BuildingFactory {
       throw new Error('Invalid building configuration');
     }
 
-    const building = new BuildingBase({
+    const normalizedConfig: BuildingConfig = {
       ...config,
       cost: Math.max(0, config.cost),
       maintenance: Math.max(0, config.maintenance),
@@ -22,9 +22,13 @@ export class BuildingFactory {
       upgradeCostFactor: Math.max(1.1, config.upgradeCostFactor ?? 1.65),
       upgradePowerBonus: Math.max(0, config.upgradePowerBonus ?? 0.22),
       upgradeMaintenanceBonus: Math.max(0, config.upgradeMaintenanceBonus ?? 0.12),
-      upgradeCapacityBonus: Math.max(0, config.upgradeCapacityBonus ?? 0.28),
-      constructionHours: Math.max(1, config.constructionHours ?? 0)
-    }, snapshot?.instanceId);
+      upgradeCapacityBonus: Math.max(0, config.upgradeCapacityBonus ?? 0.28)
+    };
+    if (config.constructionHours !== undefined) {
+      normalizedConfig.constructionHours = Math.max(1, config.constructionHours);
+    }
+
+    const building = new BuildingBase(normalizedConfig, snapshot?.instanceId);
 
     if (snapshot) {
       building.enabled = snapshot.enabled;
