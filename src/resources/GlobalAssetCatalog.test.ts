@@ -17,18 +17,23 @@ describe('GlobalAssetCatalog', () => {
       .toBe('/assets/city01/product/districts/district-old-town-base.png');
   });
 
-  it('loads the single City-01 base map and road runtime assets', () => {
+  it('loads the aligned City-01 base map and road network assets', () => {
     const entries = new Map(globalAssetCatalog.entries.map((entry) => [entry.id, entry]));
     const baseMap = entries.get('city01_map_base');
+    const roadNetwork = entries.get('city01_road_network_base');
 
     expect(baseMap?.src)
       .toBe('/assets/city01/product/environment/runtime/city01-map-base.svg');
+    expect(roadNetwork?.src)
+      .toBe('/assets/city01/product/environment/runtime/city01-road-network.svg');
     expect(baseMap?.width).toBe(2048);
     expect(baseMap?.height).toBe(1536);
+    expect(roadNetwork?.width).toBe(baseMap?.width);
+    expect(roadNetwork?.height).toBe(baseMap?.height);
     expect(baseMap?.anchor).toEqual({ x: 0.5, y: 0.5 });
+    expect(roadNetwork?.anchor).toEqual(baseMap?.anchor);
     expect(baseMap?.preload).toBe('level');
-    expect(entries.get('city01_road_connector_short')?.src)
-      .toBe('/assets/city01/product/environment/base/terrain-road-straight-base.png');
+    expect(roadNetwork?.preload).toBe('level');
   });
 
   it('keeps source environment and vehicle assets available for later layers', () => {
