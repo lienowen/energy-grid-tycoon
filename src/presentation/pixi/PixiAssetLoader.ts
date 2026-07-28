@@ -9,6 +9,10 @@ import {
   isCity01FacilityRuntimeAsset
 } from './City01FacilityTextureFactory';
 import {
+  createCity01GridRuntimeTexture,
+  isCity01GridRuntimeAsset
+} from './City01GridTextureFactory';
+import {
   createCity01SupportRuntimeTexture,
   isCity01SupportRuntimeAsset
 } from './City01SupportTextureFactory';
@@ -34,13 +38,15 @@ export class PixiAssetLoader {
     const request = (
       isCity01FacilityRuntimeAsset(assetId)
         ? createCity01FacilityRuntimeTexture(assetId, source)
-        : isCity01SupportRuntimeAsset(assetId)
-          ? createCity01SupportRuntimeTexture(assetId, source)
-          : isCity01DistrictRuntimeAsset(assetId)
-            ? createCity01DistrictRuntimeTexture(assetId, source)
-            : city01RuntimeTextureKind(assetId)
-              ? createCity01RuntimeTexture(assetId, source)
-              : Assets.load<Texture>({ alias: assetId, src: source })
+        : isCity01GridRuntimeAsset(assetId)
+          ? createCity01GridRuntimeTexture(assetId, source)
+          : isCity01SupportRuntimeAsset(assetId)
+            ? createCity01SupportRuntimeTexture(assetId, source)
+            : isCity01DistrictRuntimeAsset(assetId)
+              ? createCity01DistrictRuntimeTexture(assetId, source)
+              : city01RuntimeTextureKind(assetId)
+                ? createCity01RuntimeTexture(assetId, source)
+                : Assets.load<Texture>({ alias: assetId, src: source })
     ).catch((error: unknown) => {
       console.warn(`Pixi texture failed to load: ${assetId}`, error);
       return undefined;
