@@ -85,6 +85,15 @@ const migrateBuildingSnapshot = (item: Partial<BuildingSnapshot>): BuildingSnaps
   if (typeof item.placementId === 'string' && item.placementId) {
     snapshot.placementId = item.placementId;
   }
+
+  const totalHours = Math.max(0, Number(item.constructionHoursTotal ?? 0));
+  const remainingHours = Math.max(0, Number(item.constructionHoursRemaining ?? 0));
+  if (totalHours > 0 && remainingHours > 0) {
+    snapshot.constructionHoursTotal = Math.max(1, totalHours);
+    snapshot.constructionHoursRemaining = Math.min(snapshot.constructionHoursTotal, remainingHours);
+    snapshot.enabled = false;
+    snapshot.storedEnergy = 0;
+  }
   return snapshot;
 };
 
