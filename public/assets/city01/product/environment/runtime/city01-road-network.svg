@@ -20,7 +20,6 @@
     <path d="M796.1 635.3 L798.8 694.8 M1066.9 712.6 L950.7 770.7 M1218.8 788.6 L1102.6 846.7" stroke="#4d5455" stroke-width="25"/>
   </g>
 
-  <!-- Five access roads terminate beneath their matching district subjects. -->
   <g fill="none" stroke-linecap="butt" stroke-linejoin="round">
     <path d="M796.1 635.3 L936.4 618.3 M1218.8 788.6 L1303.7 761.3 M950.7 770.7 L985.6 753.3 M798.8 694.8 L710.3 708.6 M1102.6 846.7 L1040.5 885.3" stroke="#071115" stroke-opacity=".34" stroke-width="32" filter="url(#road-shadow)"/>
     <path d="M796.1 635.3 L936.4 618.3 M1218.8 788.6 L1303.7 761.3 M950.7 770.7 L985.6 753.3 M798.8 694.8 L710.3 708.6 M1102.6 846.7 L1040.5 885.3" stroke="url(#curb)" stroke-width="27"/>
@@ -28,12 +27,13 @@
     <path d="M796.1 635.3 L936.4 618.3 M1218.8 788.6 L1303.7 761.3 M950.7 770.7 L985.6 753.3 M798.8 694.8 L710.3 708.6 M1102.6 846.7 L1040.5 885.3" stroke="#505758" stroke-width="17"/>
   </g>
 
+  <!-- Junction plates only close sub-pixel gaps; they must not read as nodes. -->
   <g fill="url(#curb)">
-    <circle cx="796.1" cy="635.3" r="22"/><circle cx="1066.9" cy="712.6" r="22"/><circle cx="1218.8" cy="788.6" r="22"/>
-    <circle cx="798.8" cy="694.8" r="20"/><circle cx="950.7" cy="770.7" r="22"/><circle cx="1102.6" cy="846.7" r="20"/>
+    <circle cx="796.1" cy="635.3" r="13"/><circle cx="1066.9" cy="712.6" r="13"/><circle cx="1218.8" cy="788.6" r="13"/>
+    <circle cx="798.8" cy="694.8" r="12"/><circle cx="950.7" cy="770.7" r="13"/><circle cx="1102.6" cy="846.7" r="12"/>
   </g>
-  <g fill="#4b5253" stroke="#252e30" stroke-width="4">
-    <circle cx="796.1" cy="635.3" r="17"/><circle cx="1066.9" cy="712.6" r="17"/><circle cx="1218.8" cy="788.6" r="17"/>
-    <circle cx="798.8" cy="694.8" r="15"/><circle cx="950.7" cy="770.7" r="17"/><circle cx="1102.6" cy="846.7" r="15"/>
+  <g fill="#4b5253" stroke="#252e30" stroke-width="2.5">
+    <circle cx="796.1" cy="635.3" r="9"/><circle cx="1066.9" cy="712.6" r="9"/><circle cx="1218.8" cy="788.6" r="9"/>
+    <circle cx="798.8" cy="694.8" r="8"/><circle cx="950.7" cy="770.7" r="9"/><circle cx="1102.6" cy="846.7" r="8"/>
   </g>
 </svg>
