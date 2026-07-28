@@ -9,6 +9,7 @@ import {
   retiredCity01FacilitySourcePrefix
 } from './City01UnifiedFacilityCatalog';
 import { city01UnifiedSupportCatalog } from './City01UnifiedSupportCatalog';
+import { city01UnifiedGridCatalog } from './City01UnifiedGridCatalog';
 import type { AssetCatalog, AssetEntry } from './AssetManager';
 
 const legacyCatalog = legacyCatalogData as unknown as AssetCatalog;
@@ -41,7 +42,8 @@ export const globalAssetCatalog: AssetCatalog = {
     city01RuntimeCatalog.schemaVersion,
     city01MapRuntimeCatalog.schemaVersion,
     city01UnifiedFacilityCatalog.schemaVersion,
-    city01UnifiedSupportCatalog.schemaVersion
+    city01UnifiedSupportCatalog.schemaVersion,
+    city01UnifiedGridCatalog.schemaVersion
   ),
   budgetBytes: (legacyCatalog.budgetBytes ?? 0)
     + (v5Catalog.budgetBytes ?? 100_000_000)
@@ -50,7 +52,8 @@ export const globalAssetCatalog: AssetCatalog = {
     + (city01RuntimeCatalog.budgetBytes ?? 50_000_000)
     + (city01MapRuntimeCatalog.budgetBytes ?? 4_000_000)
     + (city01UnifiedFacilityCatalog.budgetBytes ?? 12_000_000)
-    + (city01UnifiedSupportCatalog.budgetBytes ?? 5_000_000),
+    + (city01UnifiedSupportCatalog.budgetBytes ?? 5_000_000)
+    + (city01UnifiedGridCatalog.budgetBytes ?? 3_000_000),
   entries: mergeEntries(
     legacyCatalog,
     v5Catalog,
@@ -59,6 +62,7 @@ export const globalAssetCatalog: AssetCatalog = {
     city01RuntimeCatalog,
     city01MapRuntimeCatalog,
     city01UnifiedFacilityCatalog,
-    city01UnifiedSupportCatalog
+    city01UnifiedSupportCatalog,
+    city01UnifiedGridCatalog
   )
 };
