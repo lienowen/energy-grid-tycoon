@@ -1,0 +1,70 @@
+name: Capture City01 multi viewport
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  capture-multi-viewport:
+    if: github.head_ref == 'feat/commercial-standard-recovery-v1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout rebuild branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/commercial-standard-recovery-v1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install application
+        run: npm install --no-package-lock
+
+      - name: Install capture browser
+        run: |
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Build production application
+        run: npm run build
+
+      - name: Start production preview
+        run: |
+          npm run preview -- --host 127.0.0.1 > /tmp/city01-preview.log 2>&1 &
+          echo $! > /tmp/city01-preview.pid
+          for attempt in $(seq 1 40); do
+            if curl --fail --silent http://127.0.0.1:4173 >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/city01-preview.log
+          exit 1
+
+      - name: Capture desktop narrow and mobile views
+        env:
+          CITY01_CAPTURE_URL: http://127.0.0.1:4173
+          CITY01_CAPTURE_DIR: artifacts/city01-multi-viewport
+        run: node scripts/capture-city01-multi-viewport.mjs
+
+      - name: Upload multi viewport screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: city01-multi-viewport-${{ github.sha }}
+          path: artifacts/city01-multi-viewport
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Stop production preview
+        if: always()
+        run: |
+          if test -f /tmp/city01-preview.pid; then
+            kill "$(cat /tmp/city01-preview.pid)" || true
+          fi

@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2048" height="1536" viewBox="0 0 2048 1536">
+  <defs>
+    <radialGradient id="ocean" cx="51%" cy="46%" r="78%">
+      <stop offset="0" stop-color="#0b5363"/>
+      <stop offset=".52" stop-color="#073f50"/>
+      <stop offset="1" stop-color="#022633"/>
+    </radialGradient>
+    <linearGradient id="island" x1=".18" y1=".05" x2=".82" y2=".95">
+      <stop offset="0" stop-color="#55785b"/>
+      <stop offset=".48" stop-color="#41684f"/>
+      <stop offset="1" stop-color="#2c5142"/>
+    </linearGradient>
+    <linearGradient id="cliff" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#2c423c"/>
+      <stop offset="1" stop-color="#111f20"/>
+    </linearGradient>
+    <linearGradient id="sand" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#d9c891"/>
+      <stop offset="1" stop-color="#a99263"/>
+    </linearGradient>
+    <linearGradient id="industrial" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#53635e"/>
+      <stop offset="1" stop-color="#3b4c49"/>
+    </linearGradient>
+    <linearGradient id="civic" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#668568"/>
+      <stop offset="1" stop-color="#4d704f"/>
+    </linearGradient>
+    <pattern id="waves" width="176" height="112" patternUnits="userSpaceOnUse">
+      <g fill="none" stroke="#84d2d7" stroke-linecap="round">
+        <path d="M12 20 C31 14 49 14 68 20" opacity=".08"/>
+        <path d="M96 40 C111 35 128 35 145 40" opacity=".055"/>
+        <path d="M35 71 C54 65 72 65 91 71" opacity=".075"/>
+        <path d="M121 94 C138 89 154 90 170 94" opacity=".045"/>
+      </g>
+    </pattern>
+    <pattern id="terrain-noise" width="96" height="72" patternUnits="userSpaceOnUse">
+      <path d="M8 40 C23 30 34 31 48 40 S75 50 89 39" fill="none" stroke="#b7d2b6" stroke-opacity=".045" stroke-width="2"/>
+      <circle cx="18" cy="18" r="2" fill="#d9e6d2" opacity=".05"/>
+      <circle cx="72" cy="58" r="2.5" fill="#132b25" opacity=".08"/>
+    </pattern>
+    <filter id="soft-shadow" x="-25%" y="-35%" width="150%" height="180%">
+      <feGaussianBlur stdDeviation="24"/>
+    </filter>
+    <filter id="coast-glow" x="-20%" y="-30%" width="140%" height="160%">
+      <feGaussianBlur stdDeviation="7"/>
+    </filter>
+    <clipPath id="island-clip">
+      <path d="M920 526 L1379 716 L1454 871 L1234 983 L982 979 L592 804 L534 639 L715 557 Z"/>
+    </clipPath>
+  </defs>
+
+  <rect width="2048" height="1536" fill="url(#ocean)"/>
+  <rect width="2048" height="1536" fill="url(#waves)"/>
+  <path d="M-120 338 C310 276 710 405 1105 330 S1770 270 2180 388" fill="none" stroke="#5fb5bf" stroke-opacity=".045" stroke-width="4"/>
+  <path d="M-90 1075 C430 982 770 1115 1210 1026 S1780 970 2140 1080" fill="none" stroke="#5fb5bf" stroke-opacity=".04" stroke-width="4"/>
+
+  <path d="M920 558 L1379 748 L1454 903 L1234 1015 L982 1011 L592 836 L534 671 L715 589 Z"
+        fill="#00161c" opacity=".48" filter="url(#soft-shadow)"/>
+  <path d="M920 548 L1379 738 L1454 893 L1234 1005 L982 1001 L592 826 L534 661 L715 579 Z"
+        fill="url(#cliff)" stroke="#0a1718" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M920 526 L1379 716 L1454 871 L1234 983 L982 979 L592 804 L534 639 L715 557 Z"
+        fill="url(#sand)" stroke="#e9dcae" stroke-opacity=".55" stroke-width="9" stroke-linejoin="round"/>
+  <path d="M920 542 L1366 726 L1433 864 L1223 965 L989 962 L610 792 L555 647 L724 574 Z"
+        fill="url(#island)" stroke="#25483c" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M920 542 L1366 726 L1433 864 L1223 965 L989 962 L610 792 L555 647 L724 574 Z"
+        fill="url(#terrain-noise)" opacity=".75"/>
+
+  <path d="M568 676 C633 665 689 684 728 724 C686 754 642 773 598 779 C570 750 555 714 568 676 Z"
+        fill="#083f50" stroke="#9ac8c8" stroke-opacity=".38" stroke-width="5"/>
+  <path d="M1284 911 C1339 887 1388 873 1434 870 L1387 918 C1348 940 1307 949 1262 947 Z"
+        fill="#083f50" stroke="#9ac8c8" stroke-opacity=".34" stroke-width="5"/>
+  <path d="M566 678 C626 672 683 690 718 722" fill="none" stroke="#e8f2df" stroke-opacity=".5" stroke-width="7" filter="url(#coast-glow)"/>
+  <path d="M1287 911 C1339 888 1384 877 1427 875" fill="none" stroke="#e8f2df" stroke-opacity=".46" stroke-width="7" filter="url(#coast-glow)"/>
+
+  <g clip-path="url(#island-clip)">
+    <path d="M690 578 L1010 522 L1162 612 L842 678 Z" fill="#5a7d58" opacity=".45"/>
+    <path d="M1058 601 L1325 699 L1243 803 L1001 704 Z" fill="#658965" opacity=".42"/>
+    <path d="M584 685 L875 684 L914 819 L648 810 Z" fill="#4d6a50" opacity=".48"/>
+    <path d="M654 800 L944 813 L993 949 L760 888 Z" fill="#6d7353" opacity=".36"/>
+    <path d="M836 684 L1110 704 L1191 845 L927 849 Z" fill="url(#civic)" opacity=".48"/>
+    <path d="M936 731 L1066 739 L1104 806 L974 806 Z" fill="#8b9b7a" opacity=".18" stroke="#c4d1ae" stroke-opacity=".16" stroke-width="3"/>
+    <path d="M1110 705 L1388 811 L1255 958 L1056 852 Z" fill="url(#industrial)" opacity=".58"/>
+    <path d="M1175 773 L1320 826 L1268 885 L1126 832 Z" fill="#68736f" opacity=".22"/>
+
+    <g fill="none" stroke="#d3e2c7" stroke-opacity=".08" stroke-width="3">
+      <path d="M728 674 L992 671 L1114 705"/>
+      <path d="M875 684 L929 846 L994 950"/>
+      <path d="M1110 704 L1056 852"/>
+      <path d="M650 810 L944 813 L1191 845"/>
+    </g>
+
+    <g fill="#244d39" opacity=".44">
+      <circle cx="766" cy="611" r="12"/><circle cx="792" cy="624" r="9"/><circle cx="815" cy="607" r="11"/>
+      <circle cx="1185" cy="679" r="10"/><circle cx="1210" cy="691" r="13"/><circle cx="1235" cy="708" r="8"/>
+      <circle cx="693" cy="748" r="12"/><circle cx="720" cy="760" r="8"/><circle cx="743" cy="744" r="10"/>
+      <circle cx="1118" cy="905" r="9"/><circle cx="1142" cy="916" r="12"/><circle cx="1168" cy="906" r="8"/>
+    </g>
+  </g>
+
+  <path d="M920 526 L1379 716 L1454 871 L1234 983 L982 979 L592 804 L534 639 L715 557 Z"
+        fill="none" stroke="#d5ece5" stroke-opacity=".22" stroke-width="12" stroke-linejoin="round" filter="url(#coast-glow)"/>
+</svg>

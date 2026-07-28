@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2048" height="1536" viewBox="0 0 2048 1536">
+  <defs>
+    <filter id="road-shadow" x="-20%" y="-45%" width="140%" height="190%"><feGaussianBlur stdDeviation="5"/></filter>
+    <linearGradient id="asphalt" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#606666"/><stop offset=".55" stop-color="#4b5253"/><stop offset="1" stop-color="#3a4244"/></linearGradient>
+    <linearGradient id="curb" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eee7d8"/><stop offset="1" stop-color="#c5b89f"/></linearGradient>
+  </defs>
+
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M796.1 635.3 L1066.9 712.6 L1218.8 788.6 M798.8 694.8 L950.7 770.7 L1102.6 846.7" stroke="#071115" stroke-opacity=".42" stroke-width="48" filter="url(#road-shadow)"/>
+    <path d="M796.1 635.3 L1066.9 712.6 L1218.8 788.6 M798.8 694.8 L950.7 770.7 L1102.6 846.7" stroke="url(#curb)" stroke-width="42"/>
+    <path d="M796.1 635.3 L1066.9 712.6 L1218.8 788.6 M798.8 694.8 L950.7 770.7 L1102.6 846.7" stroke="#252e30" stroke-width="36"/>
+    <path d="M796.1 635.3 L1066.9 712.6 L1218.8 788.6 M798.8 694.8 L950.7 770.7 L1102.6 846.7" stroke="url(#asphalt)" stroke-width="30"/>
+    <path d="M796.1 635.3 L1066.9 712.6 L1218.8 788.6 M798.8 694.8 L950.7 770.7 L1102.6 846.7" stroke="#e0c45e" stroke-opacity=".52" stroke-width="2.2" stroke-dasharray="15 13"/>
+  </g>
+
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M796.1 635.3 L798.8 694.8 M1066.9 712.6 L950.7 770.7 M1218.8 788.6 L1102.6 846.7" stroke="#071115" stroke-opacity=".38" stroke-width="42" filter="url(#road-shadow)"/>
+    <path d="M796.1 635.3 L798.8 694.8 M1066.9 712.6 L950.7 770.7 M1218.8 788.6 L1102.6 846.7" stroke="url(#curb)" stroke-width="36"/>
+    <path d="M796.1 635.3 L798.8 694.8 M1066.9 712.6 L950.7 770.7 M1218.8 788.6 L1102.6 846.7" stroke="#252e30" stroke-width="30"/>
+    <path d="M796.1 635.3 L798.8 694.8 M1066.9 712.6 L950.7 770.7 M1218.8 788.6 L1102.6 846.7" stroke="#4d5455" stroke-width="25"/>
+  </g>
+
+  <g fill="none" stroke-linecap="butt" stroke-linejoin="round">
+    <path d="M796.1 635.3 L936.4 618.3 M1218.8 788.6 L1303.7 761.3 M950.7 770.7 L985.6 753.3 M798.8 694.8 L710.3 708.6 M1102.6 846.7 L1040.5 885.3" stroke="#071115" stroke-opacity=".34" stroke-width="32" filter="url(#road-shadow)"/>
+    <path d="M796.1 635.3 L936.4 618.3 M1218.8 788.6 L1303.7 761.3 M950.7 770.7 L985.6 753.3 M798.8 694.8 L710.3 708.6 M1102.6 846.7 L1040.5 885.3" stroke="url(#curb)" stroke-width="27"/>
+    <path d="M796.1 635.3 L936.4 618.3 M1218.8 788.6 L1303.7 761.3 M950.7 770.7 L985.6 753.3 M798.8 694.8 L710.3 708.6 M1102.6 846.7 L1040.5 885.3" stroke="#283133" stroke-width="22"/>
+    <path d="M796.1 635.3 L936.4 618.3 M1218.8 788.6 L1303.7 761.3 M950.7 770.7 L985.6 753.3 M798.8 694.8 L710.3 708.6 M1102.6 846.7 L1040.5 885.3" stroke="#505758" stroke-width="17"/>
+  </g>
+
+  <!-- Junction plates only close sub-pixel gaps; they must not read as nodes. -->
+  <g fill="url(#curb)">
+    <circle cx="796.1" cy="635.3" r="13"/><circle cx="1066.9" cy="712.6" r="13"/><circle cx="1218.8" cy="788.6" r="13"/>
+    <circle cx="798.8" cy="694.8" r="12"/><circle cx="950.7" cy="770.7" r="13"/><circle cx="1102.6" cy="846.7" r="12"/>
+  </g>
+  <g fill="#4b5253" stroke="#252e30" stroke-width="2.5">
+    <circle cx="796.1" cy="635.3" r="9"/><circle cx="1066.9" cy="712.6" r="9"/><circle cx="1218.8" cy="788.6" r="9"/>
+    <circle cx="798.8" cy="694.8" r="8"/><circle cx="950.7" cy="770.7" r="9"/><circle cx="1102.6" cy="846.7" r="8"/>
+  </g>
+</svg>

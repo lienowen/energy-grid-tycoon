@@ -73,17 +73,24 @@ const assetId = (family: FacilityVisualFamily, suffix: string): string =>
 
 const commercialFamilies = new Set<FacilityVisualFamily>(['solar', 'wind', 'gas', 'battery']);
 
+const commercialState = (state: FacilityVisualState): 'active' | 'offline' | 'construction' | 'fault' => {
+  if (state === 'construction') return 'construction';
+  if (state === 'offline') return 'offline';
+  if (state === 'damaged' || state === 'overload') return 'fault';
+  return 'active';
+};
+
 export class FacilityVisualRegistry {
   static resolve(input: ResolveFacilityVisualInput): FacilityVisualDescriptor {
     const family = resolveFamily(input.configId, input.category);
     const state = resolveState(input);
     const animated = input.enabled && state !== 'construction' && state !== 'offline';
     if (input.presentation === 'commercial' && commercialFamilies.has(family)) {
-      const commercialState = state === 'offline' ? 'offline' : 'active';
+      const runtimeFamily = input.configId === 'battery_utility' ? 'battery_utility' : family;
       return {
         family,
         state,
-        bodyAssetId: `commercial_facility_${family}_${commercialState}`,
+        bodyAssetId: `commercial_facility_${runtimeFamily}_${commercialState(state)}`,
         shadowAssetId: 'commercial_facility_shadow'
       };
     }
