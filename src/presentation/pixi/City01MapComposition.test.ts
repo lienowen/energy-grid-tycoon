@@ -47,13 +47,12 @@ describe('City01MapComposition', () => {
     }
   });
 
-  it('uses product road art with only two cropped short-link details', () => {
+  it('keeps only the six connected central road tiles in the live map', () => {
     const roads = city01MapPlacements.filter((placement) => placement.layer === 'roads');
-    expect(roads.length).toBeGreaterThanOrEqual(8);
+    expect(roads).toHaveLength(6);
     expect(roads.every((placement) => placement.assetId.includes('road'))).toBe(true);
-    const shortLinks = roads.filter((placement) => placement.assetId === 'city01_road_connector_short');
-    expect(shortLinks).toHaveLength(2);
-    expect(shortLinks.every((placement) => placement.width <= 180)).toBe(true);
+    expect(roads.some((placement) => placement.assetId === 'city01_road_connector_short')).toBe(false);
+    expect(roads.some((placement) => placement.assetId === 'terrain_road_dead_end_base')).toBe(false);
   });
 
   it('adds product vehicles without turning the map into a traffic layer', () => {
