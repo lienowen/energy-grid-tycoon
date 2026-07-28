@@ -16,15 +16,14 @@ describe('City01MapComposition', () => {
     expect(city01BaseMapPlacement.anchorY).toBe(0.5);
   });
 
-  it('uses one aligned road network as the only live road placement', () => {
+  it('uses one pixel-aligned road network as the only live road placement', () => {
     const roads = city01MapPlacements.filter((placement) => placement.layer === 'roads');
 
     expect(roads).toEqual([city01RoadNetworkPlacement]);
     expect(city01RoadNetworkPlacement.assetId).toBe('city01_road_network_base');
     expect(city01RoadNetworkPlacement.width).toBe(city01BaseMapPlacement.width);
     expect(city01RoadNetworkPlacement.anchorY).toBe(city01BaseMapPlacement.anchorY);
-    expect(city01RoadNetworkPlacement.point.x).toBe(city01BaseMapPlacement.point.x);
-    expect(city01RoadNetworkPlacement.point.z).toBe(city01BaseMapPlacement.point.z);
+    expect(city01RoadNetworkPlacement.point).toEqual(city01BaseMapPlacement.point);
   });
 
   it('does not assemble the island or road network from large external tiles', () => {
