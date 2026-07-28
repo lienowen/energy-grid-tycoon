@@ -36,31 +36,31 @@ export const city01RoadNodes: readonly City01RoadNode[] = [
   { id: 'road.east.south', position: { x: 75, y: 60 }, kind: 'junction' },
   {
     id: 'entry.commercial',
-    position: { x: 43, y: 39 },
+    position: { x: 34, y: 35 },
     kind: 'district-entry',
     districtId: 'dawn-commercial'
   },
   {
     id: 'entry.residential',
-    position: { x: 73, y: 27 },
+    position: { x: 77, y: 28 },
     kind: 'district-entry',
     districtId: 'dawn-residential'
   },
   {
     id: 'entry.public',
-    position: { x: 54, y: 56 },
+    position: { x: 55, y: 54 },
     kind: 'district-entry',
     districtId: 'dawn-public'
   },
   {
     id: 'entry.old-town',
-    position: { x: 43, y: 76 },
+    position: { x: 31, y: 70 },
     kind: 'district-entry',
     districtId: 'dawn-old-town'
   },
   {
     id: 'entry.industrial',
-    position: { x: 76, y: 66 },
+    position: { x: 76, y: 72 },
     kind: 'district-entry',
     districtId: 'dawn-industrial'
   }
@@ -139,10 +139,10 @@ export const city01RoadEdges: readonly City01RoadEdge[] = [
   },
   {
     id: 'access.commercial',
-    from: 'road.central.cross',
+    from: 'road.west.bridge',
     to: 'entry.commercial',
     roadClass: 'access',
-    exits: ['NW', 'SE'],
+    exits: ['NE', 'SW'],
     assetId: 'pending-road-access-commercial',
     isDeadEnd: false,
     maxAccessLength: 20
@@ -162,7 +162,7 @@ export const city01RoadEdges: readonly City01RoadEdge[] = [
     from: 'road.central.t',
     to: 'entry.public',
     roadClass: 'access',
-    exits: ['NW', 'SE'],
+    exits: ['NE', 'SW'],
     assetId: 'pending-road-access-public',
     isDeadEnd: false,
     maxAccessLength: 20
@@ -233,9 +233,8 @@ export const validateCity01RoadTopology = (): string[] => {
     connect(edge.to, edge.from);
   }
 
-  const root = 'road.central.cross';
   const visited = new Set<string>();
-  const queue = [root];
+  const queue = ['road.central.cross'];
   while (queue.length > 0) {
     const current = queue.shift();
     if (!current || visited.has(current)) continue;
@@ -303,7 +302,7 @@ const nearestBackboneProjection = (
 
 /**
  * Compatibility helper for the old vector renderer. The active City-01 wrapper
- * passes an empty road list, so no access line is drawn over product road art.
+ * passes an empty road list, so no access line is drawn over authored road art.
  */
 export const buildCity01AccessRoads = (state: CitySceneState): RoadSceneState[] => {
   if (state.roads.every((road) => road.points.length < 2)) return [];
