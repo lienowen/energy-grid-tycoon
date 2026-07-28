@@ -58,6 +58,12 @@ const districtLabelOffsets: Record<DistrictPrefabSceneState['kind'], { x: number
   old_town: { x: -92, y: 44 }
 };
 
+const placementAssets = {
+  valid: 'city01_placement_valid',
+  warning: 'city01_placement_warning',
+  invalid: 'city01_placement_invalid'
+} as const;
+
 const clamp = (value: number, min: number, max: number): number =>
   Math.min(max, Math.max(min, value));
 
@@ -99,6 +105,8 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
   private mounted = false;
   private ready = false;
   private renderGeneration = 0;
+  private pendingPlotId?: string;
+  private placementBuildingId?: string;
 
   constructor(
     private readonly host: HTMLElement,
@@ -119,6 +127,8 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     this.mounted = false;
     this.ready = false;
     this.renderGeneration += 1;
+    this.pendingPlotId = undefined;
+    this.placementBuildingId = undefined;
     this.input?.destroy();
     this.input = undefined;
     this.resizeObserver?.disconnect();
@@ -135,6 +145,9 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
 
   setState(next: CitySceneState): void {
     const levelChanged = this.state?.levelId !== next.levelId;
+    const nextPlacementId = next.placement?.buildingId;
+    if (nextPlacementId !== this.placementBuildingId) this.pendingPlotId = undefined;
+    this.placementBuildingId = nextPlacementId;
     this.state = next;
     if (!this.ready) return;
     this.renderScene(next);
@@ -172,7 +185,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     canvas.className = 'hologram-sandbox-canvas pixi-world-canvas immersive-world-canvas city01-integrated-canvas';
     canvas.tabIndex = 0;
     canvas.setAttribute('role', 'application');
-    canvas.setAttribute('aria-label', '曙光新城连续海岸与道路城市地图，可拖动、缩放和选择设施');
+    canvas.setAttribute('aria-label', '曙光新城地图，可拖动、缩放并通过两次点击确认建设');
     this.host.replaceChildren(canvas);
     this.app.stage.addChild(this.layerManager.root);
 
@@ -202,10 +215,11 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     this.drawIslandBase(diagnostics);
     this.drawRoadBackbone(state, diagnostics);
     this.drawMapComposition(generation, diagnostics);
+    this.drawPlotGrounds(state, generation, diagnostics);
     this.drawNetwork(state, generation, diagnostics);
     this.drawDistricts(state, generation, diagnostics);
     this.drawFacilities(state, generation);
-    this.drawPlots(state);
+    this.drawPlacementPlots(state, generation);
 
     for (const layer of Object.values(this.layerManager.layers)) layer.sortChildren();
   }
@@ -268,10 +282,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     surface.zIndex = -920000;
     this.layerManager.layers.terrain.addChild(surface);
 
-    const inner = projected.map((point) => ({
-      x: point.x * 0.965,
-      y: point.y * 0.965 + 2
-    }));
+    const inner = projected.map((point) => ({ x: point.x * 0.965, y: point.y * 0.965 + 2 }));
     const innerGround = new Graphics()
       .poly(inner.flatMap((point) => [point.x, point.y]))
       .fill({ color: diagnostics ? 0x18322e : 0x315c4c, alpha: 0.38 });
@@ -288,37 +299,19 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
 
       const curb = new Graphics();
       this.tracePath(curb, road.points);
-      curb.stroke({
-        color: 0xd7cdb3,
-        alpha: alpha * 0.92,
-        width: 19 * laneScale,
-        cap: 'round',
-        join: 'round'
-      });
+      curb.stroke({ color: 0xd7cdb3, alpha: alpha * 0.92, width: 19 * laneScale, cap: 'round', join: 'round' });
       curb.zIndex = -510000 + index * 4;
       this.layerManager.layers.roads.addChild(curb);
 
       const edge = new Graphics();
       this.tracePath(edge, road.points);
-      edge.stroke({
-        color: 0x252d2f,
-        alpha,
-        width: 16 * laneScale,
-        cap: 'round',
-        join: 'round'
-      });
+      edge.stroke({ color: 0x252d2f, alpha, width: 16 * laneScale, cap: 'round', join: 'round' });
       edge.zIndex = -509999 + index * 4;
       this.layerManager.layers.roads.addChild(edge);
 
       const asphalt = new Graphics();
       this.tracePath(asphalt, road.points);
-      asphalt.stroke({
-        color: diagnostics ? 0x364247 : 0x4a4f4f,
-        alpha,
-        width: 12.5 * laneScale,
-        cap: 'round',
-        join: 'round'
-      });
+      asphalt.stroke({ color: diagnostics ? 0x364247 : 0x4a4f4f, alpha, width: 12.5 * laneScale, cap: 'round', join: 'round' });
       asphalt.zIndex = -509998 + index * 4;
       this.layerManager.layers.roads.addChild(asphalt);
 
@@ -351,9 +344,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     };
 
     for (const placement of city01MapPlacements) {
-      const alpha = diagnostics
-        ? placement.diagnosticsAlpha ?? 0.44
-        : placement.alpha ?? 1;
+      const alpha = diagnostics ? placement.diagnosticsAlpha ?? 0.44 : placement.alpha ?? 1;
       if (alpha <= 0) continue;
       this.addAsset({
         assetId: placement.assetId,
@@ -369,16 +360,27 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     }
   }
 
-  private drawDistricts(
-    state: CitySceneState,
-    generation: number,
-    diagnostics: boolean
-  ): void {
+  private drawPlotGrounds(state: CitySceneState, generation: number, diagnostics: boolean): void {
+    for (const plot of state.plots) {
+      if (plot.locked) continue;
+      this.addAsset({
+        assetId: plot.groundAssetId,
+        point: { ...plot, elevation: plot.elevation - 0.08 },
+        width: 142 * plot.scale,
+        anchorY: 0.82,
+        generation,
+        layer: this.layerManager.layers.groundDecorations,
+        alpha: diagnostics ? 0.4 : plot.occupied ? 0.66 : 0.86,
+        placeholderColor: 0x4a7658,
+        zIndexOverride: this.depth(plot, -120)
+      });
+    }
+  }
+
+  private drawDistricts(state: CitySceneState, generation: number, diagnostics: boolean): void {
     for (const district of state.districtPrefabs ?? []) {
       if (!district.prefabAssetId) continue;
-      const suffix = district.status === 'blackout' || district.status === 'offline'
-        ? 'blackout'
-        : 'night';
+      const suffix = district.status === 'blackout' || district.status === 'offline' ? 'blackout' : 'night';
       this.addAsset({
         assetId: `${district.prefabAssetId}_${suffix}`,
         point: { ...district, elevation: district.elevation + 0.18 },
@@ -398,15 +400,8 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     const offset = districtLabelOffsets[district.kind];
     const color = districtStatusColor(district);
     const label = new Text({
-      text: district.status === 'normal'
-        ? district.label
-        : `${district.label} · ${Math.round(district.powerRatio * 100)}%`,
-      style: {
-        fontFamily: 'Inter, PingFang SC, Microsoft YaHei, sans-serif',
-        fontSize: 11,
-        fontWeight: '600',
-        fill: 0xeefaff
-      }
+      text: district.status === 'normal' ? district.label : `${district.label} · ${Math.round(district.powerRatio * 100)}%`,
+      style: { fontFamily: 'Inter, PingFang SC, Microsoft YaHei, sans-serif', fontSize: 11, fontWeight: '600', fill: 0xeefaff }
     });
     label.anchor.set(0.5);
     const width = Math.max(80, label.width + 24);
@@ -428,7 +423,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
         category: facility.category,
         enabled: facility.enabled,
         selected: false,
-        constructionProgress: 1,
+        constructionProgress: facility.constructionProgress,
         presentation: 'commercial'
       });
       this.addAsset({
@@ -438,42 +433,51 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
         anchorY: 0.9115,
         generation,
         layer: this.layerManager.layers.buildings,
-        alpha: facility.enabled ? 1 : 0.72,
+        alpha: facility.underConstruction ? 0.92 : facility.enabled ? 1 : 0.72,
         placeholderColor: 0x78dfff,
         onActivate: () => this.actions.onFacilityClick(facility.instanceId)
       });
+      if (facility.underConstruction) this.drawConstructionStatus(facility);
     }
   }
 
-  private drawNetwork(
-    state: CitySceneState,
-    generation: number,
-    diagnostics: boolean
-  ): void {
+  private drawConstructionStatus(facility: FacilitySceneState): void {
+    const position = this.project({ ...facility, elevation: facility.elevation + 3.2 });
+    const progress = clamp(facility.constructionProgress, 0, 1);
+    const container = new Container();
+    container.position.set(position.x, position.y - 34);
+    container.zIndex = this.depth(facility, 420);
+    const panel = new Graphics()
+      .roundRect(-48, -14, 96, 28, 8)
+      .fill({ color: 0x061722, alpha: 0.9 })
+      .stroke({ color: 0xffd45f, alpha: 0.82, width: 1 })
+      .roundRect(-38, 5, 76, 4, 2)
+      .fill({ color: 0x243238, alpha: 1 })
+      .roundRect(-38, 5, 76 * progress, 4, 2)
+      .fill({ color: 0xffd45f, alpha: 1 });
+    const label = new Text({
+      text: `施工 ${Math.round(progress * 100)}%`,
+      style: { fontFamily: 'Inter, PingFang SC, Microsoft YaHei, sans-serif', fontSize: 10, fontWeight: '600', fill: 0xfff3c4 }
+    });
+    label.anchor.set(0.5);
+    label.position.set(0, -3);
+    container.addChild(panel, label);
+    this.layerManager.layers.overlays.addChild(container);
+  }
+
+  private drawNetwork(state: CitySceneState, generation: number, diagnostics: boolean): void {
     for (const edge of selectVisibleNetworkEdges(state.networkEdges ?? [], diagnostics)) {
       if (edge.points.length < 2) continue;
       const color = networkColor(edge.status);
       const glow = new Graphics();
       this.tracePath(glow, edge.points);
-      glow.stroke({
-        color,
-        alpha: diagnostics ? 0.12 : 0.04,
-        width: diagnostics ? 8 : 4,
-        cap: 'round',
-        join: 'round'
-      });
+      glow.stroke({ color, alpha: diagnostics ? 0.12 : 0.04, width: diagnostics ? 8 : 4, cap: 'round', join: 'round' });
       glow.zIndex = this.depth(edge.points[0]!, -4);
       this.layerManager.layers.groundDecorations.addChild(glow);
 
       const line = new Graphics();
       this.tracePath(line, edge.points);
-      line.stroke({
-        color,
-        alpha: diagnostics ? 0.72 : edge.status === 'offline' ? 0.34 : 0.22,
-        width: diagnostics ? 2.2 : 1.1,
-        cap: 'round',
-        join: 'round'
-      });
+      line.stroke({ color, alpha: diagnostics ? 0.72 : edge.status === 'offline' ? 0.34 : 0.22, width: diagnostics ? 2.2 : 1.1, cap: 'round', join: 'round' });
       line.zIndex = this.depth(edge.points[0]!, -3);
       this.layerManager.layers.groundDecorations.addChild(line);
     }
@@ -482,11 +486,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
       if (node.kind === 'district') continue;
       if (shouldRenderNetworkNodeAsset(node, diagnostics)
         && (node.kind === 'substation' || node.kind === 'distribution')) {
-        const stateSuffix = node.status === 'offline'
-          ? 'offline'
-          : node.status === 'warning'
-            ? 'overload'
-            : 'active';
+        const stateSuffix = node.status === 'offline' ? 'offline' : node.status === 'warning' ? 'overload' : 'active';
         const assetId = node.kind === 'substation'
           ? `commercial_facility_substation_${node.status === 'offline' ? 'offline' : 'active'}`
           : `world_facility_grid_node_${stateSuffix}`;
@@ -507,11 +507,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
 
   private drawNodeDiagnostic(node: EnergyNetworkNodeSceneState): void {
     const position = this.project({ ...node, elevation: 0.35 });
-    const color = node.status === 'warning'
-      ? 0xffb347
-      : node.status === 'offline'
-        ? 0xff667f
-        : 0x55ddff;
+    const color = node.status === 'warning' ? 0xffb347 : node.status === 'offline' ? 0xff667f : 0x55ddff;
     const marker = new Graphics()
       .circle(position.x, position.y, node.kind === 'substation' ? 11 : 8)
       .fill({ color: 0x061722, alpha: 0.8 })
@@ -522,30 +518,69 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     this.layerManager.layers.effects.addChild(marker);
   }
 
-  private drawPlots(state: CitySceneState): void {
+  private drawPlacementPlots(state: CitySceneState, generation: number): void {
     if (!state.placement) return;
     for (const plot of state.plots) {
-      if (plot.occupied || plot.locked) continue;
-      this.drawPlot(plot);
+      if (plot.occupied || plot.locked || !plot.placementTone) continue;
+      this.drawPlacementPlot(plot, generation);
     }
   }
 
-  private drawPlot(plot: PlotSceneState): void {
-    const color = plot.available ? 0x5ce1a3 : plot.blocked ? 0xff667f : 0x4ad7ff;
-    const position = this.project(plot);
-    const overlay = new Graphics()
-      .ellipse(position.x, position.y, 54 * plot.scale, 27 * plot.scale)
-      .fill({ color, alpha: plot.available ? 0.18 : 0.05 })
-      .stroke({ color, alpha: plot.available ? 0.9 : 0.3, width: plot.available ? 2 : 1 });
-    overlay.zIndex = this.depth(plot, 250);
-    if (plot.available) {
-      overlay.eventMode = 'static';
-      overlay.cursor = 'pointer';
-      overlay.on('pointertap', () => {
-        if (this.input?.canActivateObject()) this.actions.onPlotClick(plot.id);
+  private drawPlacementPlot(plot: PlotSceneState, generation: number): void {
+    const pending = this.pendingPlotId === plot.id;
+    const tone = plot.placementTone ?? (plot.available ? 'valid' : 'invalid');
+    this.addAsset({
+      assetId: placementAssets[tone],
+      point: { ...plot, elevation: plot.elevation + 0.1 },
+      width: (pending ? 154 : 142) * plot.scale,
+      anchorY: 0.72,
+      generation,
+      layer: this.layerManager.layers.overlays,
+      alpha: pending ? 1 : 0.82,
+      placeholderColor: tone === 'valid' ? 0x5ce1a3 : tone === 'warning' ? 0xffd45f : 0xff667f,
+      zIndexOverride: this.depth(plot, 250),
+      onActivate: plot.available ? () => this.activatePlot(plot.id) : undefined
+    });
+
+    if (pending) {
+      this.addAsset({
+        assetId: 'city01_placement_footprint',
+        point: { ...plot, elevation: plot.elevation + 0.16 },
+        width: 126 * plot.scale,
+        anchorY: 0.72,
+        generation,
+        layer: this.layerManager.layers.overlays,
+        alpha: 0.92,
+        placeholderColor: 0xffffff,
+        zIndexOverride: this.depth(plot, 270)
       });
+      const position = this.project({ ...plot, elevation: plot.elevation + 2.4 });
+      const label = new Text({
+        text: '再次点击确认建设',
+        style: { fontFamily: 'Inter, PingFang SC, Microsoft YaHei, sans-serif', fontSize: 11, fontWeight: '700', fill: 0xffffff }
+      });
+      label.anchor.set(0.5);
+      const panel = new Graphics()
+        .roundRect(-66, -13, 132, 26, 8)
+        .fill({ color: 0x061722, alpha: 0.92 })
+        .stroke({ color: 0x5ce1a3, alpha: 0.85, width: 1 });
+      const container = new Container();
+      container.position.set(position.x, position.y - 38);
+      container.zIndex = this.depth(plot, 300);
+      container.addChild(panel, label);
+      this.layerManager.layers.overlays.addChild(container);
     }
-    this.layerManager.layers.overlays.addChild(overlay);
+  }
+
+  private activatePlot(plotId: string): void {
+    if (!this.state) return;
+    if (this.pendingPlotId === plotId) {
+      this.pendingPlotId = undefined;
+      this.actions.onPlotClick(plotId);
+      return;
+    }
+    this.pendingPlotId = plotId;
+    this.renderScene(this.state);
   }
 
   private addAsset(options: {
@@ -589,23 +624,11 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     void this.assets.load(options.assetId).then((texture) => {
       if (!texture || !this.mounted || options.generation !== this.renderGeneration || slot.destroyed) return;
       for (const child of slot.removeChildren()) child.destroy();
-      slot.addChild(this.makeSprite(
-        texture,
-        options.width,
-        options.anchorY,
-        options.alpha ?? 1,
-        options.flipX ?? false
-      ));
+      slot.addChild(this.makeSprite(texture, options.width, options.anchorY, options.alpha ?? 1, options.flipX ?? false));
     });
   }
 
-  private makeSprite(
-    texture: Texture,
-    width: number,
-    anchorY: number,
-    alpha: number,
-    flipX: boolean
-  ): Sprite {
+  private makeSprite(texture: Texture, width: number, anchorY: number, alpha: number, flipX: boolean): Sprite {
     const sprite = new Sprite(texture);
     sprite.anchor.set(0.5, anchorY);
     const scale = width / Math.max(1, texture.width);
