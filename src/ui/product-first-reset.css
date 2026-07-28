@@ -135,7 +135,7 @@
   .release-onboarding {
     left: 8px;
     right: 8px;
-    bottom: calc(151px + env(safe-area-inset-bottom));
+    bottom: calc(170px + env(safe-area-inset-bottom));
     width: auto;
     grid-template-columns: minmax(0, 1fr) auto;
     padding: 9px 10px;
