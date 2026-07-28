@@ -22,7 +22,10 @@ jobs:
       - name: Install
         run: npm install --no-audit --no-fund
       - name: Validate content and assets
-        run: npm run check:content
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run check:content 2>&1 | tee check-content.log
       - name: Unit tests
         shell: bash
         run: |
@@ -39,6 +42,7 @@ jobs:
         with:
           name: release-build-log
           path: |
+            check-content.log
             test.log
             build.log
           if-no-files-found: ignore
