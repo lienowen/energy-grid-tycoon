@@ -14,8 +14,6 @@ export interface City01MapPlacement {
   flipX?: boolean;
 }
 
-const ROAD_TILE_WIDTH = 328;
-
 export const city01MapToScenePoint = (
   x: number,
   y: number,
@@ -37,25 +35,16 @@ export const city01BaseMapPlacement: City01MapPlacement = {
   diagnosticsAlpha: 0.72
 };
 
-const roadTile = (
-  id: string,
-  assetId: string,
-  x: number,
-  y: number,
-  width = ROAD_TILE_WIDTH,
-  diagnosticsAlpha = 0.5,
-  flipX = false
-): City01MapPlacement => ({
-  id,
-  assetId,
-  point: city01MapToScenePoint(x, y, -0.08),
-  width,
-  anchorY: 0.9115,
+export const city01RoadNetworkPlacement: City01MapPlacement = {
+  id: 'city01-road-network',
+  assetId: 'city01_road_network_base',
+  point: city01MapToScenePoint(57, 50, -0.12),
+  width: 1760,
+  anchorY: 0.5,
   layer: 'roads',
   alpha: 1,
-  diagnosticsAlpha,
-  flipX
-});
+  diagnosticsAlpha: 0.48
+};
 
 const vehicle = (
   id: string,
@@ -92,18 +81,13 @@ export const city01IslandBoundary: readonly ScenePoint[] = [
 ];
 
 /**
- * L0 is one complete base map. L1 currently contains only the central road
- * network whose full-size road tiles visibly touch each other. Isolated access
- * roads are intentionally absent until P0-MAP-03 topology approval.
+ * L0 and L1 each use one aligned authored asset. The road network is generated
+ * from the explicit node/edge topology and shares the base map dimensions,
+ * anchor and origin. Large road tiles are retained only as source material.
  */
 export const city01MapPlacements: readonly City01MapPlacement[] = [
   city01BaseMapPlacement,
-  roadTile('west-bridge', 'terrain_road_bridge_base', 27, 50, ROAD_TILE_WIDTH, 0.48),
-  roadTile('central-crossroad', 'terrain_road_crossroad_base', 55, 40, ROAD_TILE_WIDTH, 0.5),
-  roadTile('north-east-corner', 'terrain_road_corner_base', 75, 40, ROAD_TILE_WIDTH, 0.48, true),
-  roadTile('old-town-straight', 'terrain_road_straight_base', 35, 60, ROAD_TILE_WIDTH, 0.48),
-  roadTile('central-t-junction', 'terrain_road_t_junction_base', 55, 60, ROAD_TILE_WIDTH, 0.5),
-  roadTile('industrial-straight', 'terrain_road_straight_base', 75, 60, ROAD_TILE_WIDTH, 0.48),
+  city01RoadNetworkPlacement,
   vehicle('city-sedan', 'vehicle_sedan', 57, 39, 43),
   vehicle('civic-utility-van', 'vehicle_utility_van', 55, 61, 47, true),
   vehicle('industrial-cargo-truck', 'vehicle_cargo_truck', 74, 66, 54)
@@ -134,9 +118,5 @@ export const city01EnvironmentAssetIds = [
 
 export const city01RequiredLiveAssetIds = [
   'city01_map_base',
-  'terrain_road_bridge_base',
-  'terrain_road_corner_base',
-  'terrain_road_crossroad_base',
-  'terrain_road_straight_base',
-  'terrain_road_t_junction_base'
+  'city01_road_network_base'
 ] as const;
