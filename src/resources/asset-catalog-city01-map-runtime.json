@@ -1,12 +1,12 @@
 {
-  "schemaVersion": 15,
-  "budgetBytes": 7000000,
+  "schemaVersion": 16,
+  "budgetBytes": 8000000,
   "entries": [
     {
       "id": "city01_map_base",
       "kind": "image",
       "src": "/assets/city01/product/environment/runtime/city01-map-base.svg",
-      "version": 15,
+      "version": 16,
       "preload": "level",
       "width": 2048,
       "height": 1536,
@@ -14,10 +14,21 @@
       "tags": ["city-01", "map", "base", "ocean", "island", "coast", "runtime"]
     },
     {
+      "id": "city01_road_network_base",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/runtime/city01-road-network.svg",
+      "version": 16,
+      "preload": "level",
+      "width": 2048,
+      "height": 1536,
+      "anchor": { "x": 0.5, "y": 0.5 },
+      "tags": ["city-01", "map", "road", "network", "topology", "runtime"]
+    },
+    {
       "id": "city01_ocean_water_base",
       "kind": "image",
       "src": "/assets/city01/product/environment/runtime/ocean-water-base.svg",
-      "version": 15,
+      "version": 16,
       "preload": "level",
       "width": 2048,
       "height": 1536,
@@ -28,12 +39,12 @@
       "id": "city01_road_connector_short",
       "kind": "image",
       "src": "/assets/city01/product/environment/base/terrain-road-straight-base.png",
-      "version": 15,
+      "version": 16,
       "preload": "level",
       "width": 1024,
       "height": 768,
       "anchor": { "x": 0.5, "y": 0.5 },
-      "tags": ["city-01", "environment", "road", "connector", "runtime-crop"]
+      "tags": ["city-01", "environment", "road", "connector", "source-crop"]
     }
   ]
 }
