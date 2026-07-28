@@ -26,11 +26,11 @@
   "retiredRuntime": [
     {
       "prefix": "/assets/city01/product/facilities/",
-      "reason": "文件名与实际设施语义错位，只允许作为历史源素材，不得进入全局运行目录。"
+      "reason": "文件名与实际设施语义错位，已从运行目录和产品资源表清退。"
     },
     {
       "pattern": "*/未来*.png",
-      "reason": "整张精灵源图只用于切图，不得由运行时直接加载。"
+      "reason": "整张精灵源图只用于切图追溯，不得由运行时直接加载。"
     },
     {
       "pattern": "build_sheet__04..08,12..15,19..21",
@@ -38,7 +38,7 @@
     },
     {
       "pattern": "family selection-ring/menu-icon source variants",
-      "reason": "画布、描边和尺寸不一致，后续统一生成。"
+      "reason": "画布、描边和尺寸不一致，不进入运行目录。"
     }
   ],
   "cutBatches": [
@@ -51,22 +51,25 @@
     {
       "id": "P0-ASSET-02",
       "name": "地块基础",
-      "status": "CUTTING",
+      "status": "ACTIVE",
       "targetCanvas": { "width": 512, "height": 256 },
+      "runtimeIds": ["city01_ground_grass", "city01_ground_paved", "city01_ground_gravel", "city01_ground_rough"],
       "approvedSources": ["ground_sheet__01__grass-lot", "ground_sheet__02__paved-lot-a", "ground_sheet__06__gravel-lot-a", "ground_sheet__10__rough-lot-a"]
     },
     {
       "id": "P0-ASSET-03",
       "name": "建设与选址反馈",
-      "status": "CUTTING",
+      "status": "ACTIVE",
       "targetCanvas": { "width": 512, "height": 256 },
+      "runtimeIds": ["city01_placement_valid", "city01_placement_warning", "city01_placement_invalid", "city01_placement_footprint"],
       "approvedSources": ["build_sheet__10__small-bar-e", "build_sheet__11__small-bar-f", "build_sheet__16__menu-icon", "build_sheet__18__small-bar-j"]
     },
     {
       "id": "P0-ASSET-04",
       "name": "设施特效",
-      "status": "CUTTING",
+      "status": "ACTIVE",
       "targetCanvas": { "width": 512, "height": 512 },
+      "runtimeIds": ["city01_fx_smoke_dark", "city01_fx_smoke_light", "city01_fx_energize", "city01_fx_spark"],
       "approvedSources": ["gas_sheet__06__smoke-white", "gas_sheet__07__smoke-dark", "substation_sheet__04__energize-fx", "tower_sheet__06__spark-fx"]
     },
     {
