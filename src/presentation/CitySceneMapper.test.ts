@@ -52,17 +52,17 @@ describe('CitySceneMapper', () => {
     expect(scene.ambientBlocks).toHaveLength(0);
   });
 
-  it('uses authored plot anchors for facilities and build targets', () => {
+  it('uses the inland authored plot anchors for facilities and build targets', () => {
     const scene = CitySceneMapper.map(makeView());
     const solar = scene.facilities.find((facility) => facility.plotId === 'sunrise-neighborhood');
     const wind = scene.facilities.find((facility) => facility.plotId === 'east-coast');
     const gasPlot = scene.plots.find((plot) => plot.id === 'west-industry');
-    const solarPoint = toScenePoint({ x: 26, y: 22, elevation: 0.2 });
-    const windPoint = toScenePoint({ x: 97, y: 38, elevation: 0.32 });
+    const solarPoint = toScenePoint({ x: 33, y: 28, elevation: 0.16 });
+    const windPoint = toScenePoint({ x: 87, y: 45, elevation: 0.2 });
 
     expect(solar).toMatchObject({ ...solarPoint, elevation: solarPoint.elevation + 1.1 });
     expect(wind).toMatchObject({ ...windPoint, elevation: windPoint.elevation + 1.1 });
-    expect(gasPlot).toMatchObject(toScenePoint({ x: 22, y: 58, elevation: 0.18 }));
+    expect(gasPlot).toMatchObject(toScenePoint({ x: 27, y: 56, elevation: 0.14 }));
   });
 
   it('marks only legal empty plots when the player chooses a facility', () => {
@@ -81,7 +81,7 @@ describe('CitySceneMapper', () => {
     const scene = CitySceneMapper.map(makeView());
     expect(scene.camera.startZoom).toBe(1.26);
     expect(scene.camera.panLimitX).toBe(180);
-    expect(scene.focus).toEqual(toScenePoint({ x: 57, y: 48, elevation: 0 }));
+    expect(scene.focus).toEqual(toScenePoint({ x: 55, y: 50, elevation: 0 }));
     expect(scene.camera.minZoom).toBeLessThan(scene.camera.maxZoom);
   });
 
