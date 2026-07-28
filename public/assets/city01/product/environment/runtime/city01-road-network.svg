@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2048" height="1536" viewBox="0 0 2048 1536">
+  <defs>
+    <filter id="road-shadow" x="-20%" y="-40%" width="140%" height="180%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+    <linearGradient id="asphalt" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#5c6262"/>
+      <stop offset=".55" stop-color="#454c4e"/>
+      <stop offset="1" stop-color="#343c3e"/>
+    </linearGradient>
+    <linearGradient id="curb" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#f0eadb"/>
+      <stop offset="1" stop-color="#c7baa2"/>
+    </linearGradient>
+  </defs>
+
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M796 654 L1067 731 L1219 807 M796 654 L799 714 L951 789 L1103 865 M1067 731 L951 789 M1219 807 L1103 865"
+          stroke="#061014" stroke-opacity=".46" stroke-width="70" filter="url(#road-shadow)"/>
+    <path d="M796 654 L1067 731 L1219 807 M796 654 L799 714 L951 789 L1103 865 M1067 731 L951 789 M1219 807 L1103 865"
+          stroke="url(#curb)" stroke-width="62"/>
+    <path d="M796 654 L1067 731 L1219 807 M796 654 L799 714 L951 789 L1103 865 M1067 731 L951 789 M1219 807 L1103 865"
+          stroke="#222b2d" stroke-width="54"/>
+    <path d="M796 654 L1067 731 L1219 807 M796 654 L799 714 L951 789 L1103 865 M1067 731 L951 789 M1219 807 L1103 865"
+          stroke="url(#asphalt)" stroke-width="46"/>
+    <path d="M796 654 L1067 731 L1219 807 M799 714 L951 789 L1103 865"
+          stroke="#e4c861" stroke-opacity=".62" stroke-width="3" stroke-dasharray="18 15"/>
+  </g>
+
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M1067 731 L982 683 M1219 807 L1279 762 M951 789 L966 774 M799 714 L767 790 M1103 865 L1075 887"
+          stroke="#071115" stroke-opacity=".42" stroke-width="52" filter="url(#road-shadow)"/>
+    <path d="M1067 731 L982 683 M1219 807 L1279 762 M951 789 L966 774 M799 714 L767 790 M1103 865 L1075 887"
+          stroke="url(#curb)" stroke-width="46"/>
+    <path d="M1067 731 L982 683 M1219 807 L1279 762 M951 789 L966 774 M799 714 L767 790 M1103 865 L1075 887"
+          stroke="#252e30" stroke-width="39"/>
+    <path d="M1067 731 L982 683 M1219 807 L1279 762 M951 789 L966 774 M799 714 L767 790 M1103 865 L1075 887"
+          stroke="#4b5253" stroke-width="32"/>
+  </g>
+
+  <g>
+    <g transform="translate(1067 731) rotate(26)">
+      <rect x="-44" y="-34" width="88" height="68" rx="10" fill="#d7cbb6"/>
+      <rect x="-38" y="-28" width="76" height="56" rx="8" fill="#3f4749" stroke="#252d2f" stroke-width="7"/>
+      <g fill="#e9eee8" opacity=".84">
+        <rect x="-30" y="-23" width="5" height="18"/><rect x="-20" y="-23" width="5" height="18"/><rect x="-10" y="-23" width="5" height="18"/>
+        <rect x="0" y="-23" width="5" height="18"/><rect x="10" y="-23" width="5" height="18"/><rect x="20" y="-23" width="5" height="18"/>
+      </g>
+    </g>
+    <g transform="translate(951 789) rotate(26)">
+      <rect x="-41" y="-31" width="82" height="62" rx="10" fill="#d7cbb6"/>
+      <rect x="-35" y="-25" width="70" height="50" rx="8" fill="#424a4c" stroke="#252d2f" stroke-width="7"/>
+    </g>
+    <g transform="translate(1219 807) rotate(26)">
+      <rect x="-37" y="-29" width="74" height="58" rx="9" fill="#d7cbb6"/>
+      <rect x="-31" y="-23" width="62" height="46" rx="7" fill="#434b4d" stroke="#252d2f" stroke-width="7"/>
+    </g>
+  </g>
+
+  <g fill="#386849" stroke="#d8ceb9" stroke-width="5">
+    <ellipse cx="880" cy="696" rx="25" ry="13" transform="rotate(26 880 696)"/>
+    <ellipse cx="1024" cy="846" rx="23" ry="12" transform="rotate(26 1024 846)"/>
+    <ellipse cx="1155" cy="838" rx="22" ry="12" transform="rotate(26 1155 838)"/>
+  </g>
+</svg>
