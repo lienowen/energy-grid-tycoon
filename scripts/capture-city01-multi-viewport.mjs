@@ -7,6 +7,7 @@ const outputDir = process.env.CITY01_CAPTURE_DIR ?? 'artifacts/city01-multi-view
 const cases = [
   { id: 'desktop-city', width: 1440, height: 1080, mode: 'city' },
   { id: 'desktop-placement', width: 1440, height: 1080, mode: 'city', action: 'placement' },
+  { id: 'desktop-construction', width: 1440, height: 1080, mode: 'city', action: 'construction' },
   { id: 'narrow-city', width: 1024, height: 900, mode: 'city' },
   { id: 'mobile-city', width: 430, height: 932, mode: 'city' },
   { id: 'mobile-placement', width: 430, height: 932, mode: 'city', action: 'placement' },
@@ -41,7 +42,10 @@ const enterCity = async (page) => {
   await startButton.waitFor({ state: 'visible', timeout: 30000 });
   await startButton.click();
   await page.waitForSelector('canvas.city01-integrated-canvas', { timeout: 30000 });
-  await page.waitForTimeout(350);
+  await page.waitForTimeout(250);
+  const paused = await clickVisible(page, '[data-speed="0"]');
+  if (!paused) throw new Error('Unable to pause the city before capture');
+  await page.waitForTimeout(120);
 };
 
 const enterPlacement = async (page) => {
@@ -57,7 +61,18 @@ const enterPlacement = async (page) => {
     Boolean(document.querySelector('.hologram-secretary.placement'))
     || Boolean(document.querySelector('[data-cancel-build="true"]'))
   );
-  await page.waitForTimeout(350);
+  await page.waitForTimeout(250);
+};
+
+const placeConstruction = async (page) => {
+  // This point is the authored utility plot in the fixed 1440x1080 City-01 home camera.
+  const target = { x: 916, y: 773 };
+  await page.mouse.click(target.x, target.y);
+  await page.waitForTimeout(120);
+  await page.mouse.click(target.x, target.y);
+  await page.waitForFunction(() => !document.querySelector('[data-cancel-build="true"]'));
+  await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+  await page.waitForTimeout(250);
 };
 
 const switchToGrid = async (page) => {
@@ -69,18 +84,32 @@ const switchToGrid = async (page) => {
   );
 };
 
-const rectFor = (element) => {
-  if (!(element instanceof HTMLElement)) return null;
-  const rect = element.getBoundingClientRect();
-  return {
-    left: rect.left,
-    top: rect.top,
-    right: rect.right,
-    bottom: rect.bottom,
-    width: rect.width,
-    height: rect.height
-  };
-};
+const inspectConstructionSave = async (page) => page.evaluate(() => {
+  const raw = localStorage.getItem('energy-grid-tycoon:save:v1');
+  if (!raw) return null;
+  try {
+    const envelope = JSON.parse(raw);
+    const save = envelope?.envelopeVersion === 1 && typeof envelope.payload === 'string'
+      ? JSON.parse(envelope.payload)
+      : envelope;
+    const building = Array.isArray(save?.buildings)
+      ? save.buildings.find((candidate) =>
+          candidate?.configId === 'gas_basic'
+          && Number(candidate?.constructionHoursRemaining ?? 0) > 0
+        )
+      : undefined;
+    if (!building) return null;
+    return {
+      configId: building.configId,
+      enabled: building.enabled,
+      placementId: building.placementId,
+      constructionHoursTotal: building.constructionHoursTotal,
+      constructionHoursRemaining: building.constructionHoursRemaining
+    };
+  } catch {
+    return null;
+  }
+});
 
 const inspectPage = async (page, captureCase) => page.evaluate(({ expectedMode, expectedPlacement }) => {
   const canvas = document.querySelector('canvas.city01-integrated-canvas');
@@ -162,7 +191,7 @@ const inspectPage = async (page, captureCase) => page.evaluate(({ expectedMode, 
   expectedPlacement: captureCase.action === 'placement'
 });
 
-const validate = (diagnostics, captureCase) => {
+const validate = (diagnostics, captureCase, constructionSave) => {
   const issues = [];
   if (diagnostics.renderer !== 'city01-integrated') issues.push('City-01 renderer did not mount');
   if (diagnostics.presentationMode !== captureCase.mode) {
@@ -172,6 +201,17 @@ const validate = (diagnostics, captureCase) => {
     if (!diagnostics.placementGuideVisible) issues.push('Placement guidance is not visible');
     if (!diagnostics.placementName?.includes('燃气')) {
       issues.push(`Expected gas facility placement, received ${diagnostics.placementName}`);
+    }
+  }
+  if (captureCase.action === 'construction') {
+    if (diagnostics.placementGuideVisible) issues.push('Placement mode did not close after confirmation');
+    if (!constructionSave) issues.push('No unfinished gas facility was saved after construction confirmation');
+    if (constructionSave?.enabled !== false) issues.push('Facility is not disabled during construction');
+    if (constructionSave?.constructionHoursTotal !== 10) {
+      issues.push(`Expected 10 construction hours, received ${constructionSave?.constructionHoursTotal}`);
+    }
+    if (!(Number(constructionSave?.constructionHoursRemaining) > 0)) {
+      issues.push('Construction remaining hours were not persisted');
     }
   }
   if (captureCase.width <= 480) {
@@ -209,15 +249,22 @@ try {
     });
 
     let diagnostics = null;
+    let constructionSave = null;
     const issues = [];
     try {
       await enterCity(page);
-      if (captureCase.action === 'placement') await enterPlacement(page);
+      if (captureCase.action === 'placement' || captureCase.action === 'construction') {
+        await enterPlacement(page);
+      }
+      if (captureCase.action === 'construction') {
+        await placeConstruction(page);
+        constructionSave = await inspectConstructionSave(page);
+      }
       if (captureCase.mode === 'grid') await switchToGrid(page);
 
-      await page.waitForTimeout(450);
+      await page.waitForTimeout(350);
       diagnostics = await inspectPage(page, captureCase);
-      issues.push(...validate(diagnostics, captureCase));
+      issues.push(...validate(diagnostics, captureCase, constructionSave));
     } catch (error) {
       issues.push(error instanceof Error ? error.message : String(error));
     }
@@ -226,7 +273,7 @@ try {
       path: `${outputDir}/${captureCase.id}.png`,
       fullPage: true
     }).catch(() => undefined);
-    results.push({ ...captureCase, diagnostics, issues });
+    results.push({ ...captureCase, diagnostics, constructionSave, issues });
     if (issues.length > 0) failed = true;
     await page.close();
   }
