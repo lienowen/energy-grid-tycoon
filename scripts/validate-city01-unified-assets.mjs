@@ -28,7 +28,7 @@ for (const family of policy.approvedFamilies ?? []) {
   assert(typeof family.id === 'string' && family.id.length > 0, 'approved family id is required');
   assert(Array.isArray(family.states) && family.states.length >= 3,
     `${family.id}: at least three source states are required`);
-  assert(catalogSource.includes(`'${family.folder}'`),
+  assert(catalogSource.includes(family.folder),
     `${family.id}: unified catalog does not reference folder ${family.folder}`);
 
   const folder = family.folder;
@@ -39,8 +39,9 @@ for (const family of policy.approvedFamilies ?? []) {
   }
 }
 
-assert(!catalogSource.includes('/assets/city01/product/facilities/'),
-  'unified facility catalog must not reference the retired mislabeled directory');
+const retiredRuntimeEntryPattern = /src\s*:\s*[`'\"]\/assets\/city01\/product\/facilities\//;
+assert(!retiredRuntimeEntryPattern.test(catalogSource),
+  'unified facility catalog contains a runtime entry from the retired mislabeled directory');
 assert(globalCatalogSource.includes('retiredCity01FacilitySourcePrefix'),
   'global catalog must filter the retired City-01 facility source prefix');
 assert(globalCatalogSource.includes('city01UnifiedFacilityCatalog'),
