@@ -38,7 +38,7 @@ export const city01BaseMapPlacement: City01MapPlacement = {
 export const city01RoadNetworkPlacement: City01MapPlacement = {
   id: 'city01-road-network',
   assetId: 'city01_road_network_base',
-  point: city01MapToScenePoint(57, 50, -0.12),
+  point: city01MapToScenePoint(57, 50, -1.4),
   width: 1760,
   anchorY: 0.5,
   layer: 'roads',
@@ -83,7 +83,8 @@ export const city01IslandBoundary: readonly ScenePoint[] = [
 /**
  * L0 and L1 each use one aligned authored asset. The road network is generated
  * from the explicit node/edge topology and shares the base map dimensions,
- * anchor and origin. Large road tiles are retained only as source material.
+ * anchor, origin and elevation. Large road tiles are retained only as source
+ * material.
  */
 export const city01MapPlacements: readonly City01MapPlacement[] = [
   city01BaseMapPlacement,
