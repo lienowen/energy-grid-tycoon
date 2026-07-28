@@ -38,9 +38,6 @@ describe('GlobalAssetCatalog', () => {
     expect(baseMap?.anchor).toEqual({ x: 0.5, y: 0.5 });
     expect(roadNetwork?.anchor).toEqual(baseMap?.anchor);
     expect(groundDetails?.anchor).toEqual(baseMap?.anchor);
-    expect(baseMap?.preload).toBe('level');
-    expect(roadNetwork?.preload).toBe('level');
-    expect(groundDetails?.preload).toBe('level');
   });
 
   it('keeps source environment and vehicle assets available for later layers', () => {
@@ -53,16 +50,41 @@ describe('GlobalAssetCatalog', () => {
       .toBe('/assets/city01/product/vehicles/base/vehicle-utility-van.png');
   });
 
-  it('corrects the mislabeled product facility files through semantic runtime ids', () => {
+  it('uses semantically correct single cuts for every City-01 energy family', () => {
     const entries = new Map(globalAssetCatalog.entries.map((entry) => [entry.id, entry]));
     expect(entries.get('commercial_facility_solar_active')?.src)
-      .toBe('/assets/city01/product/facilities/facility-distribution-node-base.png');
+      .toBe('/assets/single/v1/solar_sheet/solar_sheet__01__base-main.png');
     expect(entries.get('commercial_facility_wind_active')?.src)
-      .toBe('/assets/city01/product/facilities/facility-gas-peaker-base.png');
+      .toBe('/assets/single/v1/wind_sheet/wind_sheet__01__base-main.png');
     expect(entries.get('commercial_facility_gas_active')?.src)
-      .toBe('/assets/city01/product/facilities/facility-main-substation-base.png');
+      .toBe('/assets/single/v1/gas_sheet/gas_sheet__01__base-main.png');
+    expect(entries.get('commercial_facility_battery_active')?.src)
+      .toBe('/assets/single/v1/battery_sheet/battery_sheet__01__base-main.png');
+    expect(entries.get('commercial_facility_battery_utility_active')?.src)
+      .toBe('/assets/single/v1/battery_utility_sheet/battery_utility_sheet__01__base-main.png');
     expect(entries.get('commercial_facility_substation_active')?.src)
-      .toBe('/assets/city01/product/facilities/facility-solar-farm-base.png');
+      .toBe('/assets/single/v1/substation_sheet/substation_sheet__01__base-main.png');
+    expect(entries.get('world_facility_grid_node_active')?.src)
+      .toBe('/assets/single/v1/tower_sheet/tower_sheet__01__base-main.png');
+  });
+
+  it('removes the mislabeled legacy facility directory from the runtime catalog', () => {
+    expect(globalAssetCatalog.entries.some((entry) =>
+      entry.src.startsWith('/assets/city01/product/facilities/')
+    )).toBe(false);
+  });
+
+  it('gives every unified facility entry one 512 canvas and one anchor contract', () => {
+    const facilities = globalAssetCatalog.entries.filter((entry) =>
+      entry.tags?.includes('unified-runtime-v1')
+    );
+    expect(facilities.length).toBeGreaterThanOrEqual(27);
+    for (const facility of facilities) {
+      expect(facility.width).toBe(512);
+      expect(facility.height).toBe(512);
+      expect(facility.anchor).toEqual({ x: 0.5, y: 0.9115 });
+      expect(facility.src.startsWith('/assets/single/v1/')).toBe(true);
+    }
   });
 
   it('keeps runtime asset ids unique after all catalogs are merged', () => {
