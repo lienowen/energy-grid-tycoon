@@ -1,12 +1,12 @@
 {
-  "schemaVersion": 16,
-  "budgetBytes": 8000000,
+  "schemaVersion": 17,
+  "budgetBytes": 9000000,
   "entries": [
     {
       "id": "city01_map_base",
       "kind": "image",
       "src": "/assets/city01/product/environment/runtime/city01-map-base.svg",
-      "version": 16,
+      "version": 17,
       "preload": "level",
       "width": 2048,
       "height": 1536,
@@ -17,7 +17,7 @@
       "id": "city01_road_network_base",
       "kind": "image",
       "src": "/assets/city01/product/environment/runtime/city01-road-network.svg",
-      "version": 16,
+      "version": 17,
       "preload": "level",
       "width": 2048,
       "height": 1536,
@@ -25,10 +25,21 @@
       "tags": ["city-01", "map", "road", "network", "topology", "runtime"]
     },
     {
+      "id": "city01_ground_details_base",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/runtime/city01-ground-details.svg",
+      "version": 17,
+      "preload": "level",
+      "width": 2048,
+      "height": 1536,
+      "anchor": { "x": 0.5, "y": 0.5 },
+      "tags": ["city-01", "map", "decoration", "park", "forest", "runtime"]
+    },
+    {
       "id": "city01_ocean_water_base",
       "kind": "image",
       "src": "/assets/city01/product/environment/runtime/ocean-water-base.svg",
-      "version": 16,
+      "version": 17,
       "preload": "level",
       "width": 2048,
       "height": 1536,
@@ -39,7 +50,7 @@
       "id": "city01_road_connector_short",
       "kind": "image",
       "src": "/assets/city01/product/environment/base/terrain-road-straight-base.png",
-      "version": 16,
+      "version": 17,
       "preload": "level",
       "width": 1024,
       "height": 768,
