@@ -1,6 +1,19 @@
 import { CanvasSource, Texture } from 'pixi.js';
 
+export const CITY01_FACILITY_CANVAS = {
+  width: 512,
+  height: 512,
+  anchorY: 0.9115,
+  baseline: Math.round(512 * 0.9115)
+} as const;
+
+export interface City01FacilityCanvasSpec {
+  maxSubjectWidth: number;
+  maxSubjectHeight: number;
+}
+
 const facilityPrefixes = [
+  'commercial_facility_battery_utility_',
   'commercial_facility_solar_',
   'commercial_facility_wind_',
   'commercial_facility_gas_',
@@ -14,15 +27,34 @@ const requests = new Map<string, Promise<Texture | undefined>>();
 export const isCity01FacilityRuntimeAsset = (assetId: string): boolean =>
   facilityPrefixes.some((prefix) => assetId.startsWith(prefix));
 
-export const city01FacilitySubjectScale = (assetId: string): number => {
-  if (assetId.startsWith('world_facility_grid_node_')) return 0.68;
-  if (assetId.startsWith('commercial_facility_substation_')) return 0.74;
-  if (assetId.startsWith('commercial_facility_solar_')) return 0.78;
-  if (assetId.startsWith('commercial_facility_wind_')) return 0.8;
-  if (assetId.startsWith('commercial_facility_gas_')) return 0.78;
-  if (assetId.startsWith('commercial_facility_battery_')) return 0.78;
-  return 1;
+export const city01FacilityCanvasSpec = (assetId: string): City01FacilityCanvasSpec => {
+  if (assetId.startsWith('commercial_facility_battery_utility_')) {
+    return { maxSubjectWidth: 448, maxSubjectHeight: 350 };
+  }
+  if (assetId.startsWith('commercial_facility_solar_')) {
+    return { maxSubjectWidth: 430, maxSubjectHeight: 360 };
+  }
+  if (assetId.startsWith('commercial_facility_wind_')) {
+    return { maxSubjectWidth: 300, maxSubjectHeight: 430 };
+  }
+  if (assetId.startsWith('commercial_facility_gas_')) {
+    return { maxSubjectWidth: 440, maxSubjectHeight: 390 };
+  }
+  if (assetId.startsWith('commercial_facility_battery_')) {
+    return { maxSubjectWidth: 426, maxSubjectHeight: 342 };
+  }
+  if (assetId.startsWith('commercial_facility_substation_')) {
+    return { maxSubjectWidth: 446, maxSubjectHeight: 346 };
+  }
+  if (assetId.startsWith('world_facility_grid_node_')) {
+    return { maxSubjectWidth: 318, maxSubjectHeight: 420 };
+  }
+  return { maxSubjectWidth: 420, maxSubjectHeight: 380 };
 };
+
+// Retained for callers and tests that compare the relative visual footprint.
+export const city01FacilitySubjectScale = (assetId: string): number =>
+  city01FacilityCanvasSpec(assetId).maxSubjectWidth / CITY01_FACILITY_CANVAS.width;
 
 const makeCanvas = (width: number, height: number): HTMLCanvasElement => {
   const canvas = document.createElement('canvas');
@@ -46,29 +78,121 @@ const textureFromCanvas = (canvas: HTMLCanvasElement): Texture => {
   return new Texture({ source });
 };
 
+interface AlphaBounds {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+const weightedAlphaBounds = (
+  pixels: Uint8ClampedArray,
+  width: number,
+  height: number
+): AlphaBounds => {
+  const columns = new Float64Array(width);
+  const rows = new Float64Array(height);
+  let total = 0;
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const alpha = pixels[(y * width + x) * 4 + 3] ?? 0;
+      if (alpha <= 8) continue;
+      columns[x] += alpha;
+      rows[y] += alpha;
+      total += alpha;
+    }
+  }
+
+  if (total <= 0) return { x: 0, y: 0, width, height };
+  const trim = total * 0.0005;
+
+  let left = 0;
+  let accumulated = 0;
+  while (left < width - 1 && accumulated + columns[left]! <= trim) {
+    accumulated += columns[left]!;
+    left += 1;
+  }
+
+  let right = width - 1;
+  accumulated = 0;
+  while (right > left && accumulated + columns[right]! <= trim) {
+    accumulated += columns[right]!;
+    right -= 1;
+  }
+
+  let top = 0;
+  accumulated = 0;
+  while (top < height - 1 && accumulated + rows[top]! <= trim) {
+    accumulated += rows[top]!;
+    top += 1;
+  }
+
+  let bottom = height - 1;
+  accumulated = 0;
+  while (bottom > top && accumulated + rows[bottom]! <= trim) {
+    accumulated += rows[bottom]!;
+    bottom -= 1;
+  }
+
+  return {
+    x: left,
+    y: top,
+    width: Math.max(1, right - left + 1),
+    height: Math.max(1, bottom - top + 1)
+  };
+};
+
+const shouldDeriveOfflineStyle = (assetId: string): boolean =>
+  assetId === 'commercial_facility_wind_offline';
+
 const buildFacilityTexture = async (
   assetId: string,
   source: string
 ): Promise<Texture | undefined> => {
   if (typeof document === 'undefined' || typeof Image === 'undefined') return undefined;
   const image = await loadImage(source);
-  const width = image.naturalWidth;
-  const height = image.naturalHeight;
-  if (width <= 0 || height <= 0) return undefined;
+  const sourceWidth = image.naturalWidth;
+  const sourceHeight = image.naturalHeight;
+  if (sourceWidth <= 0 || sourceHeight <= 0) return undefined;
 
-  const subjectScale = city01FacilitySubjectScale(assetId);
-  const targetWidth = width * subjectScale;
-  const targetHeight = height * subjectScale;
-  const anchorY = 0.9115;
-  const targetX = (width - targetWidth) * 0.5;
-  const targetY = height * anchorY - targetHeight * anchorY;
+  const sourceCanvas = makeCanvas(sourceWidth, sourceHeight);
+  const sourceContext = sourceCanvas.getContext('2d', { willReadFrequently: true });
+  if (!sourceContext) return undefined;
+  sourceContext.drawImage(image, 0, 0);
+  const imageData = sourceContext.getImageData(0, 0, sourceWidth, sourceHeight);
+  const bounds = weightedAlphaBounds(imageData.data, sourceWidth, sourceHeight);
 
-  const canvas = makeCanvas(width, height);
+  const spec = city01FacilityCanvasSpec(assetId);
+  const scale = Math.min(
+    spec.maxSubjectWidth / bounds.width,
+    spec.maxSubjectHeight / bounds.height
+  );
+  const targetWidth = Math.max(1, Math.round(bounds.width * scale));
+  const targetHeight = Math.max(1, Math.round(bounds.height * scale));
+  const targetX = Math.round((CITY01_FACILITY_CANVAS.width - targetWidth) * 0.5);
+  const targetY = CITY01_FACILITY_CANVAS.baseline - targetHeight;
+
+  const canvas = makeCanvas(CITY01_FACILITY_CANVAS.width, CITY01_FACILITY_CANVAS.height);
   const context = canvas.getContext('2d');
   if (!context) return undefined;
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = 'high';
-  context.drawImage(image, targetX, targetY, targetWidth, targetHeight);
+  if (shouldDeriveOfflineStyle(assetId)) {
+    context.filter = 'grayscale(86%) saturate(42%) brightness(62%)';
+  }
+  context.drawImage(
+    sourceCanvas,
+    bounds.x,
+    bounds.y,
+    bounds.width,
+    bounds.height,
+    targetX,
+    targetY,
+    targetWidth,
+    targetHeight
+  );
+  context.filter = 'none';
   return textureFromCanvas(canvas);
 };
 
