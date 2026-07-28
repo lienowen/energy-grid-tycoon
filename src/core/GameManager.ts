@@ -1,4 +1,4 @@
-import { BuildingConfig } from '../buildings/BuildingBase';
+import { BuildingBase, BuildingConfig } from '../buildings/BuildingBase';
 import { BuildingFactory } from '../buildings/BuildingFactory';
 import { RuleEngine } from '../rules/RuleEngine';
 import { BuildingUpgradeSystem, type UpgradeQuote } from '../systems/BuildingUpgradeSystem';
@@ -147,13 +147,9 @@ export class GameManager {
     state.money -= config.cost;
     const building = BuildingFactory.create(config);
     if (plotId) building.place(plotId);
+    building.beginConstruction(this.getConstructionHours(config));
     this.session.buildings.add(building);
     this.refreshStorageState();
-    this.domainEvents.emit('building.completed', {
-      configId: config.id,
-      instanceId: building.instanceId,
-      plotId
-    });
     this.emit();
     return { ok: true };
   }
@@ -163,6 +159,7 @@ export class GameManager {
     if (state.completed || state.failed) return { ok: false, reason: '本局已经结束' };
     const building = this.session.buildings.find(instanceId);
     if (!building) return { ok: false, reason: '没有找到该设施' };
+    if (building.underConstruction) return { ok: false, reason: '设施施工完成后才能扩建' };
 
     const quote = BuildingUpgradeSystem.quote(building);
     if (!quote.available) return { ok: false, reason: quote.reason };
@@ -181,6 +178,7 @@ export class GameManager {
     if (state.completed || state.failed) return { ok: false, reason: '本局已经结束' };
     const building = this.session.buildings.find(instanceId);
     if (!building) return { ok: false, reason: '没有找到该设施' };
+    if (building.underConstruction) return { ok: false, reason: '设施仍在施工，暂时不能启停' };
     building.enabled = !building.enabled;
     this.refreshStorageState();
     this.domainEvents.emit('building.toggled', { instanceId, enabled: building.enabled });
@@ -247,6 +245,7 @@ export class GameManager {
     const state = this.session.state;
     if (state.speed === 0 || state.completed || state.failed) return;
 
+    const completedBuildings = this.advanceConstruction(state.speed);
     const previousEventId = this.eventSystem.getActive()?.config.id;
     this.eventSystem.advance(state.speed);
     this.eventSystem.maybeTrigger(
@@ -297,6 +296,14 @@ export class GameManager {
     state.failed = !state.completed && GoalSystem.isFailed(state, this.session.config);
     if (state.completed || state.failed) state.speed = 0;
 
+    for (const building of completedBuildings) {
+      this.domainEvents.emit('building.completed', {
+        configId: building.config.id,
+        instanceId: building.instanceId,
+        plotId: building.placementId
+      });
+    }
+
     const overloaded = state.supplyRatio < 0.9;
     if (overloaded && !this.gridOverloaded) {
       this.domainEvents.emit('grid.overloaded', {
@@ -321,6 +328,26 @@ export class GameManager {
     this.lastStorage = result.storage;
     this.telemetry.record(state, result.economy, result.power);
     this.emit();
+  }
+
+  private getConstructionHours(config: BuildingConfig): number {
+    if (Number.isFinite(config.constructionHours) && (config.constructionHours ?? 0) > 0) {
+      return Math.max(1, config.constructionHours ?? 1);
+    }
+    if (config.category === 'grid') return 12;
+    if (config.category === 'storage') return 8;
+    if (config.id.includes('gas')) return 10;
+    if (config.id.includes('wind')) return 8;
+    return 6;
+  }
+
+  private advanceConstruction(deltaHours: number): BuildingBase[] {
+    const completed: BuildingBase[] = [];
+    for (const building of this.session.buildings.getBuildings()) {
+      if (building.advanceConstruction(deltaHours)) completed.push(building);
+    }
+    if (completed.length > 0) this.refreshStorageState();
+    return completed;
   }
 
   private getAvailableTechnologies(): TechnologyConfig[] {
