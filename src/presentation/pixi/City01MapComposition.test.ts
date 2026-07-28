@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   city01BaseMapPlacement,
   city01MapPlacements,
-  city01RequiredLiveAssetIds
+  city01RequiredLiveAssetIds,
+  city01RoadNetworkPlacement
 } from './City01MapComposition';
 
 describe('City01MapComposition', () => {
@@ -15,7 +16,18 @@ describe('City01MapComposition', () => {
     expect(city01BaseMapPlacement.anchorY).toBe(0.5);
   });
 
-  it('does not assemble the island from external coast or environment tiles', () => {
+  it('uses one aligned road network as the only live road placement', () => {
+    const roads = city01MapPlacements.filter((placement) => placement.layer === 'roads');
+
+    expect(roads).toEqual([city01RoadNetworkPlacement]);
+    expect(city01RoadNetworkPlacement.assetId).toBe('city01_road_network_base');
+    expect(city01RoadNetworkPlacement.width).toBe(city01BaseMapPlacement.width);
+    expect(city01RoadNetworkPlacement.anchorY).toBe(city01BaseMapPlacement.anchorY);
+    expect(city01RoadNetworkPlacement.point.x).toBe(city01BaseMapPlacement.point.x);
+    expect(city01RoadNetworkPlacement.point.z).toBe(city01BaseMapPlacement.point.z);
+  });
+
+  it('does not assemble the island or road network from large external tiles', () => {
     const forbidden = new Set([
       'terrain_beach_open_base',
       'terrain_coast_cliff_base',
@@ -24,7 +36,14 @@ describe('City01MapComposition', () => {
       'terrain_empty_grasslot_base',
       'terrain_forest_base',
       'terrain_park_plaza_base',
-      'terrain_small_park_base'
+      'terrain_small_park_base',
+      'terrain_road_bridge_base',
+      'terrain_road_corner_base',
+      'terrain_road_crossroad_base',
+      'terrain_road_straight_base',
+      'terrain_road_t_junction_base',
+      'terrain_road_dead_end_base',
+      'city01_road_connector_short'
     ]);
 
     expect(city01MapPlacements.every((placement) => !forbidden.has(placement.assetId))).toBe(true);
@@ -45,14 +64,6 @@ describe('City01MapComposition', () => {
       expect(Math.abs(placement.point.x)).toBeLessThanOrEqual(55);
       expect(Math.abs(placement.point.z)).toBeLessThanOrEqual(40);
     }
-  });
-
-  it('keeps only the six connected central road tiles in the live map', () => {
-    const roads = city01MapPlacements.filter((placement) => placement.layer === 'roads');
-    expect(roads).toHaveLength(6);
-    expect(roads.every((placement) => placement.assetId.includes('road'))).toBe(true);
-    expect(roads.some((placement) => placement.assetId === 'city01_road_connector_short')).toBe(false);
-    expect(roads.some((placement) => placement.assetId === 'terrain_road_dead_end_base')).toBe(false);
   });
 
   it('adds product vehicles without turning the map into a traffic layer', () => {
