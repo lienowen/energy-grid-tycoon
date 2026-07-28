@@ -46,6 +46,17 @@ export const city01RoadNetworkPlacement: City01MapPlacement = {
   diagnosticsAlpha: 0.48
 };
 
+export const city01GroundDetailsPlacement: City01MapPlacement = {
+  id: 'city01-ground-details',
+  assetId: 'city01_ground_details_base',
+  point: city01MapToScenePoint(57, 50, -1.4),
+  width: 1760,
+  anchorY: 0.5,
+  layer: 'groundDecorations',
+  alpha: 1,
+  diagnosticsAlpha: 0.26
+};
+
 const vehicle = (
   id: string,
   assetId: string,
@@ -81,14 +92,14 @@ export const city01IslandBoundary: readonly ScenePoint[] = [
 ];
 
 /**
- * L0 and L1 each use one aligned authored asset. The road network is generated
- * from the explicit node/edge topology and shares the base map dimensions,
- * anchor, origin and elevation. Large road tiles are retained only as source
- * material.
+ * L0, L1 and L4 each use one aligned authored asset. They share dimensions,
+ * anchor, origin and elevation. Decoration only fills open land and never
+ * defines the island, road graph or interaction zones.
  */
 export const city01MapPlacements: readonly City01MapPlacement[] = [
   city01BaseMapPlacement,
   city01RoadNetworkPlacement,
+  city01GroundDetailsPlacement,
   vehicle('city-sedan', 'vehicle_sedan', 57, 39, 43),
   vehicle('civic-utility-van', 'vehicle_utility_van', 55, 61, 47, true),
   vehicle('industrial-cargo-truck', 'vehicle_cargo_truck', 74, 66, 54)
@@ -119,5 +130,6 @@ export const city01EnvironmentAssetIds = [
 
 export const city01RequiredLiveAssetIds = [
   'city01_map_base',
-  'city01_road_network_base'
+  'city01_road_network_base',
+  'city01_ground_details_base'
 ] as const;
