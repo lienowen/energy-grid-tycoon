@@ -26,7 +26,7 @@ const facility = (
 });
 
 describe('CommercialLandmarkPlanner', () => {
-  it('turns adjacent solar units into one readable landmark', () => {
+  it('turns adjacent solar units into one readable but subordinate landmark', () => {
     const source = [
       facility('solar-a', 'solar_basic', 10, 20, 180),
       facility('solar-b', 'solar_basic', 20, 30, 180),
@@ -40,9 +40,10 @@ describe('CommercialLandmarkPlanner', () => {
       name: '曙光光伏场',
       x: 15,
       z: 25,
-      output: 360
+      output: 360,
+      scale: 1.08
     });
-    expect(planned[0]?.scale).toBeGreaterThan(1.3);
+    expect(planned[0]?.scale).toBeLessThan(1.15);
     expect(planned[1]?.configId).toBe('wind_basic');
     expect(source).toHaveLength(3);
   });
