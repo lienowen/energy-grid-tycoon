@@ -4,7 +4,8 @@ import {
   city01GroundDetailsPlacement,
   city01MapPlacements,
   city01RequiredLiveAssetIds,
-  city01RoadNetworkPlacement
+  city01RoadNetworkPlacement,
+  city01UrbanFabricPlacements
 } from './City01MapComposition';
 
 describe('City01MapComposition', () => {
@@ -27,14 +28,23 @@ describe('City01MapComposition', () => {
     expect(city01RoadNetworkPlacement.point).toEqual(city01BaseMapPlacement.point);
   });
 
-  it('uses one aligned decoration layer without changing map topology', () => {
+  it('keeps one aligned ground-detail surface beneath the urban fabric', () => {
     const decorations = city01MapPlacements.filter((placement) => placement.layer === 'groundDecorations');
 
-    expect(decorations).toEqual([city01GroundDetailsPlacement]);
+    expect(decorations).toContain(city01GroundDetailsPlacement);
     expect(city01GroundDetailsPlacement.assetId).toBe('city01_ground_details_base');
     expect(city01GroundDetailsPlacement.width).toBe(city01BaseMapPlacement.width);
     expect(city01GroundDetailsPlacement.anchorY).toBe(city01BaseMapPlacement.anchorY);
     expect(city01GroundDetailsPlacement.point).toEqual(city01BaseMapPlacement.point);
+  });
+
+  it('fills the roads between landmarks with secondary city blocks', () => {
+    expect(city01UrbanFabricPlacements.length).toBeGreaterThanOrEqual(18);
+    expect(city01UrbanFabricPlacements.every((placement) => placement.layer === 'groundDecorations')).toBe(true);
+    expect(city01UrbanFabricPlacements.every((placement) => placement.assetId.startsWith('commercial_district_'))).toBe(true);
+    expect(city01UrbanFabricPlacements.every((placement) => (placement.alpha ?? 1) < 0.9)).toBe(true);
+    expect(new Set(city01UrbanFabricPlacements.map((placement) => placement.id)).size)
+      .toBe(city01UrbanFabricPlacements.length);
   });
 
   it('does not assemble the island or road network from large external tiles', () => {
@@ -76,9 +86,10 @@ describe('City01MapComposition', () => {
     }
   });
 
-  it('adds product vehicles without turning the map into a traffic layer', () => {
+  it('adds visible traffic without turning it into the primary visual layer', () => {
     const vehicles = city01MapPlacements.filter((placement) => placement.layer === 'vehicles');
-    expect(vehicles).toHaveLength(3);
+    expect(vehicles.length).toBeGreaterThanOrEqual(6);
+    expect(vehicles.length).toBeLessThanOrEqual(10);
     expect(vehicles.every((placement) => placement.diagnosticsAlpha === 0)).toBe(true);
   });
 });
