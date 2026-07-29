@@ -40,9 +40,25 @@ export class WorldCamera {
   }
 
   focusHome(): void {
-    this.target.scale.set(this.homeZoom);
-    this.homePositionX = this.viewportWidth * 0.5 + this.homeOffsetX;
-    this.homePositionY = this.viewportHeight * 0.49 + this.homeOffsetY;
+    const portrait = this.viewportHeight > this.viewportWidth * 1.2;
+    const viewportZoom = this.viewportWidth <= 520
+      ? 0.46
+      : portrait && this.viewportWidth <= 900
+        ? 0.72
+        : this.viewportWidth <= 1100
+          ? 0.9
+          : 1;
+    const zoom = clamp(this.homeZoom * viewportZoom, this.minZoom, this.maxZoom);
+    const offsetX = this.viewportWidth <= 520 ? this.homeOffsetX * 0.25 : this.homeOffsetX;
+    const offsetY = this.viewportWidth <= 520
+      ? Math.min(24, this.homeOffsetY * 0.4)
+      : portrait
+        ? Math.min(32, this.homeOffsetY * 0.7)
+        : this.homeOffsetY;
+
+    this.target.scale.set(zoom);
+    this.homePositionX = this.viewportWidth * 0.5 + offsetX;
+    this.homePositionY = this.viewportHeight * (portrait ? 0.52 : 0.49) + offsetY;
     this.target.position.set(this.homePositionX, this.homePositionY);
   }
 
