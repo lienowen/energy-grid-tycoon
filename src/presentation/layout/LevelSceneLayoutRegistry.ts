@@ -5,13 +5,13 @@ const dawnCityLayout: LevelSceneLayout = {
   mode: 'authored',
   focus: { x: 55, y: 50, elevation: 0 },
   camera: {
-    startZoom: 1.26,
-    minZoom: 0.78,
+    startZoom: 1.34,
+    minZoom: 0.56,
     maxZoom: 2.1,
     startOffsetX: 0,
-    startOffsetY: 100,
-    panLimitX: 180,
-    panLimitY: 130
+    startOffsetY: 38,
+    panLimitX: 210,
+    panLimitY: 160
   },
   districts: [
     {
@@ -90,33 +90,9 @@ const dawnCityLayout: LevelSceneLayout = {
     { plotId: 'central-utility', x: 82, y: 72, elevation: 0.14, scale: 0.8 },
     { plotId: 'east-industry', x: 86, y: 62, elevation: 0.14, scale: 0.78 }
   ],
-  roads: [
-    {
-      id: 'dawn-central-boulevard',
-      laneCount: 2,
-      points: [{ x: 27, y: 50 }, { x: 55, y: 40 }, { x: 75, y: 40 }]
-    },
-    {
-      id: 'dawn-south-boulevard',
-      laneCount: 2,
-      points: [{ x: 35, y: 60 }, { x: 55, y: 60 }, { x: 75, y: 60 }]
-    },
-    {
-      id: 'dawn-west-link',
-      laneCount: 1,
-      points: [{ x: 27, y: 50 }, { x: 35, y: 60 }]
-    },
-    {
-      id: 'dawn-central-link',
-      laneCount: 1,
-      points: [{ x: 55, y: 40 }, { x: 55, y: 60 }]
-    },
-    {
-      id: 'dawn-east-link',
-      laneCount: 1,
-      points: [{ x: 75, y: 40 }, { x: 75, y: 60 }]
-    }
-  ],
+  // The live city view uses one authored road layer. Keeping a second vector
+  // backbone here made the map read as stacked strips instead of one city.
+  roads: [],
   environment: [
     { id: 'dawn-west-water', kind: 'water', x: 5, y: 51, width: 25, depth: 94, density: 0.7, variant: 3 },
     { id: 'dawn-south-coast', kind: 'coast', x: 51, y: 93, width: 100, depth: 17, density: 0.8, variant: 7 },
