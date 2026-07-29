@@ -1,9 +1,9 @@
 import type { BuildingConfig } from '../buildings/BuildingBase';
+import { isReleaseCity, selectReleaseLevels } from '../product/ProductScope';
 import { AssetManager } from '../resources/AssetManager';
 import { LevelAssetPlanner } from '../resources/LevelAssetPlanner';
 import type { EventConfig } from '../systems/EventSystem';
 import type { LevelConfig } from '../systems/LevelLoader';
-import { LevelProgressionSystem } from '../systems/LevelProgressionSystem';
 import type { PolicyConfig } from '../systems/PolicySystem';
 import type { TechnologyConfig } from '../systems/ResearchSystem';
 import { CityRecoveryFeedback } from '../ui/CityRecoveryFeedback';
@@ -35,7 +35,11 @@ export class AppController {
   ) {}
 
   start(): void {
-    this.showCampaign();
+    const releaseLevel = selectReleaseLevels(this.levels)[0];
+    const save = SaveManager.loadGame();
+    if (releaseLevel) void this.startLevel(releaseLevel.id, save?.levelId === releaseLevel.id);
+    else this.showCampaign();
+
     window.addEventListener('pagehide', this.handlePageHide);
     document.addEventListener('visibilitychange', this.handleVisibilityChange);
     window.addEventListener('beforeunload', this.handleBeforeUnload);
@@ -61,9 +65,9 @@ export class AppController {
     const profile = SaveManager.loadProfile();
     const save = SaveManager.loadGame();
     const completed = new Set(profile.completedLevelIds);
-    const items = this.levels.map((level) => ({
+    const items = selectReleaseLevels(this.levels).map((level) => ({
       level,
-      unlocked: LevelProgressionSystem.isUnlocked(level, completed),
+      unlocked: true,
       completed: completed.has(level.id),
       hasSave: save?.levelId === level.id,
       bestScore: profile.bestScoreByLevel[level.id] ?? 0
@@ -76,6 +80,11 @@ export class AppController {
   }
 
   private async startLevel(levelId: string, resume: boolean): Promise<void> {
+    if (!isReleaseCity(levelId)) {
+      this.showCampaign();
+      return;
+    }
+
     const level = this.levels.find((item) => item.id === levelId);
     if (!level) return;
 
@@ -181,6 +190,10 @@ export class AppController {
   private loadCurrentSave(): { ok: boolean; message: string } {
     const save = SaveManager.loadGame();
     if (!save) return { ok: false, message: '没有找到之前保存的城市进度' };
+    if (!isReleaseCity(save.levelId)) {
+      SaveManager.clearGame();
+      return { ok: false, message: '旧城市存档已冻结，当前主版本只开放 City-01' };
+    }
     void this.startLevel(save.levelId, true);
     return { ok: true, message: '正在回到上次保存的位置' };
   }
@@ -192,12 +205,7 @@ export class AppController {
   }
 
   private startNextLevel(): void {
-    if (!this.currentLevelId) return;
-    const current = this.levels.find((level) => level.id === this.currentLevelId);
-    if (!current) return;
-    const next = LevelProgressionSystem.getNextLevel(current, this.levels);
-    if (next) void this.startLevel(next.id, false);
-    else this.showCampaign();
+    this.showCampaign();
   }
 
   private notReady(): GameActionResult {
