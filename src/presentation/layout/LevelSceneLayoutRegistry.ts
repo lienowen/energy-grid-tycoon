@@ -3,26 +3,26 @@ import type { LevelSceneLayout } from './LevelSceneLayout';
 const dawnCityLayout: LevelSceneLayout = {
   levelId: 'city-01',
   mode: 'authored',
-  focus: { x: 55, y: 50, elevation: 0 },
+  focus: { x: 54, y: 50, elevation: 0 },
   camera: {
-    startZoom: 1.34,
-    minZoom: 0.56,
+    startZoom: 1.47,
+    minZoom: 0.52,
     maxZoom: 2.1,
     startOffsetX: 0,
-    startOffsetY: 38,
-    panLimitX: 210,
-    panLimitY: 160
+    startOffsetY: 8,
+    panLimitX: 190,
+    panLimitY: 145
   },
   districts: [
     {
       id: 'dawn-residential',
       label: '居住区',
       kind: 'residential',
-      x: 77,
-      y: 28,
-      width: 21,
-      depth: 14,
-      scale: 0.9,
+      x: 69,
+      y: 32,
+      width: 23,
+      depth: 15,
+      scale: 1.06,
       buildingCount: 7,
       priority: 1,
       variant: 11
@@ -31,11 +31,11 @@ const dawnCityLayout: LevelSceneLayout = {
       id: 'dawn-commercial',
       label: '商业区',
       kind: 'commercial',
-      x: 34,
-      y: 35,
-      width: 20,
-      depth: 15,
-      scale: 0.91,
+      x: 40,
+      y: 38,
+      width: 23,
+      depth: 16,
+      scale: 1.12,
       buildingCount: 6,
       priority: 2,
       variant: 23
@@ -44,11 +44,11 @@ const dawnCityLayout: LevelSceneLayout = {
       id: 'dawn-industrial',
       label: '工业区',
       kind: 'industrial',
-      x: 76,
-      y: 72,
-      width: 21,
-      depth: 15,
-      scale: 0.92,
+      x: 70,
+      y: 66,
+      width: 23,
+      depth: 16,
+      scale: 1.05,
       buildingCount: 5,
       priority: 3,
       variant: 37
@@ -58,10 +58,10 @@ const dawnCityLayout: LevelSceneLayout = {
       label: '公共服务区',
       kind: 'public',
       x: 55,
-      y: 54,
-      width: 19,
-      depth: 13,
-      scale: 0.9,
+      y: 52,
+      width: 21,
+      depth: 14,
+      scale: 1.08,
       buildingCount: 4,
       priority: 0,
       variant: 41
@@ -70,25 +70,25 @@ const dawnCityLayout: LevelSceneLayout = {
       id: 'dawn-old-town',
       label: '东部老城区',
       kind: 'old_town',
-      x: 31,
-      y: 70,
-      width: 20,
-      depth: 15,
-      scale: 0.91,
+      x: 39,
+      y: 65,
+      width: 22,
+      depth: 16,
+      scale: 1.04,
       buildingCount: 6,
       priority: 5,
       variant: 59
     }
   ],
   plotAnchors: [
-    { plotId: 'sunrise-neighborhood', x: 33, y: 28, elevation: 0.16, scale: 0.78 },
-    { plotId: 'south-outskirts', x: 37, y: 31, elevation: 0.16, scale: 0.76 },
-    { plotId: 'north-outskirts', x: 84, y: 39, elevation: 0.16, scale: 0.78 },
-    { plotId: 'east-coast', x: 87, y: 45, elevation: 0.2, scale: 0.72 },
-    { plotId: 'west-industry', x: 27, y: 56, elevation: 0.14, scale: 0.8 },
-    { plotId: 'south-neighborhood', x: 70, y: 78, elevation: 0.14, scale: 0.78 },
-    { plotId: 'central-utility', x: 82, y: 72, elevation: 0.14, scale: 0.8 },
-    { plotId: 'east-industry', x: 86, y: 62, elevation: 0.14, scale: 0.78 }
+    { plotId: 'sunrise-neighborhood', x: 36, y: 31, elevation: 0.16, scale: 0.86 },
+    { plotId: 'south-outskirts', x: 40, y: 34, elevation: 0.16, scale: 0.84 },
+    { plotId: 'north-outskirts', x: 77, y: 39, elevation: 0.16, scale: 0.86 },
+    { plotId: 'east-coast', x: 82, y: 44, elevation: 0.2, scale: 0.8 },
+    { plotId: 'west-industry', x: 31, y: 56, elevation: 0.14, scale: 0.88 },
+    { plotId: 'south-neighborhood', x: 64, y: 74, elevation: 0.14, scale: 0.86 },
+    { plotId: 'central-utility', x: 76, y: 68, elevation: 0.14, scale: 0.88 },
+    { plotId: 'east-industry', x: 82, y: 61, elevation: 0.14, scale: 0.86 }
   ],
   // The live city view uses one authored road layer. Keeping a second vector
   // backbone here made the map read as stacked strips instead of one city.
@@ -99,7 +99,7 @@ const dawnCityLayout: LevelSceneLayout = {
     { id: 'dawn-north-ridge', kind: 'ridge', x: 61, y: 4, width: 86, depth: 17, density: 0.9, variant: 13 },
     { id: 'dawn-north-forest', kind: 'forest', x: 36, y: 10, width: 46, depth: 16, density: 0.82, variant: 17 },
     { id: 'dawn-east-forest', kind: 'forest', x: 99, y: 46, width: 16, depth: 72, density: 0.88, variant: 29 },
-    { id: 'dawn-central-park', kind: 'park', x: 57, y: 39, width: 18, depth: 10, density: 0.65, variant: 31 }
+    { id: 'dawn-central-park', kind: 'park', x: 55, y: 45, width: 24, depth: 12, density: 0.72, variant: 31 }
   ],
   energyNetwork: {
     nodes: [
@@ -107,8 +107,8 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'solar-hub',
         label: '太阳能场',
         kind: 'generation',
-        x: 35,
-        y: 29,
+        x: 36,
+        y: 31,
         elevation: 0.24,
         plotIds: ['sunrise-neighborhood', 'south-outskirts'],
         facilityConfigIds: ['solar_basic'],
@@ -118,8 +118,8 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'wind-hub',
         label: '风力发电场',
         kind: 'generation',
-        x: 87,
-        y: 45,
+        x: 82,
+        y: 44,
         elevation: 0.28,
         plotIds: ['east-coast'],
         facilityConfigIds: ['wind_basic', 'wind_offshore'],
@@ -129,7 +129,7 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'reserve-plant',
         label: '应急电站',
         kind: 'generation',
-        x: 27,
+        x: 31,
         y: 56,
         elevation: 0.2,
         plotIds: ['west-industry'],
@@ -140,8 +140,8 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'storage-hub',
         label: '城市储能站',
         kind: 'storage',
-        x: 82,
-        y: 72,
+        x: 76,
+        y: 68,
         elevation: 0.22,
         plotIds: ['central-utility'],
         facilityConfigIds: ['battery_basic', 'battery_utility'],
@@ -151,7 +151,7 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'main-substation',
         label: '主变电站',
         kind: 'substation',
-        x: 67,
+        x: 63,
         y: 49,
         elevation: 0.16,
         alwaysOperational: true,
@@ -161,7 +161,7 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'west-distribution',
         label: '西部配电',
         kind: 'distribution',
-        x: 57,
+        x: 54,
         y: 52,
         elevation: 0.1,
         alwaysOperational: true,
@@ -171,8 +171,8 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'east-distribution',
         label: '东部配电',
         kind: 'distribution',
-        x: 79,
-        y: 56,
+        x: 71,
+        y: 55,
         elevation: 0.1,
         alwaysOperational: true,
         capacity: 1.05
@@ -181,8 +181,8 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'residential-load',
         label: '居住区',
         kind: 'district',
-        x: 77,
-        y: 28,
+        x: 69,
+        y: 32,
         elevation: 0.1,
         districtId: 'dawn-residential',
         capacity: 0.9
@@ -191,8 +191,8 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'commercial-load',
         label: '商业区',
         kind: 'district',
-        x: 34,
-        y: 35,
+        x: 40,
+        y: 38,
         elevation: 0.1,
         districtId: 'dawn-commercial',
         capacity: 1.05
@@ -201,8 +201,8 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'industrial-load',
         label: '工业区',
         kind: 'district',
-        x: 76,
-        y: 72,
+        x: 70,
+        y: 66,
         elevation: 0.1,
         districtId: 'dawn-industrial',
         capacity: 1.2
@@ -212,7 +212,7 @@ const dawnCityLayout: LevelSceneLayout = {
         label: '公共服务区',
         kind: 'district',
         x: 55,
-        y: 54,
+        y: 52,
         elevation: 0.1,
         districtId: 'dawn-public',
         capacity: 0.85
@@ -221,8 +221,8 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'old-town-load',
         label: '东部老城区',
         kind: 'district',
-        x: 31,
-        y: 70,
+        x: 39,
+        y: 65,
         elevation: 0.1,
         districtId: 'dawn-old-town',
         capacity: 0.8
@@ -234,42 +234,42 @@ const dawnCityLayout: LevelSceneLayout = {
         from: 'solar-hub',
         to: 'main-substation',
         capacity: 0.78,
-        points: [{ x: 35, y: 29 }, { x: 45, y: 36 }, { x: 57, y: 43 }, { x: 67, y: 49 }]
+        points: [{ x: 36, y: 31 }, { x: 45, y: 36 }, { x: 55, y: 43 }, { x: 63, y: 49 }]
       },
       {
         id: 'reserve-to-main',
         from: 'reserve-plant',
         to: 'main-substation',
         capacity: 1.2,
-        points: [{ x: 27, y: 56 }, { x: 41, y: 54 }, { x: 55, y: 51 }, { x: 67, y: 49 }]
+        points: [{ x: 31, y: 56 }, { x: 42, y: 54 }, { x: 53, y: 51 }, { x: 63, y: 49 }]
       },
       {
         id: 'main-to-west',
         from: 'main-substation',
         to: 'west-distribution',
         capacity: 1.25,
-        points: [{ x: 67, y: 49 }, { x: 62, y: 50 }, { x: 57, y: 52 }]
+        points: [{ x: 63, y: 49 }, { x: 59, y: 50 }, { x: 54, y: 52 }]
       },
       {
         id: 'west-to-east',
         from: 'west-distribution',
         to: 'east-distribution',
         capacity: 1.05,
-        points: [{ x: 57, y: 52 }, { x: 68, y: 53 }, { x: 79, y: 56 }]
+        points: [{ x: 54, y: 52 }, { x: 63, y: 53 }, { x: 71, y: 55 }]
       },
       {
         id: 'wind-to-east',
         from: 'wind-hub',
         to: 'east-distribution',
         capacity: 0.95,
-        points: [{ x: 87, y: 45 }, { x: 84, y: 49 }, { x: 81, y: 53 }, { x: 79, y: 56 }]
+        points: [{ x: 82, y: 44 }, { x: 79, y: 48 }, { x: 75, y: 52 }, { x: 71, y: 55 }]
       },
       {
         id: 'storage-to-east',
         from: 'storage-hub',
         to: 'east-distribution',
         capacity: 1,
-        points: [{ x: 82, y: 72 }, { x: 82, y: 66 }, { x: 80, y: 60 }, { x: 79, y: 56 }]
+        points: [{ x: 76, y: 68 }, { x: 75, y: 63 }, { x: 73, y: 59 }, { x: 71, y: 55 }]
       },
       { id: 'west-to-residential', from: 'west-distribution', to: 'residential-load', capacity: 0.92 },
       { id: 'west-to-commercial', from: 'west-distribution', to: 'commercial-load', capacity: 1 },
