@@ -1,39 +1,63 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="2048" height="1536" viewBox="0 0 2048 1536">
   <defs>
     <filter id="road-shadow" x="-20%" y="-45%" width="140%" height="190%"><feGaussianBlur stdDeviation="5"/></filter>
-    <linearGradient id="asphalt" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#606666"/><stop offset=".55" stop-color="#4b5253"/><stop offset="1" stop-color="#3a4244"/></linearGradient>
-    <linearGradient id="curb" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eee7d8"/><stop offset="1" stop-color="#c5b89f"/></linearGradient>
+    <linearGradient id="asphalt" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#5d6464"/><stop offset=".55" stop-color="#484f50"/><stop offset="1" stop-color="#373f41"/></linearGradient>
+    <linearGradient id="collector" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#555d5d"/><stop offset="1" stop-color="#41494a"/></linearGradient>
+    <linearGradient id="curb" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e1ddcf"/><stop offset="1" stop-color="#b7ad99"/></linearGradient>
   </defs>
 
+  <!-- Primary city spine: old town -> commercial -> civic -> residential. -->
   <g fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M796.1 635.3 L1066.9 712.6 L1218.8 788.6 M798.8 694.8 L950.7 770.7 L1102.6 846.7" stroke="#071115" stroke-opacity=".42" stroke-width="48" filter="url(#road-shadow)"/>
-    <path d="M796.1 635.3 L1066.9 712.6 L1218.8 788.6 M798.8 694.8 L950.7 770.7 L1102.6 846.7" stroke="url(#curb)" stroke-width="42"/>
-    <path d="M796.1 635.3 L1066.9 712.6 L1218.8 788.6 M798.8 694.8 L950.7 770.7 L1102.6 846.7" stroke="#252e30" stroke-width="36"/>
-    <path d="M796.1 635.3 L1066.9 712.6 L1218.8 788.6 M798.8 694.8 L950.7 770.7 L1102.6 846.7" stroke="url(#asphalt)" stroke-width="30"/>
-    <path d="M796.1 635.3 L1066.9 712.6 L1218.8 788.6 M798.8 694.8 L950.7 770.7 L1102.6 846.7" stroke="#e0c45e" stroke-opacity=".52" stroke-width="2.2" stroke-dasharray="15 13"/>
+    <path d="M694 714 C765 680 827 650 884 637 C912 630 935 630 956 638 C970 676 980 713 990 754 C1081 734 1182 741 1308 772"
+          stroke="#071115" stroke-opacity=".38" stroke-width="52" filter="url(#road-shadow)"/>
+    <path d="M694 714 C765 680 827 650 884 637 C912 630 935 630 956 638 C970 676 980 713 990 754 C1081 734 1182 741 1308 772"
+          stroke="url(#curb)" stroke-width="45"/>
+    <path d="M694 714 C765 680 827 650 884 637 C912 630 935 630 956 638 C970 676 980 713 990 754 C1081 734 1182 741 1308 772"
+          stroke="#252e30" stroke-width="38"/>
+    <path d="M694 714 C765 680 827 650 884 637 C912 630 935 630 956 638 C970 676 980 713 990 754 C1081 734 1182 741 1308 772"
+          stroke="url(#asphalt)" stroke-width="31"/>
+    <path d="M694 714 C765 680 827 650 884 637 C912 630 935 630 956 638 C970 676 980 713 990 754 C1081 734 1182 741 1308 772"
+          stroke="#e0c45e" stroke-opacity=".4" stroke-width="2.2" stroke-dasharray="15 13"/>
   </g>
 
+  <!-- Civic-to-industrial and industrial-to-energy logistics corridor. -->
   <g fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M796.1 635.3 L798.8 694.8 M1066.9 712.6 L950.7 770.7 M1218.8 788.6 L1102.6 846.7" stroke="#071115" stroke-opacity=".38" stroke-width="42" filter="url(#road-shadow)"/>
-    <path d="M796.1 635.3 L798.8 694.8 M1066.9 712.6 L950.7 770.7 M1218.8 788.6 L1102.6 846.7" stroke="url(#curb)" stroke-width="36"/>
-    <path d="M796.1 635.3 L798.8 694.8 M1066.9 712.6 L950.7 770.7 M1218.8 788.6 L1102.6 846.7" stroke="#252e30" stroke-width="30"/>
-    <path d="M796.1 635.3 L798.8 694.8 M1066.9 712.6 L950.7 770.7 M1218.8 788.6 L1102.6 846.7" stroke="#4d5455" stroke-width="25"/>
+    <path d="M990 754 C995 802 1014 846 1044 884 C1132 894 1238 854 1341 790"
+          stroke="#071115" stroke-opacity=".36" stroke-width="48" filter="url(#road-shadow)"/>
+    <path d="M990 754 C995 802 1014 846 1044 884 C1132 894 1238 854 1341 790"
+          stroke="url(#curb)" stroke-width="41"/>
+    <path d="M990 754 C995 802 1014 846 1044 884 C1132 894 1238 854 1341 790"
+          stroke="#252e30" stroke-width="34"/>
+    <path d="M990 754 C995 802 1014 846 1044 884 C1132 894 1238 854 1341 790"
+          stroke="url(#asphalt)" stroke-width="27"/>
+    <path d="M990 754 C995 802 1014 846 1044 884 C1132 894 1238 854 1341 790"
+          stroke="#e0c45e" stroke-opacity=".34" stroke-width="2" stroke-dasharray="14 12"/>
   </g>
 
+  <!-- Secondary links close the gaps between prefab district entrances. -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M694 714 C790 755 886 775 990 754 M956 638 C1044 654 1121 695 1186 744 M1044 884 C1008 909 966 919 918 911 M1308 772 C1340 774 1363 782 1384 800"
+          stroke="#071115" stroke-opacity=".3" stroke-width="38" filter="url(#road-shadow)"/>
+    <path d="M694 714 C790 755 886 775 990 754 M956 638 C1044 654 1121 695 1186 744 M1044 884 C1008 909 966 919 918 911 M1308 772 C1340 774 1363 782 1384 800"
+          stroke="url(#curb)" stroke-width="32"/>
+    <path d="M694 714 C790 755 886 775 990 754 M956 638 C1044 654 1121 695 1186 744 M1044 884 C1008 909 966 919 918 911 M1308 772 C1340 774 1363 782 1384 800"
+          stroke="#293234" stroke-width="27"/>
+    <path d="M694 714 C790 755 886 775 990 754 M956 638 C1044 654 1121 695 1186 744 M1044 884 C1008 909 966 919 918 911 M1308 772 C1340 774 1363 782 1384 800"
+          stroke="url(#collector)" stroke-width="21"/>
+  </g>
+
+  <!-- Short entrance aprons visually merge the district artwork into the city roads. -->
   <g fill="none" stroke-linecap="butt" stroke-linejoin="round">
-    <path d="M796.1 635.3 L936.4 618.3 M1218.8 788.6 L1303.7 761.3 M950.7 770.7 L985.6 753.3 M798.8 694.8 L710.3 708.6 M1102.6 846.7 L1040.5 885.3" stroke="#071115" stroke-opacity=".34" stroke-width="32" filter="url(#road-shadow)"/>
-    <path d="M796.1 635.3 L936.4 618.3 M1218.8 788.6 L1303.7 761.3 M950.7 770.7 L985.6 753.3 M798.8 694.8 L710.3 708.6 M1102.6 846.7 L1040.5 885.3" stroke="url(#curb)" stroke-width="27"/>
-    <path d="M796.1 635.3 L936.4 618.3 M1218.8 788.6 L1303.7 761.3 M950.7 770.7 L985.6 753.3 M798.8 694.8 L710.3 708.6 M1102.6 846.7 L1040.5 885.3" stroke="#283133" stroke-width="22"/>
-    <path d="M796.1 635.3 L936.4 618.3 M1218.8 788.6 L1303.7 761.3 M950.7 770.7 L985.6 753.3 M798.8 694.8 L710.3 708.6 M1102.6 846.7 L1040.5 885.3" stroke="#505758" stroke-width="17"/>
+    <path d="M694 714 L646 730 M884 637 L885 590 M956 638 L1004 601 M1186 744 L1240 718 M1308 772 L1354 752 M990 754 L944 787 M1044 884 L1072 925 M1341 790 L1390 770"
+          stroke="#071115" stroke-opacity=".28" stroke-width="30" filter="url(#road-shadow)"/>
+    <path d="M694 714 L646 730 M884 637 L885 590 M956 638 L1004 601 M1186 744 L1240 718 M1308 772 L1354 752 M990 754 L944 787 M1044 884 L1072 925 M1341 790 L1390 770"
+          stroke="url(#curb)" stroke-width="25"/>
+    <path d="M694 714 L646 730 M884 637 L885 590 M956 638 L1004 601 M1186 744 L1240 718 M1308 772 L1354 752 M990 754 L944 787 M1044 884 L1072 925 M1341 790 L1390 770"
+          stroke="#485051" stroke-width="19"/>
   </g>
 
-  <!-- Junction plates only close sub-pixel gaps; they must not read as nodes. -->
-  <g fill="url(#curb)">
-    <circle cx="796.1" cy="635.3" r="13"/><circle cx="1066.9" cy="712.6" r="13"/><circle cx="1218.8" cy="788.6" r="13"/>
-    <circle cx="798.8" cy="694.8" r="12"/><circle cx="950.7" cy="770.7" r="13"/><circle cx="1102.6" cy="846.7" r="12"/>
-  </g>
-  <g fill="#4b5253" stroke="#252e30" stroke-width="2.5">
-    <circle cx="796.1" cy="635.3" r="9"/><circle cx="1066.9" cy="712.6" r="9"/><circle cx="1218.8" cy="788.6" r="9"/>
-    <circle cx="798.8" cy="694.8" r="8"/><circle cx="950.7" cy="770.7" r="9"/><circle cx="1102.6" cy="846.7" r="8"/>
-  </g>
+  <!-- Small civic roundabout ties the visual center together without reading as a grid node. -->
+  <ellipse cx="990" cy="754" rx="28" ry="15" fill="url(#curb)"/>
+  <ellipse cx="990" cy="754" rx="22" ry="11" fill="#444c4d" stroke="#252e30" stroke-width="3"/>
+  <ellipse cx="990" cy="754" rx="9" ry="4.5" fill="#61775c"/>
 </svg>
