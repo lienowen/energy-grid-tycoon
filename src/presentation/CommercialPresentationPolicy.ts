@@ -42,6 +42,6 @@ export const shouldRenderNetworkNodeDiagnostics = (
 ): boolean => showDiagnostics;
 
 export const shouldRenderDistrictLabel = (
-  district: Pick<DistrictPrefabSceneState, 'status'>,
+  _district: Pick<DistrictPrefabSceneState, 'status'>,
   showDiagnostics: boolean
-): boolean => showDiagnostics || district.status !== 'normal';
+): boolean => showDiagnostics;
