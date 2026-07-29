@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "mode": "commercial-vertical-slice",
+  "releaseCityId": "city-01",
+  "expansionFrozen": true,
+  "storeReady": false,
+  "blockedWork": [
+    "new-city",
+    "new-meta-system",
+    "new-resource-family"
+  ],
+  "acceptance": {
+    "firstFiveMinutesPlayable": false,
+    "cityReadableWithoutLabels": false,
+    "cityOccupiesAtLeast70Percent": false,
+    "constructionChangesWorld": false,
+    "blackoutRecoveryVisibleInWorld": false,
+    "productionArtApproved": false,
+    "desktopStoreScreenshotApproved": false,
+    "mobileStoreScreenshotApproved": false
+  }
+}
