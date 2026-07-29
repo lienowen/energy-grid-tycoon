@@ -4,7 +4,7 @@ import { WorldCamera } from './WorldCamera';
 
 const authoredCamera = {
   startZoom: 1.24,
-  minZoom: 0.86,
+  minZoom: 0.5,
   maxZoom: 2.05,
   startOffsetX: 18,
   startOffsetY: 4,
@@ -13,7 +13,7 @@ const authoredCamera = {
 };
 
 describe('WorldCamera product framing', () => {
-  it('gives authored city scenes a tighter opening frame', () => {
+  it('gives authored city scenes a city-filling desktop frame', () => {
     const target = new Container();
     const camera = new WorldCamera(target);
     camera.setViewport(1200, 800);
@@ -21,9 +21,21 @@ describe('WorldCamera product framing', () => {
     camera.setPivot(100, 80);
     camera.focusHome();
 
-    expect(target.scale.x).toBeCloseTo(1.364, 3);
+    expect(target.scale.x).toBeCloseTo(1.4136, 3);
     expect(target.position.x).toBe(618);
-    expect(target.position.y).toBe(396);
+    expect(target.position.y).toBe(388);
+  });
+
+  it('keeps the city readable instead of shrinking the whole island on phones', () => {
+    const target = new Container();
+    const camera = new WorldCamera(target);
+    camera.setViewport(390, 844);
+    camera.configure(authoredCamera);
+    camera.focusHome();
+
+    expect(target.scale.x).toBeCloseTo(0.82, 2);
+    expect(target.position.x).toBeCloseTo(198.24, 2);
+    expect(target.position.y).toBeCloseTo(422.8, 2);
   });
 
   it('does not apply the authored zoom bonus to procedural scenes', () => {
