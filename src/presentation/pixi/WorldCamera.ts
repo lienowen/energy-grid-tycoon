@@ -27,7 +27,9 @@ export class WorldCamera {
   configure(config: HologramCameraConfig): void {
     this.minZoom = config.minZoom;
     this.maxZoom = config.maxZoom;
-    const authoredFraming = (config.panLimitX ?? 420) <= 220 ? 1.1 : 1;
+    // Authored City-01 scenes are framed as a city-management view: the urban
+    // footprint fills the viewport and the model-table edge stays outside it.
+    const authoredFraming = (config.panLimitX ?? 420) <= 220 ? 1.14 : 1;
     this.homeZoom = clamp(config.startZoom * authoredFraming, this.minZoom, this.maxZoom);
     this.homeOffsetX = config.startOffsetX;
     this.homeOffsetY = config.startOffsetY;
@@ -42,23 +44,23 @@ export class WorldCamera {
   focusHome(): void {
     const portrait = this.viewportHeight > this.viewportWidth * 1.2;
     const viewportZoom = this.viewportWidth <= 520
-      ? 0.46
+      ? 0.58
       : portrait && this.viewportWidth <= 900
-        ? 0.72
+        ? 0.84
         : this.viewportWidth <= 1100
-          ? 0.9
+          ? 0.94
           : 1;
     const zoom = clamp(this.homeZoom * viewportZoom, this.minZoom, this.maxZoom);
-    const offsetX = this.viewportWidth <= 520 ? this.homeOffsetX * 0.25 : this.homeOffsetX;
+    const offsetX = this.viewportWidth <= 520 ? this.homeOffsetX * 0.18 : this.homeOffsetX;
     const offsetY = this.viewportWidth <= 520
-      ? Math.min(24, this.homeOffsetY * 0.4)
+      ? Math.min(8, this.homeOffsetY * 0.2)
       : portrait
-        ? Math.min(32, this.homeOffsetY * 0.7)
+        ? Math.min(18, this.homeOffsetY * 0.45)
         : this.homeOffsetY;
 
     this.target.scale.set(zoom);
     this.homePositionX = this.viewportWidth * 0.5 + offsetX;
-    this.homePositionY = this.viewportHeight * (portrait ? 0.52 : 0.49) + offsetY;
+    this.homePositionY = this.viewportHeight * (portrait ? 0.5 : 0.48) + offsetY;
     this.target.position.set(this.homePositionX, this.homePositionY);
   }
 
