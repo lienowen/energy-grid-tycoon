@@ -24,6 +24,11 @@ jobs:
           node-version: 22
       - name: Install
         run: npm install --no-audit --no-fund
+      - name: Validate product scope
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run check:product 2>&1 | tee check-product.log
       - name: Validate content and assets
         shell: bash
         run: |
@@ -45,6 +50,7 @@ jobs:
         with:
           name: release-build-log
           path: |
+            check-product.log
             check-content.log
             test.log
             build.log
@@ -55,7 +61,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           CI_STATE: ${{ job.status == 'success' && 'success' || 'failure' }}
-          CI_DESCRIPTION: ${{ job.status == 'success' && '资源、测试、类型与生产构建通过' || '主干质量门失败，请查看运行日志' }}
+          CI_DESCRIPTION: ${{ job.status == 'success' && '产品范围、资源、测试、类型与生产构建通过' || '主干质量门失败，请查看运行日志' }}
           CI_TARGET_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           jq -n \
