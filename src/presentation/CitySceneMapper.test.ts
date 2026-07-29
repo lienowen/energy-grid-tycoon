@@ -77,10 +77,12 @@ describe('CitySceneMapper', () => {
     }
   });
 
-  it('uses the authored camera composition for Dawn City', () => {
+  it('uses the tighter authored camera composition for Dawn City', () => {
     const scene = CitySceneMapper.map(makeView());
-    expect(scene.camera.startZoom).toBe(1.26);
-    expect(scene.camera.panLimitX).toBe(180);
+    expect(scene.camera.startZoom).toBe(1.34);
+    expect(scene.camera.startOffsetY).toBe(38);
+    expect(scene.camera.panLimitX).toBe(210);
+    expect(scene.roads).toHaveLength(0);
     expect(scene.focus).toEqual(toScenePoint({ x: 55, y: 50, elevation: 0 }));
     expect(scene.camera.minZoom).toBeLessThan(scene.camera.maxZoom);
   });
