@@ -1,63 +1,50 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="2048" height="1536" viewBox="0 0 2048 1536">
   <defs>
     <filter id="road-shadow" x="-20%" y="-45%" width="140%" height="190%"><feGaussianBlur stdDeviation="5"/></filter>
-    <linearGradient id="asphalt" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#5d6464"/><stop offset=".55" stop-color="#484f50"/><stop offset="1" stop-color="#373f41"/></linearGradient>
-    <linearGradient id="collector" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#555d5d"/><stop offset="1" stop-color="#41494a"/></linearGradient>
-    <linearGradient id="curb" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e1ddcf"/><stop offset="1" stop-color="#b7ad99"/></linearGradient>
+    <linearGradient id="asphalt" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#626a6a"/><stop offset=".52" stop-color="#4b5354"/><stop offset="1" stop-color="#343d3f"/></linearGradient>
+    <linearGradient id="collector" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#596162"/><stop offset="1" stop-color="#414a4b"/></linearGradient>
+    <linearGradient id="curb" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eee7d7"/><stop offset="1" stop-color="#bdb29d"/></linearGradient>
   </defs>
 
-  <!-- Primary city spine: old town -> commercial -> civic -> residential. -->
+  <!-- One readable urban ring replaces the old separated road strips. -->
   <g fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M694 714 C765 680 827 650 884 637 C912 630 935 630 956 638 C970 676 980 713 990 754 C1081 734 1182 741 1308 772"
-          stroke="#071115" stroke-opacity=".38" stroke-width="52" filter="url(#road-shadow)"/>
-    <path d="M694 714 C765 680 827 650 884 637 C912 630 935 630 956 638 C970 676 980 713 990 754 C1081 734 1182 741 1308 772"
-          stroke="url(#curb)" stroke-width="45"/>
-    <path d="M694 714 C765 680 827 650 884 637 C912 630 935 630 956 638 C970 676 980 713 990 754 C1081 734 1182 741 1308 772"
-          stroke="#252e30" stroke-width="38"/>
-    <path d="M694 714 C765 680 827 650 884 637 C912 630 935 630 956 638 C970 676 980 713 990 754 C1081 734 1182 741 1308 772"
-          stroke="url(#asphalt)" stroke-width="31"/>
-    <path d="M694 714 C765 680 827 650 884 637 C912 630 935 630 956 638 C970 676 980 713 990 754 C1081 734 1182 741 1308 772"
-          stroke="#e0c45e" stroke-opacity=".4" stroke-width="2.2" stroke-dasharray="15 13"/>
+    <path d="M800 725 C850 690 909 654 965 650 C997 669 1004 706 997 748 C1071 731 1146 730 1220 743 C1178 789 1110 827 1030 845 C938 827 859 786 800 725 Z"
+          stroke="#071115" stroke-opacity=".4" stroke-width="54" filter="url(#road-shadow)"/>
+    <path d="M800 725 C850 690 909 654 965 650 C997 669 1004 706 997 748 C1071 731 1146 730 1220 743 C1178 789 1110 827 1030 845 C938 827 859 786 800 725 Z"
+          stroke="url(#curb)" stroke-width="47"/>
+    <path d="M800 725 C850 690 909 654 965 650 C997 669 1004 706 997 748 C1071 731 1146 730 1220 743 C1178 789 1110 827 1030 845 C938 827 859 786 800 725 Z"
+          stroke="#252e30" stroke-width="40"/>
+    <path d="M800 725 C850 690 909 654 965 650 C997 669 1004 706 997 748 C1071 731 1146 730 1220 743 C1178 789 1110 827 1030 845 C938 827 859 786 800 725 Z"
+          stroke="url(#asphalt)" stroke-width="32"/>
+    <path d="M800 725 C850 690 909 654 965 650 C997 669 1004 706 997 748 C1071 731 1146 730 1220 743 C1178 789 1110 827 1030 845 C938 827 859 786 800 725 Z"
+          stroke="#e7cb64" stroke-opacity=".44" stroke-width="2.3" stroke-dasharray="15 13"/>
   </g>
 
-  <!-- Civic-to-industrial and industrial-to-energy logistics corridor. -->
+  <!-- Cross-city boulevards make the five districts read as one connected place. -->
   <g fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M990 754 C995 802 1014 846 1044 884 C1132 894 1238 854 1341 790"
-          stroke="#071115" stroke-opacity=".36" stroke-width="48" filter="url(#road-shadow)"/>
-    <path d="M990 754 C995 802 1014 846 1044 884 C1132 894 1238 854 1341 790"
-          stroke="url(#curb)" stroke-width="41"/>
-    <path d="M990 754 C995 802 1014 846 1044 884 C1132 894 1238 854 1341 790"
-          stroke="#252e30" stroke-width="34"/>
-    <path d="M990 754 C995 802 1014 846 1044 884 C1132 894 1238 854 1341 790"
-          stroke="url(#asphalt)" stroke-width="27"/>
-    <path d="M990 754 C995 802 1014 846 1044 884 C1132 894 1238 854 1341 790"
-          stroke="#e0c45e" stroke-opacity=".34" stroke-width="2" stroke-dasharray="14 12"/>
+    <path d="M965 650 C1018 696 1028 770 1030 845 M800 725 C875 724 938 735 997 748 M997 748 C1072 779 1137 780 1220 743"
+          stroke="#071115" stroke-opacity=".34" stroke-width="44" filter="url(#road-shadow)"/>
+    <path d="M965 650 C1018 696 1028 770 1030 845 M800 725 C875 724 938 735 997 748 M997 748 C1072 779 1137 780 1220 743"
+          stroke="url(#curb)" stroke-width="38"/>
+    <path d="M965 650 C1018 696 1028 770 1030 845 M800 725 C875 724 938 735 997 748 M997 748 C1072 779 1137 780 1220 743"
+          stroke="#293234" stroke-width="32"/>
+    <path d="M965 650 C1018 696 1028 770 1030 845 M800 725 C875 724 938 735 997 748 M997 748 C1072 779 1137 780 1220 743"
+          stroke="url(#collector)" stroke-width="25"/>
   </g>
 
-  <!-- Secondary links close the gaps between prefab district entrances. -->
+  <!-- Short access streets visibly seat facilities and districts into the same road system. -->
   <g fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M694 714 C790 755 886 775 990 754 M956 638 C1044 654 1121 695 1186 744 M1044 884 C1008 909 966 919 918 911 M1308 772 C1340 774 1363 782 1384 800"
-          stroke="#071115" stroke-opacity=".3" stroke-width="38" filter="url(#road-shadow)"/>
-    <path d="M694 714 C790 755 886 775 990 754 M956 638 C1044 654 1121 695 1186 744 M1044 884 C1008 909 966 919 918 911 M1308 772 C1340 774 1363 782 1384 800"
-          stroke="url(#curb)" stroke-width="32"/>
-    <path d="M694 714 C790 755 886 775 990 754 M956 638 C1044 654 1121 695 1186 744 M1044 884 C1008 909 966 919 918 911 M1308 772 C1340 774 1363 782 1384 800"
-          stroke="#293234" stroke-width="27"/>
-    <path d="M694 714 C790 755 886 775 990 754 M956 638 C1044 654 1121 695 1186 744 M1044 884 C1008 909 966 919 918 911 M1308 772 C1340 774 1363 782 1384 800"
-          stroke="url(#collector)" stroke-width="21"/>
+    <path d="M965 650 L975 614 M800 725 L792 668 M1220 743 L1249 827 M1030 845 L1064 874 M997 748 L1075 769 M1220 743 L1264 720 M1030 845 L975 889"
+          stroke="#071115" stroke-opacity=".3" stroke-width="32" filter="url(#road-shadow)"/>
+    <path d="M965 650 L975 614 M800 725 L792 668 M1220 743 L1249 827 M1030 845 L1064 874 M997 748 L1075 769 M1220 743 L1264 720 M1030 845 L975 889"
+          stroke="url(#curb)" stroke-width="27"/>
+    <path d="M965 650 L975 614 M800 725 L792 668 M1220 743 L1249 827 M1030 845 L1064 874 M997 748 L1075 769 M1220 743 L1264 720 M1030 845 L975 889"
+          stroke="#485152" stroke-width="20"/>
   </g>
 
-  <!-- Short entrance aprons visually merge the district artwork into the city roads. -->
-  <g fill="none" stroke-linecap="butt" stroke-linejoin="round">
-    <path d="M694 714 L646 730 M884 637 L885 590 M956 638 L1004 601 M1186 744 L1240 718 M1308 772 L1354 752 M990 754 L944 787 M1044 884 L1072 925 M1341 790 L1390 770"
-          stroke="#071115" stroke-opacity=".28" stroke-width="30" filter="url(#road-shadow)"/>
-    <path d="M694 714 L646 730 M884 637 L885 590 M956 638 L1004 601 M1186 744 L1240 718 M1308 772 L1354 752 M990 754 L944 787 M1044 884 L1072 925 M1341 790 L1390 770"
-          stroke="url(#curb)" stroke-width="25"/>
-    <path d="M694 714 L646 730 M884 637 L885 590 M956 638 L1004 601 M1186 744 L1240 718 M1308 772 L1354 752 M990 754 L944 787 M1044 884 L1072 925 M1341 790 L1390 770"
-          stroke="#485051" stroke-width="19"/>
-  </g>
-
-  <!-- Small civic roundabout ties the visual center together without reading as a grid node. -->
-  <ellipse cx="990" cy="754" rx="28" ry="15" fill="url(#curb)"/>
-  <ellipse cx="990" cy="754" rx="22" ry="11" fill="#444c4d" stroke="#252e30" stroke-width="3"/>
-  <ellipse cx="990" cy="754" rx="9" ry="4.5" fill="#61775c"/>
+  <!-- Civic roundabout gives the compact city a clear visual center. -->
+  <ellipse cx="997" cy="748" rx="34" ry="18" fill="url(#curb)"/>
+  <ellipse cx="997" cy="748" rx="27" ry="13" fill="#444d4e" stroke="#252e30" stroke-width="3"/>
+  <ellipse cx="997" cy="748" rx="12" ry="6" fill="#6e8a68"/>
+  <ellipse cx="997" cy="746" rx="5" ry="3" fill="#d8e4c9" opacity=".55"/>
 </svg>
