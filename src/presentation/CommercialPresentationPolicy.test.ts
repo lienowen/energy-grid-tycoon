@@ -45,9 +45,10 @@ describe('CommercialPresentationPolicy', () => {
     expect(shouldRenderNetworkNodeDiagnostics({ status: 'offline' }, false)).toBe(false);
   });
 
-  it('only labels healthy districts in the explicit grid view', () => {
+  it('keeps all district labels inside the explicit grid view', () => {
     expect(shouldRenderDistrictLabel({ status: 'normal' }, false)).toBe(false);
-    expect(shouldRenderDistrictLabel({ status: 'blackout' }, false)).toBe(true);
+    expect(shouldRenderDistrictLabel({ status: 'blackout' }, false)).toBe(false);
+    expect(shouldRenderDistrictLabel({ status: 'offline' }, false)).toBe(false);
     expect(shouldRenderDistrictLabel({ status: 'normal' }, true)).toBe(true);
   });
 
