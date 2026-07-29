@@ -14,7 +14,7 @@ describe('LevelSceneLayoutRegistry', () => {
       'public',
       'old_town'
     ]);
-    expect(layout?.roads.length).toBeGreaterThanOrEqual(5);
+    expect(layout?.roads).toHaveLength(0);
     expect(layout?.environment.some((item) => item.kind === 'water')).toBe(true);
     expect(layout?.environment.some((item) => item.kind === 'ridge')).toBe(true);
     expect(layout?.plotAnchors).toHaveLength(8);
