@@ -77,8 +77,9 @@ const urbanFill = (
 });
 
 /**
- * Visual-only fill modules. They close gaps between the five interactive
- * districts, but never replace landmark districts or define the road network.
+ * Reviewed fill inventory. These modules stay defined for later composition
+ * work, but are intentionally not part of the live City-01 map while the base
+ * map and landmark hierarchy are being validated in isolation.
  */
 export const city01UrbanFabricPlacements: readonly City01MapPlacement[] = [
   urbanFill('commercial-corner', 'commercial_corner_01', 45, 47, 162, 0.91, 0.38),
@@ -130,7 +131,6 @@ export const city01MapPlacements: readonly City01MapPlacement[] = [
   city01BaseMapPlacement,
   city01RoadNetworkPlacement,
   city01GroundDetailsPlacement,
-  ...city01UrbanFabricPlacements,
   vehicle('north-sedan', 'vehicle_sedan', 59, 38, 31),
   vehicle('commercial-sedan', 'vehicle_sedan', 47, 50, 30, true),
   vehicle('civic-utility-van', 'vehicle_utility_van', 58, 56, 35, true),
@@ -168,6 +168,5 @@ export const city01EnvironmentAssetIds = [
 export const city01RequiredLiveAssetIds = [
   'city01_map_base',
   'city01_road_network_base',
-  'city01_ground_details_base',
-  ...city01UrbanFabricPlacements.map((placement) => placement.assetId)
+  'city01_ground_details_base'
 ] as const;
