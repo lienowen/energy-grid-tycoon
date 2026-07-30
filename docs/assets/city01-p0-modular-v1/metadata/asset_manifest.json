@@ -1,0 +1,352 @@
+{
+  "schemaVersion": 1,
+  "packId": "city01-p0-modular-assets-v1",
+  "targetProject": "lienowen/energy-grid-tycoon",
+  "rendering": {
+    "projection": "isometric",
+    "canvas": [
+      1024,
+      1024
+    ],
+    "format": "PNG RGBA",
+    "background": "transparent",
+    "orientation": "fixed southeast-facing source art; rotation allowed only where declared",
+    "runtimeNote": "Use manifest anchor and footprint. Do not trim at runtime."
+  },
+  "assets": [
+    {
+      "id": "road_straight_01",
+      "dest": "assets/road/road_straight_01.png",
+      "category": "road",
+      "footprint": [
+        4,
+        4
+      ],
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "rotatable": true,
+      "connects": [
+        "N",
+        "S"
+      ],
+      "usage": "景观直路模块，适合主干道或示范街段",
+      "file": "assets/road/road_straight_01.png",
+      "sourceFile": "城市道路模块_路灯与绿树.png",
+      "canvas": [
+        1024,
+        1024
+      ],
+      "contentBounds": [
+        76,
+        142,
+        985,
+        935
+      ],
+      "alpha": true,
+      "sha256": "7e231e9fca32bd2a3655ef198d699c0203420e517941c8c9bf7b0bfeaf5b6740",
+      "bytes": 1500673,
+      "status": "prototype-ready"
+    },
+    {
+      "id": "road_corner_01",
+      "dest": "assets/road/road_corner_01.png",
+      "category": "road",
+      "footprint": [
+        4,
+        4
+      ],
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "rotatable": true,
+      "connects": [
+        "N",
+        "E"
+      ],
+      "usage": "L形转角道路模块",
+      "file": "assets/road/road_corner_01.png",
+      "sourceFile": "isometric_l形道路转角模块.png",
+      "canvas": [
+        1024,
+        1024
+      ],
+      "contentBounds": [
+        92,
+        102,
+        1021,
+        975
+      ],
+      "alpha": true,
+      "sha256": "483f7ca5691e1981e438602b2f93f7f4a3e6e74da1e8bbf8dc818a558545e227",
+      "bytes": 1502442,
+      "status": "prototype-ready"
+    },
+    {
+      "id": "road_t_junction_01",
+      "dest": "assets/road/road_t_junction_01.png",
+      "category": "road",
+      "footprint": [
+        4,
+        4
+      ],
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "rotatable": true,
+      "connects": [
+        "N",
+        "E",
+        "W"
+      ],
+      "usage": "T字路口模块",
+      "file": "assets/road/road_t_junction_01.png",
+      "sourceFile": "we_need_answer_chinese_title_7_words_sentence.png",
+      "canvas": [
+        1024,
+        1024
+      ],
+      "contentBounds": [
+        40,
+        102,
+        1021,
+        975
+      ],
+      "alpha": true,
+      "sha256": "fc946e0945b9f3ccf72bf779e66f4e2d432e8d0e57bfc45c02d324529013d9db",
+      "bytes": 1556343,
+      "status": "prototype-ready"
+    },
+    {
+      "id": "road_cross_01",
+      "dest": "assets/road/road_cross_01.png",
+      "category": "road",
+      "footprint": [
+        4,
+        4
+      ],
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "rotatable": false,
+      "connects": [
+        "N",
+        "E",
+        "S",
+        "W"
+      ],
+      "usage": "四向交叉路口模块",
+      "file": "assets/road/road_cross_01.png",
+      "sourceFile": "四向交叉路口模块.png",
+      "canvas": [
+        1024,
+        1024
+      ],
+      "contentBounds": [
+        40,
+        219,
+        981,
+        959
+      ],
+      "alpha": true,
+      "sha256": "7d77639bc648069eae190245fa9fdd1f34c6d9b5040320dd73cd3411a826decc",
+      "bytes": 1494935,
+      "status": "prototype-ready"
+    },
+    {
+      "id": "commercial_corner_01",
+      "dest": "assets/building/commercial_corner_01.png",
+      "category": "commercial",
+      "footprint": [
+        4,
+        4
+      ],
+      "anchor": [
+        0.5,
+        0.91
+      ],
+      "rotatable": true,
+      "roadFacing": "S",
+      "usage": "街角商业建筑，用于商业区转角",
+      "file": "assets/building/commercial_corner_01.png",
+      "sourceFile": "现代街角双店铺建筑_start_of_caption.png",
+      "canvas": [
+        1024,
+        1024
+      ],
+      "contentBounds": [
+        42,
+        168,
+        975,
+        935
+      ],
+      "alpha": true,
+      "sha256": "3ac08637e966febf228c4ef20a876a291a0ce3a4d7ea075046f19a8ed1cc11d7",
+      "bytes": 1632626,
+      "status": "prototype-ready"
+    },
+    {
+      "id": "apartment_courtyard_01",
+      "dest": "assets/building/apartment_courtyard_01.png",
+      "category": "residential",
+      "footprint": [
+        6,
+        4
+      ],
+      "anchor": [
+        0.5,
+        0.91
+      ],
+      "rotatable": true,
+      "roadFacing": "S",
+      "usage": "中密度住宅公寓庭院",
+      "file": "assets/building/apartment_courtyard_01.png",
+      "sourceFile": "三栋相连的现代公寓与中央庭院.png",
+      "canvas": [
+        1024,
+        1024
+      ],
+      "contentBounds": [
+        67,
+        225,
+        965,
+        840
+      ],
+      "alpha": true,
+      "sha256": "8d908d824b8a8b60f01771372460d248ecadc98772cb1a92ad882a454a1f0287",
+      "bytes": 1737138,
+      "status": "prototype-ready"
+    },
+    {
+      "id": "office_campus_01",
+      "dest": "assets/building/office_campus_01.png",
+      "category": "office",
+      "footprint": [
+        6,
+        4
+      ],
+      "anchor": [
+        0.5,
+        0.91
+      ],
+      "rotatable": true,
+      "roadFacing": "S",
+      "usage": "现代办公园区",
+      "file": "assets/building/office_campus_01.png",
+      "sourceFile": "现代双楼办公园区.png",
+      "canvas": [
+        1024,
+        1024
+      ],
+      "contentBounds": [
+        45,
+        135,
+        974,
+        966
+      ],
+      "alpha": true,
+      "sha256": "b36d6f88ed59aaec3f4199f1d6ba6fac0c3efeed135de648aa48353acb4e56b4",
+      "bytes": 1736938,
+      "status": "prototype-ready"
+    },
+    {
+      "id": "suburban_neighborhood_01",
+      "dest": "assets/building/suburban_neighborhood_01.png",
+      "category": "residential",
+      "footprint": [
+        8,
+        8
+      ],
+      "anchor": [
+        0.5,
+        0.91
+      ],
+      "rotatable": false,
+      "roadFacing": "S",
+      "usage": "低密度郊区社区大预制块",
+      "file": "assets/building/suburban_neighborhood_01.png",
+      "sourceFile": "we_need_answer_chinese_title_7_words_sentence_c.png",
+      "canvas": [
+        1024,
+        1024
+      ],
+      "contentBounds": [
+        0,
+        102,
+        1019,
+        966
+      ],
+      "alpha": true,
+      "sha256": "ca0bb1815a7b249ff2421e6547568a20ce5e3baf9201af27306bab596468cb9b",
+      "bytes": 1769068,
+      "status": "prototype-ready"
+    },
+    {
+      "id": "park_pocket_01",
+      "dest": "assets/park/park_pocket_01.png",
+      "category": "park",
+      "footprint": [
+        4,
+        4
+      ],
+      "anchor": [
+        0.5,
+        0.82
+      ],
+      "rotatable": true,
+      "usage": "口袋公园和城市填充块",
+      "file": "assets/park/park_pocket_01.png",
+      "sourceFile": "城市口袋公园与中央喷泉.png",
+      "canvas": [
+        1024,
+        1024
+      ],
+      "contentBounds": [
+        25,
+        130,
+        997,
+        793
+      ],
+      "alpha": true,
+      "sha256": "d24cf33408c73fc4cb04b5f42d985890eea32eb40e44d1f553d720dd21d1c5d3",
+      "bytes": 1793945,
+      "status": "prototype-ready"
+    },
+    {
+      "id": "industrial_yard_01",
+      "dest": "assets/industrial/industrial_yard_01.png",
+      "category": "industrial",
+      "footprint": [
+        6,
+        6
+      ],
+      "anchor": [
+        0.5,
+        0.91
+      ],
+      "rotatable": true,
+      "roadFacing": "S",
+      "usage": "工业服务、物流和能源外围过渡地块",
+      "file": "assets/industrial/industrial_yard_01.png",
+      "sourceFile": "工业服务_yard_isometric_3d_rendering.png",
+      "canvas": [
+        1024,
+        1024
+      ],
+      "contentBounds": [
+        7,
+        102,
+        1016,
+        935
+      ],
+      "alpha": true,
+      "sha256": "5d924e468c10703b0cb39e2124e3a1e5f551532768292a492299c078d618b24d",
+      "bytes": 1751325,
+      "status": "prototype-ready"
+    }
+  ]
+}
