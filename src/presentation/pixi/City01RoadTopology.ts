@@ -4,6 +4,15 @@ import type {
   ScenePoint
 } from '../CitySceneTypes';
 
+/**
+ * Diagnostic-only topology for City-01.
+ *
+ * City mode uses the authored `city01_road_network_base` asset and must never
+ * create roads from this module. These nodes, edges and access-line helpers are
+ * reserved for grid diagnostics, validation and editor tooling.
+ */
+export const CITY01_ROAD_TOPOLOGY_MODE = 'diagnostic-only' as const;
+
 export type City01RoadClass = 'arterial' | 'collector' | 'access';
 export type City01RoadExit = 'NW' | 'NE' | 'SE' | 'SW';
 export type City01RoadNodeKind = 'junction' | 'district-entry' | 'facility-access';
@@ -34,158 +43,73 @@ export const city01RoadNodes: readonly City01RoadNode[] = [
   { id: 'road.west.south', position: { x: 35, y: 60 }, kind: 'junction' },
   { id: 'road.central.t', position: { x: 55, y: 60 }, kind: 'junction' },
   { id: 'road.east.south', position: { x: 75, y: 60 }, kind: 'junction' },
-  {
-    id: 'entry.commercial',
-    position: { x: 34, y: 35 },
-    kind: 'district-entry',
-    districtId: 'dawn-commercial'
-  },
-  {
-    id: 'entry.residential',
-    position: { x: 77, y: 28 },
-    kind: 'district-entry',
-    districtId: 'dawn-residential'
-  },
-  {
-    id: 'entry.public',
-    position: { x: 55, y: 54 },
-    kind: 'district-entry',
-    districtId: 'dawn-public'
-  },
-  {
-    id: 'entry.old-town',
-    position: { x: 31, y: 70 },
-    kind: 'district-entry',
-    districtId: 'dawn-old-town'
-  },
-  {
-    id: 'entry.industrial',
-    position: { x: 76, y: 72 },
-    kind: 'district-entry',
-    districtId: 'dawn-industrial'
-  }
+  { id: 'entry.commercial', position: { x: 34, y: 35 }, kind: 'district-entry', districtId: 'dawn-commercial' },
+  { id: 'entry.residential', position: { x: 77, y: 28 }, kind: 'district-entry', districtId: 'dawn-residential' },
+  { id: 'entry.public', position: { x: 55, y: 54 }, kind: 'district-entry', districtId: 'dawn-public' },
+  { id: 'entry.old-town', position: { x: 31, y: 70 }, kind: 'district-entry', districtId: 'dawn-old-town' },
+  { id: 'entry.industrial', position: { x: 76, y: 72 }, kind: 'district-entry', districtId: 'dawn-industrial' }
 ];
 
 export const city01RoadEdges: readonly City01RoadEdge[] = [
   {
-    id: 'road.west-to-central',
-    from: 'road.west.bridge',
-    to: 'road.central.cross',
-    roadClass: 'arterial',
-    exits: ['SE', 'NW'],
-    assetId: 'terrain_road_bridge_base',
-    isDeadEnd: false,
-    maxAccessLength: 32
+    id: 'road.west-to-central', from: 'road.west.bridge', to: 'road.central.cross',
+    roadClass: 'arterial', exits: ['SE', 'NW'], assetId: 'terrain_road_bridge_base',
+    isDeadEnd: false, maxAccessLength: 32
   },
   {
-    id: 'road.central-to-east',
-    from: 'road.central.cross',
-    to: 'road.east.corner',
-    roadClass: 'arterial',
-    exits: ['SE', 'NW'],
-    assetId: 'terrain_road_crossroad_base',
-    isDeadEnd: false,
-    maxAccessLength: 22
+    id: 'road.central-to-east', from: 'road.central.cross', to: 'road.east.corner',
+    roadClass: 'arterial', exits: ['SE', 'NW'], assetId: 'terrain_road_crossroad_base',
+    isDeadEnd: false, maxAccessLength: 22
   },
   {
-    id: 'road.west-vertical',
-    from: 'road.west.bridge',
-    to: 'road.west.south',
-    roadClass: 'collector',
-    exits: ['SW', 'NE'],
-    assetId: 'terrain_road_straight_base',
-    isDeadEnd: false,
-    maxAccessLength: 20
+    id: 'road.west-vertical', from: 'road.west.bridge', to: 'road.west.south',
+    roadClass: 'collector', exits: ['SW', 'NE'], assetId: 'terrain_road_straight_base',
+    isDeadEnd: false, maxAccessLength: 20
   },
   {
-    id: 'road.central-vertical',
-    from: 'road.central.cross',
-    to: 'road.central.t',
-    roadClass: 'collector',
-    exits: ['SW', 'NE'],
-    assetId: 'terrain_road_t_junction_base',
-    isDeadEnd: false,
-    maxAccessLength: 22
+    id: 'road.central-vertical', from: 'road.central.cross', to: 'road.central.t',
+    roadClass: 'collector', exits: ['SW', 'NE'], assetId: 'terrain_road_t_junction_base',
+    isDeadEnd: false, maxAccessLength: 22
   },
   {
-    id: 'road.east-vertical',
-    from: 'road.east.corner',
-    to: 'road.east.south',
-    roadClass: 'collector',
-    exits: ['SW', 'NE'],
-    assetId: 'terrain_road_corner_base',
-    isDeadEnd: false,
-    maxAccessLength: 22
+    id: 'road.east-vertical', from: 'road.east.corner', to: 'road.east.south',
+    roadClass: 'collector', exits: ['SW', 'NE'], assetId: 'terrain_road_corner_base',
+    isDeadEnd: false, maxAccessLength: 22
   },
   {
-    id: 'road.south-west-to-central',
-    from: 'road.west.south',
-    to: 'road.central.t',
-    roadClass: 'arterial',
-    exits: ['SE', 'NW'],
-    assetId: 'terrain_road_straight_base',
-    isDeadEnd: false,
-    maxAccessLength: 22
+    id: 'road.south-west-to-central', from: 'road.west.south', to: 'road.central.t',
+    roadClass: 'arterial', exits: ['SE', 'NW'], assetId: 'terrain_road_straight_base',
+    isDeadEnd: false, maxAccessLength: 22
   },
   {
-    id: 'road.south-central-to-east',
-    from: 'road.central.t',
-    to: 'road.east.south',
-    roadClass: 'arterial',
-    exits: ['SE', 'NW'],
-    assetId: 'terrain_road_straight_base',
-    isDeadEnd: false,
-    maxAccessLength: 22
+    id: 'road.south-central-to-east', from: 'road.central.t', to: 'road.east.south',
+    roadClass: 'arterial', exits: ['SE', 'NW'], assetId: 'terrain_road_straight_base',
+    isDeadEnd: false, maxAccessLength: 22
   },
   {
-    id: 'access.commercial',
-    from: 'road.west.bridge',
-    to: 'entry.commercial',
-    roadClass: 'access',
-    exits: ['NE', 'SW'],
-    assetId: 'pending-road-access-commercial',
-    isDeadEnd: false,
-    maxAccessLength: 20
+    id: 'access.commercial', from: 'road.west.bridge', to: 'entry.commercial',
+    roadClass: 'access', exits: ['NE', 'SW'], assetId: 'pending-road-access-commercial',
+    isDeadEnd: false, maxAccessLength: 20
   },
   {
-    id: 'access.residential',
-    from: 'road.east.corner',
-    to: 'entry.residential',
-    roadClass: 'access',
-    exits: ['NE', 'SW'],
-    assetId: 'pending-road-access-residential',
-    isDeadEnd: false,
-    maxAccessLength: 20
+    id: 'access.residential', from: 'road.east.corner', to: 'entry.residential',
+    roadClass: 'access', exits: ['NE', 'SW'], assetId: 'pending-road-access-residential',
+    isDeadEnd: false, maxAccessLength: 20
   },
   {
-    id: 'access.public',
-    from: 'road.central.t',
-    to: 'entry.public',
-    roadClass: 'access',
-    exits: ['NE', 'SW'],
-    assetId: 'pending-road-access-public',
-    isDeadEnd: false,
-    maxAccessLength: 20
+    id: 'access.public', from: 'road.central.t', to: 'entry.public',
+    roadClass: 'access', exits: ['NE', 'SW'], assetId: 'pending-road-access-public',
+    isDeadEnd: false, maxAccessLength: 20
   },
   {
-    id: 'access.old-town',
-    from: 'road.west.south',
-    to: 'entry.old-town',
-    roadClass: 'access',
-    exits: ['SW', 'NE'],
-    assetId: 'pending-road-access-old-town',
-    isDeadEnd: false,
-    maxAccessLength: 20
+    id: 'access.old-town', from: 'road.west.south', to: 'entry.old-town',
+    roadClass: 'access', exits: ['SW', 'NE'], assetId: 'pending-road-access-old-town',
+    isDeadEnd: false, maxAccessLength: 20
   },
   {
-    id: 'access.industrial',
-    from: 'road.east.south',
-    to: 'entry.industrial',
-    roadClass: 'access',
-    exits: ['SE', 'NW'],
-    assetId: 'pending-road-access-industrial',
-    isDeadEnd: false,
-    maxAccessLength: 20
+    id: 'access.industrial', from: 'road.east.south', to: 'entry.industrial',
+    roadClass: 'access', exits: ['SE', 'NW'], assetId: 'pending-road-access-industrial',
+    isDeadEnd: false, maxAccessLength: 20
   }
 ];
 
@@ -222,12 +146,8 @@ export const validateCity01RoadTopology = (): string[] => {
       continue;
     }
     const length = mapDistance(from, to);
-    if (length > edge.maxAccessLength + 0.001) {
-      errors.push(`road edge exceeds maximum length: ${edge.id}`);
-    }
-    if (edge.roadClass === 'access' && length > 20.001) {
-      errors.push(`access road exceeds one tile: ${edge.id}`);
-    }
+    if (length > edge.maxAccessLength + 0.001) errors.push(`road edge exceeds maximum length: ${edge.id}`);
+    if (edge.roadClass === 'access' && length > 20.001) errors.push(`access road exceeds one tile: ${edge.id}`);
     if (edge.exits[0] === edge.exits[1]) errors.push(`road exits cannot be identical: ${edge.id}`);
     connect(edge.from, edge.to);
     connect(edge.to, edge.from);
@@ -261,11 +181,7 @@ const pointDistanceSquared = (left: ScenePoint, right: ScenePoint): number => {
   return dx * dx + dz * dz;
 };
 
-const projectToSegment = (
-  target: ScenePoint,
-  start: ScenePoint,
-  end: ScenePoint
-): SegmentProjection => {
+const projectToSegment = (target: ScenePoint, start: ScenePoint, end: ScenePoint): SegmentProjection => {
   const dx = end.x - start.x;
   const dz = end.z - start.z;
   const lengthSquared = dx * dx + dz * dz;
@@ -301,8 +217,9 @@ const nearestBackboneProjection = (
 };
 
 /**
- * Compatibility helper for the old vector renderer. The active City-01 wrapper
- * passes an empty road list, so no access line is drawn over authored road art.
+ * Builds temporary diagnostic access lines from scene-state roads. The normal
+ * City-01 renderer never calls this helper because city mode uses authored road
+ * art and does not create road structure at render time.
  */
 export const buildCity01AccessRoads = (state: CitySceneState): RoadSceneState[] => {
   if (state.roads.every((road) => road.points.length < 2)) return [];
