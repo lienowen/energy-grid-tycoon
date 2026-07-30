@@ -29,8 +29,17 @@ import type { WorldRenderActions, WorldRenderSurface } from '../../ui/world/Worl
 import {
   city01IslandBoundary,
   city01MapPlacements,
-  type City01MapLayer
+  type City01MapLayer,
+  type City01MapPlacement
 } from './City01MapComposition';
+import {
+  resolveCityPresentationMode,
+  shouldDrawAvailablePlotHints,
+  shouldDrawDiagnosticStructure,
+  shouldDrawEnergyNetwork,
+  shouldDrawPlotGrounds,
+  type ResolvedCityPresentationMode
+} from './City01PresentationPolicy';
 import { PixiAssetLoader } from './PixiAssetLoader';
 import { buildCity01AccessRoads } from './City01RoadTopology';
 import { WorldCamera } from './WorldCamera';
@@ -92,6 +101,14 @@ const facilityWidth = (facility: FacilitySceneState): number => {
           ? 230
           : 228;
   return base * clamp(facility.scale, 0.85, 1.18) * 0.72;
+};
+
+const gamePlacementAlpha = (placement: City01MapPlacement): number => {
+  const authoredAlpha = placement.alpha ?? 1;
+  if (placement.layer === 'terrain') return authoredAlpha;
+  if (placement.layer === 'roads') return Math.min(authoredAlpha, 0.55);
+  if (placement.layer === 'groundDecorations') return Math.min(authoredAlpha, 0.42);
+  return Math.min(authoredAlpha, 0.78);
 };
 
 export class City01IntegratedPixiWorld implements WorldRenderSurface {
@@ -208,17 +225,24 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
   private renderScene(state: CitySceneState): void {
     const generation = ++this.renderGeneration;
     this.layerManager.clear();
-    const diagnostics = state.presentationMode === 'grid';
-    this.host.dataset.presentationMode = diagnostics ? 'grid' : 'city';
+    const mode = resolveCityPresentationMode(state.presentationMode);
+    const diagnostics = shouldDrawDiagnosticStructure(mode);
+    const hasPlacement = Boolean(state.placement);
+    this.host.dataset.presentationMode = mode;
 
     this.drawOcean(state, generation, diagnostics);
-    if (diagnostics) this.drawIslandBase(diagnostics);
-    if (diagnostics) this.drawRoadBackbone(state, diagnostics);
-    this.drawMapComposition(generation, diagnostics);
-    this.drawPlotGrounds(state, generation, diagnostics);
-    this.drawNetwork(state, generation, diagnostics);
+    if (diagnostics) this.drawIslandBase();
+    if (diagnostics) this.drawRoadBackbone(state);
+    this.drawMapComposition(generation, mode);
+    if (shouldDrawPlotGrounds(mode, hasPlacement)) {
+      this.drawPlotGrounds(state, generation, diagnostics);
+    }
+    if (shouldDrawEnergyNetwork(mode)) this.drawNetwork(state, generation, diagnostics);
     this.drawDistricts(state, generation, diagnostics);
     this.drawFacilities(state, generation);
+    if (shouldDrawAvailablePlotHints(mode, hasPlacement)) {
+      this.drawAvailablePlotHints(state);
+    }
     this.drawPlacementPlots(state, generation);
 
     for (const layer of Object.values(this.layerManager.layers)) layer.sortChildren();
@@ -263,39 +287,39 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     });
   }
 
-  private drawIslandBase(diagnostics: boolean): void {
+  private drawIslandBase(): void {
     const projected = city01IslandBoundary.map((point) => this.project(point));
     const surfacePoints = projected.flatMap((point) => [point.x, point.y]);
     const cliffPoints = projected.flatMap((point) => [point.x, point.y + 18]);
 
     const cliff = new Graphics()
       .poly(cliffPoints)
-      .fill({ color: 0x0b1716, alpha: diagnostics ? 0.68 : 0.92 })
+      .fill({ color: 0x0b1716, alpha: 0.68 })
       .stroke({ color: 0x03090a, alpha: 0.72, width: 2 });
     cliff.zIndex = -930000;
     this.layerManager.layers.terrain.addChild(cliff);
 
     const surface = new Graphics()
       .poly(surfacePoints)
-      .fill({ color: diagnostics ? 0x193631 : 0x2d5547, alpha: 0.98 })
-      .stroke({ color: 0x78948a, alpha: diagnostics ? 0.2 : 0.32, width: 2 });
+      .fill({ color: 0x193631, alpha: 0.98 })
+      .stroke({ color: 0x78948a, alpha: 0.2, width: 2 });
     surface.zIndex = -920000;
     this.layerManager.layers.terrain.addChild(surface);
 
     const inner = projected.map((point) => ({ x: point.x * 0.965, y: point.y * 0.965 + 2 }));
     const innerGround = new Graphics()
       .poly(inner.flatMap((point) => [point.x, point.y]))
-      .fill({ color: diagnostics ? 0x18322e : 0x315c4c, alpha: 0.38 });
+      .fill({ color: 0x18322e, alpha: 0.38 });
     innerGround.zIndex = -919900;
     this.layerManager.layers.terrain.addChild(innerGround);
   }
 
-  private drawRoadBackbone(state: CitySceneState, diagnostics: boolean): void {
+  private drawRoadBackbone(state: CitySceneState): void {
     const roads: RoadSceneState[] = [...state.roads, ...buildCity01AccessRoads(state)];
     for (const [index, road] of roads.entries()) {
       if (road.points.length < 2) continue;
       const laneScale = road.laneCount === 2 ? 1.25 : 1;
-      const alpha = diagnostics ? 0.42 : 0.96;
+      const alpha = 0.42;
 
       const curb = new Graphics();
       this.tracePath(curb, road.points);
@@ -311,7 +335,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
 
       const asphalt = new Graphics();
       this.tracePath(asphalt, road.points);
-      asphalt.stroke({ color: diagnostics ? 0x364247 : 0x4a4f4f, alpha, width: 12.5 * laneScale, cap: 'round', join: 'round' });
+      asphalt.stroke({ color: 0x364247, alpha, width: 12.5 * laneScale, cap: 'round', join: 'round' });
       asphalt.zIndex = -509998 + index * 4;
       this.layerManager.layers.roads.addChild(asphalt);
 
@@ -319,7 +343,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
       this.tracePath(centerLine, road.points);
       centerLine.stroke({
         color: 0xe0c45e,
-        alpha: diagnostics ? 0.12 : 0.34,
+        alpha: 0.12,
         width: road.laneCount === 2 ? 1.25 : 0.8,
         cap: 'round',
         join: 'round'
@@ -329,7 +353,10 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     }
   }
 
-  private drawMapComposition(generation: number, diagnostics: boolean): void {
+  private drawMapComposition(
+    generation: number,
+    mode: ResolvedCityPresentationMode
+  ): void {
     const layers: Record<City01MapLayer, Container> = {
       terrain: this.layerManager.layers.terrain,
       roads: this.layerManager.layers.roads,
@@ -344,7 +371,11 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     };
 
     for (const placement of city01MapPlacements) {
-      const alpha = diagnostics ? placement.diagnosticsAlpha ?? 0.44 : placement.alpha ?? 1;
+      const alpha = mode === 'grid'
+        ? placement.diagnosticsAlpha ?? 0.44
+        : mode === 'showcase'
+          ? placement.alpha ?? 1
+          : gamePlacementAlpha(placement);
       if (alpha <= 0) continue;
       this.addAsset({
         assetId: placement.assetId,
@@ -361,9 +392,9 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
   }
 
   private drawPlotGrounds(state: CitySceneState, generation: number, diagnostics: boolean): void {
-    if (!diagnostics) return;
     for (const plot of state.plots) {
       if (plot.locked) continue;
+      if (!diagnostics && (plot.occupied || !plot.placementTone)) continue;
       this.addAsset({
         assetId: plot.groundAssetId,
         point: { ...plot, elevation: plot.elevation - 0.08 },
@@ -371,7 +402,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
         anchorY: 0.82,
         generation,
         layer: this.layerManager.layers.groundDecorations,
-        alpha: 0.36,
+        alpha: diagnostics ? 0.36 : plot.available ? 0.42 : 0.2,
         placeholderColor: 0x4a7658,
         zIndexOverride: this.depth(plot, -120)
       });
@@ -517,6 +548,34 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
       .fill({ color, alpha: 1 });
     marker.zIndex = this.depth(node, 220);
     this.layerManager.layers.effects.addChild(marker);
+  }
+
+  private drawAvailablePlotHints(state: CitySceneState): void {
+    for (const plot of state.plots) {
+      if (plot.locked || plot.occupied) continue;
+      const position = this.project({ ...plot, elevation: plot.elevation + 0.16 });
+      const scale = clamp(plot.scale, 0.72, 1.08);
+      const radius = 7 * scale;
+      const marker = new Container();
+      marker.position.set(position.x, position.y);
+      marker.zIndex = this.depth(plot, 180);
+      marker.eventMode = 'static';
+      marker.cursor = 'pointer';
+      marker.hitArea = new Rectangle(-18, -18, 36, 36);
+
+      const diamond = new Graphics()
+        .poly([0, -radius, radius * 1.5, 0, 0, radius, -radius * 1.5, 0])
+        .fill({ color: 0x09242d, alpha: 0.36 })
+        .stroke({ color: 0x66e5c8, alpha: 0.46, width: 1.2 });
+      const dot = new Graphics()
+        .circle(0, 0, 2.3 * scale)
+        .fill({ color: 0xa5ffe9, alpha: 0.74 });
+      marker.addChild(diamond, dot);
+      marker.on('pointertap', () => {
+        if (this.input?.canActivateObject()) this.actions.onPlotClick(plot.id);
+      });
+      this.layerManager.layers.overlays.addChild(marker);
+    }
   }
 
   private drawPlacementPlots(state: CitySceneState, generation: number): void {
