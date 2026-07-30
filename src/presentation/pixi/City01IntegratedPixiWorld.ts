@@ -91,7 +91,7 @@ const facilityWidth = (facility: FacilitySceneState): number => {
         : facility.configId.includes('battery')
           ? 230
           : 228;
-  return base * clamp(facility.scale, 0.85, 1.18);
+  return base * clamp(facility.scale, 0.85, 1.18) * 0.72;
 };
 
 export class City01IntegratedPixiWorld implements WorldRenderSurface {
@@ -213,7 +213,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
 
     this.drawOcean(state, generation, diagnostics);
     this.drawIslandBase(diagnostics);
-    this.drawRoadBackbone(state, diagnostics);
+    if (diagnostics) this.drawRoadBackbone(state, diagnostics);
     this.drawMapComposition(generation, diagnostics);
     this.drawPlotGrounds(state, generation, diagnostics);
     this.drawNetwork(state, generation, diagnostics);
@@ -361,6 +361,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
   }
 
   private drawPlotGrounds(state: CitySceneState, generation: number, diagnostics: boolean): void {
+    if (!diagnostics) return;
     for (const plot of state.plots) {
       if (plot.locked) continue;
       this.addAsset({
@@ -370,7 +371,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
         anchorY: 0.82,
         generation,
         layer: this.layerManager.layers.groundDecorations,
-        alpha: diagnostics ? 0.36 : plot.occupied ? 0.34 : 0.48,
+        alpha: 0.36,
         placeholderColor: 0x4a7658,
         zIndexOverride: this.depth(plot, -120)
       });
