@@ -6,7 +6,7 @@ export const resolveCityPresentationMode = (
   mode: CityPresentationMode | undefined
 ): ResolvedCityPresentationMode => {
   if (mode === 'grid') return 'grid';
-  if (mode === 'showcase' || mode === 'city') return 'showcase';
+  if (mode === 'showcase') return 'showcase';
   return 'game';
 };
 
