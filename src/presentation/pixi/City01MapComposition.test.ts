@@ -28,24 +28,24 @@ describe('City01MapComposition', () => {
     expect(city01RoadNetworkPlacement.point).toEqual(city01BaseMapPlacement.point);
   });
 
-  it('keeps one aligned ground-detail surface beneath the urban fill', () => {
+  it('keeps only the aligned ground-detail surface in the live decoration layer', () => {
     const decorations = city01MapPlacements.filter((placement) => placement.layer === 'groundDecorations');
 
-    expect(decorations).toContain(city01GroundDetailsPlacement);
+    expect(decorations).toEqual([city01GroundDetailsPlacement]);
     expect(city01GroundDetailsPlacement.assetId).toBe('city01_ground_details_base');
     expect(city01GroundDetailsPlacement.width).toBe(city01BaseMapPlacement.width);
     expect(city01GroundDetailsPlacement.anchorY).toBe(city01BaseMapPlacement.anchorY);
     expect(city01GroundDetailsPlacement.point).toEqual(city01BaseMapPlacement.point);
   });
 
-  it('limits auxiliary urban fill to a quiet gap-closing layer', () => {
+  it('keeps reviewed urban fill as inventory but removes it from the live composition', () => {
     expect(city01UrbanFabricPlacements.length).toBeGreaterThanOrEqual(5);
     expect(city01UrbanFabricPlacements.length).toBeLessThanOrEqual(8);
     expect(city01UrbanFabricPlacements.every((placement) => placement.layer === 'groundDecorations')).toBe(true);
     expect(city01UrbanFabricPlacements.every((placement) => (placement.alpha ?? 1) >= 0.28)).toBe(true);
     expect(city01UrbanFabricPlacements.every((placement) => (placement.alpha ?? 1) <= 0.42)).toBe(true);
-    expect(new Set(city01UrbanFabricPlacements.map((placement) => placement.id)).size)
-      .toBe(city01UrbanFabricPlacements.length);
+    const liveIds = new Set(city01MapPlacements.map((placement) => placement.id));
+    expect(city01UrbanFabricPlacements.every((placement) => !liveIds.has(placement.id))).toBe(true);
   });
 
   it('does not layer decorative road tiles over the authored road surface', () => {
