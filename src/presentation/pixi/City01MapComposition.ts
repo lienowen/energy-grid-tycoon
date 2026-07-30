@@ -57,40 +57,21 @@ export const city01GroundDetailsPlacement: City01MapPlacement = {
   diagnosticsAlpha: 0.24
 };
 
-const urbanFill = (
-  id: string,
-  assetId: string,
-  x: number,
-  y: number,
-  width: number,
-  anchorY: number,
-  alpha: number
-): City01MapPlacement => ({
-  id: `urban-${id}`,
-  assetId,
-  point: city01MapToScenePoint(x, y, 0.04),
-  width,
-  anchorY,
-  layer: 'groundDecorations',
-  alpha,
-  diagnosticsAlpha: 0.08
-});
-
 /**
- * Reviewed fill inventory. These modules stay defined for later composition
- * work, but are intentionally not part of the live City-01 map while the base
- * map and landmark hierarchy are being validated in isolation.
+ * Static authored surfaces only. Logical districts, plots, facilities, roads
+ * and energy topology belong to LevelSceneLayoutRegistry and scene state.
  */
-export const city01UrbanFabricPlacements: readonly City01MapPlacement[] = [
-  urbanFill('commercial-corner', 'commercial_corner_01', 45, 47, 162, 0.91, 0.38),
-  urbanFill('apartment-courtyard', 'apartment_courtyard_01', 72, 43, 188, 0.91, 0.34),
-  urbanFill('office-campus', 'office_campus_01', 57, 41, 174, 0.91, 0.32),
-  urbanFill('suburban-edge', 'suburban_neighborhood_01', 83, 34, 188, 0.91, 0.3),
-  urbanFill('pocket-park', 'park_pocket_01', 51, 59, 148, 0.82, 0.36),
-  urbanFill('industrial-buffer', 'industrial_yard_01', 78, 69, 190, 0.91, 0.38)
+export const city01StaticBackgroundPlacements: readonly City01MapPlacement[] = [
+  city01BaseMapPlacement,
+  city01RoadNetworkPlacement,
+  city01GroundDetailsPlacement
 ];
 
-// Compatibility name retained for callers introduced with the P0 asset pack.
+/**
+ * Retained as an empty compatibility export for older callers. City-01 no
+ * longer places auxiliary city blocks from the static composition module.
+ */
+export const city01UrbanFabricPlacements: readonly City01MapPlacement[] = [];
 export const city01P0UrbanPlacements = city01UrbanFabricPlacements;
 
 const vehicle = (
@@ -111,10 +92,17 @@ const vehicle = (
   flipX
 });
 
+export const city01VehiclePlacements: readonly City01MapPlacement[] = [
+  vehicle('north-sedan', 'vehicle_sedan', 59, 38, 31),
+  vehicle('commercial-sedan', 'vehicle_sedan', 47, 50, 30, true),
+  vehicle('civic-utility-van', 'vehicle_utility_van', 58, 56, 35, true),
+  vehicle('old-town-sedan', 'vehicle_sedan', 42, 62, 30),
+  vehicle('industrial-cargo-truck', 'vehicle_cargo_truck', 74, 70, 40)
+];
+
 /**
- * Temporary compatibility boundary for the legacy renderer underlay. The new
- * visible L0 surface is city01BaseMapPlacement; no external coast or terrain
- * tile is allowed to define the island silhouette.
+ * Temporary compatibility boundary for the legacy renderer underlay. The
+ * authored background assets remain the visible map authority.
  */
 export const city01IslandBoundary: readonly ScenePoint[] = [
   city01MapToScenePoint(20, 18, -0.34),
@@ -128,19 +116,13 @@ export const city01IslandBoundary: readonly ScenePoint[] = [
 ];
 
 export const city01MapPlacements: readonly City01MapPlacement[] = [
-  city01BaseMapPlacement,
-  city01RoadNetworkPlacement,
-  city01GroundDetailsPlacement,
-  vehicle('north-sedan', 'vehicle_sedan', 59, 38, 31),
-  vehicle('commercial-sedan', 'vehicle_sedan', 47, 50, 30, true),
-  vehicle('civic-utility-van', 'vehicle_utility_van', 58, 56, 35, true),
-  vehicle('old-town-sedan', 'vehicle_sedan', 42, 62, 30),
-  vehicle('industrial-cargo-truck', 'vehicle_cargo_truck', 74, 70, 40)
+  ...city01StaticBackgroundPlacements,
+  ...city01VehiclePlacements
 ];
 
 /**
- * Source inventory remains registered for future cutting and decoration work.
- * Presence here does not mean an asset must be placed in the live map.
+ * Source inventory remains available for diagnostics and future cutting work.
+ * These IDs are not live City-01 map placements.
  */
 export const city01EnvironmentAssetIds = [
   'terrain_forest_base',
@@ -158,15 +140,16 @@ export const city01EnvironmentAssetIds = [
   'terrain_harbor_pier_base',
   'terrain_road_bridge_base',
   'terrain_road_dead_end_base',
-  'terrain_small_park_base',
-  'road_straight_01',
-  'road_corner_01',
-  'road_t_junction_01',
-  'road_cross_01'
+  'terrain_small_park_base'
 ] as const;
 
+/**
+ * The complete live static asset contract. Ocean is rendered by the Pixi world
+ * underlay, while the other three entries are placed by this module.
+ */
 export const city01RequiredLiveAssetIds = [
   'city01_map_base',
   'city01_road_network_base',
-  'city01_ground_details_base'
+  'city01_ground_details_base',
+  'city01_ocean_water_base'
 ] as const;
