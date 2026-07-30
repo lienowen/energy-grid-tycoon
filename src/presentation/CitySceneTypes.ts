@@ -105,7 +105,7 @@ export type EnergyNetworkEdgeStatus = 'normal' | 'overload' | 'offline' | 'plann
  * game: default player-readable operation map.
  * grid: diagnostic/editor topology view.
  * showcase: authored illustration-focused presentation.
- * city: deprecated compatibility alias resolved as showcase by the renderer.
+ * city: deprecated compatibility alias resolved as game by the renderer.
  */
 export type CityPresentationMode = 'game' | 'grid' | 'showcase' | 'city';
 
