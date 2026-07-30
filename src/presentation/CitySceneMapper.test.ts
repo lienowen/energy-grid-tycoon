@@ -52,17 +52,17 @@ describe('CitySceneMapper', () => {
     expect(scene.ambientBlocks).toHaveLength(0);
   });
 
-  it('uses the compact authored plot anchors for facilities and build targets', () => {
+  it('uses perimeter plot anchors for facilities and build targets', () => {
     const scene = CitySceneMapper.map(makeView());
     const solar = scene.facilities.find((facility) => facility.plotId === 'sunrise-neighborhood');
     const wind = scene.facilities.find((facility) => facility.plotId === 'east-coast');
     const gasPlot = scene.plots.find((plot) => plot.id === 'west-industry');
-    const solarPoint = toScenePoint({ x: 36, y: 31, elevation: 0.16 });
-    const windPoint = toScenePoint({ x: 82, y: 44, elevation: 0.2 });
+    const solarPoint = toScenePoint({ x: 29, y: 27, elevation: 0.16 });
+    const windPoint = toScenePoint({ x: 91, y: 40, elevation: 0.2 });
 
     expect(solar).toMatchObject({ ...solarPoint, elevation: solarPoint.elevation + 1.1 });
     expect(wind).toMatchObject({ ...windPoint, elevation: windPoint.elevation + 1.1 });
-    expect(gasPlot).toMatchObject(toScenePoint({ x: 31, y: 56, elevation: 0.14 }));
+    expect(gasPlot).toMatchObject(toScenePoint({ x: 23, y: 67, elevation: 0.14 }));
   });
 
   it('marks only legal empty plots when the player chooses a facility', () => {
@@ -77,13 +77,13 @@ describe('CitySceneMapper', () => {
     }
   });
 
-  it('uses the denser authored camera composition for Dawn City', () => {
+  it('uses the authored city-core camera composition for Dawn City', () => {
     const scene = CitySceneMapper.map(makeView());
-    expect(scene.camera.startZoom).toBe(1.47);
+    expect(scene.camera.startZoom).toBe(1.42);
     expect(scene.camera.startOffsetY).toBe(8);
     expect(scene.camera.panLimitX).toBe(190);
     expect(scene.roads).toHaveLength(0);
-    expect(scene.focus).toEqual(toScenePoint({ x: 54, y: 50, elevation: 0 }));
+    expect(scene.focus).toEqual(toScenePoint({ x: 56, y: 51, elevation: 0 }));
     expect(scene.camera.minZoom).toBeLessThan(scene.camera.maxZoom);
   });
 
