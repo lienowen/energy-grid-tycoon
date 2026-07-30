@@ -84,14 +84,14 @@ const dawnCityLayout: LevelSceneLayout = {
     { plotId: 'sunrise-neighborhood', x: 29, y: 27, elevation: 0.16, scale: 0.82 },
     { plotId: 'south-outskirts', x: 34, y: 33, elevation: 0.16, scale: 0.82 },
     { plotId: 'north-outskirts', x: 82, y: 31, elevation: 0.16, scale: 0.82 },
-    { plotId: 'east-coast', x: 91, y: 40, elevation: 0.2, scale: 0.78 },
-    { plotId: 'west-industry', x: 23, y: 67, elevation: 0.14, scale: 0.84 },
+    { plotId: 'east-coast', x: 90, y: 56, elevation: 0.2, scale: 0.62 },
+    { plotId: 'west-industry', x: 30, y: 74, elevation: 0.14, scale: 0.72 },
     { plotId: 'south-neighborhood', x: 61, y: 80, elevation: 0.14, scale: 0.82 },
-    { plotId: 'central-utility', x: 84, y: 77, elevation: 0.14, scale: 0.84 },
+    { plotId: 'central-utility', x: 74, y: 78, elevation: 0.14, scale: 0.7 },
     { plotId: 'east-industry', x: 90, y: 68, elevation: 0.14, scale: 0.82 }
   ],
   // City mode relies on the single authored road surface. Access roads are
-  // generated only for live facilities and no decorative road tiles are added.
+  // generated only for diagnostics and no decorative road tiles are added.
   roads: [],
   environment: [
     { id: 'dawn-west-water', kind: 'water', x: 5, y: 51, width: 25, depth: 94, density: 0.7, variant: 3 },
@@ -118,8 +118,8 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'wind-hub',
         label: '风力发电场',
         kind: 'generation',
-        x: 91,
-        y: 40,
+        x: 90,
+        y: 56,
         elevation: 0.28,
         plotIds: ['east-coast'],
         facilityConfigIds: ['wind_basic', 'wind_offshore'],
@@ -129,8 +129,8 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'reserve-plant',
         label: '应急电站',
         kind: 'generation',
-        x: 23,
-        y: 67,
+        x: 30,
+        y: 74,
         elevation: 0.2,
         plotIds: ['west-industry'],
         facilityConfigIds: ['gas_basic'],
@@ -140,8 +140,8 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'storage-hub',
         label: '城市储能站',
         kind: 'storage',
-        x: 84,
-        y: 77,
+        x: 74,
+        y: 78,
         elevation: 0.22,
         plotIds: ['central-utility'],
         facilityConfigIds: ['battery_basic', 'battery_utility'],
@@ -241,7 +241,7 @@ const dawnCityLayout: LevelSceneLayout = {
         from: 'reserve-plant',
         to: 'main-substation',
         capacity: 1.2,
-        points: [{ x: 23, y: 67 }, { x: 37, y: 63 }, { x: 50, y: 59 }, { x: 62, y: 55 }]
+        points: [{ x: 30, y: 74 }, { x: 41, y: 68 }, { x: 52, y: 61 }, { x: 62, y: 55 }]
       },
       {
         id: 'main-to-west',
@@ -262,14 +262,14 @@ const dawnCityLayout: LevelSceneLayout = {
         from: 'wind-hub',
         to: 'east-distribution',
         capacity: 0.95,
-        points: [{ x: 91, y: 40 }, { x: 85, y: 46 }, { x: 78, y: 52 }, { x: 70, y: 57 }]
+        points: [{ x: 90, y: 56 }, { x: 83, y: 56 }, { x: 76, y: 57 }, { x: 70, y: 57 }]
       },
       {
         id: 'storage-to-east',
         from: 'storage-hub',
         to: 'east-distribution',
         capacity: 1,
-        points: [{ x: 84, y: 77 }, { x: 80, y: 70 }, { x: 75, y: 63 }, { x: 70, y: 57 }]
+        points: [{ x: 74, y: 78 }, { x: 73, y: 70 }, { x: 72, y: 63 }, { x: 70, y: 57 }]
       },
       { id: 'west-to-residential', from: 'west-distribution', to: 'residential-load', capacity: 0.92 },
       { id: 'west-to-commercial', from: 'west-distribution', to: 'commercial-load', capacity: 1 },
