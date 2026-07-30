@@ -11,6 +11,7 @@ describe('City01PresentationPolicy', () => {
   it('uses game as the default player-facing mode', () => {
     expect(resolveCityPresentationMode(undefined)).toBe('game');
     expect(resolveCityPresentationMode('game')).toBe('game');
+    expect(resolveCityPresentationMode('city')).toBe('game');
   });
 
   it('keeps grid diagnostic-only and showcase illustration-focused', () => {
