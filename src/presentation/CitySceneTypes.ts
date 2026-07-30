@@ -100,7 +100,14 @@ export interface EnergyLinkSceneState {
 
 export type EnergyNetworkNodeStatus = 'active' | 'warning' | 'offline' | 'planned';
 export type EnergyNetworkEdgeStatus = 'normal' | 'overload' | 'offline' | 'planned';
-export type CityPresentationMode = 'city' | 'grid';
+
+/**
+ * game: default player-readable operation map.
+ * grid: diagnostic/editor topology view.
+ * showcase: authored illustration-focused presentation.
+ * city: deprecated compatibility alias resolved as showcase by the renderer.
+ */
+export type CityPresentationMode = 'game' | 'grid' | 'showcase' | 'city';
 
 export interface EnergyNetworkNodeSceneState extends ScenePoint {
   id: string;
