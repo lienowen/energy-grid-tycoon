@@ -42,8 +42,8 @@ export const city01RoadNetworkPlacement: City01MapPlacement = {
   width: 1760,
   anchorY: 0.5,
   layer: 'roads',
-  alpha: 1,
-  diagnosticsAlpha: 0.48
+  alpha: 0.62,
+  diagnosticsAlpha: 0.34
 };
 
 export const city01GroundDetailsPlacement: City01MapPlacement = {
@@ -53,57 +53,68 @@ export const city01GroundDetailsPlacement: City01MapPlacement = {
   width: 1760,
   anchorY: 0.5,
   layer: 'groundDecorations',
-  alpha: 1,
-  diagnosticsAlpha: 0.26
+  alpha: 0.76,
+  diagnosticsAlpha: 0.22
 };
 
-const urbanBlock = (
+const modularPlacement = (
   id: string,
-  district: 'residential' | 'commercial' | 'industrial' | 'public' | 'old_town',
+  assetId: string,
   x: number,
   y: number,
   width: number,
-  alpha: number,
-  flipX = false
+  anchorY: number,
+  layer: City01MapLayer,
+  elevation = 0.04,
+  alpha = 1,
+  diagnosticsAlpha = 0.12
 ): City01MapPlacement => ({
-  id: `urban-${id}`,
-  assetId: `commercial_district_${district}_night`,
-  point: city01MapToScenePoint(x, y, 0.06),
+  id,
+  assetId,
+  point: city01MapToScenePoint(x, y, elevation),
   width,
-  anchorY: 0.9115,
-  layer: 'groundDecorations',
+  anchorY,
+  layer,
   alpha,
-  diagnosticsAlpha: 0.12,
-  flipX
+  diagnosticsAlpha
 });
 
 /**
- * Secondary street blocks turn the five landmark prefabs into one city. They
- * deliberately sit below the interactive districts and facilities, so they
- * provide density without stealing clicks or becoming gameplay objects.
+ * The four authored P0 road modules reinforce the existing road surface at the
+ * exact places where players read the city: the north boulevard, old-town
+ * turn, civic T-junction and east-side crossroad. They are used once each so
+ * their baked sidewalks, lamps and markings do not repeat visibly.
  */
-export const city01UrbanFabricPlacements: readonly City01MapPlacement[] = [
-  urbanBlock('northwest-apartments', 'residential', 36, 43, 136, 0.72, true),
-  urbanBlock('north-market', 'commercial', 48, 34, 152, 0.82),
-  urbanBlock('north-courts', 'residential', 57, 34, 138, 0.74, true),
-  urbanBlock('northeast-apartments', 'residential', 77, 36, 134, 0.7),
-  urbanBlock('west-high-street', 'old_town', 45, 45, 142, 0.78, true),
-  urbanBlock('civic-west', 'public', 51, 43, 148, 0.8),
-  urbanBlock('central-offices', 'commercial', 60, 43, 158, 0.84, true),
-  urbanBlock('residential-link', 'residential', 67, 45, 142, 0.76),
-  urbanBlock('east-shops', 'commercial', 74, 46, 144, 0.76, true),
-  urbanBlock('old-town-gate', 'old_town', 34, 54, 136, 0.74),
-  urbanBlock('west-courtyard', 'old_town', 45, 54, 144, 0.8, true),
-  urbanBlock('civic-south', 'public', 51, 59, 150, 0.82),
-  urbanBlock('central-mixed-use', 'commercial', 59, 58, 158, 0.84, true),
-  urbanBlock('east-mixed-use', 'residential', 65, 55, 142, 0.76),
-  urbanBlock('industrial-gate', 'industrial', 75, 54, 148, 0.76, true),
-  urbanBlock('old-town-south', 'old_town', 48, 67, 148, 0.8),
-  urbanBlock('south-housing', 'residential', 57, 67, 140, 0.72, true),
-  urbanBlock('south-workshops', 'industrial', 64, 63, 154, 0.8),
-  urbanBlock('logistics-west', 'industrial', 74, 60, 150, 0.78, true),
-  urbanBlock('logistics-east', 'industrial', 78, 69, 142, 0.72)
+export const city01P0RoadPlacements: readonly City01MapPlacement[] = [
+  modularPlacement('p0-road-straight', 'road_straight_01', 55, 44, 370, 0.5, 'roads', -0.02, 0.94, 0.2),
+  modularPlacement('p0-road-corner', 'road_corner_01', 42, 54, 248, 0.5, 'roads', -0.01, 0.96, 0.2),
+  modularPlacement('p0-road-t-junction', 'road_t_junction_01', 57, 58, 260, 0.5, 'roads', -0.01, 0.96, 0.2),
+  modularPlacement('p0-road-cross', 'road_cross_01', 68, 52, 244, 0.5, 'roads', -0.01, 0.96, 0.2)
 ];
+
+/**
+ * The six non-road assets replace the previous repeated district-prefab filler.
+ * Each image has one defined role and appears once: commercial transition,
+ * apartment courtyard, office core, suburban edge, pocket park and industrial
+ * yard. Interactive landmark districts remain above these visual-only blocks.
+ */
+export const city01P0UrbanPlacements: readonly City01MapPlacement[] = [
+  modularPlacement('p0-commercial-corner', 'commercial_corner_01', 48, 46, 218, 0.91, 'groundDecorations', 0.08, 1, 0.1),
+  modularPlacement('p0-apartment-courtyard', 'apartment_courtyard_01', 67, 43, 286, 0.91, 'groundDecorations', 0.08, 1, 0.1),
+  modularPlacement('p0-office-campus', 'office_campus_01', 57, 39, 294, 0.91, 'groundDecorations', 0.08, 1, 0.1),
+  modularPlacement('p0-suburban-neighborhood', 'suburban_neighborhood_01', 80, 40, 326, 0.91, 'groundDecorations', 0.06, 0.98, 0.08),
+  modularPlacement('p0-pocket-park', 'park_pocket_01', 50, 58, 204, 0.82, 'groundDecorations', 0.05, 1, 0.12),
+  modularPlacement('p0-industrial-yard', 'industrial_yard_01', 79, 66, 310, 0.91, 'groundDecorations', 0.07, 1, 0.1)
+];
+
+export const city01P0AssetPlacements: readonly City01MapPlacement[] = [
+  ...city01P0RoadPlacements,
+  ...city01P0UrbanPlacements
+];
+
+// Compatibility export for tests and callers that still describe these blocks
+// as the urban-fabric layer.
+export const city01UrbanFabricPlacements = city01P0UrbanPlacements;
 
 const vehicle = (
   id: string,
@@ -139,16 +150,11 @@ export const city01IslandBoundary: readonly ScenePoint[] = [
   city01MapToScenePoint(11, 40, -0.34)
 ];
 
-/**
- * L0 and L1 define the aligned authored surface. The urban fabric below the
- * landmark districts adds visual continuity only; interaction remains owned by
- * the five district prefabs, facilities and build plots.
- */
 export const city01MapPlacements: readonly City01MapPlacement[] = [
   city01BaseMapPlacement,
   city01RoadNetworkPlacement,
   city01GroundDetailsPlacement,
-  ...city01UrbanFabricPlacements,
+  ...city01P0AssetPlacements,
   vehicle('north-sedan', 'vehicle_sedan', 55, 38, 40),
   vehicle('commercial-sedan', 'vehicle_sedan', 46, 47, 39, true),
   vehicle('civic-utility-van', 'vehicle_utility_van', 55, 55, 45, true),
@@ -181,8 +187,22 @@ export const city01EnvironmentAssetIds = [
   'terrain_small_park_base'
 ] as const;
 
+export const city01P0AssetIds = [
+  'road_straight_01',
+  'road_corner_01',
+  'road_t_junction_01',
+  'road_cross_01',
+  'commercial_corner_01',
+  'apartment_courtyard_01',
+  'office_campus_01',
+  'suburban_neighborhood_01',
+  'park_pocket_01',
+  'industrial_yard_01'
+] as const;
+
 export const city01RequiredLiveAssetIds = [
   'city01_map_base',
   'city01_road_network_base',
-  'city01_ground_details_base'
+  'city01_ground_details_base',
+  ...city01P0AssetIds
 ] as const;
