@@ -370,7 +370,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
         anchorY: 0.82,
         generation,
         layer: this.layerManager.layers.groundDecorations,
-        alpha: diagnostics ? 0.4 : plot.occupied ? 0.66 : 0.86,
+        alpha: diagnostics ? 0.36 : plot.occupied ? 0.34 : 0.48,
         placeholderColor: 0x4a7658,
         zIndexOverride: this.depth(plot, -120)
       });
@@ -471,13 +471,13 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
       const color = networkColor(edge.status);
       const glow = new Graphics();
       this.tracePath(glow, edge.points);
-      glow.stroke({ color, alpha: diagnostics ? 0.12 : 0.04, width: diagnostics ? 8 : 4, cap: 'round', join: 'round' });
+      glow.stroke({ color, alpha: diagnostics ? 0.12 : 0.025, width: diagnostics ? 8 : 3, cap: 'round', join: 'round' });
       glow.zIndex = this.depth(edge.points[0]!, -4);
       this.layerManager.layers.groundDecorations.addChild(glow);
 
       const line = new Graphics();
       this.tracePath(line, edge.points);
-      line.stroke({ color, alpha: diagnostics ? 0.72 : edge.status === 'offline' ? 0.34 : 0.22, width: diagnostics ? 2.2 : 1.1, cap: 'round', join: 'round' });
+      line.stroke({ color, alpha: diagnostics ? 0.72 : edge.status === 'offline' ? 0.24 : 0.16, width: diagnostics ? 2.2 : 0.9, cap: 'round', join: 'round' });
       line.zIndex = this.depth(edge.points[0]!, -3);
       this.layerManager.layers.groundDecorations.addChild(line);
     }
