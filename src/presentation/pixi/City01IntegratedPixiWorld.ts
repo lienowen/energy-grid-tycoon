@@ -212,7 +212,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     this.host.dataset.presentationMode = diagnostics ? 'grid' : 'city';
 
     this.drawOcean(state, generation, diagnostics);
-    this.drawIslandBase(diagnostics);
+    if (diagnostics) this.drawIslandBase(diagnostics);
     if (diagnostics) this.drawRoadBackbone(state, diagnostics);
     this.drawMapComposition(generation, diagnostics);
     this.drawPlotGrounds(state, generation, diagnostics);
