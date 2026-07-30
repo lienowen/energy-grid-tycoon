@@ -1,171 +1,50 @@
 {
-  "schemaVersion": 18,
-  "budgetBytes": 28000000,
+  "schemaVersion": 19,
+  "budgetBytes": 9000000,
   "entries": [
     {
       "id": "city01_map_base",
       "kind": "image",
       "src": "/assets/city01/product/environment/runtime/city01-map-base.svg",
-      "version": 18,
+      "version": 19,
       "preload": "level",
       "width": 2048,
       "height": 1536,
       "anchor": { "x": 0.5, "y": 0.5 },
-      "tags": ["city-01", "map", "base", "ocean", "island", "coast", "runtime"]
+      "tags": ["city-01", "map", "base", "runtime", "authoritative"]
     },
     {
       "id": "city01_road_network_base",
       "kind": "image",
       "src": "/assets/city01/product/environment/runtime/city01-road-network.svg",
-      "version": 18,
+      "version": 19,
       "preload": "level",
       "width": 2048,
       "height": 1536,
       "anchor": { "x": 0.5, "y": 0.5 },
-      "tags": ["city-01", "map", "road", "network", "topology", "runtime"]
+      "tags": ["city-01", "map", "road", "runtime", "authoritative"]
     },
     {
       "id": "city01_ground_details_base",
       "kind": "image",
       "src": "/assets/city01/product/environment/runtime/city01-ground-details.svg",
-      "version": 18,
+      "version": 19,
       "preload": "level",
       "width": 2048,
       "height": 1536,
       "anchor": { "x": 0.5, "y": 0.5 },
-      "tags": ["city-01", "map", "decoration", "park", "forest", "runtime"]
+      "tags": ["city-01", "map", "decoration", "runtime", "authoritative"]
     },
     {
       "id": "city01_ocean_water_base",
       "kind": "image",
       "src": "/assets/city01/product/environment/runtime/ocean-water-base.svg",
-      "version": 18,
+      "version": 19,
       "preload": "level",
       "width": 2048,
       "height": 1536,
       "anchor": { "x": 0.5, "y": 0.5 },
-      "tags": ["city-01", "environment", "ocean", "legacy-underlay"]
-    },
-    {
-      "id": "city01_road_connector_short",
-      "kind": "image",
-      "src": "/assets/city01/product/environment/base/terrain-road-straight-base.png",
-      "version": 18,
-      "preload": "level",
-      "width": 1024,
-      "height": 768,
-      "anchor": { "x": 0.5, "y": 0.5 },
-      "tags": ["city-01", "environment", "road", "connector", "source-crop"]
-    },
-    {
-      "id": "road_straight_01",
-      "kind": "image",
-      "src": "/assets/city01/p0/road_straight_01.png",
-      "version": 1,
-      "preload": "level",
-      "width": 1024,
-      "height": 1024,
-      "anchor": { "x": 0.5, "y": 0.5 },
-      "tags": ["city-01", "p0", "modular", "road", "straight"]
-    },
-    {
-      "id": "road_corner_01",
-      "kind": "image",
-      "src": "/assets/city01/p0/road_corner_01.png",
-      "version": 1,
-      "preload": "level",
-      "width": 1024,
-      "height": 1024,
-      "anchor": { "x": 0.5, "y": 0.5 },
-      "tags": ["city-01", "p0", "modular", "road", "corner"]
-    },
-    {
-      "id": "road_t_junction_01",
-      "kind": "image",
-      "src": "/assets/city01/p0/road_t_junction_01.png",
-      "version": 1,
-      "preload": "level",
-      "width": 1024,
-      "height": 1024,
-      "anchor": { "x": 0.5, "y": 0.5 },
-      "tags": ["city-01", "p0", "modular", "road", "junction"]
-    },
-    {
-      "id": "road_cross_01",
-      "kind": "image",
-      "src": "/assets/city01/p0/road_cross_01.png",
-      "version": 1,
-      "preload": "level",
-      "width": 1024,
-      "height": 1024,
-      "anchor": { "x": 0.5, "y": 0.5 },
-      "tags": ["city-01", "p0", "modular", "road", "cross"]
-    },
-    {
-      "id": "commercial_corner_01",
-      "kind": "image",
-      "src": "/assets/city01/p0/commercial_corner_01.png",
-      "version": 1,
-      "preload": "level",
-      "width": 1024,
-      "height": 1024,
-      "anchor": { "x": 0.5, "y": 0.91 },
-      "tags": ["city-01", "p0", "modular", "commercial", "corner"]
-    },
-    {
-      "id": "apartment_courtyard_01",
-      "kind": "image",
-      "src": "/assets/city01/p0/apartment_courtyard_01.png",
-      "version": 1,
-      "preload": "level",
-      "width": 1024,
-      "height": 1024,
-      "anchor": { "x": 0.5, "y": 0.91 },
-      "tags": ["city-01", "p0", "modular", "residential", "apartment"]
-    },
-    {
-      "id": "office_campus_01",
-      "kind": "image",
-      "src": "/assets/city01/p0/office_campus_01.png",
-      "version": 1,
-      "preload": "level",
-      "width": 1024,
-      "height": 1024,
-      "anchor": { "x": 0.5, "y": 0.91 },
-      "tags": ["city-01", "p0", "modular", "office", "campus"]
-    },
-    {
-      "id": "suburban_neighborhood_01",
-      "kind": "image",
-      "src": "/assets/city01/p0/suburban_neighborhood_01.png",
-      "version": 1,
-      "preload": "level",
-      "width": 1024,
-      "height": 1024,
-      "anchor": { "x": 0.5, "y": 0.91 },
-      "tags": ["city-01", "p0", "modular", "residential", "suburban"]
-    },
-    {
-      "id": "park_pocket_01",
-      "kind": "image",
-      "src": "/assets/city01/p0/park_pocket_01.png",
-      "version": 1,
-      "preload": "level",
-      "width": 1024,
-      "height": 1024,
-      "anchor": { "x": 0.5, "y": 0.82 },
-      "tags": ["city-01", "p0", "modular", "park", "filler"]
-    },
-    {
-      "id": "industrial_yard_01",
-      "kind": "image",
-      "src": "/assets/city01/p0/industrial_yard_01.png",
-      "version": 1,
-      "preload": "level",
-      "width": 1024,
-      "height": 1024,
-      "anchor": { "x": 0.5, "y": 0.91 },
-      "tags": ["city-01", "p0", "modular", "industrial", "yard"]
+      "tags": ["city-01", "environment", "ocean", "runtime", "underlay"]
     }
   ]
 }
