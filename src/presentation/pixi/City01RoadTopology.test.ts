@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { CitySceneState } from '../CitySceneTypes';
 import {
   buildCity01AccessRoads,
+  CITY01_ROAD_TOPOLOGY_MODE,
   city01RoadEdges,
   city01RoadNodes,
   validateCity01RoadTopology
@@ -60,6 +61,10 @@ const state = {
 } as unknown as CitySceneState;
 
 describe('City01RoadTopology', () => {
+  it('is explicitly diagnostic-only', () => {
+    expect(CITY01_ROAD_TOPOLOGY_MODE).toBe('diagnostic-only');
+  });
+
   it('passes the explicit topology quality gate', () => {
     expect(validateCity01RoadTopology()).toEqual([]);
   });
@@ -70,21 +75,21 @@ describe('City01RoadTopology', () => {
     expect(city01RoadNodes.filter((node) => node.kind === 'district-entry')).toHaveLength(5);
   });
 
-  it('limits access roads to one standard tile and does not mark normal links as dead ends', () => {
+  it('limits diagnostic access roads to one standard tile', () => {
     const accessEdges = city01RoadEdges.filter((edge) => edge.roadClass === 'access');
     expect(accessEdges).toHaveLength(5);
     expect(accessEdges.every((edge) => edge.maxAccessLength <= 20)).toBe(true);
     expect(accessEdges.every((edge) => edge.isDeadEnd === false)).toBe(true);
   });
 
-  it('keeps compatibility access lines short and rejects distant facilities', () => {
+  it('builds short diagnostic access lines and rejects distant facilities', () => {
     const access = buildCity01AccessRoads(state);
     expect(access).toHaveLength(1);
     expect(access[0]?.id).toBe('district-access-district-a');
     expect(access[0]?.points[0]).toMatchObject({ x: 18, z: 0 });
   });
 
-  it('returns no vector access roads when the active tile renderer clears simulation roads', () => {
+  it('returns no diagnostic access roads without scene-state roads', () => {
     expect(buildCity01AccessRoads({ ...state, roads: [] })).toEqual([]);
   });
 });
