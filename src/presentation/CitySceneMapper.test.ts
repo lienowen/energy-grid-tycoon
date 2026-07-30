@@ -58,11 +58,11 @@ describe('CitySceneMapper', () => {
     const wind = scene.facilities.find((facility) => facility.plotId === 'east-coast');
     const gasPlot = scene.plots.find((plot) => plot.id === 'west-industry');
     const solarPoint = toScenePoint({ x: 29, y: 27, elevation: 0.16 });
-    const windPoint = toScenePoint({ x: 91, y: 40, elevation: 0.2 });
+    const windPoint = toScenePoint({ x: 90, y: 56, elevation: 0.2 });
 
     expect(solar).toMatchObject({ ...solarPoint, elevation: solarPoint.elevation + 1.1 });
     expect(wind).toMatchObject({ ...windPoint, elevation: windPoint.elevation + 1.1 });
-    expect(gasPlot).toMatchObject(toScenePoint({ x: 23, y: 67, elevation: 0.14 }));
+    expect(gasPlot).toMatchObject(toScenePoint({ x: 30, y: 74, elevation: 0.14 }));
   });
 
   it('marks only legal empty plots when the player chooses a facility', () => {
