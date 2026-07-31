@@ -9,7 +9,10 @@ export interface City01MapPlacement {
   width: number;
   anchorY: number;
   layer: City01MapLayer;
+  /** Illustration/showcase opacity. */
   alpha?: number;
+  /** Default player-facing game opacity. */
+  gameAlpha?: number;
   diagnosticsAlpha?: number;
   flipX?: boolean;
 }
@@ -24,47 +27,73 @@ export const city01MapToScenePoint = (
   elevation
 });
 
-export const city01BaseMapPlacement: City01MapPlacement = {
-  id: 'city01-base-map',
-  assetId: 'city01_map_base',
-  point: city01MapToScenePoint(57, 50, -1.4),
+const backgroundPoint = city01MapToScenePoint(57, 50, -1.4);
+
+export const city01LandPlacement: City01MapPlacement = {
+  id: 'city01-land-base',
+  assetId: 'city01_land_base',
+  point: backgroundPoint,
   width: 1760,
   anchorY: 0.5,
   layer: 'terrain',
   alpha: 1,
+  gameAlpha: 1,
   diagnosticsAlpha: 0.72
 };
 
-export const city01RoadNetworkPlacement: City01MapPlacement = {
-  id: 'city01-road-network',
-  assetId: 'city01_road_network_base',
-  point: city01MapToScenePoint(57, 50, -1.4),
-  width: 1760,
-  anchorY: 0.5,
-  layer: 'roads',
-  alpha: 1,
-  diagnosticsAlpha: 0.48
-};
-
-export const city01GroundDetailsPlacement: City01MapPlacement = {
-  id: 'city01-ground-details',
-  assetId: 'city01_ground_details_base',
-  point: city01MapToScenePoint(57, 50, -1.4),
+export const city01ZoneMaskPlacement: City01MapPlacement = {
+  id: 'city01-zone-mask',
+  assetId: 'city01_zone_mask',
+  point: backgroundPoint,
   width: 1760,
   anchorY: 0.5,
   layer: 'groundDecorations',
-  alpha: 0.76,
-  diagnosticsAlpha: 0.24
+  alpha: 0,
+  gameAlpha: 1,
+  diagnosticsAlpha: 0.32
 };
+
+export const city01RoadThinPlacement: City01MapPlacement = {
+  id: 'city01-road-thin',
+  assetId: 'city01_road_thin',
+  point: backgroundPoint,
+  width: 1760,
+  anchorY: 0.5,
+  layer: 'roads',
+  alpha: 0.82,
+  gameAlpha: 1,
+  diagnosticsAlpha: 0.42
+};
+
+export const city01DecorDetailsPlacement: City01MapPlacement = {
+  id: 'city01-decor-details',
+  assetId: 'city01_decor_details',
+  point: backgroundPoint,
+  width: 1760,
+  anchorY: 0.5,
+  layer: 'groundDecorations',
+  alpha: 0.82,
+  gameAlpha: 0.86,
+  diagnosticsAlpha: 0.18
+};
+
+/**
+ * Compatibility aliases for callers written against the previous three-layer
+ * authored background. They now resolve to the split gameplay layers.
+ */
+export const city01BaseMapPlacement = city01LandPlacement;
+export const city01RoadNetworkPlacement = city01RoadThinPlacement;
+export const city01GroundDetailsPlacement = city01DecorDetailsPlacement;
 
 /**
  * Static authored surfaces only. Logical districts, plots, facilities, roads
  * and energy topology belong to LevelSceneLayoutRegistry and scene state.
  */
 export const city01StaticBackgroundPlacements: readonly City01MapPlacement[] = [
-  city01BaseMapPlacement,
-  city01RoadNetworkPlacement,
-  city01GroundDetailsPlacement
+  city01LandPlacement,
+  city01ZoneMaskPlacement,
+  city01RoadThinPlacement,
+  city01DecorDetailsPlacement
 ];
 
 /**
@@ -88,6 +117,8 @@ const vehicle = (
   width,
   anchorY: 0.9,
   layer: 'vehicles',
+  alpha: 0.9,
+  gameAlpha: 0.78,
   diagnosticsAlpha: 0,
   flipX
 });
@@ -100,10 +131,7 @@ export const city01VehiclePlacements: readonly City01MapPlacement[] = [
   vehicle('industrial-cargo-truck', 'vehicle_cargo_truck', 74, 70, 40)
 ];
 
-/**
- * Temporary compatibility boundary for the legacy renderer underlay. The
- * authored background assets remain the visible map authority.
- */
+/** Diagnostic-only island boundary used by the grid/editor renderer. */
 export const city01IslandBoundary: readonly ScenePoint[] = [
   city01MapToScenePoint(20, 18, -0.34),
   city01MapToScenePoint(72, 12, -0.34),
@@ -120,10 +148,7 @@ export const city01MapPlacements: readonly City01MapPlacement[] = [
   ...city01VehiclePlacements
 ];
 
-/**
- * Source inventory remains available for diagnostics and future cutting work.
- * These IDs are not live City-01 map placements.
- */
+/** Source inventory only; none of these IDs is a live City-01 map placement. */
 export const city01EnvironmentAssetIds = [
   'terrain_forest_base',
   'terrain_park_plaza_base',
@@ -143,13 +168,11 @@ export const city01EnvironmentAssetIds = [
   'terrain_small_park_base'
 ] as const;
 
-/**
- * The complete live static asset contract. Ocean is rendered by the Pixi world
- * underlay, while the other three entries are placed by this module.
- */
+/** Complete live static asset contract, including the ocean underlay. */
 export const city01RequiredLiveAssetIds = [
-  'city01_map_base',
-  'city01_road_network_base',
-  'city01_ground_details_base',
+  'city01_land_base',
+  'city01_zone_mask',
+  'city01_road_thin',
+  'city01_decor_details',
   'city01_ocean_water_base'
 ] as const;
