@@ -45,6 +45,10 @@ const cellPoint = (
   elevation
 });
 
+/**
+ * Rasterises a segment without diagonal jumps. RoadAutoTiler uses four-neighbour
+ * masks, so every consecutive cell must share one edge rather than one corner.
+ */
 const rasterizeSegment = (
   from: TileWorldGridPointConfig,
   to: TileWorldGridPointConfig,
@@ -53,23 +57,26 @@ const rasterizeSegment = (
   let x = from.x;
   let y = from.y;
   const dx = Math.abs(to.x - from.x);
+  const dy = Math.abs(to.y - from.y);
   const sx = from.x < to.x ? 1 : -1;
-  const dy = -Math.abs(to.y - from.y);
   const sy = from.y < to.y ? 1 : -1;
-  let error = dx + dy;
+  let progressedX = 0;
+  let progressedY = 0;
 
-  while (true) {
-    visit(x, y);
-    if (x === to.x && y === to.y) break;
-    const doubled = error * 2;
-    if (doubled >= dy) {
-      error += dy;
+  visit(x, y);
+  while (x !== to.x || y !== to.y) {
+    const chooseX = x !== to.x && (
+      y === to.y
+      || (1 + progressedX * 2) * dy <= (1 + progressedY * 2) * dx
+    );
+    if (chooseX) {
       x += sx;
-    }
-    if (doubled <= dx) {
-      error += dx;
+      progressedX += 1;
+    } else {
       y += sy;
+      progressedY += 1;
     }
+    visit(x, y);
   }
 };
 
