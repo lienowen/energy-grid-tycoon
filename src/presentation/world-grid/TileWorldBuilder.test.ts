@@ -47,6 +47,32 @@ describe('TileWorldBuilder', () => {
     expect(intersection?.roadAssetId).toContain('_4');
   });
 
+  it('rasterizes diagonal design segments into four-neighbour road cells', () => {
+    const diagonalWorld = TileWorldBuilder.build({
+      ...config,
+      roadAnchors: [],
+      roadPaths: [
+        { id: 'diagonal', laneWidth: 2, points: [{ x: 1, y: 1 }, { x: 6, y: 5 }] }
+      ]
+    });
+    const roadCells = diagonalWorld.cells.filter((cell) => Boolean(cell.roadLaneWidth));
+    const roadKeys = new Set(roadCells.map((cell) => `${cell.gridX}:${cell.gridY}`));
+
+    expect(roadKeys.has('1:1')).toBe(true);
+    expect(roadKeys.has('6:5')).toBe(true);
+    for (const cell of roadCells) {
+      const neighbours = [
+        `${cell.gridX}:${cell.gridY - 1}`,
+        `${cell.gridX + 1}:${cell.gridY}`,
+        `${cell.gridX}:${cell.gridY + 1}`,
+        `${cell.gridX - 1}:${cell.gridY}`
+      ].filter((candidate) => roadKeys.has(candidate));
+      const endpoint = (cell.gridX === 1 && cell.gridY === 1)
+        || (cell.gridX === 6 && cell.gridY === 5);
+      expect(neighbours.length).toBeGreaterThanOrEqual(endpoint ? 1 : 2);
+    }
+  });
+
   it('separates unlocked buildability from surrounding world continuity', () => {
     const world = TileWorldBuilder.build(config);
 
