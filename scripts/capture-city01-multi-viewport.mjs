@@ -79,16 +79,29 @@ const enterPlacement = async (page) => {
 };
 
 const placeConstruction = async (page) => {
-  // east-industry projected through the tile-world home camera at 1440x1080.
-  // The point is intentionally tied to a logical build target, not the former
-  // authored background image position.
-  const target = { x: 890, y: 725 };
-  await page.mouse.click(target.x, target.y);
-  await page.waitForTimeout(140);
-  await page.mouse.click(target.x, target.y);
-  await page.waitForFunction(() => !document.querySelector('[data-cancel-build="true"]'));
-  await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
-  await page.waitForTimeout(250);
+  // Visible placement-disc centres in the authored home view. The renderer's
+  // hit areas extend upward from each logical plot anchor, so click the visible
+  // disc centre instead of the former background-image coordinate.
+  const targets = [
+    { x: 887, y: 690 },
+    { x: 365, y: 470 },
+    { x: 1050, y: 545 },
+    { x: 698, y: 662 }
+  ];
+
+  for (const target of targets) {
+    await page.mouse.click(target.x, target.y);
+    await page.waitForTimeout(140);
+    await page.mouse.click(target.x, target.y);
+    await page.waitForTimeout(420);
+    const closed = await page.evaluate(() => !document.querySelector('[data-cancel-build="true"]'));
+    if (!closed) continue;
+    await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+    await page.waitForTimeout(250);
+    return;
+  }
+
+  throw new Error('Unable to confirm construction on any visible valid plot');
 };
 
 const switchToGrid = async (page) => {
