@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import mapperSource from '../CitySceneMapper.ts?raw';
 import rendererSource from './City01IntegratedPixiWorld.ts?raw';
+import tilemapRendererSource from './City01TilemapRenderer.ts?raw';
+import terrainAtlasSource from './City01TerrainAtlas.ts?raw';
 import { CitySceneMapper } from '../CitySceneMapper';
 
 describe('City-01 tile-world architecture', () => {
@@ -20,5 +22,15 @@ describe('City-01 tile-world architecture', () => {
     expect(mapperSource).toContain('TileWorldBuilder.build(layout.worldGrid)');
     expect(rendererSource).not.toContain('LevelSceneLayoutRegistry');
     expect(CitySceneMapper).toBeDefined();
+  });
+
+  it('renders terrain through the 47-tile atlas instead of procedural coast lines', () => {
+    expect(tilemapRendererSource).toContain('City01TerrainAtlas.load');
+    expect(tilemapRendererSource).toContain('resolveCity01TerrainFrame');
+    expect(tilemapRendererSource).toContain('resolveCity01WaterFrame');
+    expect(tilemapRendererSource).not.toContain('drawShoreline');
+    expect(tilemapRendererSource).not.toContain('drawCoastEdge');
+    expect(terrainAtlasSource).toContain('terrain_coast_v1.png');
+    expect(terrainAtlasSource).toContain('new Spritesheet');
   });
 });
