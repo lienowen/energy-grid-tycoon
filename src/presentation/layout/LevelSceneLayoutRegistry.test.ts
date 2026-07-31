@@ -15,10 +15,10 @@ describe('LevelSceneLayoutRegistry', () => {
       'old_town'
     ]);
     expect(layout?.roads).toHaveLength(0);
-    expect(layout?.worldGrid).toMatchObject({ columns: 36, rows: 30, cellSize: 4 });
+    expect(layout?.worldGrid).toMatchObject({ columns: 48, rows: 42, cellSize: 4 });
     expect(layout?.worldGrid?.roadAnchors).toHaveLength(4);
     expect(layout?.worldGrid?.roadPaths.length).toBeGreaterThanOrEqual(6);
-    expect(layout?.worldGrid?.unlockedRegions.length).toBeGreaterThan(0);
+    expect(layout?.worldGrid?.unlockedRegions.length).toBeGreaterThan(3);
     expect(layout?.environment.some((item) => item.kind === 'water')).toBe(true);
     expect(layout?.environment.some((item) => item.kind === 'ridge')).toBe(true);
     expect(layout?.plotAnchors).toHaveLength(8);
