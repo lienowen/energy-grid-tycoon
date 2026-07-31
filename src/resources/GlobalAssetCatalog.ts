@@ -22,6 +22,7 @@ const city01MapRuntimeCatalog = city01MapRuntimeCatalogData as unknown as AssetC
 
 type RuntimeOverride = {
   id: string;
+  src: string;
   version: number;
   width: number;
   height: number;
@@ -29,14 +30,14 @@ type RuntimeOverride = {
 };
 
 const runtimeOverrides = new Map(
-  (runtimeOverrideData.entries as RuntimeOverride[]).map((entry) => [entry.id, entry])
+  (runtimeOverrideData.entries as RuntimeOverride[]).map((entry) => [`${entry.id}::${entry.src}`, entry])
 );
 
 const isRetiredRuntimeEntry = (entry: AssetEntry): boolean =>
   entry.src.startsWith(retiredCity01FacilitySourcePrefix);
 
 const normalizeEntry = (entry: AssetEntry): AssetEntry => {
-  const override = runtimeOverrides.get(entry.id);
+  const override = runtimeOverrides.get(`${entry.id}::${entry.src}`);
   if (!override) return { ...entry };
   return {
     ...entry,
