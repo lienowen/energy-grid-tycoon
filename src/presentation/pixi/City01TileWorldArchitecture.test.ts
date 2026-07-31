@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import mapperSource from '../CitySceneMapper.ts?raw';
+import terrainRegistrySource from '../world-grid/City01TerrainTileRegistry.ts?raw';
 import rendererSource from './City01IntegratedPixiWorld.ts?raw';
 import tilemapRendererSource from './City01TilemapRenderer.ts?raw';
 import terrainAtlasSource from './City01TerrainAtlas.ts?raw';
@@ -32,5 +33,11 @@ describe('City-01 tile-world architecture', () => {
     expect(tilemapRendererSource).not.toContain('drawCoastEdge');
     expect(terrainAtlasSource).toContain('terrain_coast_v1.png');
     expect(terrainAtlasSource).toContain('new Spritesheet');
+  });
+
+  it('uses stable center materials instead of random per-cell terrain frames', () => {
+    expect(terrainRegistrySource).toContain("'terrain_grass_00'");
+    expect(terrainRegistrySource).toContain("'terrain_water_00'");
+    expect(terrainRegistrySource).not.toContain('variationSuffix');
   });
 });
