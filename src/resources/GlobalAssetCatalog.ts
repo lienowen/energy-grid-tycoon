@@ -4,6 +4,7 @@ import commercialCatalogData from './asset-catalog-commercial.json';
 import city01ProductCatalogData from './asset-catalog-city01-v0.5.json';
 import city01RuntimeCatalogData from './asset-catalog-city01-runtime.json';
 import city01MapRuntimeCatalogData from './asset-catalog-city01-map-runtime.json';
+import runtimeOverrideData from './asset-runtime-overrides.json';
 import {
   city01UnifiedFacilityCatalog,
   retiredCity01FacilitySourcePrefix
@@ -19,32 +20,32 @@ const city01ProductCatalog = city01ProductCatalogData as unknown as AssetCatalog
 const city01RuntimeCatalog = city01RuntimeCatalogData as unknown as AssetCatalog;
 const city01MapRuntimeCatalog = city01MapRuntimeCatalogData as unknown as AssetCatalog;
 
+type RuntimeOverride = {
+  id: string;
+  version: number;
+  width: number;
+  height: number;
+  tag?: string;
+};
+
+const runtimeOverrides = new Map(
+  (runtimeOverrideData.entries as RuntimeOverride[]).map((entry) => [entry.id, entry])
+);
+
 const isRetiredRuntimeEntry = (entry: AssetEntry): boolean =>
   entry.src.startsWith(retiredCity01FacilitySourcePrefix);
 
-/**
- * These V5 compatibility IDs now point at the upgraded 1024px City-01 art.
- * The merged global catalog is the runtime authority, so dimensions are
- * normalized here while the legacy V5 source catalog remains immutable.
- */
-const upgradedWorldFacilityIds = new Set([
-  'world_facility_solar_active',
-  'world_facility_wind_active',
-  'world_facility_gas_active',
-  'world_facility_battery_active',
-  'world_facility_substation_active',
-  'world_facility_nuclear_active',
-  'world_facility_grid_node_active'
-]);
-
 const normalizeEntry = (entry: AssetEntry): AssetEntry => {
-  if (!upgradedWorldFacilityIds.has(entry.id)) return { ...entry };
+  const override = runtimeOverrides.get(entry.id);
+  if (!override) return { ...entry };
   return {
     ...entry,
-    version: Math.max(entry.version, 6),
-    width: 1024,
-    height: 1024,
-    tags: [...(entry.tags ?? []), 'hires-runtime-v2']
+    version: Math.max(entry.version, override.version),
+    width: override.width,
+    height: override.height,
+    tags: override.tag && !entry.tags?.includes(override.tag)
+      ? [...(entry.tags ?? []), override.tag]
+      : entry.tags
   };
 };
 
