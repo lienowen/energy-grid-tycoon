@@ -1,80 +1,82 @@
 import { describe, expect, it } from 'vitest';
 import {
-  city01BaseMapPlacement,
-  city01GroundDetailsPlacement,
+  city01DecorDetailsPlacement,
+  city01LandPlacement,
   city01MapPlacements,
   city01RequiredLiveAssetIds,
-  city01RoadNetworkPlacement,
+  city01RoadThinPlacement,
   city01StaticBackgroundPlacements,
   city01UrbanFabricPlacements,
-  city01VehiclePlacements
+  city01VehiclePlacements,
+  city01ZoneMaskPlacement
 } from './City01MapComposition';
 
 describe('City01MapComposition', () => {
-  it('owns exactly three authored static background surfaces', () => {
+  it('owns exactly four aligned split gameplay layers', () => {
     expect(city01StaticBackgroundPlacements).toEqual([
-      city01BaseMapPlacement,
-      city01RoadNetworkPlacement,
-      city01GroundDetailsPlacement
+      city01LandPlacement,
+      city01ZoneMaskPlacement,
+      city01RoadThinPlacement,
+      city01DecorDetailsPlacement
     ]);
 
-    expect(city01BaseMapPlacement.assetId).toBe('city01_map_base');
-    expect(city01RoadNetworkPlacement.assetId).toBe('city01_road_network_base');
-    expect(city01GroundDetailsPlacement.assetId).toBe('city01_ground_details_base');
+    expect(city01LandPlacement.assetId).toBe('city01_land_base');
+    expect(city01ZoneMaskPlacement.assetId).toBe('city01_zone_mask');
+    expect(city01RoadThinPlacement.assetId).toBe('city01_road_thin');
+    expect(city01DecorDetailsPlacement.assetId).toBe('city01_decor_details');
     expect(city01StaticBackgroundPlacements.every((placement) => placement.width === 1760)).toBe(true);
     expect(city01StaticBackgroundPlacements.every((placement) => placement.anchorY === 0.5)).toBe(true);
     expect(city01StaticBackgroundPlacements.every((placement) =>
-      placement.point.x === city01BaseMapPlacement.point.x
-      && placement.point.z === city01BaseMapPlacement.point.z
+      placement.point.x === city01LandPlacement.point.x
+      && placement.point.z === city01LandPlacement.point.z
     )).toBe(true);
   });
 
-  it('does not place auxiliary city blocks from the static composition module', () => {
+  it('assigns each split layer a single visual responsibility', () => {
+    expect(city01LandPlacement.layer).toBe('terrain');
+    expect(city01RoadThinPlacement.layer).toBe('roads');
+    expect(city01ZoneMaskPlacement.layer).toBe('groundDecorations');
+    expect(city01DecorDetailsPlacement.layer).toBe('groundDecorations');
+    expect(city01ZoneMaskPlacement.diagnosticsAlpha).toBeLessThan(0.4);
+    expect(city01DecorDetailsPlacement.diagnosticsAlpha).toBeLessThan(0.3);
+  });
+
+  it('does not place auxiliary city blocks or modular road tiles', () => {
     expect(city01UrbanFabricPlacements).toEqual([]);
     const liveAssetIds = new Set(city01MapPlacements.map((placement) => placement.assetId));
-    const retiredFillIds = [
+    const forbidden = [
+      'city01_map_base',
+      'city01_road_network_base',
+      'city01_ground_details_base',
+      'city01_road_connector_short',
       'commercial_corner_01',
       'apartment_courtyard_01',
       'office_campus_01',
       'suburban_neighborhood_01',
       'park_pocket_01',
-      'industrial_yard_01'
-    ];
-    for (const assetId of retiredFillIds) expect(liveAssetIds.has(assetId)).toBe(false);
-  });
-
-  it('keeps only the authored road asset in the live map composition', () => {
-    const roads = city01MapPlacements.filter((placement) => placement.layer === 'roads');
-    expect(roads).toEqual([city01RoadNetworkPlacement]);
-
-    const forbiddenRoadAssets = new Set([
-      'city01_road_connector_short',
+      'industrial_yard_01',
       'road_straight_01',
       'road_corner_01',
       'road_t_junction_01',
-      'road_cross_01',
-      'terrain_road_bridge_base',
-      'terrain_road_corner_base',
-      'terrain_road_crossroad_base',
-      'terrain_road_straight_base',
-      'terrain_road_t_junction_base',
-      'terrain_road_dead_end_base'
-    ]);
-    expect(city01MapPlacements.every((placement) => !forbiddenRoadAssets.has(placement.assetId))).toBe(true);
+      'road_cross_01'
+    ];
+    for (const assetId of forbidden) expect(liveAssetIds.has(assetId)).toBe(false);
   });
 
-  it('declares the complete four-asset static runtime contract', () => {
+  it('declares the complete five-asset runtime contract', () => {
     expect(city01RequiredLiveAssetIds).toEqual([
-      'city01_map_base',
-      'city01_road_network_base',
-      'city01_ground_details_base',
+      'city01_land_base',
+      'city01_zone_mask',
+      'city01_road_thin',
+      'city01_decor_details',
       'city01_ocean_water_base'
     ]);
 
     const placed = new Set(city01MapPlacements.map((placement) => placement.assetId));
-    expect(placed.has('city01_map_base')).toBe(true);
-    expect(placed.has('city01_road_network_base')).toBe(true);
-    expect(placed.has('city01_ground_details_base')).toBe(true);
+    expect(placed.has('city01_land_base')).toBe(true);
+    expect(placed.has('city01_zone_mask')).toBe(true);
+    expect(placed.has('city01_road_thin')).toBe(true);
+    expect(placed.has('city01_decor_details')).toBe(true);
     expect(placed.has('city01_ocean_water_base')).toBe(false);
   });
 
