@@ -22,12 +22,38 @@ const city01MapRuntimeCatalog = city01MapRuntimeCatalogData as unknown as AssetC
 const isRetiredRuntimeEntry = (entry: AssetEntry): boolean =>
   entry.src.startsWith(retiredCity01FacilitySourcePrefix);
 
+/**
+ * These V5 compatibility IDs now point at the upgraded 1024px City-01 art.
+ * The merged global catalog is the runtime authority, so dimensions are
+ * normalized here while the legacy V5 source catalog remains immutable.
+ */
+const upgradedWorldFacilityIds = new Set([
+  'world_facility_solar_active',
+  'world_facility_wind_active',
+  'world_facility_gas_active',
+  'world_facility_battery_active',
+  'world_facility_substation_active',
+  'world_facility_nuclear_active',
+  'world_facility_grid_node_active'
+]);
+
+const normalizeEntry = (entry: AssetEntry): AssetEntry => {
+  if (!upgradedWorldFacilityIds.has(entry.id)) return { ...entry };
+  return {
+    ...entry,
+    version: Math.max(entry.version, 6),
+    width: 1024,
+    height: 1024,
+    tags: [...(entry.tags ?? []), 'hires-runtime-v2']
+  };
+};
+
 const mergeEntries = (...catalogs: readonly AssetCatalog[]): AssetEntry[] => {
   const entries = new Map<string, AssetEntry>();
   for (const catalog of catalogs) {
     for (const entry of catalog.entries) {
       if (isRetiredRuntimeEntry(entry)) continue;
-      entries.set(entry.id, { ...entry });
+      entries.set(entry.id, normalizeEntry(entry));
     }
   }
   return [...entries.values()];
