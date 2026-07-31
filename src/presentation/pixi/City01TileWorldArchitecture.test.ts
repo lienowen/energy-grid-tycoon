@@ -1,15 +1,7 @@
-import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import mapperSource from '../CitySceneMapper.ts?raw';
+import rendererSource from './City01IntegratedPixiWorld.ts?raw';
 import { CitySceneMapper } from '../CitySceneMapper';
-
-const rendererSource = readFileSync(
-  new URL('./City01IntegratedPixiWorld.ts', import.meta.url),
-  'utf8'
-);
-const mapperSource = readFileSync(
-  new URL('../CitySceneMapper.ts', import.meta.url),
-  'utf8'
-);
 
 describe('City-01 tile-world architecture', () => {
   it('uses mapped tile-world state for normal runtime rendering', () => {
