@@ -32,6 +32,7 @@ import type {
 } from './CitySceneTypes';
 import type { LevelSceneLayout } from './layout/LevelSceneLayout';
 import { LevelSceneLayoutRegistry } from './layout/LevelSceneLayoutRegistry';
+import { TileWorldBuilder } from './world-grid/TileWorldBuilder';
 
 export type {
   AmbientBlockKind,
@@ -57,7 +58,10 @@ export type {
   PlotPlacementTone,
   PlotSceneState,
   RoadSceneState,
-  ScenePoint
+  ScenePoint,
+  TileWorldCellSceneState,
+  TileWorldEntryPointSceneState,
+  TileWorldSceneState
 } from './CitySceneTypes';
 
 const zoneLabels = {
@@ -427,6 +431,9 @@ export class CitySceneMapper {
       0.08,
       1
     );
+    const tileWorld = layout?.worldGrid
+      ? TileWorldBuilder.build(layout.worldGrid)
+      : undefined;
 
     const placement = selected
       ? {
@@ -457,6 +464,7 @@ export class CitySceneMapper {
       sceneMode: layout ? 'authored' : 'procedural',
       presentationMode,
       growth,
+      tileWorld,
       districts,
       districtPrefabs,
       environment: layout ? mapEnvironment(layout) : undefined,
