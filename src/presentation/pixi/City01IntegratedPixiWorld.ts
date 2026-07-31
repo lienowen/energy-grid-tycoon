@@ -565,11 +565,11 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
 
       const diamond = new Graphics()
         .poly([0, -radius, radius * 1.5, 0, 0, radius, -radius * 1.5, 0])
-        .fill({ color: 0x09242d, alpha: 0.36 })
-        .stroke({ color: 0x66e5c8, alpha: 0.46, width: 1.2 });
+        .fill({ color: 0x09242d, alpha: 0.14 })
+        .stroke({ color: 0x66e5c8, alpha: 0.22, width: 0.8 });
       const dot = new Graphics()
-        .circle(0, 0, 2.3 * scale)
-        .fill({ color: 0xa5ffe9, alpha: 0.74 });
+        .circle(0, 0, 1.6 * scale)
+        .fill({ color: 0xa5ffe9, alpha: 0.45 });
       marker.addChild(diamond, dot);
       marker.on('pointertap', () => {
         if (this.input?.canActivateObject()) this.actions.onPlotClick(plot.id);

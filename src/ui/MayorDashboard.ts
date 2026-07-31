@@ -62,13 +62,16 @@ export class MayorDashboard {
   private lastView?: GameViewModel;
   private activePanel: MayorPanel = 'none';
   private presentationMode: 'city' | 'grid' = 'city';
-  private buildDockOpen = false;
+  private buildDockOpen = true;
   private selectedBuildingId?: string;
   private focusedBuildingId?: string;
   private noticeTimer?: number;
   private sandbox?: HologramSandbox;
   private shellMounted = false;
   private active = true;
+  private lastMoney?: number;
+  private hintTimer?: number;
+  private hintVisible = true;
 
   constructor(
     private readonly root: HTMLElement,
@@ -94,8 +97,11 @@ export class MayorDashboard {
     }
     if (!this.shellMounted) this.mountShell();
 
-    const main = this.root.querySelector<HTMLElement>('.hologram-game');
-    if (main) main.style.setProperty('--scenario-accent', view.level.presentation?.accent ?? '#4ad7ff');
+    const main = this.root.querySelector<HTMLElement>('.egt-shell');
+    if (main) {
+      main.style.setProperty('--scenario-accent', view.level.presentation?.accent ?? '#4ad7ff');
+      main.dataset.placing = String(Boolean(this.selectedBuildingId));
+    }
 
     const counts = new Map<string, number>();
     for (const building of view.buildings) {
@@ -108,28 +114,64 @@ export class MayorDashboard {
     this.setRegion('tools', this.renderToolRail(view));
     this.setRegion('build', this.renderBuildDock(view, counts));
     this.setRegion('drawer', this.activePanel === 'none' ? '' : this.renderDrawer(view));
-    this.setRegion('toast', this.notice ? `<div class="mayor-toast hologram-toast">${this.notice}</div>` : '');
+    this.setRegion('toast', this.notice ? `<div class="egt-toast">${this.notice}</div>` : '');
     this.setRegion('result', view.state.completed || view.state.failed ? this.renderResult(view) : '');
 
     this.sandbox?.setState(CitySceneMapper.map(view, this.selectedBuildingId, this.presentationMode));
     this.bindEvents();
+    this.flashMoneyDelta(view.state.money);
+    this.autoDismissHints();
+  }
+
+  /** 非选址状态的提示条 5 秒后自动隐藏，还城市清净。 */
+  private autoDismissHints(): void {
+    if (this.selectedBuildingId) {
+      this.hintVisible = true;
+      return;
+    }
+    if (!this.hintVisible) return;
+    if (this.hintTimer !== undefined) window.clearTimeout(this.hintTimer);
+    this.hintTimer = window.setTimeout(() => {
+      this.hintVisible = false;
+      if (this.lastView) this.render(this.lastView);
+    }, 5000);
+  }
+
+  /** 资金变动时在顶栏飘一个 +¥ / −¥，给玩家即时反馈。 */
+  private flashMoneyDelta(money: number): void {
+    const previous = this.lastMoney;
+    this.lastMoney = money;
+    if (previous === undefined) return;
+    const delta = money - previous;
+    if (Math.abs(delta) < 1) return;
+    const layer = this.root.querySelector<HTMLElement>('[data-hud-floats]');
+    if (!layer) return;
+    if (layer.childElementCount > 5) layer.firstElementChild?.remove();
+    const anchor = this.root.querySelector<HTMLElement>('.egt-stat.gold');
+    const float = document.createElement('span');
+    float.className = `egt-float ${delta > 0 ? 'up' : 'down'}`;
+    float.textContent = `${delta > 0 ? '+' : '−'}${formatMoney(Math.abs(delta))}`;
+    const left = anchor ? anchor.getBoundingClientRect().left + 12 : 200;
+    float.style.left = `${left + Math.random() * 18 - 9}px`;
+    layer.appendChild(float);
+    window.setTimeout(() => float.remove(), 1200);
   }
 
   private mountShell(): void {
     this.root.innerHTML = `
-      <main class="mayor-game hologram-game">
-        <div class="hologram-room-backdrop" aria-hidden="true"><i></i><i></i><i></i></div>
-        <div data-hud-region="top"></div>
-        <section class="hologram-stage">
-          <div class="hologram-table-shell" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-          <div class="hologram-canvas-host" data-hologram-canvas></div>
-          <div data-hud-region="mission"></div>
-          <div data-hud-region="guide"></div>
-          <div data-hud-region="tools"></div>
-          <div data-hud-region="build"></div>
+      <main class="egt-shell">
+        <div class="egt-world" data-hologram-canvas></div>
+        <div class="egt-vignette" aria-hidden="true"></div>
+        <div class="egt-hud">
+          <div class="egt-hud-top" data-hud-region="top"></div>
+          <div class="egt-hud-left" data-hud-region="mission"></div>
+          <div class="egt-hud-banner" data-hud-region="guide"></div>
+          <div class="egt-hud-corner" data-hud-region="tools"></div>
+          <div class="egt-hud-bottom" data-hud-region="build"></div>
           <div data-hud-region="drawer"></div>
           <div data-hud-region="toast"></div>
-        </section>
+          <div class="egt-floats" data-hud-floats aria-hidden="true"></div>
+        </div>
         <div data-hud-region="result"></div>
       </main>
     `;
@@ -155,23 +197,38 @@ export class MayorDashboard {
     const { state, level, lastEconomy } = view;
     const time = `${String(Math.floor(state.hour)).padStart(2, '0')}:00`;
     const lights = Math.round(Math.min(1, state.supplyRatio) * 100);
-    const airLabel = state.pollution <= 28 ? '良好' : state.pollution < 65 ? '注意' : '很差';
+    const trend = lastEconomy
+      ? `${lastEconomy.profit >= 0 ? '+' : '−'}${formatMoney(Math.abs(lastEconomy.profit))}`
+      : '';
+    const trendTone = !lastEconomy ? '' : lastEconomy.profit >= 0 ? 'up' : 'down';
+    const stat = (
+      tone: string,
+      icon: string,
+      label: string,
+      value: string,
+      extra = ''
+    ): string => `
+      <div class="egt-stat ${tone}">
+        <i aria-hidden="true">${icon}</i>
+        <span><strong>${value}</strong><small>${label}</small></span>
+        ${extra}
+      </div>
+    `;
     return `
-      <header class="hologram-topbar">
-        <div class="hologram-city-identity">
-          <span>${this.asset('brand_logo', level.name, 'hologram-brand-image')}</span>
-          <div><strong>${level.name}</strong><small>市长：你</small></div>
+      <header class="egt-topbar">
+        <div class="egt-city">
+          <b>${level.name}</b>
+          <span class="egt-clock">第 ${state.day} 天 · ${time}</span>
         </div>
-        <div class="hologram-vitals">
-          <div><i class="money"></i><span><small>资金</small><strong>${formatMoney(state.money)}</strong><em>${lastEconomy ? `${lastEconomy.profit >= 0 ? '+' : '-'}${formatMoney(Math.abs(lastEconomy.profit))}` : '城市启动中'}</em></span></div>
-          <div class="${lights >= 98 ? 'good' : lights >= 90 ? 'warn' : 'danger'}"><i class="lights"></i><span><small>城市亮灯</small><strong>${lights}%</strong><em>${lights >= 98 ? '全城正常' : '有街区缺电'}</em></span></div>
-          <div class="${state.satisfaction >= 75 ? 'good' : state.satisfaction >= 45 ? 'warn' : 'danger'}"><i class="mood"></i><span><small>居民心情</small><strong>${state.satisfaction.toFixed(0)}%</strong><em>${formatNumber(state.population)} 位居民</em></span></div>
-          <div class="${state.pollution <= 28 ? 'good' : state.pollution >= 65 ? 'danger' : 'warn'}"><i class="air"></i><span><small>空气情况</small><strong>${airLabel}</strong><em>压力 ${state.pollution.toFixed(0)}%</em></span></div>
-          <div class="hologram-time"><span><small>第 ${state.day} 天</small><strong>${time}</strong></span></div>
+        <div class="egt-stats">
+          ${stat('gold', '¥', '资金', formatMoney(state.money), trend ? `<u class="${trendTone}">${trend}</u>` : '')}
+          ${stat(lights >= 98 ? 'good' : lights >= 90 ? 'warn' : 'bad', '⚡', '供电', `${lights}%`)}
+          ${stat(state.satisfaction >= 75 ? 'good' : state.satisfaction >= 45 ? 'warn' : 'bad', '☺', '满意度', `${state.satisfaction.toFixed(0)}%`)}
+          ${stat(state.pollution <= 28 ? 'good' : state.pollution >= 65 ? 'bad' : 'warn', '☘', '环境', `${(100 - state.pollution).toFixed(0)}%`)}
         </div>
-        <div class="hologram-speed" aria-label="游戏速度">
+        <div class="egt-speed" aria-label="游戏速度">
           ${([0, 1, 2, 4] as GameSpeed[]).map((speed) => `
-            <button data-speed="${speed}" class="${state.speed === speed ? 'active' : ''}">${speed === 0 ? 'Ⅱ' : `${speed}×`}</button>
+            <button data-speed="${speed}" class="${state.speed === speed ? 'active' : ''}" title="${speed === 0 ? '暂停' : `${speed} 倍速`}">${speed === 0 ? '❚❚' : `${speed}×`}</button>
           `).join('')}
         </div>
       </header>
@@ -181,26 +238,26 @@ export class MayorDashboard {
   private renderMission(view: GameViewModel): string {
     const progress = Math.round(view.goalProgress * 100);
     return `
-      <aside class="hologram-mission-card">
-        <span>★</span>
-        <div><small>本城目标</small><strong>${view.level.rules.objective.label}</strong></div>
-        <div class="hologram-progress"><i style="width:${progress}%"></i></div>
-        <em>${progress}%</em>
-      </aside>
+      <div class="egt-quest-mini">
+        <i aria-hidden="true">★</i>
+        <span><b>${view.level.rules.objective.label}</b><em>${progress}%</em></span>
+        <i class="egt-bar-track"><u style="width:${progress}%"></u></i>
+      </div>
     `;
   }
 
   private renderGuidance(view: GameViewModel): string {
     if (this.selectedBuildingId) {
+      this.hintVisible = true;
       const selected = view.availableBuildings.find((building) => building.id === this.selectedBuildingId);
       return `
-        <aside class="hologram-secretary placement">
-          <div class="secretary-avatar"><i></i><span>规划助手</span></div>
-          <div><small>正在安排建设</small><strong>${selected?.name ?? '城市设施'}</strong><p>拖动沙盘寻找位置，发亮地块可以建设。点击地块确认。</p></div>
-          <button data-cancel-build="true">取消</button>
-        </aside>
+        <div class="egt-hint-mini placing">
+          <span><b>放置 ${selected?.name ?? '设施'}</b> · 点击发光地块</span>
+          <button data-cancel-build="true" class="ghost">✕</button>
+        </div>
       `;
     }
+    if (!this.hintVisible) return '';
     const guide = MayorGuidanceSystem.evaluate({
       state: view.state,
       buildings: view.buildings,
@@ -211,11 +268,10 @@ export class MayorDashboard {
       goalProgress: view.goalProgress
     });
     return `
-      <aside class="hologram-secretary ${guide.tone}">
-        <div class="secretary-avatar"><i></i><span>市政秘书</span></div>
-        <div><small>下一步建议</small><strong>${guide.headline}</strong><p>${guide.message}</p><em>${guide.consequence}</em></div>
+      <div class="egt-hint-mini ${guide.tone}" data-auto-dismiss="5000">
+        <span><b>${guide.headline}</b> ${guide.message.length > 40 ? guide.message.slice(0, 40) + '…' : guide.message}</span>
         <button ${this.guideActionAttributes(guide.action)}>${guide.actionLabel}</button>
-      </aside>
+      </div>
     `;
   }
 
@@ -227,36 +283,44 @@ export class MayorDashboard {
 
   private renderToolRail(_view: GameViewModel): string {
     return `
-      <nav class="hologram-tool-rail" aria-label="城市主要工具">
-        <button data-camera-home="true" title="回到城市全景"><i>◎</i><span>回城</span></button>
-        <button data-presentation-toggle="true" aria-pressed="${this.presentationMode === 'grid'}" class="${this.presentationMode === 'grid' ? 'active' : ''}" title="切换城市经营与电网诊断视图"><i>⌁</i><span>${this.presentationMode === 'grid' ? '城市' : '电网'}</span></button>
-        <button data-build-dock-toggle="true" aria-pressed="${this.buildDockOpen}" class="${this.buildDockOpen ? 'active' : ''}" title="打开建设设施"><i>＋</i><span>建设</span></button>
-        <button data-panel="hub" class="${this.activePanel === 'hub' ? 'active' : ''}" title="打开市政管理"><i>▦</i><span>管理</span></button>
+      <nav class="egt-dock" aria-label="城市主要工具">
+        <button class="egt-round" data-camera-zoom="in" title="放大">＋</button>
+        <button class="egt-round" data-camera-zoom="out" title="缩小">−</button>
+        <button class="egt-round" data-camera-home="true" title="回到城市全景">⌂</button>
+        <button class="egt-round ${this.presentationMode === 'grid' ? 'active' : ''}" data-presentation-toggle="true" aria-pressed="${this.presentationMode === 'grid'}" title="切换城市 / 电网视图">⌁</button>
+        <button class="egt-round ${this.activePanel === 'hub' ? 'active' : ''}" data-panel="hub" title="市政管理">☰</button>
       </nav>
     `;
   }
 
   private renderBuildDock(view: GameViewModel, counts: ReadonlyMap<string, number>): string {
-    if (!this.buildDockOpen) return '';
+    if (!this.buildDockOpen) return `
+      <button class="egt-buildbar-reopen" data-build-dock-toggle="true">＋ 建设设施</button>
+    `;
     const ended = view.state.completed || view.state.failed;
     return `
-      <section class="hologram-build-dock">
-        <header><strong>建设设施</strong><small>选择项目后，在城市中确认位置</small><button data-build-dock-toggle="true" aria-label="关闭建设栏">×</button></header>
-        <div class="hologram-build-options">
+      <section class="egt-buildbar">
+        <div class="egt-buildbar-cards">
           ${view.availableBuildings.map((config) => {
-            const disabled = ended || view.state.money < config.cost;
+            const poor = view.state.money < config.cost;
+            const disabled = ended || poor;
             const selected = this.selectedBuildingId === config.id;
             const ability = config.category === 'storage'
-              ? `保存 ${formatNumber(config.capacity ?? 0)} 份电`
-              : `增加 ${formatNumber(config.power)} MW`;
+              ? `储电 ${formatNumber(config.capacity ?? 0)}`
+              : `发电 ${formatNumber(config.power)} MW`;
+            const owned = counts.get(config.id) ?? 0;
             return `
-              <button data-select-build="${config.id}" class="${selected ? 'selected' : ''}" ${disabled ? 'disabled' : ''}>
-                <span>${this.asset(config.assetId, config.name, 'hologram-build-image')}</span>
-                <div><strong>${config.name}</strong><small>${ability} · 已有 ${counts.get(config.id) ?? 0}</small><em>${formatMoney(config.cost)}</em></div>
+              <button data-select-build="${config.id}" class="egt-card ${selected ? 'selected' : ''} ${poor ? 'poor' : ''}" ${disabled ? 'disabled' : ''}>
+                ${owned > 0 ? `<b class="egt-card-count">${owned}</b>` : ''}
+                <span class="egt-card-art">${this.asset(config.assetId, config.name, 'egt-card-image')}</span>
+                <strong>${config.name}</strong>
+                <small>${ability}</small>
+                <em>${formatMoney(config.cost)}</em>
               </button>
             `;
           }).join('')}
         </div>
+        <button class="egt-buildbar-close" data-build-dock-toggle="true" aria-label="关闭建设栏">×</button>
       </section>
     `;
   }
@@ -264,15 +328,20 @@ export class MayorDashboard {
   private renderDrawer(view: GameViewModel): string {
     const panel = this.activePanel as Exclude<MayorPanel, 'none'>;
     return `
-      <div class="mayor-drawer-shade" data-panel-close="true"></div>
-      <aside class="mayor-drawer hologram-drawer">
-        <header><div><small>城市工具</small><strong>${panelLabels[panel]}</strong></div><button data-panel-close="true">×</button></header>
-        <div class="mayor-drawer-body">${this.renderDrawerBody(view)}</div>
+      <div class="egt-shade" data-panel-close="true"></div>
+      <aside class="egt-drawer">
+        <header>
+          ${panel === 'hub' ? '' : '<button class="egt-drawer-back" data-panel="hub" aria-label="返回管理">‹</button>'}
+          <strong>${panelLabels[panel]}</strong>
+          <button class="egt-drawer-close" data-panel-close="true" aria-label="关闭">×</button>
+        </header>
+        <div class="egt-drawer-body">${this.renderDrawerBody(view)}</div>
       </aside>
     `;
   }
 
   private renderDrawerBody(view: GameViewModel): string {
+    if (this.activePanel === 'hub') return this.renderManagementHub(view);
     if (this.activePanel === 'research') return this.renderUpgrades(view);
     if (this.activePanel === 'policy') return this.renderPolicies(view);
     if (this.activePanel === 'fleet') return this.renderFacilities(view);
@@ -291,7 +360,7 @@ export class MayorDashboard {
       ['system', '游戏设置', '⚙', '存档与城市列表']
     ];
     return `
-      <div class="hologram-management-grid">
+      <div class="egt-menu">
         ${items.map(([panel, label, icon, detail]) => `
           <button data-panel="${panel}">
             <i>${icon}</i>
@@ -431,12 +500,12 @@ export class MayorDashboard {
   private renderResult(view: GameViewModel): string {
     const complete = view.state.completed;
     return `
-      <div class="mayor-result-shade"><section class="mayor-result ${complete ? 'success' : 'failure'}">
-        <span>${complete ? '★' : this.asset('status_warning', '挑战失败', 'mayor-result-image')}</span>
+      <div class="egt-result-shade"><section class="egt-result ${complete ? 'success' : 'failure'}">
+        <span class="egt-result-badge">${complete ? '★' : '!'}</span>
         <small>${complete ? '城市目标已经完成' : '城市无法继续运转'}</small>
         <h2>${complete ? '这座城市建设成功' : '重新规划这座城市'}</h2>
         <p>${complete ? `你完成了“${view.level.rules.objective.label}”。` : view.level.rules.failure.label}</p>
-        <div><b>第 ${view.state.day} 天</b><b>城市成绩 ${formatNumber(view.state.score)}</b><b>剩余资金 ${formatMoney(view.state.money)}</b></div>
+        <div class="egt-result-stats"><b><small>用时</small>第 ${view.state.day} 天</b><b><small>成绩</small>${formatNumber(view.state.score)}</b><b><small>余额</small>${formatMoney(view.state.money)}</b></div>
         <footer><button data-result="menu">城市列表</button><button data-result="retry">重新开始</button>${complete && view.level.progression.nextLevelId ? '<button class="primary" data-result="next">下一座城市</button>' : ''}</footer>
       </section></div>
     `;
@@ -494,6 +563,7 @@ export class MayorDashboard {
     this.presentationMode = 'city';
     this.focusedBuildingId = undefined;
     this.buildDockOpen = false;
+    this.hintVisible = true;
     this.selectedBuildingId = this.selectedBuildingId === buildingId ? undefined : buildingId;
     if (this.lastView) this.render(this.lastView);
   }
