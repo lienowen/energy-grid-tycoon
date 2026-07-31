@@ -14,6 +14,10 @@ export type EnergyNetworkNodeKind =
   | 'distribution'
   | 'district';
 
+export type TerrainTileKind = 'water' | 'grass';
+export type TileWorldEdge = 'north' | 'east' | 'south' | 'west';
+export type TileWorldRoadLaneWidth = 2 | 4 | 6;
+
 export interface LayoutPoint {
   x: number;
   y: number;
@@ -50,6 +54,52 @@ export interface AuthoredRoadConfig {
 export interface AuthoredPlotAnchorConfig extends LayoutPoint {
   plotId: string;
   scale?: number;
+}
+
+export interface TileWorldRectConfig {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface TileWorldGridPointConfig {
+  x: number;
+  y: number;
+}
+
+export interface TileWorldRoadAnchorConfig extends TileWorldGridPointConfig {
+  id: string;
+  edge: TileWorldEdge;
+  laneWidth: TileWorldRoadLaneWidth;
+}
+
+export interface TileWorldRoadPathConfig {
+  id: string;
+  laneWidth: TileWorldRoadLaneWidth;
+  points: TileWorldGridPointConfig[];
+}
+
+/**
+ * Logical tile-world input. The mapper owns grid construction and autotiling;
+ * renderers may only consume the resulting TileWorldSceneState.
+ *
+ * Water profiles are open boundaries, not a closed island polygon:
+ * - westWaterColumnsByRow: water cell count from the west edge for each row.
+ * - southWaterRowsByColumn: water cell count from the south edge for each column.
+ */
+export interface TileWorldConfig {
+  columns: number;
+  rows: number;
+  cellSize: number;
+  originX: number;
+  originY: number;
+  defaultTerrain: TerrainTileKind;
+  westWaterColumnsByRow?: number[];
+  southWaterRowsByColumn?: number[];
+  unlockedRegions: TileWorldRectConfig[];
+  roadAnchors: TileWorldRoadAnchorConfig[];
+  roadPaths: TileWorldRoadPathConfig[];
 }
 
 export interface EnergyNetworkNodeConfig extends LayoutPoint {
@@ -91,6 +141,7 @@ export interface LevelSceneLayout {
   mode: 'authored';
   focus: LayoutPoint;
   camera: LevelSceneCameraConfig;
+  worldGrid?: TileWorldConfig;
   districts: DistrictPrefabConfig[];
   roads: AuthoredRoadConfig[];
   environment: EnvironmentPrefabConfig[];
