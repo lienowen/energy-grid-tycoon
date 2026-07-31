@@ -48,7 +48,7 @@ export const city01ZoneMaskPlacement: City01MapPlacement = {
   width: 1760,
   anchorY: 0.5,
   layer: 'groundDecorations',
-  alpha: 0,
+  alpha: 1,
   gameAlpha: 1,
   diagnosticsAlpha: 0.32
 };
