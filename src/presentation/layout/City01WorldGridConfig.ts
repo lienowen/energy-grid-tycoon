@@ -2,81 +2,86 @@ import type { TileWorldConfig } from './LevelSceneLayout';
 
 /**
  * City-01 is one district inside a larger world, not a closed island.
- * North/east land continues into locked fog; west/south open into water.
+ * The 48x42 grid deliberately overscans the home camera: west/south continue
+ * into open water while north/east continue into locked land and fog.
  */
 export const city01WorldGridConfig: TileWorldConfig = {
-  columns: 36,
-  rows: 30,
+  columns: 48,
+  rows: 42,
   cellSize: 4,
-  originX: -16,
-  originY: -10,
+  originX: -40,
+  originY: -34,
   defaultTerrain: 'grass',
   westWaterColumnsByRow: [
-    7, 7, 7, 6, 6, 6, 5, 5, 5, 5,
-    4, 4, 4, 4, 5, 5, 5, 4, 4, 4,
-    5, 5, 6, 6, 6, 7, 7, 8, 8, 9
+    13, 13, 13, 13, 13, 13,
+    13, 13, 13, 12, 12, 12, 11, 11, 11, 11,
+    10, 10, 10, 10, 11, 11, 11, 10, 10, 10,
+    11, 11, 12, 12, 12, 13, 13, 14, 14, 15,
+    15, 15, 15, 16, 16, 16
   ],
   southWaterRowsByColumn: [
-    6, 6, 6, 5, 5, 5, 4, 4, 4, 3, 3, 3,
-    3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3,
-    3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6
+    12, 12, 12, 12, 12, 12,
+    12, 12, 12, 11, 11, 11, 10, 10, 10, 9, 9, 9,
+    9, 9, 8, 8, 8, 8, 8, 8, 8, 8, 8, 9,
+    9, 9, 9, 10, 10, 10, 11, 11, 11, 12, 12, 12,
+    12, 12, 12, 12, 12, 12
   ],
   // Overlapping stepped regions form an irregular purchased territory instead
   // of one bright rectangular board. Locked terrain still continues beyond it.
   unlockedRegions: [
-    { x: 13, y: 6, width: 12, height: 3 },
-    { x: 10, y: 9, width: 18, height: 4 },
-    { x: 8, y: 13, width: 22, height: 5 },
-    { x: 9, y: 18, width: 21, height: 4 },
-    { x: 11, y: 22, width: 16, height: 3 },
-    { x: 7, y: 14, width: 3, height: 6 }
+    { x: 19, y: 12, width: 12, height: 3 },
+    { x: 16, y: 15, width: 18, height: 4 },
+    { x: 14, y: 19, width: 22, height: 5 },
+    { x: 15, y: 24, width: 21, height: 4 },
+    { x: 17, y: 28, width: 16, height: 3 },
+    { x: 13, y: 20, width: 3, height: 6 }
   ],
   roadAnchors: [
-    { id: 'north-regional-highway', x: 19, y: 0, edge: 'north', laneWidth: 4 },
-    { id: 'east-intercity-road', x: 35, y: 14, edge: 'east', laneWidth: 4 },
-    { id: 'west-harbor-bridge', x: 0, y: 15, edge: 'west', laneWidth: 4 },
-    { id: 'south-service-causeway', x: 20, y: 29, edge: 'south', laneWidth: 2 }
+    { id: 'north-regional-highway', x: 25, y: 0, edge: 'north', laneWidth: 4 },
+    { id: 'east-intercity-road', x: 47, y: 20, edge: 'east', laneWidth: 4 },
+    { id: 'west-harbor-bridge', x: 0, y: 21, edge: 'west', laneWidth: 4 },
+    { id: 'south-service-causeway', x: 26, y: 41, edge: 'south', laneWidth: 2 }
   ],
   roadPaths: [
     {
       id: 'regional-east-west',
       laneWidth: 4,
-      points: [{ x: 0, y: 15 }, { x: 12, y: 15 }, { x: 19, y: 14 }, { x: 35, y: 14 }]
+      points: [{ x: 0, y: 21 }, { x: 18, y: 21 }, { x: 25, y: 20 }, { x: 47, y: 20 }]
     },
     {
       id: 'regional-north-spine',
       laneWidth: 4,
-      points: [{ x: 19, y: 0 }, { x: 19, y: 14 }, { x: 20, y: 20 }]
+      points: [{ x: 25, y: 0 }, { x: 25, y: 20 }, { x: 26, y: 26 }]
     },
     {
       id: 'southern-utility-road',
       laneWidth: 2,
-      points: [{ x: 20, y: 20 }, { x: 20, y: 29 }]
+      points: [{ x: 26, y: 26 }, { x: 26, y: 41 }]
     },
     {
       id: 'commercial-loop-west',
       laneWidth: 2,
-      points: [{ x: 12, y: 15 }, { x: 12, y: 11 }, { x: 16, y: 9 }, { x: 19, y: 10 }]
+      points: [{ x: 18, y: 21 }, { x: 18, y: 17 }, { x: 22, y: 15 }, { x: 25, y: 16 }]
     },
     {
       id: 'residential-branch',
       laneWidth: 2,
-      points: [{ x: 19, y: 10 }, { x: 24, y: 8 }, { x: 27, y: 9 }]
+      points: [{ x: 25, y: 16 }, { x: 30, y: 14 }, { x: 33, y: 15 }]
     },
     {
       id: 'industrial-branch',
       laneWidth: 2,
-      points: [{ x: 20, y: 17 }, { x: 25, y: 19 }, { x: 28, y: 19 }]
+      points: [{ x: 26, y: 23 }, { x: 31, y: 25 }, { x: 34, y: 25 }]
     },
     {
       id: 'western-energy-branch',
       laneWidth: 2,
-      points: [{ x: 12, y: 15 }, { x: 10, y: 19 }, { x: 11, y: 22 }]
+      points: [{ x: 18, y: 21 }, { x: 16, y: 25 }, { x: 17, y: 28 }]
     },
     {
       id: 'eastern-energy-branch',
       laneWidth: 2,
-      points: [{ x: 27, y: 14 }, { x: 29, y: 16 }, { x: 29, y: 19 }]
+      points: [{ x: 33, y: 20 }, { x: 35, y: 22 }, { x: 35, y: 25 }]
     }
   ]
 };
