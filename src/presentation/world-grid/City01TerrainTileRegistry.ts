@@ -43,18 +43,18 @@ export const normalizeCity01CoastMask = (mask: number): number => {
   return normalized;
 };
 
-const variationSuffix = (variation: number): string =>
-  String(Math.abs(variation) % 4).padStart(2, '0');
-
 export const resolveCity01TerrainFrame = (
   rawShoreMask: number,
-  variation = 0
+  _variation = 0
 ): string => {
   const normalized = normalizeCity01CoastMask(rawShoreMask);
+  // Per-cell material variation made the world read as a checkerboard after
+  // minification. Runtime interiors use one seamless center frame; the extra
+  // atlas variants remain available for future chunk-scale variation.
   return normalized === 0
-    ? `terrain_grass_${variationSuffix(variation)}`
+    ? 'terrain_grass_00'
     : `terrain_coast_mask_${String(normalized).padStart(3, '0')}`;
 };
 
-export const resolveCity01WaterFrame = (variation = 0): string =>
-  `terrain_water_${variationSuffix(variation)}`;
+export const resolveCity01WaterFrame = (_variation = 0): string =>
+  'terrain_water_00';
