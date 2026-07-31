@@ -1,12 +1,16 @@
-import { Container, Graphics, Text } from 'pixi.js';
+import { Container, Graphics, Sprite, Text, type Texture } from 'pixi.js';
 import type {
   ScenePoint,
   TileWorldCellSceneState,
   TileWorldSceneState
 } from '../CitySceneTypes';
+import {
+  resolveCity01TerrainFrame,
+  resolveCity01WaterFrame
+} from '../world-grid/City01TerrainTileRegistry';
 import type { WorldLayers } from './WorldLayerManager';
-import { TerrainNeighbor } from '../world-grid/TerrainAutoTiler';
 import { RoadDirection } from './generation/RoadAutoTiler';
+import { City01TerrainAtlas } from './City01TerrainAtlas';
 
 interface ScreenPoint {
   x: number;
@@ -27,9 +31,9 @@ export interface City01TilemapRenderOptions {
   project(point: ScenePoint): ScreenPoint;
 }
 
-const grassColors = [0x426c50, 0x466f53, 0x3f684d, 0x496f54];
-const lockedGrassColors = [0x2d493e, 0x304c40, 0x2b463b];
-const waterColors = [0x0b5263, 0x0c5869, 0x0a4d5e, 0x0d5b6b];
+const fallbackGrassColors = [0x426c50, 0x466f53, 0x3f684d, 0x496f54];
+const fallbackLockedColors = [0x2d493e, 0x304c40, 0x2b463b];
+const fallbackWaterColors = [0x0b5263, 0x0c5869, 0x0a4d5e, 0x0d5b6b];
 
 const polygon = (corners: TileCorners): number[] => [
   corners.top.x, corners.top.y,
@@ -60,6 +64,11 @@ const cornersFor = (
     y: center.y + (-basisX.y + basisY.y) * 0.5
   }
 });
+
+const frameNameForCell = (cell: TileWorldCellSceneState): string =>
+  cell.terrain === 'water'
+    ? resolveCity01WaterFrame(cell.variation)
+    : resolveCity01TerrainFrame(cell.shoreMask, cell.variation);
 
 const roadWidth = (laneWidth: 2 | 4 | 6): number => {
   if (laneWidth === 6) return 14;
@@ -101,58 +110,6 @@ const entryDirection = (cell: TileWorldCellSceneState): RoadDirection | undefine
 const effectiveRoadMask = (cell: TileWorldCellSceneState): number => {
   const direction = entryDirection(cell);
   return direction === undefined ? cell.roadMask : cell.roadMask | direction;
-};
-
-const drawCoastEdge = (
-  graphics: Graphics,
-  from: ScreenPoint,
-  to: ScreenPoint,
-  diagnostics: boolean
-): void => {
-  graphics.moveTo(from.x, from.y).lineTo(to.x, to.y).stroke({
-    color: 0xc7ad72,
-    alpha: diagnostics ? 0.95 : 0.72,
-    width: diagnostics ? 4.5 : 3.2,
-    cap: 'round'
-  });
-  graphics.moveTo(from.x, from.y + 1.5).lineTo(to.x, to.y + 1.5).stroke({
-    color: 0x7cc5bd,
-    alpha: 0.28,
-    width: 1.2,
-    cap: 'round'
-  });
-};
-
-const drawShoreline = (
-  graphics: Graphics,
-  corners: TileCorners,
-  mask: number,
-  diagnostics: boolean
-): void => {
-  if ((mask & TerrainNeighbor.North) !== 0) {
-    drawCoastEdge(graphics, corners.top, corners.right, diagnostics);
-  }
-  if ((mask & TerrainNeighbor.East) !== 0) {
-    drawCoastEdge(graphics, corners.right, corners.bottom, diagnostics);
-  }
-  if ((mask & TerrainNeighbor.South) !== 0) {
-    drawCoastEdge(graphics, corners.bottom, corners.left, diagnostics);
-  }
-  if ((mask & TerrainNeighbor.West) !== 0) {
-    drawCoastEdge(graphics, corners.left, corners.top, diagnostics);
-  }
-
-  const diagonalCorners: Array<[number, ScreenPoint]> = [
-    [TerrainNeighbor.NorthEast, corners.right],
-    [TerrainNeighbor.SouthEast, corners.bottom],
-    [TerrainNeighbor.SouthWest, corners.left],
-    [TerrainNeighbor.NorthWest, corners.top]
-  ];
-  for (const [bit, point] of diagonalCorners) {
-    if ((mask & bit) === 0) continue;
-    graphics.circle(point.x, point.y, diagnostics ? 2.8 : 2)
-      .fill({ color: 0xc7ad72, alpha: diagnostics ? 0.86 : 0.48 });
-  }
 };
 
 const drawRoadCell = (
@@ -247,19 +204,46 @@ const drawEntryMarker = (
   layer.addChild(label);
 };
 
+const addTerrainSprites = (
+  container: Container,
+  cells: readonly TileWorldCellSceneState[],
+  textures: Readonly<Record<string, Texture>>,
+  project: (point: ScenePoint) => ScreenPoint,
+  tileWidth: number,
+  tileHeight: number
+): void => {
+  for (const cell of cells) {
+    const texture = textures[frameNameForCell(cell)];
+    if (!texture) continue;
+    const center = project(cell);
+    const sprite = new Sprite(texture);
+    sprite.anchor.set(0.5);
+    sprite.position.set(center.x, center.y);
+    sprite.width = tileWidth + 0.35;
+    sprite.height = tileHeight + 0.2;
+    sprite.zIndex = cell.gridX + cell.gridY;
+    container.addChild(sprite);
+  }
+  container.sortChildren();
+};
+
 export class City01TilemapRenderer {
   static render(options: City01TilemapRenderOptions): void {
     const { world, layers, diagnostics, project } = options;
     const basisX = project(world.basisX);
     const basisY = project(world.basisY);
-    const terrain = new Graphics();
-    const waterDetail = new Graphics();
-    const shore = new Graphics();
+    const tileWidth = Math.max(1, Math.abs(basisX.x - basisY.x));
+    const tileHeight = Math.max(1, Math.abs(basisX.y + basisY.y));
+
+    const fallbackTerrain = new Graphics();
+    const terrainSprites = new Container();
     const lockedFog = new Graphics();
+    const diagnosticsGrid = new Graphics();
     const curb = new Graphics();
     const asphalt = new Graphics();
     const bridge = new Graphics();
     const entries = new Container();
+    terrainSprites.sortableChildren = true;
     entries.sortableChildren = true;
 
     for (const cell of world.cells) {
@@ -267,36 +251,20 @@ export class City01TilemapRenderer {
       const corners = cornersFor(center, basisX, basisY);
       const shape = polygon(corners);
       if (cell.terrain === 'water') {
-        const color = waterColors[cell.variation % waterColors.length] ?? waterColors[0]!;
-        terrain.poly(shape).fill({ color, alpha: 1 });
-        if (cell.variation % 3 === 0) {
-          const from = {
-            x: corners.left.x * 0.58 + corners.top.x * 0.42,
-            y: corners.left.y * 0.58 + corners.top.y * 0.42
-          };
-          const to = {
-            x: corners.right.x * 0.58 + corners.bottom.x * 0.42,
-            y: corners.right.y * 0.58 + corners.bottom.y * 0.42
-          };
-          waterDetail.moveTo(from.x, from.y).lineTo(to.x, to.y).stroke({
-            color: 0x8ed9dc,
-            alpha: 0.12,
-            width: 0.8,
-            cap: 'round'
-          });
-        }
+        const color = fallbackWaterColors[cell.variation % fallbackWaterColors.length]
+          ?? fallbackWaterColors[0]!;
+        fallbackTerrain.poly(shape).fill({ color, alpha: 1 });
       } else {
-        const palette = cell.unlocked ? grassColors : lockedGrassColors;
+        const palette = cell.unlocked ? fallbackGrassColors : fallbackLockedColors;
         const color = palette[cell.variation % palette.length] ?? palette[0]!;
-        terrain.poly(shape).fill({ color, alpha: 1 });
-        if (cell.shoreMask !== 0) drawShoreline(shore, corners, cell.shoreMask, diagnostics);
+        fallbackTerrain.poly(shape).fill({ color, alpha: 1 });
         if (!cell.unlocked) {
           lockedFog.poly(shape).fill({ color: 0x07171a, alpha: diagnostics ? 0.18 : 0.3 });
         }
       }
 
       if (diagnostics) {
-        terrain.poly(shape).stroke({ color: 0xa7d6c4, alpha: 0.13, width: 0.55 });
+        diagnosticsGrid.poly(shape).stroke({ color: 0xa7d6c4, alpha: 0.18, width: 0.6 });
       }
       if (cell.roadLaneWidth) {
         drawRoadCell(curb, asphalt, bridge, cell, center, basisX, basisY, diagnostics);
@@ -306,16 +274,36 @@ export class City01TilemapRenderer {
       }
     }
 
-    terrain.zIndex = -900000;
-    waterDetail.zIndex = -899900;
-    shore.zIndex = -899800;
+    fallbackTerrain.zIndex = -900100;
+    terrainSprites.zIndex = -900000;
     lockedFog.zIndex = -899700;
+    diagnosticsGrid.zIndex = -899600;
     curb.zIndex = -410000;
     asphalt.zIndex = -409900;
     bridge.zIndex = -409800;
     entries.zIndex = -409700;
 
-    layers.terrain.addChild(terrain, waterDetail, shore, lockedFog);
+    layers.terrain.addChild(fallbackTerrain, terrainSprites, lockedFog, diagnosticsGrid);
     layers.roads.addChild(curb, asphalt, bridge, entries);
+
+    const loadedTextures = City01TerrainAtlas.isReady()
+      ? City01TerrainAtlas.getTexture('terrain_grass_00')
+      : undefined;
+    if (loadedTextures) {
+      void City01TerrainAtlas.load().then((textures) => {
+        if (!terrainSprites.parent) return;
+        addTerrainSprites(terrainSprites, world.cells, textures, project, tileWidth, tileHeight);
+      });
+      return;
+    }
+
+    void City01TerrainAtlas.load()
+      .then((textures) => {
+        if (!terrainSprites.parent) return;
+        addTerrainSprites(terrainSprites, world.cells, textures, project, tileWidth, tileHeight);
+      })
+      .catch((error: unknown) => {
+        console.error('City-01 terrain atlas failed to load:', error);
+      });
   }
 }
