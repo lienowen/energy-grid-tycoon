@@ -21,9 +21,15 @@ export const city01WorldGridConfig: TileWorldConfig = {
     3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3,
     3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6
   ],
+  // Overlapping stepped regions form an irregular purchased territory instead
+  // of one bright rectangular board. Locked terrain still continues beyond it.
   unlockedRegions: [
-    { x: 8, y: 5, width: 22, height: 19 },
-    { x: 6, y: 10, width: 4, height: 9 }
+    { x: 13, y: 6, width: 12, height: 3 },
+    { x: 10, y: 9, width: 18, height: 4 },
+    { x: 8, y: 13, width: 22, height: 5 },
+    { x: 9, y: 18, width: 21, height: 4 },
+    { x: 11, y: 22, width: 16, height: 3 },
+    { x: 7, y: 14, width: 3, height: 6 }
   ],
   roadAnchors: [
     { id: 'north-regional-highway', x: 19, y: 0, edge: 'north', laneWidth: 4 },
