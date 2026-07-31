@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2048" height="1536" viewBox="0 0 2048 1536">
+  <defs>
+    <linearGradient id="asphalt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#566062"/><stop offset="1" stop-color="#343e40"/></linearGradient>
+    <filter id="roadShadow" x="-30%" y="-80%" width="160%" height="260%"><feGaussianBlur stdDeviation="3.2"/></filter>
+  </defs>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M690 690 C790 646 888 634 977 680 C1067 726 1156 722 1274 692" stroke="#071317" stroke-opacity="0.25" stroke-width="26" filter="url(#roadShadow)"/>
+    <path d="M690 690 C790 646 888 634 977 680 C1067 726 1156 722 1274 692" stroke="#8b9188" stroke-opacity="0.58" stroke-width="21"/>
+    <path d="M690 690 C790 646 888 634 977 680 C1067 726 1156 722 1274 692" stroke="url(#asphalt)" stroke-width="15"/>
+    <path d="M977 680 C1009 723 1027 775 1038 845 C1100 874 1170 879 1242 850 C1286 831 1321 808 1354 782" stroke="#071317" stroke-opacity="0.23" stroke-width="24" filter="url(#roadShadow)"/>
+    <path d="M977 680 C1009 723 1027 775 1038 845 C1100 874 1170 879 1242 850 C1286 831 1321 808 1354 782" stroke="#878e86" stroke-opacity="0.54" stroke-width="19"/>
+    <path d="M977 680 C1009 723 1027 775 1038 845 C1100 874 1170 879 1242 850 C1286 831 1321 808 1354 782" stroke="url(#asphalt)" stroke-width="13"/>
+    <path d="M690 690 C752 748 842 802 1038 845" stroke="#071317" stroke-opacity="0.22" stroke-width="22" filter="url(#roadShadow)"/>
+    <path d="M690 690 C752 748 842 802 1038 845" stroke="#838a83" stroke-opacity="0.5" stroke-width="17"/>
+    <path d="M690 690 C752 748 842 802 1038 845" stroke="url(#asphalt)" stroke-width="12"/>
+    <path d="M1274 692 C1314 719 1348 748 1354 782 M1242 850 C1307 869 1365 884 1419 901" stroke="#071317" stroke-opacity="0.2" stroke-width="18" filter="url(#roadShadow)"/>
+    <path d="M1274 692 C1314 719 1348 748 1354 782 M1242 850 C1307 869 1365 884 1419 901" stroke="#848b84" stroke-opacity="0.48" stroke-width="14"/>
+    <path d="M1274 692 C1314 719 1348 748 1354 782 M1242 850 C1307 869 1365 884 1419 901" stroke="url(#asphalt)" stroke-width="9"/>
+    <path d="M690 690 L648 650 M812 648 L794 608 M977 680 L989 620 M1096 720 L1128 674 M1038 845 L1008 899 M1242 850 L1254 913" stroke="#7e867f" stroke-opacity="0.46" stroke-width="13"/>
+    <path d="M690 690 L648 650 M812 648 L794 608 M977 680 L989 620 M1096 720 L1128 674 M1038 845 L1008 899 M1242 850 L1254 913" stroke="#3e494b" stroke-width="8"/>
+  </g>
+  <g fill="none" stroke="#e2c96a" stroke-opacity="0.22" stroke-width="1.5" stroke-dasharray="12 15" stroke-linecap="round">
+    <path d="M690 690 C790 646 888 634 977 680 C1067 726 1156 722 1274 692"/>
+    <path d="M977 680 C1009 723 1027 775 1038 845 C1100 874 1170 879 1242 850 C1286 831 1321 808 1354 782"/>
+    <path d="M690 690 C752 748 842 802 1038 845"/>
+  </g>
+  <g><ellipse cx="977" cy="680" rx="24" ry="13" fill="#7c847c" opacity="0.64"/><ellipse cx="977" cy="680" rx="18" ry="9" fill="#3f494b"/><ellipse cx="977" cy="680" rx="7" ry="4" fill="#6d8b67" opacity="0.8"/></g>
+</svg>
