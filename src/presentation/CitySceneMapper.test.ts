@@ -50,7 +50,7 @@ describe('CitySceneMapper', () => {
     expect(scene.networkEdges?.length).toBeGreaterThanOrEqual(10);
     expect(scene.networkNodes?.some((node) => node.status === 'planned')).toBe(true);
     expect(scene.ambientBlocks).toHaveLength(0);
-    expect(scene.tileWorld?.cells).toHaveLength(36 * 30);
+    expect(scene.tileWorld?.cells).toHaveLength(48 * 42);
     expect(scene.tileWorld?.entryPoints).toHaveLength(4);
     expect(scene.tileWorld?.cells.some((cell) => cell.terrain === 'water')).toBe(true);
     expect(scene.tileWorld?.cells.some((cell) => cell.terrain === 'grass' && !cell.unlocked)).toBe(true);
