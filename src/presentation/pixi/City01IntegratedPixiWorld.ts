@@ -352,15 +352,31 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     }
   }
 
-  private drawGroundPad(point: ScenePoint, width: number, fill: number, edge: number, warning: boolean): void {
-    const position = this.project({ ...point, elevation: point.elevation - 0.05 });
-    const shadow = new Graphics().ellipse(position.x, position.y + 10, width * 0.39, width * 0.105)
+  private drawDistrictGrounding(district: DistrictPrefabSceneState, width: number): void {
+    const position = this.project({ ...district, elevation: district.elevation - 0.05 });
+    const shadow = new Graphics().ellipse(position.x, position.y + 8, width * 0.32, width * 0.075)
+      .fill({ color: 0x06130f, alpha: 0.16 });
+    shadow.zIndex = this.depth(district, -190);
+    const blend = new Graphics().ellipse(position.x, position.y + 4, width * 0.29, width * 0.061)
+      .fill({ color: districtGroundColors[district.kind], alpha: 0.08 });
+    blend.zIndex = this.depth(district, -180);
+    this.layers.layers.groundDecorations.addChild(shadow, blend);
+  }
+
+  private drawFacilityGrounding(
+    facility: FacilitySceneState,
+    width: number,
+    edge: number,
+    warning: boolean
+  ): void {
+    const position = this.project({ ...facility, elevation: facility.elevation - 0.05 });
+    const shadow = new Graphics().ellipse(position.x, position.y + 7, width * 0.31, width * 0.08)
       .fill({ color: 0x06130f, alpha: 0.2 });
-    shadow.zIndex = this.depth(point, -190);
-    const pad = new Graphics().ellipse(position.x, position.y + 4, width * 0.36, width * 0.092)
-      .fill({ color: fill, alpha: 0.14 })
-      .stroke({ color: edge, alpha: warning ? 0.5 : 0.16, width: warning ? 2 : 1 });
-    pad.zIndex = this.depth(point, -180);
+    shadow.zIndex = this.depth(facility, -190);
+    const pad = new Graphics().ellipse(position.x, position.y + 3, width * 0.28, width * 0.067)
+      .fill({ color: facilityGroundColor(facility), alpha: 0.13 })
+      .stroke({ color: edge, alpha: warning ? 0.34 : 0.12, width: warning ? 1.5 : 0.8 });
+    pad.zIndex = this.depth(facility, -180);
     this.layers.layers.groundDecorations.addChild(shadow, pad);
   }
 
@@ -368,13 +384,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     for (const district of state.districtPrefabs ?? []) {
       if (!district.prefabAssetId) continue;
       const width = districtWidths[district.kind] * district.scale;
-      this.drawGroundPad(
-        district,
-        width,
-        districtGroundColors[district.kind],
-        districtColor(district),
-        district.status !== 'normal'
-      );
+      this.drawDistrictGrounding(district, width);
       const suffix = district.status === 'blackout' || district.status === 'offline' ? 'blackout' : 'night';
       this.addAsset({
         assetId: `${district.prefabAssetId}_${suffix}`,
@@ -422,10 +432,9 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
       });
       const width = facilityWidth(facility);
       const active = facility.enabled && !facility.underConstruction;
-      this.drawGroundPad(
+      this.drawFacilityGrounding(
         facility,
         width,
-        facilityGroundColor(facility),
         facility.underConstruction ? 0xffd45f : active ? 0x64e3c0 : 0xff667f,
         facility.underConstruction || !active
       );
