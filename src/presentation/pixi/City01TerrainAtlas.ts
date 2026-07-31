@@ -26,11 +26,10 @@ export class City01TerrainAtlas {
 
     City01TerrainAtlas.loading = (async () => {
       const atlasTexture = await Assets.load<Texture>(atlasImageUrl);
-      // The V1 atlas packs transparent diamond frames without padding. Nearest
-      // sampling prevents minification from interpolating transparent frame
-      // borders into visible dark seams. Mipmaps are disabled for the same
-      // reason; a padded/extruded atlas can return to linear filtering later.
-      atlasTexture.source.scaleMode = 'nearest';
+      // Linear sampling preserves the terrain material at the current zoom.
+      // Mipmaps remain disabled because the V1 atlas has transparent frame
+      // corners; the renderer applies a small screen-space tile overscan.
+      atlasTexture.source.scaleMode = 'linear';
       atlasTexture.source.autoGenerateMipmaps = false;
       const sheet = new Spritesheet(atlasTexture, atlasData);
       await sheet.parse();
