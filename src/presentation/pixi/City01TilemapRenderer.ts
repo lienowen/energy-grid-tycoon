@@ -31,9 +31,12 @@ export interface City01TilemapRenderOptions {
   project(point: ScenePoint): ScreenPoint;
 }
 
-const fallbackGrassColors = [0x426c50, 0x466f53, 0x3f684d, 0x496f54];
-const fallbackLockedColors = [0x2d493e, 0x304c40, 0x2b463b];
-const fallbackWaterColors = [0x0b5263, 0x0c5869, 0x0a4d5e, 0x0d5b6b];
+// These fallback colors match the measured average colors of the V1 atlas.
+// They remain invisible after loading but prevent contrasting checkerboard
+// seams from showing through sub-pixel transparent tile edges.
+const FALLBACK_GRASS = 0x497448;
+const FALLBACK_LOCKED_GRASS = 0x2e4d2f;
+const FALLBACK_WATER = 0x08596f;
 
 const polygon = (corners: TileCorners): number[] => [
   corners.top.x, corners.top.y,
@@ -257,15 +260,10 @@ export class City01TilemapRenderer {
       const center = project(cell);
       const corners = cornersFor(center, basisX, basisY);
       const shape = polygon(corners);
-      if (cell.terrain === 'water') {
-        const color = fallbackWaterColors[cell.variation % fallbackWaterColors.length]
-          ?? fallbackWaterColors[0]!;
-        fallbackTerrain.poly(shape).fill({ color, alpha: 1 });
-      } else {
-        const palette = cell.unlocked ? fallbackGrassColors : fallbackLockedColors;
-        const color = palette[cell.variation % palette.length] ?? palette[0]!;
-        fallbackTerrain.poly(shape).fill({ color, alpha: 1 });
-      }
+      const fallbackColor = cell.terrain === 'water'
+        ? FALLBACK_WATER
+        : cell.unlocked ? FALLBACK_GRASS : FALLBACK_LOCKED_GRASS;
+      fallbackTerrain.poly(shape).fill({ color: fallbackColor, alpha: 1 });
 
       if (diagnostics) {
         diagnosticsGrid.poly(shape).stroke({ color: 0xa7d6c4, alpha: 0.18, width: 0.6 });
