@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "entries": [
-    { "id": "world_facility_solar_active", "version": 6, "width": 1024, "height": 1024, "tag": "hires-runtime-v2" },
-    { "id": "world_facility_wind_active", "version": 6, "width": 1024, "height": 1024, "tag": "hires-runtime-v2" },
-    { "id": "world_facility_gas_active", "version": 6, "width": 1024, "height": 1024, "tag": "hires-runtime-v2" },
-    { "id": "world_facility_battery_active", "version": 6, "width": 1024, "height": 1024, "tag": "hires-runtime-v2" },
-    { "id": "world_facility_substation_active", "version": 6, "width": 1024, "height": 1024, "tag": "hires-runtime-v2" },
-    { "id": "world_facility_nuclear_active", "version": 6, "width": 1024, "height": 1024, "tag": "hires-runtime-v2" },
-    { "id": "world_facility_grid_node_active", "version": 6, "width": 1024, "height": 1024, "tag": "hires-runtime-v2" }
+    { "id": "world_facility_solar_active", "src": "/assets/world/facilities/solar/active.png", "version": 6, "width": 1024, "height": 1024, "tag": "hires-runtime-v2" },
+    { "id": "world_facility_wind_active", "src": "/assets/world/facilities/wind/active.png", "version": 6, "width": 1024, "height": 1024, "tag": "hires-runtime-v2" },
+    { "id": "world_facility_gas_active", "src": "/assets/world/facilities/gas/active.png", "version": 6, "width": 1024, "height": 1024, "tag": "hires-runtime-v2" },
+    { "id": "world_facility_battery_active", "src": "/assets/world/facilities/battery/active.png", "version": 6, "width": 1024, "height": 1024, "tag": "hires-runtime-v2" },
+    { "id": "world_facility_substation_active", "src": "/assets/world/facilities/substation/active.png", "version": 6, "width": 1024, "height": 1024, "tag": "hires-runtime-v2" },
+    { "id": "world_facility_nuclear_active", "src": "/assets/world/facilities/nuclear/active.png", "version": 6, "width": 1024, "height": 1024, "tag": "hires-runtime-v2" },
+    { "id": "world_facility_grid_node_active", "src": "/assets/world/facilities/grid_node/active.png", "version": 6, "width": 1024, "height": 1024, "tag": "hires-runtime-v2" }
   ]
 }
