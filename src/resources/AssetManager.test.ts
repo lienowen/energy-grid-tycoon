@@ -10,8 +10,8 @@ describe('AssetManager', () => {
     expect(AssetManager.get('building_solar')).toBe('/assets/buildings/solar_basic.png');
     expect(AssetManager.getEntry('building_solar')).toMatchObject({
       kind: 'image',
-      width: 512,
-      height: 512,
+      width: 1024,
+      height: 1024,
       preload: 'level'
     });
   });
