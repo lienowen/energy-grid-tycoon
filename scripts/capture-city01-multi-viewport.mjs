@@ -5,12 +5,12 @@ const baseUrl = process.env.CITY01_CAPTURE_URL ?? 'http://127.0.0.1:4173';
 const outputDir = process.env.CITY01_CAPTURE_DIR ?? 'artifacts/city01-multi-viewport';
 
 const cases = [
-  { id: 'desktop-city', width: 1440, height: 1080, mode: 'city' },
-  { id: 'desktop-placement', width: 1440, height: 1080, mode: 'city', action: 'placement' },
-  { id: 'desktop-construction', width: 1440, height: 1080, mode: 'city', action: 'construction' },
-  { id: 'narrow-city', width: 1024, height: 900, mode: 'city' },
-  { id: 'mobile-city', width: 430, height: 932, mode: 'city' },
-  { id: 'mobile-placement', width: 430, height: 932, mode: 'city', action: 'placement' },
+  { id: 'desktop-city', width: 1440, height: 1080, mode: 'game' },
+  { id: 'desktop-placement', width: 1440, height: 1080, mode: 'game', action: 'placement' },
+  { id: 'desktop-construction', width: 1440, height: 1080, mode: 'game', action: 'construction' },
+  { id: 'narrow-city', width: 1024, height: 900, mode: 'game' },
+  { id: 'mobile-city', width: 430, height: 932, mode: 'game' },
+  { id: 'mobile-placement', width: 430, height: 932, mode: 'game', action: 'placement' },
   { id: 'mobile-grid', width: 430, height: 932, mode: 'grid' }
 ];
 
@@ -37,38 +37,52 @@ const clickVisible = async (page, selector) => page.evaluate((targetSelector) =>
 }, selector);
 
 const enterCity = async (page) => {
+  await page.addInitScript(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+  });
   await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
-  const startButton = page.locator('[data-start="city-01"]');
-  await startButton.waitFor({ state: 'visible', timeout: 30000 });
-  await startButton.click();
-  await page.waitForSelector('canvas.city01-integrated-canvas', { timeout: 30000 });
-  await page.waitForTimeout(250);
+
+  const canvas = page.locator('canvas.city01-integrated-canvas');
+  const mountedDirectly = await canvas
+    .waitFor({ state: 'visible', timeout: 8000 })
+    .then(() => true)
+    .catch(() => false);
+
+  if (!mountedDirectly) {
+    const startButton = page.locator('[data-start="city-01"]');
+    await startButton.waitFor({ state: 'visible', timeout: 15000 });
+    await startButton.click();
+    await canvas.waitFor({ state: 'visible', timeout: 30000 });
+  }
+
+  await page.waitForTimeout(350);
   const paused = await clickVisible(page, '[data-speed="0"]');
   if (!paused) throw new Error('Unable to pause the city before capture');
-  await page.waitForTimeout(120);
+  await page.waitForTimeout(160);
 };
 
 const enterPlacement = async (page) => {
   let clicked = await clickVisible(page, '[data-guide-build="gas_basic"]');
   if (!clicked) {
     clicked = await clickVisible(page, '[data-build-dock-toggle="true"]');
-    if (!clicked) throw new Error('No visible entry point for build placement');
-    await page.waitForTimeout(100);
+    if (clicked) await page.waitForTimeout(100);
     clicked = await clickVisible(page, '[data-select-build="gas_basic"]');
   }
   if (!clicked) throw new Error('Unable to select gas_basic for placement');
   await page.waitForFunction(() =>
-    Boolean(document.querySelector('.hologram-secretary.placement'))
+    Boolean(document.querySelector('.egt-hint-mini.placing'))
+    || Boolean(document.querySelector('.hologram-secretary.placement'))
     || Boolean(document.querySelector('[data-cancel-build="true"]'))
   );
   await page.waitForTimeout(250);
 };
 
 const placeConstruction = async (page) => {
-  // This point is the authored utility plot in the fixed 1440x1080 City-01 home camera.
+  // Authored utility target in the fixed desktop City-01 home camera.
   const target = { x: 916, y: 773 };
   await page.mouse.click(target.x, target.y);
-  await page.waitForTimeout(120);
+  await page.waitForTimeout(140);
   await page.mouse.click(target.x, target.y);
   await page.waitForFunction(() => !document.querySelector('[data-cancel-build="true"]'));
   await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
@@ -116,13 +130,16 @@ const inspectPage = async (page, captureCase) => page.evaluate(({ expectedMode, 
   const host = document.querySelector('[data-world-renderer="city01-integrated"]');
   const documentElement = document.documentElement;
   const body = document.body;
-  const placementGuide = document.querySelector('.hologram-secretary.placement');
+  const placementGuide = document.querySelector('.egt-hint-mini.placing')
+    ?? document.querySelector('.hologram-secretary.placement');
   const cancelBuild = document.querySelector('[data-cancel-build="true"]');
-  const placementName = placementGuide?.querySelector('strong')?.textContent?.trim()
+  const placementName = placementGuide?.querySelector('b, strong')?.textContent?.trim()
     ?? document.querySelector('.release-onboarding-target')?.textContent?.trim()
     ?? null;
-  const onboarding = document.querySelector('.release-onboarding');
-  const toolRail = document.querySelector('.hologram-tool-rail');
+  const onboarding = document.querySelector('.egt-hint-mini')
+    ?? document.querySelector('.release-onboarding');
+  const toolRail = document.querySelector('.egt-dock')
+    ?? document.querySelector('.hologram-tool-rail');
   const presentationButton = [...document.querySelectorAll('[data-presentation-toggle="true"]')]
     .find((candidate) => candidate instanceof HTMLElement && candidate.getBoundingClientRect().width > 0);
   const presentationRect = presentationButton instanceof HTMLElement
