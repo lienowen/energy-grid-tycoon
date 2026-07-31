@@ -29,11 +29,12 @@ if (runtimeOverrideCatalog.schemaVersion !== 1 || !Array.isArray(runtimeOverride
   errors.push('Runtime asset override catalog must use schemaVersion 1 and contain entries.');
 }
 
+const overrideKey = (entry) => `${entry.id}::${entry.src}`;
 const overrides = new Map(
-  (runtimeOverrideCatalog.entries ?? []).map((entry) => [entry.id, entry])
+  (runtimeOverrideCatalog.entries ?? []).map((entry) => [overrideKey(entry), entry])
 );
 const applyOverride = (entry) => {
-  const override = overrides.get(entry.id);
+  const override = overrides.get(overrideKey(entry));
   if (!override) return { ...entry };
   return {
     ...entry,
@@ -51,8 +52,12 @@ for (const catalog of [legacyCatalog, v5Catalog]) {
   for (const entry of catalog.entries ?? []) merged.set(entry.id, applyOverride(entry));
 }
 
+const sourceEntries = [...(legacyCatalog.entries ?? []), ...(v5Catalog.entries ?? [])];
 for (const override of overrides.values()) {
-  if (!merged.has(override.id)) errors.push(`Runtime asset override references missing id: ${override.id}`);
+  const sourceEntry = sourceEntries.find((entry) =>
+    entry.id === override.id && entry.src === override.src
+  );
+  if (!sourceEntry) errors.push(`Runtime asset override references missing source: ${override.id} -> ${override.src}`);
   if (!Number.isFinite(override.width) || !Number.isFinite(override.height)) {
     errors.push(`Runtime asset override has invalid dimensions: ${override.id}`);
   }
