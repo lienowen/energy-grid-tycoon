@@ -17,27 +17,33 @@ describe('GlobalAssetCatalog', () => {
       .toBe('/assets/city01/product/districts/district-old-town-base.png');
   });
 
-  it('loads aligned City-01 base, road and decoration layers', () => {
+  it('loads the aligned City-01 split gameplay map layers', () => {
     const entries = new Map(globalAssetCatalog.entries.map((entry) => [entry.id, entry]));
-    const baseMap = entries.get('city01_map_base');
-    const roadNetwork = entries.get('city01_road_network_base');
-    const groundDetails = entries.get('city01_ground_details_base');
+    const land = entries.get('city01_land_base');
+    const zones = entries.get('city01_zone_mask');
+    const roads = entries.get('city01_road_thin');
+    const decor = entries.get('city01_decor_details');
+    const ocean = entries.get('city01_ocean_water_base');
 
-    expect(baseMap?.src)
-      .toBe('/assets/city01/product/environment/runtime/city01-map-base.svg');
-    expect(roadNetwork?.src)
-      .toBe('/assets/city01/product/environment/runtime/city01-road-network.svg');
-    expect(groundDetails?.src)
-      .toBe('/assets/city01/product/environment/runtime/city01-ground-details.svg');
-    expect(baseMap?.width).toBe(2048);
-    expect(baseMap?.height).toBe(1536);
-    expect(roadNetwork?.width).toBe(baseMap?.width);
-    expect(roadNetwork?.height).toBe(baseMap?.height);
-    expect(groundDetails?.width).toBe(baseMap?.width);
-    expect(groundDetails?.height).toBe(baseMap?.height);
-    expect(baseMap?.anchor).toEqual({ x: 0.5, y: 0.5 });
-    expect(roadNetwork?.anchor).toEqual(baseMap?.anchor);
-    expect(groundDetails?.anchor).toEqual(baseMap?.anchor);
+    expect(land?.src)
+      .toBe('/assets/city01/product/environment/runtime/city01-land-base.svg');
+    expect(zones?.src)
+      .toBe('/assets/city01/product/environment/runtime/city01-zone-mask.svg');
+    expect(roads?.src)
+      .toBe('/assets/city01/product/environment/runtime/city01-road-thin.svg');
+    expect(decor?.src)
+      .toBe('/assets/city01/product/environment/runtime/city01-decor-details.svg');
+    expect(ocean?.src)
+      .toBe('/assets/city01/product/environment/runtime/ocean-water-base.svg');
+
+    const layers = [land, zones, roads, decor, ocean];
+    expect(layers.every((entry) => entry?.width === 2048)).toBe(true);
+    expect(layers.every((entry) => entry?.height === 1536)).toBe(true);
+    expect(layers.every((entry) => entry?.anchor?.x === 0.5 && entry.anchor.y === 0.5)).toBe(true);
+
+    expect(entries.has('city01_map_base')).toBe(false);
+    expect(entries.has('city01_road_network_base')).toBe(false);
+    expect(entries.has('city01_ground_details_base')).toBe(false);
   });
 
   it('keeps source environment and vehicle assets available for later layers', () => {
