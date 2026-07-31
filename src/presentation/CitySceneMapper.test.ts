@@ -50,6 +50,11 @@ describe('CitySceneMapper', () => {
     expect(scene.networkEdges?.length).toBeGreaterThanOrEqual(10);
     expect(scene.networkNodes?.some((node) => node.status === 'planned')).toBe(true);
     expect(scene.ambientBlocks).toHaveLength(0);
+    expect(scene.tileWorld?.cells).toHaveLength(36 * 30);
+    expect(scene.tileWorld?.entryPoints).toHaveLength(4);
+    expect(scene.tileWorld?.cells.some((cell) => cell.terrain === 'water')).toBe(true);
+    expect(scene.tileWorld?.cells.some((cell) => cell.terrain === 'grass' && !cell.unlocked)).toBe(true);
+    expect(scene.tileWorld?.cells.some((cell) => cell.roadLaneWidth === 4)).toBe(true);
   });
 
   it('uses perimeter plot anchors for facilities and build targets', () => {
@@ -77,12 +82,12 @@ describe('CitySceneMapper', () => {
     }
   });
 
-  it('uses the authored city-core camera composition for Dawn City', () => {
+  it('uses a movable world camera instead of model-table framing for Dawn City', () => {
     const scene = CitySceneMapper.map(makeView());
-    expect(scene.camera.startZoom).toBe(1.5);
-    expect(scene.camera.startOffsetY).toBe(14);
-    expect(scene.camera.panLimitX).toBe(175);
-    expect(scene.camera.panLimitY).toBe(135);
+    expect(scene.camera.startZoom).toBe(1.24);
+    expect(scene.camera.startOffsetY).toBe(18);
+    expect(scene.camera.panLimitX).toBe(520);
+    expect(scene.camera.panLimitY).toBe(360);
     expect(scene.roads).toHaveLength(0);
     expect(scene.focus).toEqual(toScenePoint({ x: 56, y: 51, elevation: 0 }));
     expect(scene.camera.minZoom).toBeLessThan(scene.camera.maxZoom);
@@ -92,6 +97,7 @@ describe('CitySceneMapper', () => {
     const scene = CitySceneMapper.map(makeView(1));
     expect(scene.sceneMode).toBe('procedural');
     expect(scene.camera.startZoom).toBe(1);
+    expect(scene.tileWorld).toBeUndefined();
     expect(scene.networkNodes).toBeUndefined();
     expect(scene.ambientBlocks.length).toBeGreaterThan(0);
   });
