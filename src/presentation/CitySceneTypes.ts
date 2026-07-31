@@ -3,7 +3,10 @@ import type { CityPlotZone } from '../core/CityMapConfig';
 import type {
   DistrictPrefabKind,
   EnergyNetworkNodeKind,
-  EnvironmentPrefabKind
+  EnvironmentPrefabKind,
+  TerrainTileKind,
+  TileWorldEdge,
+  TileWorldRoadLaneWidth
 } from './layout/LevelSceneLayout';
 
 export interface HologramCameraConfig {
@@ -138,6 +141,39 @@ export interface RoadSceneState {
   powered: boolean;
 }
 
+export interface TileWorldCellSceneState extends ScenePoint {
+  gridX: number;
+  gridY: number;
+  terrain: TerrainTileKind;
+  unlocked: boolean;
+  buildable: boolean;
+  shoreMask: number;
+  roadMask: number;
+  roadLaneWidth?: TileWorldRoadLaneWidth;
+  roadAssetId?: string;
+  roadEntryId?: string;
+  roadEntryEdge?: TileWorldEdge;
+  variation: number;
+}
+
+export interface TileWorldEntryPointSceneState extends ScenePoint {
+  id: string;
+  gridX: number;
+  gridY: number;
+  edge: TileWorldEdge;
+  laneWidth: TileWorldRoadLaneWidth;
+}
+
+export interface TileWorldSceneState {
+  columns: number;
+  rows: number;
+  cellSize: number;
+  basisX: ScenePoint;
+  basisY: ScenePoint;
+  cells: TileWorldCellSceneState[];
+  entryPoints: TileWorldEntryPointSceneState[];
+}
+
 export type AmbientBlockKind = 'residential' | 'industrial' | 'utility' | 'park';
 
 export interface AmbientBlockSceneState extends ScenePoint {
@@ -205,6 +241,7 @@ export interface CitySceneState {
   sceneMode?: 'procedural' | 'authored';
   presentationMode?: CityPresentationMode;
   growth?: CityGrowthSceneState;
+  tileWorld?: TileWorldSceneState;
   districts: DistrictSceneState[];
   districtPrefabs?: DistrictPrefabSceneState[];
   environment?: EnvironmentPrefabSceneState[];
