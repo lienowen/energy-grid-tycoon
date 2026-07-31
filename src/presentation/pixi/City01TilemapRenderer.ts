@@ -219,8 +219,11 @@ const addTerrainSprites = (
     const sprite = new Sprite(texture);
     sprite.anchor.set(0.5);
     sprite.position.set(center.x, center.y);
-    sprite.width = tileWidth + 0.35;
-    sprite.height = tileHeight + 0.2;
+    // Atlas frames have transparent diamond corners. A small screen-space
+    // overscan prevents linear filtering from exposing the fallback layer at
+    // shared tile edges when 256x128 source frames are reduced to ~51x26 px.
+    sprite.width = tileWidth + 2.5;
+    sprite.height = tileHeight + 1.25;
     sprite.zIndex = cell.gridX + cell.gridY;
     container.addChild(sprite);
   }
@@ -285,17 +288,6 @@ export class City01TilemapRenderer {
 
     layers.terrain.addChild(fallbackTerrain, terrainSprites, lockedFog, diagnosticsGrid);
     layers.roads.addChild(curb, asphalt, bridge, entries);
-
-    const loadedTextures = City01TerrainAtlas.isReady()
-      ? City01TerrainAtlas.getTexture('terrain_grass_00')
-      : undefined;
-    if (loadedTextures) {
-      void City01TerrainAtlas.load().then((textures) => {
-        if (!terrainSprites.parent) return;
-        addTerrainSprites(terrainSprites, world.cells, textures, project, tileWidth, tileHeight);
-      });
-      return;
-    }
 
     void City01TerrainAtlas.load()
       .then((textures) => {
