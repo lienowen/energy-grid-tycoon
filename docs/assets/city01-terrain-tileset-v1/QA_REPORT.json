@@ -1,0 +1,35 @@
+{
+  "package": "City01_Isometric_Terrain_Tileset_V1",
+  "status": "PASS",
+  "checks": {
+    "legalMaskCount": {
+      "pass": true,
+      "value": 47
+    },
+    "coastTileCount": {
+      "pass": true,
+      "value": 47
+    },
+    "allIndividualPngs256x128Rgba": {
+      "pass": true,
+      "count": 126,
+      "failures": []
+    },
+    "atlasFrameCount": {
+      "pass": true,
+      "value": 79
+    },
+    "atlasJsonReadable": {
+      "pass": true
+    },
+    "typescriptRegistryIncluded": {
+      "pass": true
+    },
+    "sharedDiamondEdgesOpaque": {
+      "pass": true
+    },
+    "tileLocalLightingRemoved": {
+      "pass": true
+    }
+  }
+}

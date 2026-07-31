@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0",
+  "tileLogicalSize": [
+    128,
+    64
+  ],
+  "tileExportSize": [
+    256,
+    128
+  ],
+  "normalizedCoastMasks": 47,
+  "grassVariations": 4,
+  "waterVariations": 4,
+  "waveOverlays": 12,
+  "decorOverlays": 12,
+  "atlasFrames": 79,
+  "bitValues": {
+    "N": 1,
+    "NE": 2,
+    "E": 4,
+    "SE": 8,
+    "S": 16,
+    "SW": 32,
+    "W": 64,
+    "NW": 128
+  },
+  "qaStatus": "PASS"
+}

@@ -1,0 +1,16 @@
+import { Assets, Sprite } from 'pixi.js';
+import {
+  resolveCity01TerrainFrame,
+  resolveCity01WaterFrame
+} from './City01TerrainTileRegistry';
+
+const sheet = await Assets.load('/assets/city01/terrain/terrain_coast_v1.json');
+
+const frameName = cell.terrain === 'water'
+  ? resolveCity01WaterFrame(cell.variation)
+  : resolveCity01TerrainFrame(cell.shoreMask, cell.variation);
+
+const sprite = new Sprite(sheet.textures[frameName]);
+sprite.anchor.set(0.5);
+sprite.position.set(projected.x, projected.y);
+sprite.scale.set(0.5); // 256x128 export -> 128x64 logical
