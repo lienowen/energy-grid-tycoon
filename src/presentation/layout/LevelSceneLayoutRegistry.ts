@@ -1,3 +1,4 @@
+import { city01WorldGridConfig } from './City01WorldGridConfig';
 import type { LevelSceneLayout } from './LevelSceneLayout';
 
 const dawnCityLayout: LevelSceneLayout = {
@@ -5,14 +6,15 @@ const dawnCityLayout: LevelSceneLayout = {
   mode: 'authored',
   focus: { x: 56, y: 51, elevation: 0 },
   camera: {
-    startZoom: 1.5,
-    minZoom: 0.58,
-    maxZoom: 2.1,
+    startZoom: 1.24,
+    minZoom: 0.5,
+    maxZoom: 2.4,
     startOffsetX: 0,
-    startOffsetY: 14,
-    panLimitX: 175,
-    panLimitY: 135
+    startOffsetY: 18,
+    panLimitX: 520,
+    panLimitY: 360
   },
+  worldGrid: city01WorldGridConfig,
   districts: [
     {
       id: 'dawn-residential',
@@ -90,8 +92,8 @@ const dawnCityLayout: LevelSceneLayout = {
     { plotId: 'central-utility', x: 74, y: 78, elevation: 0.14, scale: 0.7 },
     { plotId: 'east-industry', x: 90, y: 68, elevation: 0.14, scale: 0.82 }
   ],
-  // City mode relies on the single authored road surface. Access roads are
-  // generated only for diagnostics and no decorative road tiles are added.
+  // Ordinary roads now live in worldGrid. This legacy authored-road channel is
+  // intentionally empty and may only be used by later editor diagnostics.
   roads: [],
   environment: [
     { id: 'dawn-west-water', kind: 'water', x: 5, y: 51, width: 25, depth: 94, density: 0.7, variant: 3 },
