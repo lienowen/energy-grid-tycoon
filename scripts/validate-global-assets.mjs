@@ -17,6 +17,7 @@ const pngDimensions = (buffer) => {
 
 const legacyCatalog = await readJson('src/resources/asset-catalog.json');
 const v5Catalog = await readJson('src/resources/asset-catalog-v5.json');
+const runtimeOverrideCatalog = await readJson('src/resources/asset-runtime-overrides.json');
 
 if (!Number.isInteger(v5Catalog.schemaVersion) || v5Catalog.schemaVersion < 5) {
   errors.push('V5 asset catalog schemaVersion must be at least 5.');
@@ -24,10 +25,37 @@ if (!Number.isInteger(v5Catalog.schemaVersion) || v5Catalog.schemaVersion < 5) {
 if (!Array.isArray(v5Catalog.entries) || v5Catalog.entries.length === 0) {
   errors.push('V5 asset catalog must contain entries.');
 }
+if (runtimeOverrideCatalog.schemaVersion !== 1 || !Array.isArray(runtimeOverrideCatalog.entries)) {
+  errors.push('Runtime asset override catalog must use schemaVersion 1 and contain entries.');
+}
+
+const overrides = new Map(
+  (runtimeOverrideCatalog.entries ?? []).map((entry) => [entry.id, entry])
+);
+const applyOverride = (entry) => {
+  const override = overrides.get(entry.id);
+  if (!override) return { ...entry };
+  return {
+    ...entry,
+    version: Math.max(entry.version ?? 1, override.version ?? 1),
+    width: override.width,
+    height: override.height,
+    tags: override.tag && !(entry.tags ?? []).includes(override.tag)
+      ? [...(entry.tags ?? []), override.tag]
+      : entry.tags
+  };
+};
 
 const merged = new Map();
 for (const catalog of [legacyCatalog, v5Catalog]) {
-  for (const entry of catalog.entries ?? []) merged.set(entry.id, entry);
+  for (const entry of catalog.entries ?? []) merged.set(entry.id, applyOverride(entry));
+}
+
+for (const override of overrides.values()) {
+  if (!merged.has(override.id)) errors.push(`Runtime asset override references missing id: ${override.id}`);
+  if (!Number.isFinite(override.width) || !Number.isFinite(override.height)) {
+    errors.push(`Runtime asset override has invalid dimensions: ${override.id}`);
+  }
 }
 
 const ids = new Set();
@@ -112,9 +140,7 @@ const requiredIds = new Set([
 ]);
 
 for (const building of buildingIds) {
-  for (const state of ['day','night','blackout']) {
-    requiredIds.add(`world_building_${building}_${state}`);
-  }
+  for (const state of ['day','night','blackout']) requiredIds.add(`world_building_${building}_${state}`);
   requiredIds.add(`world_building_${building}_shadow`);
 }
 for (const facility of facilityIds) {
@@ -127,9 +153,7 @@ for (const facility of facilityIds) {
   }
 }
 for (const vehicle of vehicleIds) {
-  for (const direction of ['ne','nw','se','sw']) {
-    requiredIds.add(`world_vehicle_${vehicle}_${direction}`);
-  }
+  for (const direction of ['ne','nw','se','sw']) requiredIds.add(`world_vehicle_${vehicle}_${direction}`);
 }
 
 for (const id of requiredIds) {
@@ -142,6 +166,7 @@ if (totalAssetBytes > budgetBytes) {
 }
 
 console.log(`Global asset check: ${merged.size} merged entries, ${v5Catalog.entries?.length ?? 0} V5 entries.`);
+console.log(`Runtime overrides: ${overrides.size}.`);
 console.log(`Merged asset payload: ${totalAssetBytes} / ${budgetBytes} bytes.`);
 console.log(`Unique source files: ${sources.size}.`);
 
