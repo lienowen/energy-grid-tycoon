@@ -19,10 +19,8 @@ import { planCommercialFacilities } from '../CommercialLandmarkPlanner';
 import { FacilityVisualRegistry } from '../visuals/FacilityVisualRegistry';
 import type { WorldRenderActions, WorldRenderSurface } from '../../ui/world/WorldRenderSurface';
 import {
-  city01IslandBoundary,
   city01MapPlacements,
-  type City01MapLayer,
-  type City01MapPlacement
+  type City01MapLayer
 } from './City01MapComposition';
 import {
   resolveCityPresentationMode,
@@ -32,8 +30,8 @@ import {
   shouldDrawPlotGrounds,
   type ResolvedCityPresentationMode
 } from './City01PresentationPolicy';
+import { City01TilemapRenderer } from './City01TilemapRenderer';
 import { PixiAssetLoader } from './PixiAssetLoader';
-import { buildCity01AccessRoads } from './City01RoadTopology';
 import { WorldCamera } from './WorldCamera';
 import { WorldInputController } from './WorldInputController';
 import { WorldLayerManager } from './WorldLayerManager';
@@ -106,15 +104,6 @@ const facilityGroundColor = (facility: FacilitySceneState): number => {
   return 0x546b69;
 };
 
-const gameAlpha = (placement: City01MapPlacement): number => {
-  if (placement.gameAlpha !== undefined) return placement.gameAlpha;
-  const alpha = placement.alpha ?? 1;
-  if (placement.layer === 'terrain') return alpha;
-  if (placement.layer === 'roads') return Math.min(alpha, 0.52);
-  if (placement.layer === 'groundDecorations') return Math.min(alpha, 0.38);
-  return Math.min(alpha, 0.76);
-};
-
 export class City01IntegratedPixiWorld implements WorldRenderSurface {
   private readonly app = new Application();
   private readonly layers = new WorldLayerManager();
@@ -183,7 +172,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
       resizeTo: this.host,
       resolution: Math.min(2, window.devicePixelRatio || 1),
       autoDensity: true,
-      backgroundColor: 0x03111a,
+      backgroundColor: 0x082e3b,
       antialias: true,
       preference: 'webgl',
       powerPreference: 'high-performance'
@@ -196,7 +185,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     canvas.className = 'hologram-sandbox-canvas pixi-world-canvas immersive-world-canvas city01-integrated-canvas';
     canvas.tabIndex = 0;
     canvas.setAttribute('role', 'application');
-    canvas.setAttribute('aria-label', '曙光新城地图，可拖动、缩放并通过两次点击确认建设');
+    canvas.setAttribute('aria-label', '曙光新城瓦片地图，可拖动、缩放并通过两次点击确认建设');
     this.host.replaceChildren(canvas);
     this.app.stage.addChild(this.layers.root);
     this.camera = new WorldCamera(this.layers.root);
@@ -219,11 +208,21 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     const diagnostics = shouldDrawDiagnosticStructure(mode);
     const placing = Boolean(state.placement);
     this.host.dataset.presentationMode = mode;
+    this.host.dataset.mapArchitecture = state.tileWorld ? 'tile-world' : 'legacy-fallback';
 
-    this.drawOcean(state, generation, diagnostics);
-    if (diagnostics) this.drawIslandBase();
-    if (diagnostics) this.drawRoadBackbone(state);
-    this.drawMapComposition(generation, mode);
+    if (mode === 'showcase') {
+      this.drawLegacyShowcase(state, generation);
+    } else if (state.tileWorld) {
+      City01TilemapRenderer.render({
+        world: state.tileWorld,
+        layers: this.layers.layers,
+        diagnostics,
+        project: (point) => this.project(point)
+      });
+    } else {
+      this.drawLegacyFallback(state, generation, diagnostics);
+    }
+
     if (shouldDrawPlotGrounds(mode, placing)) this.drawPlotGrounds(state, generation, diagnostics);
     if (shouldDrawEnergyNetwork(mode)) this.drawNetwork(state, generation, diagnostics);
     this.drawDistricts(state, generation, diagnostics);
@@ -257,7 +256,17 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     }
   }
 
-  private drawOcean(state: CitySceneState, generation: number, diagnostics: boolean): void {
+  private drawLegacyShowcase(state: CitySceneState, generation: number): void {
+    this.drawOceanAsset(state, generation, 1);
+    this.drawMapComposition(generation, 'showcase');
+  }
+
+  private drawLegacyFallback(state: CitySceneState, generation: number, diagnostics: boolean): void {
+    this.drawOceanAsset(state, generation, diagnostics ? 0.72 : 1);
+    if (diagnostics) this.drawRoadBackbone(state.roads);
+  }
+
+  private drawOceanAsset(state: CitySceneState, generation: number, alpha: number): void {
     this.addAsset({
       assetId: 'city01_ocean_water_base',
       point: { ...(state.focus ?? state.city), elevation: -2 },
@@ -265,29 +274,13 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
       anchorY: 0.5,
       generation,
       layer: this.layers.layers.terrain,
-      alpha: diagnostics ? 0.72 : 1,
+      alpha,
       placeholderColor: 0x063f50,
       zIndexOverride: -1000000
     });
   }
 
-  private drawIslandBase(): void {
-    const points = city01IslandBoundary.map((point) => this.project(point));
-    const surface = points.flatMap((point) => [point.x, point.y]);
-    const cliff = points.flatMap((point) => [point.x, point.y + 18]);
-    const cliffShape = new Graphics().poly(cliff)
-      .fill({ color: 0x0b1716, alpha: 0.68 })
-      .stroke({ color: 0x03090a, alpha: 0.72, width: 2 });
-    cliffShape.zIndex = -930000;
-    const land = new Graphics().poly(surface)
-      .fill({ color: 0x193631, alpha: 0.98 })
-      .stroke({ color: 0x78948a, alpha: 0.2, width: 2 });
-    land.zIndex = -920000;
-    this.layers.layers.terrain.addChild(cliffShape, land);
-  }
-
-  private drawRoadBackbone(state: CitySceneState): void {
-    const roads: RoadSceneState[] = [...state.roads, ...buildCity01AccessRoads(state)];
+  private drawRoadBackbone(roads: readonly RoadSceneState[]): void {
     for (const [index, road] of roads.entries()) {
       if (road.points.length < 2) continue;
       const scale = road.laneCount === 2 ? 1.25 : 1;
@@ -317,9 +310,9 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
       vehicles: 0x78b9ce
     };
     for (const placement of city01MapPlacements) {
-      const alpha = mode === 'grid'
-        ? placement.diagnosticsAlpha ?? 0.44
-        : mode === 'showcase' ? placement.alpha ?? 1 : gameAlpha(placement);
+      const alpha = mode === 'showcase'
+        ? placement.alpha ?? 1
+        : placement.diagnosticsAlpha ?? 0.44;
       if (alpha <= 0) continue;
       this.addAsset({
         assetId: placement.assetId,
