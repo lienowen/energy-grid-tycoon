@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 1,
   "budgetBytes": 20000000,
   "entries": [
     { "id": "brand_logo", "kind": "image", "src": "/assets/brand/logo-mark.png", "version": 1, "preload": "boot", "width": 512, "height": 512, "anchor": { "x": 0.5, "y": 0.5 }, "tags": ["brand", "ui"] },
