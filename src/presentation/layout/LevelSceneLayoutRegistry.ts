@@ -5,13 +5,13 @@ const dawnCityLayout: LevelSceneLayout = {
   mode: 'authored',
   focus: { x: 56, y: 51, elevation: 0 },
   camera: {
-    startZoom: 1.42,
-    minZoom: 0.52,
+    startZoom: 1.5,
+    minZoom: 0.58,
     maxZoom: 2.1,
     startOffsetX: 0,
-    startOffsetY: 8,
-    panLimitX: 190,
-    panLimitY: 145
+    startOffsetY: 14,
+    panLimitX: 175,
+    panLimitY: 135
   },
   districts: [
     {
