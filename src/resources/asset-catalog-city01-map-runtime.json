@@ -1,45 +1,56 @@
 {
-  "schemaVersion": 19,
+  "schemaVersion": 20,
   "budgetBytes": 9000000,
   "entries": [
     {
-      "id": "city01_map_base",
+      "id": "city01_land_base",
       "kind": "image",
-      "src": "/assets/city01/product/environment/runtime/city01-map-base.svg",
-      "version": 19,
+      "src": "/assets/city01/product/environment/runtime/city01-land-base.svg",
+      "version": 20,
       "preload": "level",
       "width": 2048,
       "height": 1536,
       "anchor": { "x": 0.5, "y": 0.5 },
-      "tags": ["city-01", "map", "base", "runtime", "authoritative"]
+      "tags": ["city-01", "map", "land", "coast", "runtime", "authoritative"]
     },
     {
-      "id": "city01_road_network_base",
+      "id": "city01_zone_mask",
       "kind": "image",
-      "src": "/assets/city01/product/environment/runtime/city01-road-network.svg",
-      "version": 19,
+      "src": "/assets/city01/product/environment/runtime/city01-zone-mask.svg",
+      "version": 20,
       "preload": "level",
       "width": 2048,
       "height": 1536,
       "anchor": { "x": 0.5, "y": 0.5 },
-      "tags": ["city-01", "map", "road", "runtime", "authoritative"]
+      "tags": ["city-01", "map", "zones", "gameplay", "runtime"]
     },
     {
-      "id": "city01_ground_details_base",
+      "id": "city01_road_thin",
       "kind": "image",
-      "src": "/assets/city01/product/environment/runtime/city01-ground-details.svg",
-      "version": 19,
+      "src": "/assets/city01/product/environment/runtime/city01-road-thin.svg",
+      "version": 20,
       "preload": "level",
       "width": 2048,
       "height": 1536,
       "anchor": { "x": 0.5, "y": 0.5 },
-      "tags": ["city-01", "map", "decoration", "runtime", "authoritative"]
+      "tags": ["city-01", "map", "road", "thin", "runtime"]
+    },
+    {
+      "id": "city01_decor_details",
+      "kind": "image",
+      "src": "/assets/city01/product/environment/runtime/city01-decor-details.svg",
+      "version": 20,
+      "preload": "level",
+      "width": 2048,
+      "height": 1536,
+      "anchor": { "x": 0.5, "y": 0.5 },
+      "tags": ["city-01", "map", "decoration", "trees", "plaza", "runtime"]
     },
     {
       "id": "city01_ocean_water_base",
       "kind": "image",
       "src": "/assets/city01/product/environment/runtime/ocean-water-base.svg",
-      "version": 19,
+      "version": 20,
       "preload": "level",
       "width": 2048,
       "height": 1536,
