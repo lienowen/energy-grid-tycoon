@@ -30,10 +30,12 @@ describe('City01TerrainTileRegistry', () => {
     }
   });
 
-  it('provides four grass and four water variations', () => {
-    for (let variation = 0; variation < 4; variation += 1) {
-      expect(atlasFrames[resolveCity01TerrainFrame(0, variation)]).toBeDefined();
-      expect(atlasFrames[resolveCity01WaterFrame(variation)]).toBeDefined();
+  it('uses stable center frames at runtime to avoid per-cell checkerboards', () => {
+    for (let variation = 0; variation < 8; variation += 1) {
+      expect(resolveCity01TerrainFrame(0, variation)).toBe('terrain_grass_00');
+      expect(resolveCity01WaterFrame(variation)).toBe('terrain_water_00');
     }
+    expect(atlasFrames.terrain_grass_00).toBeDefined();
+    expect(atlasFrames.terrain_water_00).toBeDefined();
   });
 });
