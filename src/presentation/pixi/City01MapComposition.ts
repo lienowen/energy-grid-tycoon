@@ -49,7 +49,7 @@ export const city01ZoneMaskPlacement: City01MapPlacement = {
   anchorY: 0.5,
   layer: 'groundDecorations',
   alpha: 1,
-  gameAlpha: 1,
+  gameAlpha: 0.76,
   diagnosticsAlpha: 0.32
 };
 
@@ -61,7 +61,7 @@ export const city01RoadThinPlacement: City01MapPlacement = {
   anchorY: 0.5,
   layer: 'roads',
   alpha: 0.82,
-  gameAlpha: 1,
+  gameAlpha: 0.62,
   diagnosticsAlpha: 0.42
 };
 
@@ -73,7 +73,7 @@ export const city01DecorDetailsPlacement: City01MapPlacement = {
   anchorY: 0.5,
   layer: 'groundDecorations',
   alpha: 0.82,
-  gameAlpha: 0.86,
+  gameAlpha: 0.72,
   diagnosticsAlpha: 0.18
 };
 
@@ -118,7 +118,7 @@ const vehicle = (
   anchorY: 0.9,
   layer: 'vehicles',
   alpha: 0.9,
-  gameAlpha: 0.78,
+  gameAlpha: 0.72,
   diagnosticsAlpha: 0,
   flipX
 });
