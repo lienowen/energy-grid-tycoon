@@ -79,8 +79,10 @@ const enterPlacement = async (page) => {
 };
 
 const placeConstruction = async (page) => {
-  // Authored utility target in the fixed desktop City-01 home camera.
-  const target = { x: 916, y: 773 };
+  // east-industry projected through the tile-world home camera at 1440x1080.
+  // The point is intentionally tied to a logical build target, not the former
+  // authored background image position.
+  const target = { x: 890, y: 725 };
   await page.mouse.click(target.x, target.y);
   await page.waitForTimeout(140);
   await page.mouse.click(target.x, target.y);
@@ -182,6 +184,7 @@ const inspectPage = async (page, captureCase) => page.evaluate(({ expectedMode, 
 
   return {
     renderer: host?.getAttribute('data-world-renderer') ?? null,
+    mapArchitecture: host?.getAttribute('data-map-architecture') ?? null,
     presentationMode: host?.getAttribute('data-presentation-mode') ?? null,
     placementGuideVisible: Boolean(placementGuide || cancelBuild),
     placementName,
@@ -211,6 +214,7 @@ const inspectPage = async (page, captureCase) => page.evaluate(({ expectedMode, 
 const validate = (diagnostics, captureCase, constructionSave) => {
   const issues = [];
   if (diagnostics.renderer !== 'city01-integrated') issues.push('City-01 renderer did not mount');
+  if (diagnostics.mapArchitecture !== 'tile-world') issues.push('City-01 did not mount the tile-world architecture');
   if (diagnostics.presentationMode !== captureCase.mode) {
     issues.push(`Expected ${captureCase.mode} mode, received ${diagnostics.presentationMode}`);
   }
