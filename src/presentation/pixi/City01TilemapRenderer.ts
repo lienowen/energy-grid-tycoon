@@ -220,10 +220,15 @@ const addTerrainSprites = (
     sprite.anchor.set(0.5);
     sprite.position.set(center.x, center.y);
     // Atlas frames have transparent diamond corners. A small screen-space
-    // overscan prevents linear filtering from exposing the fallback layer at
-    // shared tile edges when 256x128 source frames are reduced to ~51x26 px.
+    // overscan prevents filtering from exposing the fallback layer at shared
+    // tile edges when 256x128 source frames are reduced to ~51x26 px.
     sprite.width = tileWidth + 2.5;
     sprite.height = tileHeight + 1.25;
+    if (cell.terrain !== 'water' && !cell.unlocked) {
+      // Locked terrain is shaded per Sprite. Drawing one semi-transparent
+      // Graphics polygon per tile caused double-blended dark seams.
+      sprite.tint = 0xa2aaa6;
+    }
     sprite.zIndex = cell.gridX + cell.gridY;
     container.addChild(sprite);
   }
@@ -240,7 +245,6 @@ export class City01TilemapRenderer {
 
     const fallbackTerrain = new Graphics();
     const terrainSprites = new Container();
-    const lockedFog = new Graphics();
     const diagnosticsGrid = new Graphics();
     const curb = new Graphics();
     const asphalt = new Graphics();
@@ -261,9 +265,6 @@ export class City01TilemapRenderer {
         const palette = cell.unlocked ? fallbackGrassColors : fallbackLockedColors;
         const color = palette[cell.variation % palette.length] ?? palette[0]!;
         fallbackTerrain.poly(shape).fill({ color, alpha: 1 });
-        if (!cell.unlocked) {
-          lockedFog.poly(shape).fill({ color: 0x07171a, alpha: diagnostics ? 0.18 : 0.3 });
-        }
       }
 
       if (diagnostics) {
@@ -279,14 +280,13 @@ export class City01TilemapRenderer {
 
     fallbackTerrain.zIndex = -900100;
     terrainSprites.zIndex = -900000;
-    lockedFog.zIndex = -899700;
     diagnosticsGrid.zIndex = -899600;
     curb.zIndex = -410000;
     asphalt.zIndex = -409900;
     bridge.zIndex = -409800;
     entries.zIndex = -409700;
 
-    layers.terrain.addChild(fallbackTerrain, terrainSprites, lockedFog, diagnosticsGrid);
+    layers.terrain.addChild(fallbackTerrain, terrainSprites, diagnosticsGrid);
     layers.roads.addChild(curb, asphalt, bridge, entries);
 
     void City01TerrainAtlas.load()
