@@ -6,25 +6,33 @@ import type {
 export type FacilityMotionKind = 'wind' | 'gas' | 'storage' | 'solar' | 'grid' | 'none';
 
 export interface City01GroundingProfile {
-  footprintWidthFactor: number;
-  footprintHeightFactor: number;
-  shadowWidthFactor: number;
-  shadowHeightFactor: number;
+  /** Logical footprint measured in Tile World cells. */
+  footprintColumns: number;
+  footprintRows: number;
   shadowOffsetX: number;
   shadowOffsetY: number;
   footprintColor: number;
+  roadConnection: boolean;
+  roadSearchRadius: number;
+  roadWidth: number;
 }
 
 export interface City01BuildingPresentationProfile extends City01GroundingProfile {
   width: number;
   anchorY: number;
   elevationOffset: number;
+  toneTint: number;
+  hitWidthFactor: number;
+  hitHeightFactor: number;
+  hitOffsetYFactor: number;
+  detailMinZoom: number;
 }
 
 export interface City01FacilityPresentationProfile extends City01BuildingPresentationProfile {
   motion: FacilityMotionKind;
   motionColor: number;
   motionAnchorY: number;
+  motionMinZoom: number;
 }
 
 const DISTRICT_PROFILES: Record<
@@ -34,57 +42,87 @@ const DISTRICT_PROFILES: Record<
   residential: {
     anchorY: 0.9115,
     elevationOffset: 0.18,
-    footprintWidthFactor: 0.265,
-    footprintHeightFactor: 0.062,
-    shadowWidthFactor: 0.34,
-    shadowHeightFactor: 0.078,
-    shadowOffsetX: 7,
+    footprintColumns: 3,
+    footprintRows: 2,
+    shadowOffsetX: 8,
     shadowOffsetY: 9,
-    footprintColor: 0x4f7458
+    footprintColor: 0x4f7458,
+    roadConnection: true,
+    roadSearchRadius: 52,
+    roadWidth: 6,
+    toneTint: 0xf4fff7,
+    hitWidthFactor: 0.82,
+    hitHeightFactor: 0.88,
+    hitOffsetYFactor: 0.03,
+    detailMinZoom: 0.82
   },
   commercial: {
     anchorY: 0.9115,
     elevationOffset: 0.18,
-    footprintWidthFactor: 0.27,
-    footprintHeightFactor: 0.064,
-    shadowWidthFactor: 0.35,
-    shadowHeightFactor: 0.08,
-    shadowOffsetX: 7,
+    footprintColumns: 3,
+    footprintRows: 2,
+    shadowOffsetX: 8,
     shadowOffsetY: 9,
-    footprintColor: 0x747052
+    footprintColor: 0x747052,
+    roadConnection: true,
+    roadSearchRadius: 52,
+    roadWidth: 7,
+    toneTint: 0xfff9e9,
+    hitWidthFactor: 0.84,
+    hitHeightFactor: 0.88,
+    hitOffsetYFactor: 0.03,
+    detailMinZoom: 0.82
   },
   industrial: {
     anchorY: 0.9115,
     elevationOffset: 0.18,
-    footprintWidthFactor: 0.29,
-    footprintHeightFactor: 0.068,
-    shadowWidthFactor: 0.37,
-    shadowHeightFactor: 0.086,
-    shadowOffsetX: 8,
+    footprintColumns: 3,
+    footprintRows: 2,
+    shadowOffsetX: 9,
     shadowOffsetY: 10,
-    footprintColor: 0x65625f
+    footprintColor: 0x65625f,
+    roadConnection: true,
+    roadSearchRadius: 58,
+    roadWidth: 8,
+    toneTint: 0xf4f6f4,
+    hitWidthFactor: 0.86,
+    hitHeightFactor: 0.9,
+    hitOffsetYFactor: 0.03,
+    detailMinZoom: 0.8
   },
   public: {
     anchorY: 0.9115,
     elevationOffset: 0.18,
-    footprintWidthFactor: 0.27,
-    footprintHeightFactor: 0.064,
-    shadowWidthFactor: 0.35,
-    shadowHeightFactor: 0.08,
-    shadowOffsetX: 7,
+    footprintColumns: 2,
+    footprintRows: 2,
+    shadowOffsetX: 8,
     shadowOffsetY: 9,
-    footprintColor: 0x4d7067
+    footprintColor: 0x4d7067,
+    roadConnection: true,
+    roadSearchRadius: 48,
+    roadWidth: 7,
+    toneTint: 0xf0ffff,
+    hitWidthFactor: 0.82,
+    hitHeightFactor: 0.88,
+    hitOffsetYFactor: 0.03,
+    detailMinZoom: 0.82
   },
   old_town: {
     anchorY: 0.9115,
     elevationOffset: 0.18,
-    footprintWidthFactor: 0.285,
-    footprintHeightFactor: 0.068,
-    shadowWidthFactor: 0.36,
-    shadowHeightFactor: 0.084,
-    shadowOffsetX: 8,
+    footprintColumns: 3,
+    footprintRows: 2,
+    shadowOffsetX: 9,
     shadowOffsetY: 10,
-    footprintColor: 0x735e49
+    footprintColor: 0x735e49,
+    roadConnection: true,
+    roadSearchRadius: 54,
+    roadWidth: 6,
+    toneTint: 0xfff2dd,
+    hitWidthFactor: 0.85,
+    hitHeightFactor: 0.9,
+    hitOffsetYFactor: 0.03,
+    detailMinZoom: 0.8
   }
 };
 
@@ -101,6 +139,7 @@ const facilityBaseWidth = (facility: FacilitySceneState): number => {
   if (facility.configId.includes('wind')) return 204;
   if (facility.configId.includes('gas')) return 224;
   if (facility.configId.includes('battery')) return 210;
+  if (facility.configId.includes('substation')) return 210;
   return 210;
 };
 
@@ -139,6 +178,26 @@ const facilityMotionAnchorY = (motion: FacilityMotionKind): number => {
   return 0;
 };
 
+const facilityFootprint = (facility: FacilitySceneState, motion: FacilityMotionKind): {
+  columns: number;
+  rows: number;
+} => {
+  if (facility.configId.includes('offshore')) return { columns: 1, rows: 1 };
+  if (motion === 'gas') return { columns: 2, rows: 2 };
+  if (motion === 'solar') return { columns: 2, rows: 1 };
+  if (motion === 'wind') return { columns: 1, rows: 1 };
+  return { columns: 1, rows: 1 };
+};
+
+const facilityToneTint = (motion: FacilityMotionKind): number => {
+  if (motion === 'wind') return 0xf2fff9;
+  if (motion === 'gas') return 0xfff3e3;
+  if (motion === 'storage') return 0xeefbff;
+  if (motion === 'solar') return 0xfff8df;
+  if (motion === 'grid') return 0xecfbff;
+  return 0xffffff;
+};
+
 export const resolveDistrictPresentation = (
   district: DistrictPrefabSceneState
 ): City01BuildingPresentationProfile => ({
@@ -150,21 +209,30 @@ export const resolveFacilityPresentation = (
   facility: FacilitySceneState
 ): City01FacilityPresentationProfile => {
   const motion = facilityMotion(facility);
+  const footprint = facilityFootprint(facility, motion);
   const scale = Math.min(1.18, Math.max(0.85, facility.scale));
+  const offshore = facility.configId.includes('offshore');
   return {
     width: facilityBaseWidth(facility) * scale * 0.68,
     anchorY: 0.9115,
     elevationOffset: 0.12,
-    footprintWidthFactor: motion === 'wind' ? 0.22 : 0.25,
-    footprintHeightFactor: motion === 'wind' ? 0.052 : 0.06,
-    shadowWidthFactor: motion === 'wind' ? 0.29 : 0.33,
-    shadowHeightFactor: motion === 'wind' ? 0.071 : 0.082,
+    footprintColumns: footprint.columns,
+    footprintRows: footprint.rows,
     shadowOffsetX: motion === 'wind' ? 5 : 6,
     shadowOffsetY: motion === 'wind' ? 7 : 8,
     footprintColor: facilityGroundColor(facility),
+    roadConnection: !offshore,
+    roadSearchRadius: motion === 'gas' ? 48 : 42,
+    roadWidth: motion === 'gas' ? 7 : 5,
+    toneTint: facilityToneTint(motion),
+    hitWidthFactor: motion === 'wind' ? 0.76 : 0.82,
+    hitHeightFactor: motion === 'wind' ? 1.18 : 0.92,
+    hitOffsetYFactor: motion === 'wind' ? -0.08 : 0.02,
+    detailMinZoom: 0.76,
     motion,
     motionColor: facilityMotionColor(motion),
-    motionAnchorY: facilityMotionAnchorY(motion)
+    motionAnchorY: facilityMotionAnchorY(motion),
+    motionMinZoom: motion === 'gas' ? 0.92 : 0.86
   };
 };
 
