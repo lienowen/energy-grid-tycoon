@@ -25,30 +25,46 @@ const facility = (
 } as FacilitySceneState);
 
 describe('City-01 building presentation', () => {
-  it('uses one upper-left light and lower-right contact-shadow contract', () => {
+  it('uses one upper-left light and logical Tile World footprints', () => {
     expect(CITY01_LIGHT_DIRECTION.source).toBe('upper-left');
     for (const kind of ['residential', 'commercial', 'industrial', 'public', 'old_town'] as const) {
       const profile = resolveDistrictPresentation(district(kind));
       expect(profile.shadowOffsetX).toBeGreaterThan(0);
       expect(profile.shadowOffsetY).toBeGreaterThan(0);
-      expect(profile.footprintWidthFactor).toBeLessThan(0.3);
-      expect(profile.footprintHeightFactor).toBeLessThan(0.08);
+      expect(profile.footprintColumns).toBeGreaterThanOrEqual(2);
+      expect(profile.footprintRows).toBeGreaterThanOrEqual(2);
+      expect(profile.roadConnection).toBe(true);
+      expect(profile.toneTint).toBeLessThanOrEqual(0xffffff);
+      expect(profile.detailMinZoom).toBeGreaterThan(0.7);
     }
   });
 
-  it('assigns restrained facility motion by energy technology', () => {
-    expect(resolveFacilityPresentation(facility('wind-turbine')).motion).toBe('wind');
-    expect(resolveFacilityPresentation(facility('gas-emergency')).motion).toBe('gas');
-    expect(resolveFacilityPresentation(facility('battery-storage', 'storage')).motion).toBe('storage');
-    expect(resolveFacilityPresentation(facility('solar-farm')).motion).toBe('solar');
-    expect(resolveFacilityPresentation(facility('grid-substation')).motion).toBe('grid');
+  it('assigns restrained facility motion and technology-specific footprints', () => {
+    const wind = resolveFacilityPresentation(facility('wind-turbine'));
+    const gas = resolveFacilityPresentation(facility('gas-emergency'));
+    const storage = resolveFacilityPresentation(facility('battery-storage', 'storage'));
+    const solar = resolveFacilityPresentation(facility('solar-farm'));
+    const grid = resolveFacilityPresentation(facility('grid-substation'));
+
+    expect(wind.motion).toBe('wind');
+    expect(wind.footprintColumns).toBe(1);
+    expect(gas.motion).toBe('gas');
+    expect(gas.footprintColumns).toBe(2);
+    expect(gas.footprintRows).toBe(2);
+    expect(storage.motion).toBe('storage');
+    expect(solar.motion).toBe('solar');
+    expect(solar.footprintColumns).toBe(2);
+    expect(grid.motion).toBe('grid');
   });
 
-  it('renders soft AO footprints and runtime facility life without hard pads', () => {
-    expect(rendererSource).toContain('drawSoftGrounding');
-    expect(rendererSource).toContain('drawFacilityAmbient');
-    expect(rendererSource).toContain('this.app.ticker.add(this.animateAmbient)');
-    expect(rendererSource).not.toContain('districtGroundColors');
+  it('renders footprint-derived grounding, road links, tone and zoom lod', () => {
+    expect(rendererSource).toContain("data.buildingPresentation = 'logical-footprint-v2'");
+    expect(rendererSource).toContain('footprintCorners');
+    expect(rendererSource).toContain('drawRoadConnection');
+    expect(rendererSource).toContain('toneTint');
+    expect(rendererSource).toContain('bindLod');
+    expect(rendererSource).toContain('new Rectangle(-22, -22, 44, 44)');
+    expect(rendererSource).not.toContain('footprintWidthFactor');
     expect(rendererSource).not.toContain('facilityGroundColor');
   });
 });
