@@ -58,7 +58,7 @@ describe('City-01 building presentation', () => {
   });
 
   it('renders footprint-derived grounding, road links, tone and zoom lod', () => {
-    expect(rendererSource).toContain("data.buildingPresentation = 'logical-footprint-v2'");
+    expect(rendererSource).toContain("this.host.dataset.buildingPresentation = 'logical-footprint-v2'");
     expect(rendererSource).toContain('footprintCorners');
     expect(rendererSource).toContain('drawRoadConnection');
     expect(rendererSource).toContain('toneTint');
