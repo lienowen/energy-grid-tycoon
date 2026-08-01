@@ -12,6 +12,14 @@ export interface City01FacilityCanvasSpec {
   maxSubjectHeight: number;
 }
 
+export interface City01FacilityCleanupSpec {
+  startYRatio: number;
+  maxAlpha: number;
+  maxLuma: number;
+  maxChroma: number;
+  alphaMultiplier: number;
+}
+
 const facilityPrefixes = [
   'commercial_facility_battery_utility_',
   'commercial_facility_solar_',
@@ -50,6 +58,57 @@ export const city01FacilityCanvasSpec = (assetId: string): City01FacilityCanvasS
     return { maxSubjectWidth: 318, maxSubjectHeight: 420 };
   }
   return { maxSubjectWidth: 420, maxSubjectHeight: 380 };
+};
+
+/**
+ * Conservative cleanup only targets dark semi-transparent pixels near the
+ * baseline. Opaque pads are intentionally left untouched for manual art cuts.
+ */
+export const city01FacilityCleanupSpec = (assetId: string): City01FacilityCleanupSpec => {
+  if (assetId.startsWith('commercial_facility_wind_')) {
+    return {
+      startYRatio: 0.72,
+      maxAlpha: 172,
+      maxLuma: 112,
+      maxChroma: 42,
+      alphaMultiplier: 0.18
+    };
+  }
+  if (assetId.startsWith('commercial_facility_gas_')) {
+    return {
+      startYRatio: 0.76,
+      maxAlpha: 138,
+      maxLuma: 96,
+      maxChroma: 34,
+      alphaMultiplier: 0.42
+    };
+  }
+  if (assetId.startsWith('commercial_facility_solar_')) {
+    return {
+      startYRatio: 0.78,
+      maxAlpha: 126,
+      maxLuma: 94,
+      maxChroma: 34,
+      alphaMultiplier: 0.48
+    };
+  }
+  if (assetId.startsWith('commercial_facility_battery_')
+    || assetId.startsWith('commercial_facility_substation_')) {
+    return {
+      startYRatio: 0.78,
+      maxAlpha: 120,
+      maxLuma: 90,
+      maxChroma: 32,
+      alphaMultiplier: 0.52
+    };
+  }
+  return {
+    startYRatio: 0.78,
+    maxAlpha: 116,
+    maxLuma: 88,
+    maxChroma: 30,
+    alphaMultiplier: 0.56
+  };
 };
 
 // Retained for callers and tests that compare the relative visual footprint.
@@ -143,6 +202,66 @@ const weightedAlphaBounds = (
   };
 };
 
+const clearPixel = (pixels: Uint8ClampedArray, offset: number): void => {
+  pixels[offset] = 0;
+  pixels[offset + 1] = 0;
+  pixels[offset + 2] = 0;
+  pixels[offset + 3] = 0;
+};
+
+const cleanFacilityGroundArtifacts = (
+  context: CanvasRenderingContext2D,
+  assetId: string
+): void => {
+  const width = CITY01_FACILITY_CANVAS.width;
+  const height = CITY01_FACILITY_CANVAS.height;
+  const imageData = context.getImageData(0, 0, width, height);
+  const pixels = imageData.data;
+  const spec = city01FacilityCleanupSpec(assetId);
+  const cleanupStart = Math.round(height * spec.startYRatio);
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset = (y * width + x) * 4;
+      const alpha = pixels[offset + 3] ?? 0;
+      if (alpha <= 2) {
+        clearPixel(pixels, offset);
+        continue;
+      }
+
+      if (alpha < 28) {
+        const softened = Math.round(alpha * alpha / 28);
+        if (softened <= 2) {
+          clearPixel(pixels, offset);
+          continue;
+        }
+        pixels[offset + 3] = softened;
+      }
+
+      const currentAlpha = pixels[offset + 3] ?? 0;
+      if (y < cleanupStart || currentAlpha > spec.maxAlpha) continue;
+
+      const red = pixels[offset] ?? 0;
+      const green = pixels[offset + 1] ?? 0;
+      const blue = pixels[offset + 2] ?? 0;
+      const maximum = Math.max(red, green, blue);
+      const minimum = Math.min(red, green, blue);
+      const chroma = maximum - minimum;
+      const luma = red * 0.2126 + green * 0.7152 + blue * 0.0722;
+
+      if (luma > spec.maxLuma || chroma > spec.maxChroma) continue;
+      const reduced = Math.round(currentAlpha * spec.alphaMultiplier);
+      if (reduced <= 6) {
+        clearPixel(pixels, offset);
+      } else {
+        pixels[offset + 3] = reduced;
+      }
+    }
+  }
+
+  context.putImageData(imageData, 0, 0);
+};
+
 const shouldDeriveOfflineStyle = (assetId: string): boolean =>
   assetId === 'commercial_facility_wind_offline';
 
@@ -174,7 +293,7 @@ const buildFacilityTexture = async (
   const targetY = CITY01_FACILITY_CANVAS.baseline - targetHeight;
 
   const canvas = makeCanvas(CITY01_FACILITY_CANVAS.width, CITY01_FACILITY_CANVAS.height);
-  const context = canvas.getContext('2d');
+  const context = canvas.getContext('2d', { willReadFrequently: true });
   if (!context) return undefined;
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = 'high';
@@ -193,6 +312,7 @@ const buildFacilityTexture = async (
     targetHeight
   );
   context.filter = 'none';
+  cleanFacilityGroundArtifacts(context, assetId);
   return textureFromCanvas(canvas);
 };
 
