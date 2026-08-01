@@ -11,6 +11,7 @@ import './ui/immersive-world.css';
 import './ui/product-first-reset.css';
 import './ui/game-shell.css';
 import './ui/gameplay-polish.css';
+import './ui/city01-safe-area.css';
 import buildingData from './data/buildings.json';
 import eventData from './data/events.json';
 import levelData from './data/levels.json';
@@ -67,7 +68,7 @@ const registerServiceWorker = async (): Promise<void> => {
 };
 
 const bootstrap = async (): Promise<void> => {
-  LoadingScreen.render(root, '正在启动全息城市沙盘', '准备城市模型、可建设区域和居民生活状态。');
+  LoadingScreen.render(root, '正在加载曙光新城', '准备地形、能源设施和城市运行状态。');
   AssetManager.load(globalAssetCatalog);
 
   const levels = levelData as unknown as LevelConfig[];
