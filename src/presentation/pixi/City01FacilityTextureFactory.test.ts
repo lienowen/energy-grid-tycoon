@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   CITY01_FACILITY_CANVAS,
   city01FacilityCanvasSpec,
+  city01FacilityCleanupSpec,
   city01FacilitySubjectScale,
   isCity01FacilityRuntimeAsset
 } from './City01FacilityTextureFactory';
@@ -35,6 +36,19 @@ describe('City01FacilityTextureFactory', () => {
       .toEqual({ maxSubjectWidth: 448, maxSubjectHeight: 350 });
     expect(city01FacilityCanvasSpec('world_facility_grid_node_active'))
       .toEqual({ maxSubjectWidth: 318, maxSubjectHeight: 420 });
+  });
+
+  it('uses conservative per-family cleanup instead of removing opaque building pixels', () => {
+    const wind = city01FacilityCleanupSpec('commercial_facility_wind_active');
+    const gas = city01FacilityCleanupSpec('commercial_facility_gas_active');
+    const battery = city01FacilityCleanupSpec('commercial_facility_battery_active');
+
+    expect(wind.startYRatio).toBeGreaterThanOrEqual(0.7);
+    expect(wind.maxAlpha).toBeLessThan(200);
+    expect(wind.alphaMultiplier).toBeLessThan(gas.alphaMultiplier);
+    expect(gas.maxAlpha).toBeLessThan(160);
+    expect(battery.maxAlpha).toBeLessThan(140);
+    expect(battery.alphaMultiplier).toBeGreaterThan(0);
   });
 
   it('reports the visual width ratio from the normalized canvas instead of old source dimensions', () => {
