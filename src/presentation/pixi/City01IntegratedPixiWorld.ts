@@ -78,6 +78,18 @@ const labelOffsets: Record<DistrictPrefabSceneState['kind'], { x: number; y: num
   old_town: { x: -84, y: 42 }
 };
 
+interface LodBinding {
+  target: Container;
+  minZoom: number;
+  maxZoom: number;
+}
+
+interface AssetHitArea {
+  width: number;
+  height: number;
+  offsetY: number;
+}
+
 export class City01IntegratedPixiWorld implements WorldRenderSurface {
   private readonly app = new Application();
   private readonly layers = new WorldLayerManager();
@@ -92,9 +104,16 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
   private pendingPlotId?: string;
   private placementBuildingId?: string;
   private ambientTime = 0;
+  private roadPoints: ScenePoint[] = [];
   private readonly ambientAnimations: Array<(time: number) => void> = [];
+  private readonly lodBindings: LodBinding[] = [];
   private readonly animateAmbient = (ticker: Ticker): void => {
     this.ambientTime += ticker.deltaMS / 1000;
+    const zoom = this.layers.root.scale.x || 1;
+    for (const binding of this.lodBindings) {
+      if (binding.target.destroyed) continue;
+      binding.target.visible = zoom >= binding.minZoom && zoom <= binding.maxZoom;
+    }
     for (const update of this.ambientAnimations) update(this.ambientTime);
   };
 
@@ -118,6 +137,9 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     this.input?.destroy();
     this.resizeObserver?.disconnect();
     this.app.ticker.remove(this.animateAmbient);
+    this.ambientAnimations.length = 0;
+    this.lodBindings.length = 0;
+    this.roadPoints = [];
     this.layers.clear();
     if (this.app.renderer) {
       this.app.destroy({ removeView: true }, { children: true, texture: false, textureSource: false, context: true });
@@ -186,12 +208,15 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
   private renderScene(state: CitySceneState): void {
     const generation = ++this.generation;
     this.ambientAnimations.length = 0;
+    this.lodBindings.length = 0;
+    this.roadPoints = this.collectRoadPoints(state);
     this.layers.clear();
     const mode = resolveCityPresentationMode(state.presentationMode);
     const diagnostics = shouldDrawDiagnosticStructure(mode);
     const placing = Boolean(state.placement);
     this.host.dataset.presentationMode = mode;
     this.host.dataset.mapArchitecture = state.tileWorld ? 'tile-world' : 'legacy-fallback';
+    this.host.dataset.buildingPresentation = 'logical-footprint-v2';
 
     if (mode === 'showcase') {
       this.drawLegacyShowcase(state, generation);
@@ -237,6 +262,82 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
       const target = this.project(point);
       graphics.lineTo(target.x, target.y);
     }
+  }
+
+  private bindLod(target: Container, minZoom: number, maxZoom = Number.POSITIVE_INFINITY): void {
+    const zoom = this.layers.root.scale.x || 1;
+    target.visible = zoom >= minZoom && zoom <= maxZoom;
+    this.lodBindings.push({ target, minZoom, maxZoom });
+  }
+
+  private collectRoadPoints(state: CitySceneState): ScenePoint[] {
+    if (state.tileWorld) {
+      return state.tileWorld.cells
+        .filter((cell) => cell.roadMask !== 0 || Boolean(cell.roadEntryId))
+        .map((cell) => ({ x: cell.x, z: cell.z, elevation: cell.elevation }));
+    }
+    return state.roads.flatMap((road) => road.points);
+  }
+
+  private footprintCorners(
+    point: ScenePoint,
+    profile: City01BuildingPresentationProfile
+  ): Array<{ x: number; y: number }> {
+    const halfX = profile.footprintColumns * GRID * 0.5;
+    const halfZ = profile.footprintRows * GRID * 0.5;
+    return [
+      this.project({ ...point, x: point.x - halfX, z: point.z - halfZ, elevation: point.elevation - 0.04 }),
+      this.project({ ...point, x: point.x + halfX, z: point.z - halfZ, elevation: point.elevation - 0.04 }),
+      this.project({ ...point, x: point.x + halfX, z: point.z + halfZ, elevation: point.elevation - 0.04 }),
+      this.project({ ...point, x: point.x - halfX, z: point.z + halfZ, elevation: point.elevation - 0.04 })
+    ];
+  }
+
+  private drawRoadConnection(
+    point: ScenePoint,
+    profile: City01BuildingPresentationProfile
+  ): void {
+    if (!profile.roadConnection || this.roadPoints.length === 0) return;
+    let nearest: ScenePoint | undefined;
+    let nearestDistance = Number.POSITIVE_INFINITY;
+    for (const roadPoint of this.roadPoints) {
+      const distance = Math.hypot(roadPoint.x - point.x, roadPoint.z - point.z);
+      if (distance < nearestDistance) {
+        nearest = roadPoint;
+        nearestDistance = distance;
+      }
+    }
+    if (!nearest || nearestDistance > profile.roadSearchRadius) return;
+
+    const source = this.project({ ...point, elevation: point.elevation - 0.02 });
+    const target = this.project({ ...nearest, elevation: nearest.elevation + 0.01 });
+    const dx = target.x - source.x;
+    const dy = target.y - source.y;
+    const screenDistance = Math.hypot(dx, dy);
+    if (screenDistance < 28) return;
+
+    const ux = dx / screenDistance;
+    const uy = dy / screenDistance;
+    const footprintExit = Math.min(
+      screenDistance * 0.58,
+      Math.max(24, (profile.footprintColumns + profile.footprintRows) * TILE_W * 0.105)
+    );
+    const roadInset = Math.min(10, screenDistance * 0.12);
+    if (screenDistance - footprintExit - roadInset < 10) return;
+
+    const startX = source.x + ux * footprintExit;
+    const startY = source.y + uy * footprintExit;
+    const endX = target.x - ux * roadInset;
+    const endY = target.y - uy * roadInset;
+    const zIndex = this.depth(point, -178);
+
+    const curb = new Graphics().moveTo(startX, startY).lineTo(endX, endY)
+      .stroke({ color: 0xc9c1ae, alpha: 0.42, width: profile.roadWidth + 4, cap: 'round' });
+    curb.zIndex = zIndex;
+    const asphalt = new Graphics().moveTo(startX, startY).lineTo(endX, endY)
+      .stroke({ color: 0x374348, alpha: 0.62, width: profile.roadWidth, cap: 'round' });
+    asphalt.zIndex = zIndex + 1;
+    this.layers.layers.roads.addChild(curb, asphalt);
   }
 
   private drawLegacyShowcase(state: CitySceneState, generation: number): void {
@@ -334,49 +435,49 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     edgeColor: number,
     warning: boolean
   ): void {
-    const position = this.project({ ...point, elevation: point.elevation - 0.05 });
+    const corners = this.footprintCorners(point, profile);
+    const flatCorners = corners.flatMap((corner) => [corner.x, corner.y]);
+    const xs = corners.map((corner) => corner.x);
+    const ys = corners.map((corner) => corner.y);
+    const centerX = (Math.min(...xs) + Math.max(...xs)) * 0.5;
+    const centerY = (Math.min(...ys) + Math.max(...ys)) * 0.5;
+    const footprintWidth = Math.max(...xs) - Math.min(...xs);
+    const footprintHeight = Math.max(...ys) - Math.min(...ys);
     const depth = this.depth(point, -190);
-    const shadowX = position.x + profile.shadowOffsetX;
-    const shadowY = position.y + profile.shadowOffsetY;
+    const shadowX = centerX + profile.shadowOffsetX;
+    const shadowY = centerY + profile.shadowOffsetY + footprintHeight * 0.08;
 
     const outerShadow = new Graphics().ellipse(
       shadowX,
       shadowY,
-      profile.width * profile.shadowWidthFactor,
-      profile.width * profile.shadowHeightFactor
-    ).fill({ color: 0x06130f, alpha: 0.055 });
+      footprintWidth * 0.37,
+      Math.max(8, footprintHeight * 0.23)
+    ).fill({ color: 0x06130f, alpha: 0.05 });
     outerShadow.zIndex = depth;
 
     const middleShadow = new Graphics().ellipse(
       shadowX,
       shadowY - 1,
-      profile.width * profile.shadowWidthFactor * 0.82,
-      profile.width * profile.shadowHeightFactor * 0.76
-    ).fill({ color: 0x06130f, alpha: 0.075 });
+      footprintWidth * 0.3,
+      Math.max(6, footprintHeight * 0.17)
+    ).fill({ color: 0x06130f, alpha: 0.072 });
     middleShadow.zIndex = depth + 1;
 
     const contactShadow = new Graphics().ellipse(
       shadowX - 1,
       shadowY - 2,
-      profile.width * profile.shadowWidthFactor * 0.58,
-      profile.width * profile.shadowHeightFactor * 0.5
+      footprintWidth * 0.21,
+      Math.max(4, footprintHeight * 0.11)
     ).fill({ color: 0x020806, alpha: 0.105 });
     contactShadow.zIndex = depth + 2;
 
-    const halfWidth = profile.width * profile.footprintWidthFactor;
-    const halfHeight = profile.width * profile.footprintHeightFactor;
-    const footprint = new Graphics().poly([
-      position.x, position.y - halfHeight,
-      position.x + halfWidth, position.y,
-      position.x, position.y + halfHeight,
-      position.x - halfWidth, position.y
-    ]).fill({
+    const footprint = new Graphics().poly(flatCorners).fill({
       color: profile.footprintColor,
-      alpha: warning ? 0.055 : 0.032
+      alpha: warning ? 0.048 : 0.022
     }).stroke({
       color: edgeColor,
-      alpha: warning ? 0.22 : 0.07,
-      width: warning ? 1.2 : 0.65
+      alpha: warning ? 0.2 : 0.055,
+      width: warning ? 1.15 : 0.6
     });
     footprint.zIndex = depth + 3;
 
@@ -413,6 +514,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     for (const district of state.districtPrefabs ?? []) {
       if (!district.prefabAssetId) continue;
       const presentation = resolveDistrictPresentation(district);
+      this.drawRoadConnection(district, presentation);
       this.drawDistrictGrounding(district, presentation);
       const suffix = district.status === 'blackout' || district.status === 'offline' ? 'blackout' : 'night';
       this.addAsset({
@@ -423,13 +525,16 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
         generation,
         layer: this.layers.layers.buildings,
         alpha: district.status === 'offline' ? 0.72 : 1,
+        toneTint: presentation.toneTint,
         placeholderColor: districtColor(district)
       });
-      if (shouldRenderDistrictLabel(district, diagnostics)) this.drawDistrictLabel(district);
+      if (shouldRenderDistrictLabel(district, diagnostics)) {
+        this.drawDistrictLabel(district, presentation.detailMinZoom);
+      }
     }
   }
 
-  private drawDistrictLabel(district: DistrictPrefabSceneState): void {
+  private drawDistrictLabel(district: DistrictPrefabSceneState, minZoom: number): void {
     const position = this.project({ ...district, elevation: 2.2 });
     const offset = labelOffsets[district.kind];
     const color = districtColor(district);
@@ -446,6 +551,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     container.position.set(position.x + offset.x, position.y + offset.y);
     container.zIndex = this.depth(district, 300);
     container.addChild(panel, label);
+    this.bindLod(container, minZoom);
     this.layers.layers.overlays.addChild(container);
   }
 
@@ -461,6 +567,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
       });
       const presentation = resolveFacilityPresentation(facility);
       const active = facility.enabled && !facility.underConstruction;
+      this.drawRoadConnection(facility, presentation);
       this.drawFacilityGrounding(
         facility,
         presentation,
@@ -475,6 +582,12 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
         generation,
         layer: this.layers.layers.buildings,
         alpha: facility.underConstruction ? 0.9 : active ? 1 : 0.68,
+        toneTint: presentation.toneTint,
+        hitArea: {
+          width: presentation.width * presentation.hitWidthFactor,
+          height: presentation.width * presentation.hitHeightFactor,
+          offsetY: presentation.width * presentation.hitOffsetYFactor
+        },
         placeholderColor: 0x78dfff,
         onActivate: () => this.actions.onFacilityClick(facility.instanceId)
       });
@@ -567,6 +680,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
       });
     }
 
+    this.bindLod(container, presentation.motionMinZoom);
     this.layers.layers.effects.addChild(container);
   }
 
@@ -588,6 +702,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     label.anchor.set(0.5);
     label.position.set(0, -3);
     container.addChild(panel, label);
+    this.bindLod(container, 0.66);
     this.layers.layers.overlays.addChild(container);
   }
 
@@ -622,6 +737,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
           generation,
           layer: this.layers.layers.buildings,
           alpha: node.status === 'offline' ? 0.72 : 1,
+          toneTint: 0xecfbff,
           placeholderColor: networkColor(node.status === 'warning' ? 'overload' : node.status === 'offline' ? 'offline' : 'normal')
         });
       }
@@ -651,7 +767,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
       marker.zIndex = this.depth(plot, 180);
       marker.eventMode = 'static';
       marker.cursor = 'pointer';
-      marker.hitArea = new Rectangle(-18, -18, 36, 36);
+      marker.hitArea = new Rectangle(-22, -22, 44, 44);
       const diamond = new Graphics().poly([0, -radius, radius * 1.5, 0, 0, radius, -radius * 1.5, 0])
         .fill({ color: 0x09242d, alpha: 0.12 })
         .stroke({ color: 0x66e5c8, alpha: 0.28, width: 0.9 });
@@ -660,6 +776,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
       marker.on('pointertap', () => {
         if (this.input?.canActivateObject()) this.actions.onPlotClick(plot.id);
       });
+      this.bindLod(marker, 0.72);
       this.layers.layers.overlays.addChild(marker);
     }
   }
@@ -735,6 +852,8 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     layer: Container;
     placeholderColor: number;
     alpha?: number;
+    toneTint?: number;
+    hitArea?: AssetHitArea;
     flipX?: boolean;
     zIndexOverride?: number;
     onActivate?: () => void;
@@ -743,7 +862,10 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     const slot = new Container();
     slot.position.set(position.x, position.y);
     slot.zIndex = options.zIndexOverride ?? this.depth(options.point);
-    slot.hitArea = new Rectangle(-options.width * 0.45, -options.width, options.width * 0.9, options.width);
+    const hitWidth = options.hitArea?.width ?? options.width * 0.9;
+    const hitHeight = options.hitArea?.height ?? options.width;
+    const hitOffsetY = options.hitArea?.offsetY ?? 0;
+    slot.hitArea = new Rectangle(-hitWidth * 0.5, -hitHeight + hitOffsetY, hitWidth, hitHeight);
     const placeholder = new Graphics().poly([
       -options.width * 0.32, -options.width * 0.24,
       0, -options.width * 0.42,
@@ -762,16 +884,31 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     void this.assets.load(options.assetId).then((texture) => {
       if (!texture || !this.mounted || options.generation !== this.generation || slot.destroyed) return;
       for (const child of slot.removeChildren()) child.destroy();
-      slot.addChild(this.makeSprite(texture, options.width, options.anchorY, options.alpha ?? 1, options.flipX ?? false));
+      slot.addChild(this.makeSprite(
+        texture,
+        options.width,
+        options.anchorY,
+        options.alpha ?? 1,
+        options.flipX ?? false,
+        options.toneTint ?? 0xffffff
+      ));
     });
   }
 
-  private makeSprite(texture: Texture, width: number, anchorY: number, alpha: number, flipX: boolean): Sprite {
+  private makeSprite(
+    texture: Texture,
+    width: number,
+    anchorY: number,
+    alpha: number,
+    flipX: boolean,
+    toneTint: number
+  ): Sprite {
     const sprite = new Sprite(texture);
     sprite.anchor.set(0.5, anchorY);
     const scale = width / Math.max(1, texture.width);
     sprite.scale.set(flipX ? -scale : scale, scale);
     sprite.alpha = alpha;
+    sprite.tint = toneTint;
     return sprite;
   }
 }
