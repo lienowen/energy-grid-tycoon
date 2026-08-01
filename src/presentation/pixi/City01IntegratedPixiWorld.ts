@@ -1,4 +1,4 @@
-import { Application, Container, Graphics, Rectangle, Sprite, Text, type Texture } from 'pixi.js';
+import { Application, Container, Graphics, Rectangle, Sprite, Text, type Texture, type Ticker } from 'pixi.js';
 import type {
   CitySceneState,
   DistrictPrefabSceneState,
@@ -30,6 +30,12 @@ import {
   shouldDrawPlotGrounds,
   type ResolvedCityPresentationMode
 } from './City01PresentationPolicy';
+import {
+  resolveDistrictPresentation,
+  resolveFacilityPresentation,
+  type City01BuildingPresentationProfile,
+  type City01FacilityPresentationProfile
+} from './City01BuildingPresentation';
 import { City01TilemapRenderer } from './City01TilemapRenderer';
 import { PixiAssetLoader } from './PixiAssetLoader';
 import { WorldCamera } from './WorldCamera';
@@ -40,30 +46,6 @@ const GRID = 10;
 const TILE_W = 128;
 const TILE_H = 64;
 const ELEVATION = 11.5;
-
-const districtWidths: Record<DistrictPrefabSceneState['kind'], number> = {
-  residential: 312,
-  commercial: 310,
-  industrial: 318,
-  public: 310,
-  old_town: 316
-};
-
-const districtGroundColors: Record<DistrictPrefabSceneState['kind'], number> = {
-  residential: 0x4f7458,
-  commercial: 0x747052,
-  industrial: 0x65625f,
-  public: 0x4d7067,
-  old_town: 0x735e49
-};
-
-const labelOffsets: Record<DistrictPrefabSceneState['kind'], { x: number; y: number }> = {
-  residential: { x: -60, y: -62 },
-  commercial: { x: -78, y: 44 },
-  industrial: { x: 82, y: 42 },
-  public: { x: -82, y: 42 },
-  old_town: { x: -84, y: 42 }
-};
 
 const placementAssets = {
   valid: 'city01_placement_valid',
@@ -88,20 +70,12 @@ const networkColor = (status: EnergyNetworkEdgeSceneState['status']): number => 
   return 0x6f858d;
 };
 
-const facilityWidth = (facility: FacilitySceneState): number => {
-  const base = facility.configId.includes('solar') ? 218
-    : facility.configId.includes('wind') ? 204
-      : facility.configId.includes('gas') ? 224
-        : facility.configId.includes('battery') ? 210 : 210;
-  return base * clamp(facility.scale, 0.85, 1.18) * 0.68;
-};
-
-const facilityGroundColor = (facility: FacilitySceneState): number => {
-  if (facility.category === 'storage') return 0x3f7580;
-  if (facility.configId.includes('wind')) return 0x4d786c;
-  if (facility.configId.includes('solar')) return 0x597555;
-  if (facility.configId.includes('gas')) return 0x77644d;
-  return 0x546b69;
+const labelOffsets: Record<DistrictPrefabSceneState['kind'], { x: number; y: number }> = {
+  residential: { x: -60, y: -62 },
+  commercial: { x: -78, y: 44 },
+  industrial: { x: 82, y: 42 },
+  public: { x: -82, y: 42 },
+  old_town: { x: -84, y: 42 }
 };
 
 export class City01IntegratedPixiWorld implements WorldRenderSurface {
@@ -117,6 +91,12 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
   private generation = 0;
   private pendingPlotId?: string;
   private placementBuildingId?: string;
+  private ambientTime = 0;
+  private readonly ambientAnimations: Array<(time: number) => void> = [];
+  private readonly animateAmbient = (ticker: Ticker): void => {
+    this.ambientTime += ticker.deltaMS / 1000;
+    for (const update of this.ambientAnimations) update(this.ambientTime);
+  };
 
   constructor(private readonly host: HTMLElement, private readonly actions: WorldRenderActions) {}
 
@@ -137,6 +117,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     this.pendingPlotId = undefined;
     this.input?.destroy();
     this.resizeObserver?.disconnect();
+    this.app.ticker.remove(this.animateAmbient);
     this.layers.clear();
     if (this.app.renderer) {
       this.app.destroy({ removeView: true }, { children: true, texture: false, textureSource: false, context: true });
@@ -188,6 +169,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     canvas.setAttribute('aria-label', '曙光新城瓦片地图，可拖动、缩放并通过两次点击确认建设');
     this.host.replaceChildren(canvas);
     this.app.stage.addChild(this.layers.root);
+    this.app.ticker.add(this.animateAmbient);
     this.camera = new WorldCamera(this.layers.root);
     this.camera.setViewport(this.host.clientWidth, this.host.clientHeight);
     this.input = new WorldInputController(canvas, this.camera);
@@ -203,6 +185,7 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
 
   private renderScene(state: CitySceneState): void {
     const generation = ++this.generation;
+    this.ambientAnimations.length = 0;
     this.layers.clear();
     const mode = resolveCityPresentationMode(state.presentationMode);
     const diagnostics = shouldDrawDiagnosticStructure(mode);
@@ -345,45 +328,98 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
     }
   }
 
-  private drawDistrictGrounding(district: DistrictPrefabSceneState, width: number): void {
-    const position = this.project({ ...district, elevation: district.elevation - 0.05 });
-    const shadow = new Graphics().ellipse(position.x, position.y + 8, width * 0.32, width * 0.075)
-      .fill({ color: 0x06130f, alpha: 0.16 });
-    shadow.zIndex = this.depth(district, -190);
-    const blend = new Graphics().ellipse(position.x, position.y + 4, width * 0.29, width * 0.061)
-      .fill({ color: districtGroundColors[district.kind], alpha: 0.08 });
-    blend.zIndex = this.depth(district, -180);
-    this.layers.layers.groundDecorations.addChild(shadow, blend);
+  private drawSoftGrounding(
+    point: ScenePoint,
+    profile: City01BuildingPresentationProfile,
+    edgeColor: number,
+    warning: boolean
+  ): void {
+    const position = this.project({ ...point, elevation: point.elevation - 0.05 });
+    const depth = this.depth(point, -190);
+    const shadowX = position.x + profile.shadowOffsetX;
+    const shadowY = position.y + profile.shadowOffsetY;
+
+    const outerShadow = new Graphics().ellipse(
+      shadowX,
+      shadowY,
+      profile.width * profile.shadowWidthFactor,
+      profile.width * profile.shadowHeightFactor
+    ).fill({ color: 0x06130f, alpha: 0.055 });
+    outerShadow.zIndex = depth;
+
+    const middleShadow = new Graphics().ellipse(
+      shadowX,
+      shadowY - 1,
+      profile.width * profile.shadowWidthFactor * 0.82,
+      profile.width * profile.shadowHeightFactor * 0.76
+    ).fill({ color: 0x06130f, alpha: 0.075 });
+    middleShadow.zIndex = depth + 1;
+
+    const contactShadow = new Graphics().ellipse(
+      shadowX - 1,
+      shadowY - 2,
+      profile.width * profile.shadowWidthFactor * 0.58,
+      profile.width * profile.shadowHeightFactor * 0.5
+    ).fill({ color: 0x020806, alpha: 0.105 });
+    contactShadow.zIndex = depth + 2;
+
+    const halfWidth = profile.width * profile.footprintWidthFactor;
+    const halfHeight = profile.width * profile.footprintHeightFactor;
+    const footprint = new Graphics().poly([
+      position.x, position.y - halfHeight,
+      position.x + halfWidth, position.y,
+      position.x, position.y + halfHeight,
+      position.x - halfWidth, position.y
+    ]).fill({
+      color: profile.footprintColor,
+      alpha: warning ? 0.055 : 0.032
+    }).stroke({
+      color: edgeColor,
+      alpha: warning ? 0.22 : 0.07,
+      width: warning ? 1.2 : 0.65
+    });
+    footprint.zIndex = depth + 3;
+
+    this.layers.layers.groundDecorations.addChild(
+      outerShadow,
+      middleShadow,
+      contactShadow,
+      footprint
+    );
+  }
+
+  private drawDistrictGrounding(
+    district: DistrictPrefabSceneState,
+    profile: City01BuildingPresentationProfile
+  ): void {
+    this.drawSoftGrounding(
+      district,
+      profile,
+      districtColor(district),
+      district.status !== 'normal'
+    );
   }
 
   private drawFacilityGrounding(
     facility: FacilitySceneState,
-    width: number,
+    profile: City01FacilityPresentationProfile,
     edge: number,
     warning: boolean
   ): void {
-    const position = this.project({ ...facility, elevation: facility.elevation - 0.05 });
-    const shadow = new Graphics().ellipse(position.x, position.y + 7, width * 0.31, width * 0.08)
-      .fill({ color: 0x06130f, alpha: 0.2 });
-    shadow.zIndex = this.depth(facility, -190);
-    const pad = new Graphics().ellipse(position.x, position.y + 3, width * 0.28, width * 0.067)
-      .fill({ color: facilityGroundColor(facility), alpha: 0.13 })
-      .stroke({ color: edge, alpha: warning ? 0.34 : 0.12, width: warning ? 1.5 : 0.8 });
-    pad.zIndex = this.depth(facility, -180);
-    this.layers.layers.groundDecorations.addChild(shadow, pad);
+    this.drawSoftGrounding(facility, profile, edge, warning);
   }
 
   private drawDistricts(state: CitySceneState, generation: number, diagnostics: boolean): void {
     for (const district of state.districtPrefabs ?? []) {
       if (!district.prefabAssetId) continue;
-      const width = districtWidths[district.kind] * district.scale;
-      this.drawDistrictGrounding(district, width);
+      const presentation = resolveDistrictPresentation(district);
+      this.drawDistrictGrounding(district, presentation);
       const suffix = district.status === 'blackout' || district.status === 'offline' ? 'blackout' : 'night';
       this.addAsset({
         assetId: `${district.prefabAssetId}_${suffix}`,
-        point: { ...district, elevation: district.elevation + 0.18 },
-        width,
-        anchorY: 0.9115,
+        point: { ...district, elevation: district.elevation + presentation.elevationOffset },
+        width: presentation.width,
+        anchorY: presentation.anchorY,
         generation,
         layer: this.layers.layers.buildings,
         alpha: district.status === 'offline' ? 0.72 : 1,
@@ -423,27 +459,115 @@ export class City01IntegratedPixiWorld implements WorldRenderSurface {
         constructionProgress: facility.constructionProgress,
         presentation: 'commercial'
       });
-      const width = facilityWidth(facility);
+      const presentation = resolveFacilityPresentation(facility);
       const active = facility.enabled && !facility.underConstruction;
       this.drawFacilityGrounding(
         facility,
-        width,
+        presentation,
         facility.underConstruction ? 0xffd45f : active ? 0x64e3c0 : 0xff667f,
         facility.underConstruction || !active
       );
       this.addAsset({
         assetId: visual.bodyAssetId,
-        point: { ...facility, elevation: facility.elevation + 0.12 },
-        width,
-        anchorY: 0.9115,
+        point: { ...facility, elevation: facility.elevation + presentation.elevationOffset },
+        width: presentation.width,
+        anchorY: presentation.anchorY,
         generation,
         layer: this.layers.layers.buildings,
         alpha: facility.underConstruction ? 0.9 : active ? 1 : 0.68,
         placeholderColor: 0x78dfff,
         onActivate: () => this.actions.onFacilityClick(facility.instanceId)
       });
+      if (active) this.drawFacilityAmbient(facility, presentation);
       if (facility.underConstruction) this.drawConstructionStatus(facility);
     }
+  }
+
+  private drawFacilityAmbient(
+    facility: FacilitySceneState,
+    presentation: City01FacilityPresentationProfile
+  ): void {
+    if (presentation.motion === 'none') return;
+    const base = this.project({
+      ...facility,
+      elevation: facility.elevation + presentation.elevationOffset
+    });
+    const container = new Container();
+    container.position.set(
+      base.x,
+      base.y + presentation.width * presentation.motionAnchorY
+    );
+    container.zIndex = this.depth(facility, 360);
+    container.eventMode = 'none';
+
+    if (presentation.motion === 'wind') {
+      const rotor = new Graphics();
+      rotor.circle(0, 0, 2.2).fill({ color: presentation.motionColor, alpha: 0.9 });
+      for (let index = 0; index < 3; index += 1) {
+        const angle = index * Math.PI * 2 / 3;
+        rotor.moveTo(0, 0).lineTo(Math.cos(angle) * 18, Math.sin(angle) * 18)
+          .stroke({ color: presentation.motionColor, alpha: 0.56, width: 1.7, cap: 'round' });
+      }
+      container.addChild(rotor);
+      this.ambientAnimations.push((time) => {
+        if (rotor.destroyed) return;
+        rotor.rotation = time * 0.92;
+      });
+    } else if (presentation.motion === 'gas') {
+      const puffs = [0, 1, 2].map((index) => {
+        const puff = new Graphics().circle(0, 0, 5 + index)
+          .fill({ color: presentation.motionColor, alpha: 0.18 });
+        container.addChild(puff);
+        return puff;
+      });
+      this.ambientAnimations.push((time) => {
+        puffs.forEach((puff, index) => {
+          if (puff.destroyed) return;
+          const phase = (time * 0.16 + index / puffs.length) % 1;
+          puff.position.set((index - 1) * 4 + Math.sin(time + index) * 2, -phase * 30);
+          puff.alpha = Math.sin(Math.PI * phase) * 0.22;
+          const scale = 0.58 + phase * 0.9;
+          puff.scale.set(scale);
+        });
+      });
+    } else if (presentation.motion === 'storage') {
+      const pulse = new Graphics().circle(0, 0, 12)
+        .stroke({ color: presentation.motionColor, alpha: 0.52, width: 1.4 });
+      const bars = new Graphics()
+        .roundRect(-11, -5, 5, 10, 2).fill({ color: presentation.motionColor, alpha: 0.38 })
+        .roundRect(-3, -8, 5, 16, 2).fill({ color: presentation.motionColor, alpha: 0.56 })
+        .roundRect(5, -11, 5, 22, 2).fill({ color: presentation.motionColor, alpha: 0.76 });
+      container.addChild(pulse, bars);
+      this.ambientAnimations.push((time) => {
+        if (pulse.destroyed || bars.destroyed) return;
+        const wave = (Math.sin(time * 2.2) + 1) * 0.5;
+        pulse.alpha = 0.14 + wave * 0.36;
+        pulse.scale.set(0.9 + wave * 0.22);
+        bars.alpha = 0.58 + wave * 0.34;
+      });
+    } else if (presentation.motion === 'solar') {
+      const sheen = new Graphics().poly([-14, 0, 0, -5, 14, 0, 0, 5])
+        .fill({ color: presentation.motionColor, alpha: 0.18 });
+      container.addChild(sheen);
+      this.ambientAnimations.push((time) => {
+        if (sheen.destroyed) return;
+        const phase = (time * 0.24) % 1;
+        sheen.position.x = -18 + phase * 36;
+        sheen.alpha = Math.sin(Math.PI * phase) * 0.28;
+      });
+    } else {
+      const pulse = new Graphics().circle(0, 0, 9)
+        .stroke({ color: presentation.motionColor, alpha: 0.44, width: 1.2 });
+      container.addChild(pulse);
+      this.ambientAnimations.push((time) => {
+        if (pulse.destroyed) return;
+        const wave = (Math.sin(time * 2.8) + 1) * 0.5;
+        pulse.alpha = 0.14 + wave * 0.32;
+        pulse.scale.set(0.82 + wave * 0.28);
+      });
+    }
+
+    this.layers.layers.effects.addChild(container);
   }
 
   private drawConstructionStatus(facility: FacilitySceneState): void {
