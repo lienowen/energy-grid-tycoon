@@ -38,13 +38,29 @@ describe('FacilityVisualRegistry', () => {
     expect(offline.lightAssetId).toBeUndefined();
   });
 
-  it('uses the approved cut state sprites for the commercial City-01 presentation', () => {
+  it('uses approved body cuts and optional component ids for commercial City-01', () => {
     const construction = FacilityVisualRegistry.resolve({
       configId: 'solar_basic',
       category: 'generation',
       enabled: true,
       selected: false,
       constructionProgress: 0.5,
+      presentation: 'commercial'
+    });
+    const wind = FacilityVisualRegistry.resolve({
+      configId: 'wind_basic',
+      category: 'generation',
+      enabled: true,
+      selected: false,
+      constructionProgress: 1,
+      presentation: 'commercial'
+    });
+    const gas = FacilityVisualRegistry.resolve({
+      configId: 'gas_basic',
+      category: 'generation',
+      enabled: true,
+      selected: false,
+      constructionProgress: 1,
       presentation: 'commercial'
     });
     const utilityStorage = FacilityVisualRegistry.resolve({
@@ -57,7 +73,28 @@ describe('FacilityVisualRegistry', () => {
     });
 
     expect(construction.bodyAssetId).toBe('commercial_facility_solar_construction');
+    expect(construction.lightAssetId).toBeUndefined();
+    expect(wind.motionAssetId).toBe('commercial_facility_wind_component_motion');
+    expect(gas.effectAssetId).toBe('commercial_facility_gas_component_effect');
     expect(utilityStorage.bodyAssetId).toBe('commercial_facility_battery_utility_active');
+    expect(utilityStorage.lightAssetId)
+      .toBe('commercial_facility_battery_utility_component_light');
+  });
+
+  it('does not request optional component cuts while offline', () => {
+    const wind = FacilityVisualRegistry.resolve({
+      configId: 'wind_basic',
+      category: 'generation',
+      enabled: false,
+      selected: false,
+      constructionProgress: 1,
+      presentation: 'commercial'
+    });
+
+    expect(wind.state).toBe('offline');
+    expect(wind.motionAssetId).toBeUndefined();
+    expect(wind.lightAssetId).toBeUndefined();
+    expect(wind.effectAssetId).toBeUndefined();
   });
 
   it('falls back by category for future registered content', () => {
