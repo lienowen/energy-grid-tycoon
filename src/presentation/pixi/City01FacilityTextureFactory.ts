@@ -1,4 +1,5 @@
 import { CanvasSource, Texture } from 'pixi.js';
+import { AssetManager } from '../../resources/AssetManager';
 
 export const CITY01_FACILITY_CANVAS = {
   width: 512,
@@ -39,31 +40,16 @@ export const isCity01P0FacilityAsset = (assetId: string): boolean =>
   assetId.includes('_p0_');
 
 export const city01FacilityCanvasSpec = (assetId: string): City01FacilityCanvasSpec => {
-  if (assetId.startsWith('commercial_facility_battery_utility_')) {
-    return { maxSubjectWidth: 448, maxSubjectHeight: 350 };
-  }
-  if (assetId.startsWith('commercial_facility_solar_')) {
-    return { maxSubjectWidth: 430, maxSubjectHeight: 360 };
-  }
-  if (assetId.startsWith('commercial_facility_wind_')) {
-    return { maxSubjectWidth: 300, maxSubjectHeight: 430 };
-  }
-  if (assetId.startsWith('commercial_facility_gas_')) {
-    return { maxSubjectWidth: 440, maxSubjectHeight: 390 };
-  }
-  if (assetId.startsWith('commercial_facility_battery_')) {
-    return { maxSubjectWidth: 426, maxSubjectHeight: 342 };
-  }
-  if (assetId.startsWith('commercial_facility_substation_')) {
-    return { maxSubjectWidth: 446, maxSubjectHeight: 346 };
-  }
-  if (assetId.startsWith('world_facility_grid_node_')) {
-    return { maxSubjectWidth: 318, maxSubjectHeight: 420 };
-  }
+  if (assetId.startsWith('commercial_facility_battery_utility_')) return { maxSubjectWidth: 448, maxSubjectHeight: 350 };
+  if (assetId.startsWith('commercial_facility_solar_')) return { maxSubjectWidth: 430, maxSubjectHeight: 360 };
+  if (assetId.startsWith('commercial_facility_wind_')) return { maxSubjectWidth: 300, maxSubjectHeight: 430 };
+  if (assetId.startsWith('commercial_facility_gas_')) return { maxSubjectWidth: 440, maxSubjectHeight: 390 };
+  if (assetId.startsWith('commercial_facility_battery_')) return { maxSubjectWidth: 426, maxSubjectHeight: 342 };
+  if (assetId.startsWith('commercial_facility_substation_')) return { maxSubjectWidth: 446, maxSubjectHeight: 346 };
+  if (assetId.startsWith('world_facility_grid_node_')) return { maxSubjectWidth: 318, maxSubjectHeight: 420 };
   return { maxSubjectWidth: 420, maxSubjectHeight: 380 };
 };
 
-/** Conservative cleanup for legacy sprites with baked semi-transparent shadows. */
 export const city01FacilityCleanupSpec = (assetId: string): City01FacilityCleanupSpec => {
   if (assetId.startsWith('commercial_facility_wind_')) {
     return { startYRatio: 0.72, maxAlpha: 172, maxLuma: 112, maxChroma: 42, alphaMultiplier: 0.18 };
@@ -100,10 +86,43 @@ const loadImage = (source: string): Promise<HTMLImageElement> =>
     image.src = source;
   });
 
-const textureFromCanvas = (canvas: HTMLCanvasElement): Texture => {
+const loadOptionalAssetImage = async (assetId: string): Promise<HTMLImageElement | undefined> => {
+  const source = AssetManager.get(assetId, '');
+  if (!source) return undefined;
+  try {
+    return await loadImage(source);
+  } catch {
+    return undefined;
+  }
+};
+
+const makeTextureSource = (canvas: HTMLCanvasElement): CanvasSource => {
   const source = new CanvasSource({ resource: canvas });
   source.scaleMode = 'linear';
-  return new Texture({ source });
+  return source;
+};
+
+const textureFromCanvas = (canvas: HTMLCanvasElement): Texture =>
+  new Texture({ source: makeTextureSource(canvas) });
+
+const animatedTextureFromCanvas = (
+  canvas: HTMLCanvasElement,
+  render: (time: number) => void
+): Texture => {
+  const source = makeTextureSource(canvas);
+  const texture = new Texture({ source });
+  render(0);
+  if (typeof requestAnimationFrame === 'function') {
+    const started = typeof performance === 'undefined' ? 0 : performance.now();
+    const frame = (now: number): void => {
+      if ((texture as unknown as { destroyed?: boolean }).destroyed) return;
+      render((now - started) / 1000);
+      source.update();
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  }
+  return texture;
 };
 
 interface AlphaBounds {
@@ -121,7 +140,6 @@ const weightedAlphaBounds = (
   const columns = new Float64Array(width);
   const rows = new Float64Array(height);
   let total = 0;
-
   for (let y = 0; y < height; y += 1) {
     for (let x = 0; x < width; x += 1) {
       const alpha = pixels[(y * width + x) * 4 + 3] ?? 0;
@@ -131,7 +149,6 @@ const weightedAlphaBounds = (
       total += alpha;
     }
   }
-
   if (total <= 0) return { x: 0, y: 0, width, height };
   const trim = total * 0.0005;
   let left = 0;
@@ -158,12 +175,7 @@ const weightedAlphaBounds = (
     accumulated += rows[bottom]!;
     bottom -= 1;
   }
-  return {
-    x: left,
-    y: top,
-    width: Math.max(1, right - left + 1),
-    height: Math.max(1, bottom - top + 1)
-  };
+  return { x: left, y: top, width: Math.max(1, right - left + 1), height: Math.max(1, bottom - top + 1) };
 };
 
 const clearPixel = (pixels: Uint8ClampedArray, offset: number): void => {
@@ -183,7 +195,6 @@ const cleanFacilityGroundArtifacts = (
   const pixels = imageData.data;
   const spec = city01FacilityCleanupSpec(assetId);
   const cleanupStart = Math.round(height * spec.startYRatio);
-
   for (let y = 0; y < height; y += 1) {
     for (let x = 0; x < width; x += 1) {
       const offset = (y * width + x) * 4;
@@ -205,9 +216,7 @@ const cleanFacilityGroundArtifacts = (
       const red = pixels[offset] ?? 0;
       const green = pixels[offset + 1] ?? 0;
       const blue = pixels[offset + 2] ?? 0;
-      const maximum = Math.max(red, green, blue);
-      const minimum = Math.min(red, green, blue);
-      const chroma = maximum - minimum;
+      const chroma = Math.max(red, green, blue) - Math.min(red, green, blue);
       const luma = red * 0.2126 + green * 0.7152 + blue * 0.0722;
       if (luma > spec.maxLuma || chroma > spec.maxChroma) continue;
       const reduced = Math.round(currentAlpha * spec.alphaMultiplier);
@@ -218,13 +227,18 @@ const cleanFacilityGroundArtifacts = (
   context.putImageData(imageData, 0, 0);
 };
 
-const drawSharedSource = (
-  context: CanvasRenderingContext2D,
-  image: HTMLImageElement
-): void => {
+const drawSharedSource = (context: CanvasRenderingContext2D, image: HTMLImageElement): void => {
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = 'high';
   context.drawImage(image, 0, 0, CITY01_FACILITY_CANVAS.width, CITY01_FACILITY_CANVAS.height);
+};
+
+const sharedCanvasFromImage = (image: HTMLImageElement): HTMLCanvasElement | undefined => {
+  const canvas = makeCanvas(CITY01_FACILITY_CANVAS.width, CITY01_FACILITY_CANVAS.height);
+  const context = canvas.getContext('2d');
+  if (!context) return undefined;
+  drawSharedSource(context, image);
+  return canvas;
 };
 
 const traceWindRotor = (context: CanvasRenderingContext2D): void => {
@@ -248,37 +262,104 @@ const traceWindRotor = (context: CanvasRenderingContext2D): void => {
   context.arc(243, 174, 22, 0, Math.PI * 2);
 };
 
-const buildP0WindBody = (image: HTMLImageElement): Texture | undefined => {
-  const canvas = makeCanvas(CITY01_FACILITY_CANVAS.width, CITY01_FACILITY_CANVAS.height);
-  const context = canvas.getContext('2d');
-  if (!context) return undefined;
-  drawSharedSource(context, image);
-  context.save();
-  context.globalCompositeOperation = 'destination-out';
-  traceWindRotor(context);
-  context.fill();
-  context.restore();
-  return textureFromCanvas(canvas);
+const windLayers = (image: HTMLImageElement): {
+  body: HTMLCanvasElement;
+  rotor: HTMLCanvasElement;
+} | undefined => {
+  const body = sharedCanvasFromImage(image);
+  const rotor = makeCanvas(CITY01_FACILITY_CANVAS.width, CITY01_FACILITY_CANVAS.height);
+  if (!body) return undefined;
+  const bodyContext = body.getContext('2d');
+  const rotorContext = rotor.getContext('2d');
+  if (!bodyContext || !rotorContext) return undefined;
+  bodyContext.save();
+  bodyContext.globalCompositeOperation = 'destination-out';
+  traceWindRotor(bodyContext);
+  bodyContext.fill();
+  bodyContext.restore();
+  rotorContext.save();
+  traceWindRotor(rotorContext);
+  rotorContext.clip();
+  drawSharedSource(rotorContext, image);
+  rotorContext.restore();
+  return { body, rotor };
 };
 
-const buildP0WindMotion = (image: HTMLImageElement): Texture | undefined => {
-  const canvas = makeCanvas(CITY01_FACILITY_CANVAS.width, CITY01_FACILITY_CANVAS.height);
-  const context = canvas.getContext('2d');
+const buildAnimatedWindBody = (image: HTMLImageElement): Texture | undefined => {
+  const layers = windLayers(image);
+  if (!layers) return undefined;
+  const output = makeCanvas(CITY01_FACILITY_CANVAS.width, CITY01_FACILITY_CANVAS.height);
+  const context = output.getContext('2d');
   if (!context) return undefined;
-  context.save();
-  traceWindRotor(context);
-  context.clip();
-  drawSharedSource(context, image);
-  context.restore();
-  return textureFromCanvas(canvas);
+  const hubX = 243;
+  const hubY = 174;
+  return animatedTextureFromCanvas(output, (time) => {
+    context.clearRect(0, 0, output.width, output.height);
+    context.drawImage(layers.body, 0, 0);
+    context.save();
+    context.translate(hubX, hubY);
+    context.rotate(time * 0.72);
+    context.translate(-hubX, -hubY);
+    context.drawImage(layers.rotor, 0, 0);
+    context.restore();
+  });
+};
+
+const buildWindMotionTexture = (image: HTMLImageElement): Texture | undefined => {
+  const layers = windLayers(image);
+  return layers ? textureFromCanvas(layers.rotor) : undefined;
+};
+
+const buildAnimatedGasBody = async (image: HTMLImageElement): Promise<Texture | undefined> => {
+  const body = sharedCanvasFromImage(image);
+  if (!body) return undefined;
+  const smoke = await loadOptionalAssetImage('commercial_facility_gas_p0_effect');
+  if (!smoke) return textureFromCanvas(body);
+  const output = makeCanvas(CITY01_FACILITY_CANVAS.width, CITY01_FACILITY_CANVAS.height);
+  const context = output.getContext('2d');
+  if (!context) return undefined;
+  return animatedTextureFromCanvas(output, (time) => {
+    context.clearRect(0, 0, output.width, output.height);
+    context.save();
+    context.globalAlpha = 0.46 + Math.sin(time * 0.7) * 0.05;
+    const driftA = (time * 3.2) % 8;
+    const driftB = (time * 2.6 + 4) % 8;
+    context.drawImage(smoke, 274, 76, 221, 862, 142, -70 - driftA, 44, 150);
+    context.drawImage(smoke, 446, 145, 402, 783, 174, -92 - driftB, 55, 154);
+    context.restore();
+    context.drawImage(body, 0, 0);
+  });
+};
+
+const buildAnimatedStorageBody = async (
+  image: HTMLImageElement,
+  utility: boolean
+): Promise<Texture | undefined> => {
+  const body = sharedCanvasFromImage(image);
+  if (!body) return undefined;
+  const light = await loadOptionalAssetImage(
+    utility ? 'commercial_facility_battery_utility_p0_light' : 'commercial_facility_battery_p0_light'
+  );
+  if (!light) return textureFromCanvas(body);
+  const lightCanvas = sharedCanvasFromImage(light);
+  if (!lightCanvas) return textureFromCanvas(body);
+  const output = makeCanvas(CITY01_FACILITY_CANVAS.width, CITY01_FACILITY_CANVAS.height);
+  const context = output.getContext('2d');
+  if (!context) return undefined;
+  return animatedTextureFromCanvas(output, (time) => {
+    context.clearRect(0, 0, output.width, output.height);
+    context.drawImage(body, 0, 0);
+    context.save();
+    context.globalCompositeOperation = 'screen';
+    context.globalAlpha = 0.28 + (Math.sin(time * 2.1) + 1) * 0.18;
+    context.drawImage(lightCanvas, 0, 0);
+    context.restore();
+  });
 };
 
 const buildSharedP0Texture = (image: HTMLImageElement): Texture | undefined => {
-  const canvas = makeCanvas(CITY01_FACILITY_CANVAS.width, CITY01_FACILITY_CANVAS.height);
-  const context = canvas.getContext('2d');
-  if (!context) return undefined;
-  drawSharedSource(context, image);
-  return textureFromCanvas(canvas);
+  const canvas = sharedCanvasFromImage(image);
+  return canvas ? textureFromCanvas(canvas) : undefined;
 };
 
 const buildTrimmedP0Effect = (image: HTMLImageElement): Texture | undefined => {
@@ -300,13 +381,16 @@ const buildTrimmedP0Effect = (image: HTMLImageElement): Texture | undefined => {
   return textureFromCanvas(canvas);
 };
 
-const buildP0FacilityTexture = (
+const buildP0FacilityTexture = async (
   assetId: string,
   image: HTMLImageElement
-): Texture | undefined => {
-  if (assetId === 'commercial_facility_wind_p0_body') return buildP0WindBody(image);
-  if (assetId === 'commercial_facility_wind_p0_motion') return buildP0WindMotion(image);
+): Promise<Texture | undefined> => {
+  if (assetId === 'commercial_facility_wind_p0_body') return buildAnimatedWindBody(image);
+  if (assetId === 'commercial_facility_wind_p0_motion') return buildWindMotionTexture(image);
+  if (assetId === 'commercial_facility_gas_p0_body') return buildAnimatedGasBody(image);
   if (assetId === 'commercial_facility_gas_p0_effect') return buildTrimmedP0Effect(image);
+  if (assetId === 'commercial_facility_battery_p0_body') return buildAnimatedStorageBody(image, false);
+  if (assetId === 'commercial_facility_battery_utility_p0_body') return buildAnimatedStorageBody(image, true);
   return buildSharedP0Texture(image);
 };
 
