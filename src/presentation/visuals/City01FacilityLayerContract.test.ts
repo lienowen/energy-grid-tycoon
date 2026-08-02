@@ -17,7 +17,7 @@ const commercial = (configId: string, category: 'generation' | 'storage' = 'gene
   });
 
 describe('City01FacilityLayerContract', () => {
-  it('keeps every cut on one 512 canvas and one baseline', () => {
+  it('keeps shared cuts on one 512 canvas and one baseline', () => {
     expect(CITY01_FACILITY_LAYER_CANVAS).toEqual({
       width: 512,
       height: 512,
@@ -33,11 +33,21 @@ describe('City01FacilityLayerContract', () => {
     const battery = resolveCity01FacilityLayerStack(commercial('battery_basic', 'storage'));
 
     expect(wind.map((layer) => layer.role)).toEqual(['body', 'motion']);
-    expect(wind[1]?.animation).toBe('rotate');
+    expect(wind[1]).toMatchObject({
+      animation: 'rotate',
+      layout: 'shared-canvas',
+      pivotX: 0.476,
+      pivotY: 0.342
+    });
     expect(gas.map((layer) => layer.role)).toEqual(['body', 'effect']);
-    expect(gas[1]?.animation).toBe('rise');
+    expect(gas[1]).toMatchObject({
+      animation: 'rise',
+      layout: 'trimmed-effect',
+      widthFactor: 0.58,
+      offsetXFactor: -0.16
+    });
     expect(battery.map((layer) => layer.role)).toEqual(['body', 'light']);
-    expect(battery[1]?.animation).toBe('pulse');
+    expect(battery[1]).toMatchObject({ animation: 'pulse', layout: 'shared-canvas' });
   });
 
   it('makes only the body mandatory and forbids baked pads and shadows', () => {
