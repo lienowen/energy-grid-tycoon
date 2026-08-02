@@ -1,5 +1,5 @@
 export const CITY01_ART_V2 = {
-  revision: 'city01-art-v2-foundation-2',
+  revision: 'city01-art-v2-foundation-3',
   direction: {
     camera: 'isometric-2-to-1',
     lightSource: 'upper-left',
@@ -8,17 +8,21 @@ export const CITY01_ART_V2 = {
     shadowScreenOffsetX: 1,
     shadowScreenOffsetY: 1
   },
+  atlasReference: {
+    grassAverage: 0x497448,
+    waterAverage: 0x08596f
+  },
   palette: {
     ocean: {
       deep: 0x051920,
       mid: 0x082e38,
-      shallow: 0x0f5360,
+      shallow: 0x075267,
       highlight: 0x8acfd1,
       foam: 0xe4f3ec
     },
     terrain: {
-      grassFallback: 0x536b57,
-      lockedFallback: 0x34423d,
+      grassFallback: 0x41693e,
+      lockedFallback: 0x213822,
       landTint: 0xe2e8dc,
       waterTint: 0xd7ecec,
       lockedTint: 0x737c78,
