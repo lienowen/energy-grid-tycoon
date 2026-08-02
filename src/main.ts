@@ -29,13 +29,13 @@ import type { EventConfig } from './systems/EventSystem';
 import type { LevelConfig } from './systems/LevelLoader';
 import type { PolicyConfig } from './systems/PolicySystem';
 import type { TechnologyConfig } from './systems/ResearchSystem';
+import { CITY01_ART_V2_SHELL } from './ui/City01ArtV2ShellContract';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { RuntimeRecovery } from './ui/RuntimeRecovery';
 
-const CITY01_ART_V2_SHELL_SCOPE = 'city01-art-v2-foundation-1';
-document.documentElement.dataset.artDirection = CITY01_ART_V2_SHELL_SCOPE;
+document.documentElement.dataset.artDirection = CITY01_ART_V2_SHELL.scope;
 document.documentElement.dataset.artThemeRevision = CITY01_ART_V2.revision;
-document.documentElement.dataset.artVersion = '2';
+document.documentElement.dataset.artVersion = CITY01_ART_V2_SHELL.majorVersion;
 
 const root = document.querySelector<HTMLElement>('#app');
 if (!root) throw new Error('Application root #app was not found');
