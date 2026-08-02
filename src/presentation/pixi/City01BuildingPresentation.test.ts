@@ -3,6 +3,7 @@ import type {
   DistrictPrefabSceneState,
   FacilitySceneState
 } from '../CitySceneTypes';
+import { CITY01_ART_V2 } from '../art-v2/City01ArtV2Theme';
 import rendererSource from './City01IntegratedPixiWorld.ts?raw';
 import {
   CITY01_LIGHT_DIRECTION,
@@ -37,6 +38,15 @@ describe('City-01 building presentation', () => {
       expect(profile.toneTint).toBeLessThanOrEqual(0xffffff);
       expect(profile.detailMinZoom).toBeGreaterThan(0.7);
     }
+  });
+
+  it('keeps the modular public district restrained and neutral', () => {
+    const profile = resolveDistrictPresentation(district('public'));
+    expect(profile.width).toBeLessThan(280);
+    expect(profile.toneTint).toBe(CITY01_ART_V2.palette.building.neutralTint);
+    expect(profile.roadWidth).toBeLessThanOrEqual(6);
+    expect(profile.shadowOffsetX).toBeLessThanOrEqual(6);
+    expect(profile.shadowOffsetY).toBeLessThanOrEqual(7);
   });
 
   it('assigns restrained facility motion and technology-specific footprints', () => {
