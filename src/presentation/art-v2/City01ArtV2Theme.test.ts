@@ -10,13 +10,50 @@ const perceivedLuma = (color: number): number =>
   + channel(color, 8) * 0.7152
   + channel(color, 0) * 0.0722;
 
+const multiplyColor = (source: number, tint: number): number => {
+  const red = Math.round(channel(source, 16) * channel(tint, 16) / 255);
+  const green = Math.round(channel(source, 8) * channel(tint, 8) / 255);
+  const blue = Math.round(channel(source, 0) * channel(tint, 0) / 255);
+  return (red << 16) | (green << 8) | blue;
+};
+
+const expectColorNear = (actual: number, expected: number, tolerance = 2): void => {
+  expect(Math.abs(channel(actual, 16) - channel(expected, 16))).toBeLessThanOrEqual(tolerance);
+  expect(Math.abs(channel(actual, 8) - channel(expected, 8))).toBeLessThanOrEqual(tolerance);
+  expect(Math.abs(channel(actual, 0) - channel(expected, 0))).toBeLessThanOrEqual(tolerance);
+};
+
 describe('City01ArtV2Theme', () => {
   it('defines one versioned modern-isometric visual direction', () => {
-    expect(CITY01_ART_V2.revision).toBe('city01-art-v2-foundation-2');
+    expect(CITY01_ART_V2.revision).toBe('city01-art-v2-foundation-3');
     expect(CITY01_ART_V2.direction.camera).toBe('isometric-2-to-1');
     expect(CITY01_ART_V2.direction.lightSource).toBe('upper-left');
     expect(CITY01_ART_V2.direction.lightAzimuthDegrees).toBe(315);
     expect(CITY01_ART_V2.direction.lightElevationDegrees).toBe(45);
+  });
+
+  it('matches every transparent tile fallback to the tinted atlas average', () => {
+    expectColorNear(
+      CITY01_ART_V2.palette.terrain.grassFallback,
+      multiplyColor(
+        CITY01_ART_V2.atlasReference.grassAverage,
+        CITY01_ART_V2.palette.terrain.landTint
+      )
+    );
+    expectColorNear(
+      CITY01_ART_V2.palette.terrain.lockedFallback,
+      multiplyColor(
+        CITY01_ART_V2.atlasReference.grassAverage,
+        CITY01_ART_V2.palette.terrain.lockedTint
+      )
+    );
+    expectColorNear(
+      CITY01_ART_V2.palette.ocean.shallow,
+      multiplyColor(
+        CITY01_ART_V2.atlasReference.waterAverage,
+        CITY01_ART_V2.palette.terrain.waterTint
+      )
+    );
   });
 
   it('keeps terrain and roads readable without arcade-level contrast', () => {
