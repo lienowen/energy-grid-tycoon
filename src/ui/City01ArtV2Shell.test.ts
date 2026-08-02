@@ -13,8 +13,10 @@ describe('City01 Art V2 shell', () => {
     expect(artV2Index).toBeGreaterThan(legacyIndex);
   });
 
-  it('publishes a versioned runtime marker before the game mounts', () => {
-    expect(mainSource).toContain('document.documentElement.dataset.artDirection = CITY01_ART_V2.revision');
+  it('publishes stable shell, theme revision and major-version markers before mount', () => {
+    expect(mainSource).toContain("const CITY01_ART_V2_SHELL_SCOPE = 'city01-art-v2-foundation-1'");
+    expect(mainSource).toContain('document.documentElement.dataset.artDirection = CITY01_ART_V2_SHELL_SCOPE');
+    expect(mainSource).toContain('document.documentElement.dataset.artThemeRevision = CITY01_ART_V2.revision');
     expect(mainSource).toContain("document.documentElement.dataset.artVersion = '2'");
   });
 
