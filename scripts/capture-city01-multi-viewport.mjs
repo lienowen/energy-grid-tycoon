@@ -3,6 +3,7 @@ import { chromium } from 'playwright';
 
 const baseUrl = process.env.CITY01_CAPTURE_URL ?? 'http://127.0.0.1:4173';
 const outputDir = process.env.CITY01_CAPTURE_DIR ?? 'artifacts/city01-multi-viewport';
+const captureRevision = 'facility-p0-layered-v1';
 
 const cases = [
   { id: 'desktop-city', width: 1440, height: 1080, mode: 'game' },
@@ -79,9 +80,6 @@ const enterPlacement = async (page) => {
 };
 
 const placeConstruction = async (page) => {
-  // Visible placement-disc centres in the authored home view. The renderer's
-  // hit areas extend upward from each logical plot anchor, so click the visible
-  // disc centre instead of the former background-image coordinate.
   const targets = [
     { x: 887, y: 690 },
     { x: 365, y: 470 },
@@ -296,7 +294,7 @@ try {
       }
       if (captureCase.mode === 'grid') await switchToGrid(page);
 
-      await page.waitForTimeout(350);
+      await page.waitForTimeout(1100);
       diagnostics = await inspectPage(page, captureCase);
       issues.push(...validate(diagnostics, captureCase, constructionSave));
     } catch (error) {
@@ -317,7 +315,7 @@ try {
 
 await writeFile(
   `${outputDir}/diagnostics.json`,
-  `${JSON.stringify({ baseUrl, generatedAt: new Date().toISOString(), results }, null, 2)}\n`,
+  `${JSON.stringify({ captureRevision, baseUrl, generatedAt: new Date().toISOString(), results }, null, 2)}\n`,
   'utf8'
 );
 
