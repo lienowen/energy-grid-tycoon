@@ -25,6 +25,20 @@ interface TileCorners {
   left: ScreenPoint;
 }
 
+interface LockedFogRectangle {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+}
+
+interface FogFrontier {
+  from: keyof TileCorners;
+  to: keyof TileCorners;
+  dx: number;
+  dy: number;
+}
+
 export interface City01TilemapRenderOptions {
   world: TileWorldSceneState;
   layers: WorldLayers;
@@ -33,6 +47,8 @@ export interface City01TilemapRenderOptions {
 }
 
 const THEME = CITY01_ART_V2;
+
+const cellKey = (gridX: number, gridY: number): string => `${gridX}:${gridY}`;
 
 const polygon = (corners: TileCorners): number[] => [
   corners.top.x, corners.top.y,
@@ -230,11 +246,10 @@ const drawEntryMarker = (
   layer.addChild(label);
 };
 
-const terrainTint = (cell: TileWorldCellSceneState): number => {
-  if (cell.terrain === 'water') return THEME.palette.terrain.waterTint;
-  if (!cell.unlocked) return THEME.palette.terrain.lockedTint;
-  return THEME.palette.terrain.landTint;
-};
+const terrainTint = (cell: TileWorldCellSceneState): number =>
+  cell.terrain === 'water'
+    ? THEME.palette.terrain.waterTint
+    : THEME.palette.terrain.landTint;
 
 const addTerrainSprites = (
   container: Container,
@@ -281,6 +296,146 @@ const drawSparseWaterHighlight = (
     });
 };
 
+const mergeLockedFogRectangles = (
+  cells: readonly TileWorldCellSceneState[]
+): LockedFogRectangle[] => {
+  const lockedKeys = new Set(
+    cells
+      .filter((cell) => cell.terrain !== 'water' && !cell.unlocked)
+      .map((cell) => cellKey(cell.gridX, cell.gridY))
+  );
+  const consumed = new Set<string>();
+  const lockedCells = cells
+    .filter((cell) => lockedKeys.has(cellKey(cell.gridX, cell.gridY)))
+    .slice()
+    .sort((left, right) => left.gridY - right.gridY || left.gridX - right.gridX);
+  const rectangles: LockedFogRectangle[] = [];
+
+  for (const cell of lockedCells) {
+    const startKey = cellKey(cell.gridX, cell.gridY);
+    if (consumed.has(startKey)) continue;
+
+    let maxX = cell.gridX;
+    while (
+      lockedKeys.has(cellKey(maxX + 1, cell.gridY))
+      && !consumed.has(cellKey(maxX + 1, cell.gridY))
+    ) {
+      maxX += 1;
+    }
+
+    let maxY = cell.gridY;
+    while (true) {
+      const candidateY = maxY + 1;
+      let completeRow = true;
+      for (let gridX = cell.gridX; gridX <= maxX; gridX += 1) {
+        const candidateKey = cellKey(gridX, candidateY);
+        if (!lockedKeys.has(candidateKey) || consumed.has(candidateKey)) {
+          completeRow = false;
+          break;
+        }
+      }
+      if (!completeRow) break;
+      maxY = candidateY;
+    }
+
+    for (let gridY = cell.gridY; gridY <= maxY; gridY += 1) {
+      for (let gridX = cell.gridX; gridX <= maxX; gridX += 1) {
+        consumed.add(cellKey(gridX, gridY));
+      }
+    }
+
+    rectangles.push({
+      minX: cell.gridX,
+      maxX,
+      minY: cell.gridY,
+      maxY
+    });
+  }
+
+  return rectangles;
+};
+
+const fogRectanglePolygon = (
+  rectangle: LockedFogRectangle,
+  cellsByKey: ReadonlyMap<string, TileWorldCellSceneState>,
+  project: (point: ScenePoint) => ScreenPoint,
+  basisX: ScreenPoint,
+  basisY: ScreenPoint
+): number[] | undefined => {
+  const topLeft = cellsByKey.get(cellKey(rectangle.minX, rectangle.minY));
+  const topRight = cellsByKey.get(cellKey(rectangle.maxX, rectangle.minY));
+  const bottomRight = cellsByKey.get(cellKey(rectangle.maxX, rectangle.maxY));
+  const bottomLeft = cellsByKey.get(cellKey(rectangle.minX, rectangle.maxY));
+  if (!topLeft || !topRight || !bottomRight || !bottomLeft) return undefined;
+
+  const topLeftCorners = cornersFor(project(topLeft), basisX, basisY);
+  const topRightCorners = cornersFor(project(topRight), basisX, basisY);
+  const bottomRightCorners = cornersFor(project(bottomRight), basisX, basisY);
+  const bottomLeftCorners = cornersFor(project(bottomLeft), basisX, basisY);
+
+  return [
+    topLeftCorners.top.x, topLeftCorners.top.y,
+    topRightCorners.right.x, topRightCorners.right.y,
+    bottomRightCorners.bottom.x, bottomRightCorners.bottom.y,
+    bottomLeftCorners.left.x, bottomLeftCorners.left.y
+  ];
+};
+
+const FOG_FRONTIERS: readonly FogFrontier[] = [
+  { dx: -1, dy: 0, from: 'top', to: 'left' },
+  { dx: 1, dy: 0, from: 'right', to: 'bottom' },
+  { dx: 0, dy: -1, from: 'top', to: 'right' },
+  { dx: 0, dy: 1, from: 'left', to: 'bottom' }
+];
+
+const drawLockedAreaFog = (
+  fog: Graphics,
+  fogEdgeGlow: Graphics,
+  fogEdge: Graphics,
+  cells: readonly TileWorldCellSceneState[],
+  project: (point: ScenePoint) => ScreenPoint,
+  basisX: ScreenPoint,
+  basisY: ScreenPoint
+): void => {
+  const cellsByKey = new Map(
+    cells.map((cell) => [cellKey(cell.gridX, cell.gridY), cell] as const)
+  );
+
+  for (const rectangle of mergeLockedFogRectangles(cells)) {
+    const shape = fogRectanglePolygon(rectangle, cellsByKey, project, basisX, basisY);
+    if (!shape) continue;
+    fog.poly(shape).fill({
+      color: THEME.palette.terrain.fogFill,
+      alpha: THEME.atmosphere.lockedFogAlpha
+    });
+  }
+
+  for (const cell of cells) {
+    if (cell.terrain === 'water' || cell.unlocked) continue;
+    const corners = cornersFor(project(cell), basisX, basisY);
+
+    for (const frontier of FOG_FRONTIERS) {
+      const neighbor = cellsByKey.get(cellKey(cell.gridX + frontier.dx, cell.gridY + frontier.dy));
+      if (!neighbor || neighbor.terrain === 'water' || !neighbor.unlocked) continue;
+      const from = corners[frontier.from];
+      const to = corners[frontier.to];
+
+      fogEdgeGlow.moveTo(from.x, from.y).lineTo(to.x, to.y).stroke({
+        color: THEME.palette.terrain.fogGlow,
+        alpha: THEME.atmosphere.lockedFogEdgeGlowAlpha,
+        width: THEME.atmosphere.lockedFogEdgeGlowWidth,
+        cap: 'round'
+      });
+      fogEdge.moveTo(from.x, from.y).lineTo(to.x, to.y).stroke({
+        color: THEME.palette.terrain.fogEdge,
+        alpha: THEME.atmosphere.lockedFogEdgeAlpha,
+        width: THEME.atmosphere.lockedFogEdgeWidth,
+        cap: 'round'
+      });
+    }
+  }
+};
+
 export class City01TilemapRenderer {
   static render(options: City01TilemapRenderOptions): void {
     const { world, layers, diagnostics, project } = options;
@@ -298,6 +453,9 @@ export class City01TilemapRenderer {
     const roadMarkings = new Graphics();
     const bridge = new Graphics();
     const entries = new Container();
+    const lockedFog = new Graphics();
+    const lockedFogEdgeGlow = new Graphics();
+    const lockedFogEdge = new Graphics();
     terrainSprites.sortableChildren = true;
     entries.sortableChildren = true;
 
@@ -307,9 +465,7 @@ export class City01TilemapRenderer {
       const shape = polygon(corners);
       const fallbackColor = cell.terrain === 'water'
         ? THEME.palette.ocean.shallow
-        : cell.unlocked
-          ? THEME.palette.terrain.grassFallback
-          : THEME.palette.terrain.lockedFallback;
+        : THEME.palette.terrain.grassFallback;
       fallbackTerrain.poly(shape).fill({ color: fallbackColor, alpha: 1 });
       drawSparseWaterHighlight(waterHighlights, cell, center, tileWidth, tileHeight);
 
@@ -338,6 +494,16 @@ export class City01TilemapRenderer {
       }
     }
 
+    drawLockedAreaFog(
+      lockedFog,
+      lockedFogEdgeGlow,
+      lockedFogEdge,
+      world.cells,
+      project,
+      basisX,
+      basisY
+    );
+
     fallbackTerrain.zIndex = -900100;
     terrainSprites.zIndex = -900000;
     waterHighlights.zIndex = -899850;
@@ -347,6 +513,9 @@ export class City01TilemapRenderer {
     roadMarkings.zIndex = -409850;
     bridge.zIndex = -409800;
     entries.zIndex = -409700;
+    lockedFog.zIndex = -1000;
+    lockedFogEdgeGlow.zIndex = -990;
+    lockedFogEdge.zIndex = -980;
 
     layers.terrain.addChild(
       fallbackTerrain,
@@ -355,6 +524,7 @@ export class City01TilemapRenderer {
       diagnosticsGrid
     );
     layers.roads.addChild(curb, asphalt, roadMarkings, bridge, entries);
+    layers.groundDecorations.addChild(lockedFog, lockedFogEdgeGlow, lockedFogEdge);
 
     void City01TerrainAtlas.load()
       .then((textures) => {
