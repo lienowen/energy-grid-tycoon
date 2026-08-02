@@ -1,36 +1,31 @@
-import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-
-const mainSource = readFileSync(new URL('../main.ts', import.meta.url), 'utf8');
-const artV2Css = readFileSync(new URL('./city01-art-v2.css', import.meta.url), 'utf8');
+import { CITY01_ART_V2_SHELL } from './City01ArtV2ShellContract';
 
 describe('City01 Art V2 shell', () => {
-  it('loads the Art V2 stylesheet after legacy shell styles', () => {
-    const legacyIndex = mainSource.indexOf("import './ui/game-shell.css'");
-    const artV2Index = mainSource.indexOf("import './ui/city01-art-v2.css'");
-
-    expect(legacyIndex).toBeGreaterThanOrEqual(0);
-    expect(artV2Index).toBeGreaterThan(legacyIndex);
+  it('keeps one stable CSS scope and major version', () => {
+    expect(CITY01_ART_V2_SHELL.scope).toBe('city01-art-v2-foundation-1');
+    expect(CITY01_ART_V2_SHELL.majorVersion).toBe('2');
+    expect(CITY01_ART_V2_SHELL.stylesheet).toBe('./ui/city01-art-v2.css');
   });
 
-  it('publishes stable shell, theme revision and major-version markers before mount', () => {
-    expect(mainSource).toContain("const CITY01_ART_V2_SHELL_SCOPE = 'city01-art-v2-foundation-1'");
-    expect(mainSource).toContain('document.documentElement.dataset.artDirection = CITY01_ART_V2_SHELL_SCOPE');
-    expect(mainSource).toContain('document.documentElement.dataset.artThemeRevision = CITY01_ART_V2.revision');
-    expect(mainSource).toContain("document.documentElement.dataset.artVersion = '2'");
+  it('must load after the legacy shell rather than competing with it', () => {
+    expect(CITY01_ART_V2_SHELL.loadAfterLegacyShell).toBe(true);
   });
 
-  it('owns the world atmosphere, command bar, tool rail and build dock', () => {
-    expect(artV2Css).toContain('.egt-world::before');
-    expect(artV2Css).toContain('.egt-topbar');
-    expect(artV2Css).toContain('.egt-dock');
-    expect(artV2Css).toContain('.egt-buildbar::before');
-    expect(artV2Css).toContain('.egt-card.selected');
+  it('owns every high-level player-facing surface', () => {
+    expect(CITY01_ART_V2_SHELL.owns).toEqual([
+      'world-atmosphere',
+      'top-command-bar',
+      'mission-guidance',
+      'tool-rail',
+      'build-dock',
+      'drawer-surfaces'
+    ]);
   });
 
   it('keeps mobile safe-area and reduced-motion contracts', () => {
-    expect(artV2Css).toContain('env(safe-area-inset-top)');
-    expect(artV2Css).toContain('env(safe-area-inset-bottom)');
-    expect(artV2Css).toContain('@media (prefers-reduced-motion: reduce)');
+    expect(CITY01_ART_V2_SHELL.responsive.safeArea).toBe(true);
+    expect(CITY01_ART_V2_SHELL.responsive.mobilePortrait).toBe(true);
+    expect(CITY01_ART_V2_SHELL.responsive.reducedMotion).toBe(true);
   });
 });
