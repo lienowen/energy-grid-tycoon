@@ -7,19 +7,17 @@ import {
 } from './City01DistrictTextureFactory';
 
 describe('City01DistrictTextureFactory', () => {
-  it('routes the public district through modular Art V2 rendering', () => {
-    expect(city01DistrictRuntimeTreatment('commercial_district_public_night')).toBe('public-v2');
-    expect(city01DistrictRuntimeTreatment('commercial_district_public_blackout')).toBe('public-v2');
-    expect(factorySource).toContain('buildPublicDistrictV2Texture');
-    expect(factorySource).toContain('Research center');
-    expect(factorySource).toContain('Community hospital');
-    expect(factorySource).toContain('City hall');
-    expect(factorySource).toContain('Public service pavilion and plaza');
-    expect(factorySource).not.toContain('fillText(');
+  it('routes the three highest-impact districts through modular Art V2 rendering', () => {
+    for (const kind of ['public', 'industrial', 'old_town']) {
+      expect(city01DistrictRuntimeTreatment(`commercial_district_${kind}_night`)).toBe('generated-v2');
+      expect(city01DistrictRuntimeTreatment(`commercial_district_${kind}_blackout`)).toBe('generated-v2');
+    }
+    expect(factorySource).toContain('createCity01DistrictV2Texture');
+    expect(factorySource).toContain("treatment === 'generated-v2'");
   });
 
-  it('keeps the other powered and blackout districts on the softened legacy route', () => {
-    for (const kind of ['residential', 'commercial', 'industrial', 'old_town']) {
+  it('keeps residential and commercial districts on the softened legacy route', () => {
+    for (const kind of ['residential', 'commercial']) {
       expect(city01DistrictRuntimeTreatment(`commercial_district_${kind}_night`)).toBe('legacy-softened');
       expect(city01DistrictRuntimeTreatment(`commercial_district_${kind}_blackout`)).toBe('legacy-softened');
       expect(isCity01DistrictRuntimeAsset(`commercial_district_${kind}_night`)).toBe(true);
