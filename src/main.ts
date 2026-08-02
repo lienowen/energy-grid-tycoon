@@ -12,6 +12,7 @@ import './ui/product-first-reset.css';
 import './ui/game-shell.css';
 import './ui/gameplay-polish.css';
 import './ui/city01-safe-area.css';
+import './ui/city01-art-v2.css';
 import buildingData from './data/buildings.json';
 import eventData from './data/events.json';
 import levelData from './data/levels.json';
@@ -21,6 +22,7 @@ import type { BuildingConfig } from './buildings/BuildingBase';
 import { AppController } from './core/AppController';
 import { GameConfigValidator } from './core/GameConfigValidator';
 import { HologramConfigValidator } from './core/HologramConfigValidator';
+import { CITY01_ART_V2 } from './presentation/art-v2/City01ArtV2Theme';
 import { AssetManager } from './resources/AssetManager';
 import { globalAssetCatalog } from './resources/GlobalAssetCatalog';
 import type { EventConfig } from './systems/EventSystem';
@@ -29,6 +31,9 @@ import type { PolicyConfig } from './systems/PolicySystem';
 import type { TechnologyConfig } from './systems/ResearchSystem';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { RuntimeRecovery } from './ui/RuntimeRecovery';
+
+document.documentElement.dataset.artDirection = CITY01_ART_V2.revision;
+document.documentElement.dataset.artVersion = '2';
 
 const root = document.querySelector<HTMLElement>('#app');
 if (!root) throw new Error('Application root #app was not found');
