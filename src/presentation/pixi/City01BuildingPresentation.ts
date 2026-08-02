@@ -94,21 +94,21 @@ const DISTRICT_PROFILES: Record<
     detailMinZoom: 0.8
   },
   public: {
-    anchorY: 0.9115,
-    elevationOffset: 0.18,
+    anchorY: 0.905,
+    elevationOffset: 0.12,
     footprintColumns: 2,
     footprintRows: 2,
-    shadowOffsetX: 8,
-    shadowOffsetY: 9,
+    shadowOffsetX: 6,
+    shadowOffsetY: 7,
     footprintColor: THEME.palette.building.publicFootprint,
     roadConnection: true,
-    roadSearchRadius: 48,
-    roadWidth: 7,
-    toneTint: THEME.palette.building.coolTint,
-    hitWidthFactor: 0.82,
-    hitHeightFactor: 0.88,
-    hitOffsetYFactor: 0.03,
-    detailMinZoom: 0.82
+    roadSearchRadius: 44,
+    roadWidth: 6,
+    toneTint: THEME.palette.building.neutralTint,
+    hitWidthFactor: 0.78,
+    hitHeightFactor: 0.84,
+    hitOffsetYFactor: 0.02,
+    detailMinZoom: 0.78
   },
   old_town: {
     anchorY: 0.9115,
@@ -133,7 +133,7 @@ const DISTRICT_WIDTHS: Record<DistrictPrefabSceneState['kind'], number> = {
   residential: 312,
   commercial: 310,
   industrial: 318,
-  public: 310,
+  public: 252,
   old_town: 316
 };
 
