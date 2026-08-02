@@ -22,7 +22,7 @@ const clampByte = (value: number): number =>
 export const city01DistrictRuntimeTreatment = (
   assetId: string
 ): City01DistrictRuntimeTreatment => {
-  if (city01GeneratedDistrictKind(assetId)) return 'generated-v2';
+  if (city01GeneratedDistrictKind(assetId) === 'public') return 'generated-v2';
   if (districtAssetPrefixes.some((prefix) => assetId.startsWith(prefix))) return 'legacy-softened';
   return 'none';
 };
