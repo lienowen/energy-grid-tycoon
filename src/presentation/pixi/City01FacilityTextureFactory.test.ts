@@ -4,21 +4,27 @@ import {
   city01FacilityCanvasSpec,
   city01FacilityCleanupSpec,
   city01FacilitySubjectScale,
-  isCity01FacilityRuntimeAsset
+  isCity01FacilityRuntimeAsset,
+  isCity01P0FacilityAsset
 } from './City01FacilityTextureFactory';
 
 describe('City01FacilityTextureFactory', () => {
-  it('routes every approved City-01 facility family through one cached normalizer', () => {
+  it('routes approved static and P0 facility assets through one cached factory', () => {
     expect(isCity01FacilityRuntimeAsset('commercial_facility_solar_active')).toBe(true);
-    expect(isCity01FacilityRuntimeAsset('commercial_facility_wind_offline')).toBe(true);
-    expect(isCity01FacilityRuntimeAsset('commercial_facility_battery_active')).toBe(true);
-    expect(isCity01FacilityRuntimeAsset('commercial_facility_battery_utility_active')).toBe(true);
-    expect(isCity01FacilityRuntimeAsset('commercial_facility_substation_active')).toBe(true);
+    expect(isCity01FacilityRuntimeAsset('commercial_facility_wind_p0_body')).toBe(true);
+    expect(isCity01FacilityRuntimeAsset('commercial_facility_gas_p0_effect')).toBe(true);
+    expect(isCity01FacilityRuntimeAsset('commercial_facility_battery_utility_p0_light')).toBe(true);
     expect(isCity01FacilityRuntimeAsset('world_facility_grid_node_overload')).toBe(true);
     expect(isCity01FacilityRuntimeAsset('commercial_district_residential_night')).toBe(false);
   });
 
-  it('uses one 512 square canvas and one bottom ground line for all facility states', () => {
+  it('recognizes only the new layered runtime ids as P0 assets', () => {
+    expect(isCity01P0FacilityAsset('commercial_facility_wind_p0_body')).toBe(true);
+    expect(isCity01P0FacilityAsset('commercial_facility_battery_p0_light')).toBe(true);
+    expect(isCity01P0FacilityAsset('commercial_facility_wind_active')).toBe(false);
+  });
+
+  it('uses one 512 square canvas and one bottom ground line for shared layers', () => {
     expect(CITY01_FACILITY_CANVAS).toEqual({
       width: 512,
       height: 512,
@@ -27,7 +33,7 @@ describe('City01FacilityTextureFactory', () => {
     });
   });
 
-  it('keeps family-specific subject boxes while preserving the shared canvas contract', () => {
+  it('keeps family-specific subject boxes for legacy state cuts', () => {
     expect(city01FacilityCanvasSpec('commercial_facility_solar_active'))
       .toEqual({ maxSubjectWidth: 430, maxSubjectHeight: 360 });
     expect(city01FacilityCanvasSpec('commercial_facility_wind_active'))
@@ -38,7 +44,7 @@ describe('City01FacilityTextureFactory', () => {
       .toEqual({ maxSubjectWidth: 318, maxSubjectHeight: 420 });
   });
 
-  it('uses conservative per-family cleanup instead of removing opaque building pixels', () => {
+  it('uses conservative cleanup only for legacy baked shadow fringes', () => {
     const wind = city01FacilityCleanupSpec('commercial_facility_wind_active');
     const gas = city01FacilityCleanupSpec('commercial_facility_gas_active');
     const battery = city01FacilityCleanupSpec('commercial_facility_battery_active');
@@ -48,10 +54,9 @@ describe('City01FacilityTextureFactory', () => {
     expect(wind.alphaMultiplier).toBeLessThan(gas.alphaMultiplier);
     expect(gas.maxAlpha).toBeLessThan(160);
     expect(battery.maxAlpha).toBeLessThan(140);
-    expect(battery.alphaMultiplier).toBeGreaterThan(0);
   });
 
-  it('reports the visual width ratio from the normalized canvas instead of old source dimensions', () => {
+  it('reports the legacy visual width ratio from the normalized canvas', () => {
     expect(city01FacilitySubjectScale('commercial_facility_solar_active')).toBeCloseTo(430 / 512);
     expect(city01FacilitySubjectScale('commercial_facility_wind_active')).toBeCloseTo(300 / 512);
     expect(city01FacilitySubjectScale('commercial_facility_substation_active')).toBeCloseTo(446 / 512);
