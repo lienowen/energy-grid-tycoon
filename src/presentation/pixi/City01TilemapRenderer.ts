@@ -4,6 +4,7 @@ import type {
   TileWorldCellSceneState,
   TileWorldSceneState
 } from '../CitySceneTypes';
+import { CITY01_ART_V2 } from '../art-v2/City01ArtV2Theme';
 import {
   resolveCity01TerrainFrame,
   resolveCity01WaterFrame
@@ -31,12 +32,7 @@ export interface City01TilemapRenderOptions {
   project(point: ScenePoint): ScreenPoint;
 }
 
-// These fallback colors match the measured average colors of the V1 atlas.
-// They remain invisible after loading but prevent contrasting checkerboard
-// seams from showing through sub-pixel transparent tile edges.
-const FALLBACK_GRASS = 0x497448;
-const FALLBACK_LOCKED_GRASS = 0x2e4d2f;
-const FALLBACK_WATER = 0x08596f;
+const THEME = CITY01_ART_V2;
 
 const polygon = (corners: TileCorners): number[] => [
   corners.top.x, corners.top.y,
@@ -118,6 +114,7 @@ const effectiveRoadMask = (cell: TileWorldCellSceneState): number => {
 const drawRoadCell = (
   curb: Graphics,
   asphalt: Graphics,
+  markings: Graphics,
   bridge: Graphics,
   cell: TileWorldCellSceneState,
   center: ScreenPoint,
@@ -139,30 +136,53 @@ const drawRoadCell = (
   for (const direction of directions) {
     if ((mask & direction) === 0) continue;
     const target = endpoints[direction];
+    const dx = target.x - center.x;
+    const dy = target.y - center.y;
+    const length = Math.max(1, Math.hypot(dx, dy));
+    const ux = dx / length;
+    const uy = dy / length;
+    const roadColor = cell.terrain === 'water'
+      ? THEME.palette.road.bridgeAsphalt
+      : THEME.palette.road.asphalt;
+
     curb.moveTo(center.x, center.y).lineTo(target.x, target.y).stroke({
-      color: cell.terrain === 'water' ? 0xb8c6c2 : 0xb7aa8f,
-      alpha: diagnostics ? 0.92 : 0.7,
-      width: width + 4,
+      color: THEME.palette.road.shoulder,
+      alpha: diagnostics ? THEME.road.diagnosticAlpha : 0.66,
+      width: width + THEME.road.shoulderExtraWidth,
       cap: 'square'
     });
     asphalt.moveTo(center.x, center.y).lineTo(target.x, target.y).stroke({
-      color: cell.terrain === 'water' ? 0x344b50 : 0x303d3f,
-      alpha: 0.98,
+      color: roadColor,
+      alpha: THEME.road.normalAlpha,
       width,
       cap: 'square'
     });
+    markings
+      .moveTo(center.x + ux * width * 0.36, center.y + uy * width * 0.36)
+      .lineTo(target.x - ux * 3, target.y - uy * 3)
+      .stroke({
+        color: THEME.palette.road.centerLine,
+        alpha: diagnostics ? 0.7 : THEME.road.centerLineAlpha,
+        width: THEME.road.centerLineWidth,
+        cap: 'round'
+      });
   }
 
   asphalt.circle(center.x, center.y, width * 0.55)
-    .fill({ color: cell.terrain === 'water' ? 0x344b50 : 0x303d3f, alpha: 0.98 });
+    .fill({
+      color: cell.terrain === 'water'
+        ? THEME.palette.road.bridgeAsphalt
+        : THEME.palette.road.asphalt,
+      alpha: THEME.road.normalAlpha
+    });
 
   if (cell.terrain === 'water') {
     bridge.moveTo(center.x - basisX.x * 0.14, center.y - basisX.y * 0.14 + 6)
       .lineTo(center.x - basisX.x * 0.14, center.y - basisX.y * 0.14 + 12)
-      .stroke({ color: 0x20363b, alpha: 0.72, width: 2 });
+      .stroke({ color: THEME.palette.road.bridgeRail, alpha: 0.78, width: 2 });
     bridge.moveTo(center.x + basisX.x * 0.14, center.y + basisX.y * 0.14 + 6)
       .lineTo(center.x + basisX.x * 0.14, center.y + basisX.y * 0.14 + 12)
-      .stroke({ color: 0x20363b, alpha: 0.72, width: 2 });
+      .stroke({ color: THEME.palette.road.bridgeRail, alpha: 0.78, width: 2 });
   }
 };
 
@@ -188,7 +208,10 @@ const drawEntryMarker = (
     target.x + unitX * 8, target.y + unitY * 8,
     target.x - unitX * 3 + sideX * 5, target.y - unitY * 3 + sideY * 5,
     target.x - unitX * 3 - sideX * 5, target.y - unitY * 3 - sideY * 5
-  ]).fill({ color: 0x9ce8d2, alpha: diagnostics ? 0.92 : 0.5 });
+  ]).fill({
+    color: THEME.palette.status.positive,
+    alpha: diagnostics ? 0.92 : 0.52
+  });
   arrow.zIndex = 20;
   layer.addChild(arrow);
 
@@ -198,13 +221,19 @@ const drawEntryMarker = (
     style: {
       fontFamily: 'Inter, PingFang SC, Microsoft YaHei, sans-serif',
       fontSize: 8,
-      fill: 0xcffdf1
+      fill: THEME.palette.ui.textPrimary
     }
   });
   label.anchor.set(0.5);
   label.position.set(target.x + unitX * 24, target.y + unitY * 24);
   label.zIndex = 21;
   layer.addChild(label);
+};
+
+const terrainTint = (cell: TileWorldCellSceneState): number => {
+  if (cell.terrain === 'water') return THEME.palette.terrain.waterTint;
+  if (!cell.unlocked) return THEME.palette.terrain.lockedTint;
+  return THEME.palette.terrain.landTint;
 };
 
 const addTerrainSprites = (
@@ -222,20 +251,34 @@ const addTerrainSprites = (
     const sprite = new Sprite(texture);
     sprite.anchor.set(0.5);
     sprite.position.set(center.x, center.y);
-    // Atlas frames have transparent diamond corners. A small screen-space
-    // overscan prevents filtering from exposing the fallback layer at shared
-    // tile edges when 256x128 source frames are reduced to ~51x26 px.
-    sprite.width = tileWidth + 2.5;
-    sprite.height = tileHeight + 1.25;
-    if (cell.terrain !== 'water' && !cell.unlocked) {
-      // Locked terrain is shaded per Sprite. Drawing one semi-transparent
-      // Graphics polygon per tile caused double-blended dark seams.
-      sprite.tint = 0xa2aaa6;
-    }
+    sprite.width = tileWidth + THEME.terrain.spriteOverscanX;
+    sprite.height = tileHeight + THEME.terrain.spriteOverscanY;
+    sprite.tint = terrainTint(cell);
     sprite.zIndex = cell.gridX + cell.gridY;
     container.addChild(sprite);
   }
   container.sortChildren();
+};
+
+const drawSparseWaterHighlight = (
+  graphics: Graphics,
+  cell: TileWorldCellSceneState,
+  center: ScreenPoint,
+  tileWidth: number,
+  tileHeight: number
+): void => {
+  if (cell.terrain !== 'water') return;
+  const seed = Math.abs(cell.gridX * 17 + cell.gridY * 31);
+  if (seed % THEME.terrain.sparseWaterHighlightModulo !== 0) return;
+  graphics
+    .moveTo(center.x - tileWidth * 0.16, center.y - tileHeight * 0.03)
+    .lineTo(center.x + tileWidth * 0.08, center.y - tileHeight * 0.09)
+    .stroke({
+      color: THEME.palette.ocean.highlight,
+      alpha: THEME.terrain.sparseWaterHighlightAlpha,
+      width: 1.1,
+      cap: 'round'
+    });
 };
 
 export class City01TilemapRenderer {
@@ -248,9 +291,11 @@ export class City01TilemapRenderer {
 
     const fallbackTerrain = new Graphics();
     const terrainSprites = new Container();
+    const waterHighlights = new Graphics();
     const diagnosticsGrid = new Graphics();
     const curb = new Graphics();
     const asphalt = new Graphics();
+    const roadMarkings = new Graphics();
     const bridge = new Graphics();
     const entries = new Container();
     terrainSprites.sortableChildren = true;
@@ -261,15 +306,32 @@ export class City01TilemapRenderer {
       const corners = cornersFor(center, basisX, basisY);
       const shape = polygon(corners);
       const fallbackColor = cell.terrain === 'water'
-        ? FALLBACK_WATER
-        : cell.unlocked ? FALLBACK_GRASS : FALLBACK_LOCKED_GRASS;
+        ? THEME.palette.ocean.shallow
+        : cell.unlocked
+          ? THEME.palette.terrain.grassFallback
+          : THEME.palette.terrain.lockedFallback;
       fallbackTerrain.poly(shape).fill({ color: fallbackColor, alpha: 1 });
+      drawSparseWaterHighlight(waterHighlights, cell, center, tileWidth, tileHeight);
 
       if (diagnostics) {
-        diagnosticsGrid.poly(shape).stroke({ color: 0xa7d6c4, alpha: 0.18, width: 0.6 });
+        diagnosticsGrid.poly(shape).stroke({
+          color: THEME.palette.terrain.diagnosticGrid,
+          alpha: 0.16,
+          width: 0.6
+        });
       }
       if (cell.roadLaneWidth) {
-        drawRoadCell(curb, asphalt, bridge, cell, center, basisX, basisY, diagnostics);
+        drawRoadCell(
+          curb,
+          asphalt,
+          roadMarkings,
+          bridge,
+          cell,
+          center,
+          basisX,
+          basisY,
+          diagnostics
+        );
       }
       if (cell.roadEntryId) {
         drawEntryMarker(entries, cell, center, basisX, basisY, diagnostics);
@@ -278,14 +340,21 @@ export class City01TilemapRenderer {
 
     fallbackTerrain.zIndex = -900100;
     terrainSprites.zIndex = -900000;
+    waterHighlights.zIndex = -899850;
     diagnosticsGrid.zIndex = -899600;
     curb.zIndex = -410000;
     asphalt.zIndex = -409900;
+    roadMarkings.zIndex = -409850;
     bridge.zIndex = -409800;
     entries.zIndex = -409700;
 
-    layers.terrain.addChild(fallbackTerrain, terrainSprites, diagnosticsGrid);
-    layers.roads.addChild(curb, asphalt, bridge, entries);
+    layers.terrain.addChild(
+      fallbackTerrain,
+      terrainSprites,
+      waterHighlights,
+      diagnosticsGrid
+    );
+    layers.roads.addChild(curb, asphalt, roadMarkings, bridge, entries);
 
     void City01TerrainAtlas.load()
       .then((textures) => {
