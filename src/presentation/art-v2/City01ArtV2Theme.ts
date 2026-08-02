@@ -1,5 +1,5 @@
 export const CITY01_ART_V2 = {
-  revision: 'city01-art-v2-foundation-3',
+  revision: 'city01-art-v2-foundation-4',
   direction: {
     camera: 'isometric-2-to-1',
     lightSource: 'upper-left',
@@ -22,10 +22,13 @@ export const CITY01_ART_V2 = {
     },
     terrain: {
       grassFallback: 0x41693e,
-      lockedFallback: 0x213822,
+      lockedFallback: 0x41693e,
       landTint: 0xe2e8dc,
       waterTint: 0xd7ecec,
-      lockedTint: 0x737c78,
+      lockedTint: 0xe2e8dc,
+      fogFill: 0x08181d,
+      fogEdge: 0x78928b,
+      fogGlow: 0x69cdb8,
       diagnosticGrid: 0x9ab4aa
     },
     road: {
@@ -74,8 +77,12 @@ export const CITY01_ART_V2 = {
     canvasBackground: 0x071e27,
     horizonAlpha: 0.18,
     worldVignetteAlpha: 0.22,
-    lockedFogAlpha: 0.3,
-    lockedFogEdgeAlpha: 0.46,
+    lockedFogMode: 'merged-area-overlay',
+    lockedFogAlpha: 0.36,
+    lockedFogEdgeAlpha: 0.25,
+    lockedFogEdgeGlowAlpha: 0.08,
+    lockedFogEdgeWidth: 1.25,
+    lockedFogEdgeGlowWidth: 4.5,
     waterSheenAlpha: 0.14,
     grainOpacity: 0.025
   },
