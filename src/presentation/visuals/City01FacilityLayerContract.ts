@@ -5,15 +5,21 @@ import type {
 
 export type City01FacilityLayerRole = 'body' | 'motion' | 'light' | 'effect';
 export type City01FacilityLayerAnimation = 'none' | 'rotate' | 'pulse' | 'rise' | 'sweep';
+export type City01FacilityLayerLayout = 'shared-canvas' | 'trimmed-effect';
 
 export interface City01FacilityLayerSpec {
   role: City01FacilityLayerRole;
   assetId: string;
   required: boolean;
   animation: City01FacilityLayerAnimation;
+  layout: City01FacilityLayerLayout;
   anchorX: number;
   anchorY: number;
   widthFactor: number;
+  offsetXFactor: number;
+  offsetYFactor: number;
+  pivotX?: number;
+  pivotY?: number;
   zOffset: number;
   minZoom: number;
 }
@@ -44,25 +50,27 @@ const optionalLayer = (
   assetId: string | undefined
 ): City01FacilityLayerSpec | undefined => {
   if (!assetId) return undefined;
+  const windMotion = visual.family === 'wind' && role === 'motion';
+  const gasEffect = visual.family === 'gas' && role === 'effect';
   return {
     role,
     assetId,
     required: false,
     animation: motionAnimation(visual.family, role),
-    anchorX: CITY01_FACILITY_LAYER_CANVAS.anchorX,
-    anchorY: CITY01_FACILITY_LAYER_CANVAS.anchorY,
-    widthFactor: 1,
+    layout: gasEffect ? 'trimmed-effect' : 'shared-canvas',
+    anchorX: gasEffect ? 0.5 : CITY01_FACILITY_LAYER_CANVAS.anchorX,
+    anchorY: gasEffect ? 0.92 : CITY01_FACILITY_LAYER_CANVAS.anchorY,
+    widthFactor: gasEffect ? 0.58 : 1,
+    offsetXFactor: gasEffect ? -0.16 : 0,
+    offsetYFactor: gasEffect ? -0.62 : 0,
+    pivotX: windMotion ? 0.476 : undefined,
+    pivotY: windMotion ? 0.342 : undefined,
     zOffset: role === 'effect' ? 30 : role === 'light' ? 20 : 10,
     minZoom: role === 'effect' ? 0.92 : 0.86
   };
 };
 
-/**
- * Returns the authoritative render stack for a facility.
- *
- * Body is mandatory. Component cuts are optional so the runtime may keep using
- * procedural motion until the matching transparent PNG has passed art QA.
- */
+/** Returns the authoritative body/component render stack for one facility. */
 export const resolveCity01FacilityLayerStack = (
   visual: FacilityVisualDescriptor
 ): City01FacilityLayerSpec[] => {
@@ -71,9 +79,12 @@ export const resolveCity01FacilityLayerStack = (
     assetId: visual.bodyAssetId,
     required: true,
     animation: 'none',
+    layout: 'shared-canvas',
     anchorX: CITY01_FACILITY_LAYER_CANVAS.anchorX,
     anchorY: CITY01_FACILITY_LAYER_CANVAS.anchorY,
     widthFactor: 1,
+    offsetXFactor: 0,
+    offsetYFactor: 0,
     zOffset: 0,
     minZoom: 0
   }];
