@@ -12,7 +12,7 @@ const perceivedLuma = (color: number): number =>
 
 describe('City01ArtV2Theme', () => {
   it('defines one versioned modern-isometric visual direction', () => {
-    expect(CITY01_ART_V2.revision).toBe('city01-art-v2-foundation-1');
+    expect(CITY01_ART_V2.revision).toBe('city01-art-v2-foundation-2');
     expect(CITY01_ART_V2.direction.camera).toBe('isometric-2-to-1');
     expect(CITY01_ART_V2.direction.lightSource).toBe('upper-left');
     expect(CITY01_ART_V2.direction.lightAzimuthDegrees).toBe(315);
@@ -36,6 +36,7 @@ describe('City01ArtV2Theme', () => {
     expect(CITY01_ART_V2_LEGACY_POLICY.legacyAssetsMayDefineColor).toBe(false);
     expect(CITY01_ART_V2_LEGACY_POLICY.legacyAssetsMayDefineLighting).toBe(false);
     expect(CITY01_ART_V2_LEGACY_POLICY.legacyAssetsMayDefineGrounding).toBe(false);
+    expect(CITY01_ART_V2_LEGACY_POLICY.legacyAssetsMayDefineUiChrome).toBe(false);
     expect(CITY01_ART_V2_LEGACY_POLICY.newHardcodedPresentationColorsAllowed).toBe(false);
   });
 });
