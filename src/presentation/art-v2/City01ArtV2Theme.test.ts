@@ -25,7 +25,7 @@ const expectColorNear = (actual: number, expected: number, tolerance = 2): void 
 
 describe('City01ArtV2Theme', () => {
   it('defines one versioned modern-isometric visual direction', () => {
-    expect(CITY01_ART_V2.revision).toBe('city01-art-v2-foundation-3');
+    expect(CITY01_ART_V2.revision).toBe('city01-art-v2-foundation-4');
     expect(CITY01_ART_V2.direction.camera).toBe('isometric-2-to-1');
     expect(CITY01_ART_V2.direction.lightSource).toBe('upper-left');
     expect(CITY01_ART_V2.direction.lightAzimuthDegrees).toBe(315);
@@ -33,20 +33,12 @@ describe('City01ArtV2Theme', () => {
   });
 
   it('matches every transparent tile fallback to the tinted atlas average', () => {
-    expectColorNear(
-      CITY01_ART_V2.palette.terrain.grassFallback,
-      multiplyColor(
-        CITY01_ART_V2.atlasReference.grassAverage,
-        CITY01_ART_V2.palette.terrain.landTint
-      )
+    const tintedGrass = multiplyColor(
+      CITY01_ART_V2.atlasReference.grassAverage,
+      CITY01_ART_V2.palette.terrain.landTint
     );
-    expectColorNear(
-      CITY01_ART_V2.palette.terrain.lockedFallback,
-      multiplyColor(
-        CITY01_ART_V2.atlasReference.grassAverage,
-        CITY01_ART_V2.palette.terrain.lockedTint
-      )
-    );
+    expectColorNear(CITY01_ART_V2.palette.terrain.grassFallback, tintedGrass);
+    expectColorNear(CITY01_ART_V2.palette.terrain.lockedFallback, tintedGrass);
     expectColorNear(
       CITY01_ART_V2.palette.ocean.shallow,
       multiplyColor(
@@ -56,13 +48,24 @@ describe('City01ArtV2Theme', () => {
     );
   });
 
-  it('keeps terrain and roads readable without arcade-level contrast', () => {
+  it('keeps base land continuous and expresses locked state with area fog', () => {
     const grass = perceivedLuma(CITY01_ART_V2.palette.terrain.grassFallback);
     const locked = perceivedLuma(CITY01_ART_V2.palette.terrain.lockedFallback);
+
+    expect(locked).toBe(grass);
+    expect(CITY01_ART_V2.palette.terrain.lockedTint)
+      .toBe(CITY01_ART_V2.palette.terrain.landTint);
+    expect(CITY01_ART_V2.atmosphere.lockedFogMode).toBe('merged-area-overlay');
+    expect(CITY01_ART_V2.atmosphere.lockedFogAlpha).toBeGreaterThan(0.2);
+    expect(CITY01_ART_V2.atmosphere.lockedFogAlpha).toBeLessThan(0.5);
+    expect(CITY01_ART_V2.atmosphere.lockedFogEdgeAlpha)
+      .toBeLessThan(CITY01_ART_V2.atmosphere.lockedFogAlpha);
+  });
+
+  it('keeps terrain and roads readable without arcade-level contrast', () => {
     const asphalt = perceivedLuma(CITY01_ART_V2.palette.road.asphalt);
     const shoulder = perceivedLuma(CITY01_ART_V2.palette.road.shoulder);
 
-    expect(grass).toBeGreaterThan(locked);
     expect(shoulder).toBeGreaterThan(asphalt + 45);
     expect(CITY01_ART_V2.road.centerLineAlpha).toBeLessThan(0.6);
     expect(CITY01_ART_V2.terrain.sparseWaterHighlightAlpha).toBeLessThan(0.2);
