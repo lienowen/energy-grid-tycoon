@@ -3,7 +3,7 @@ import { chromium } from 'playwright';
 
 const baseUrl = process.env.CITY01_CAPTURE_URL ?? 'http://127.0.0.1:4173';
 const outputDir = process.env.CITY01_CAPTURE_DIR ?? 'artifacts/city01-multi-viewport';
-const captureRevision = 'city01-art-v2-foundation-2';
+const captureRevision = 'city01-art-v2-foundation-3';
 
 const cases = [
   { id: 'desktop-city', width: 1440, height: 1080, mode: 'game' },
