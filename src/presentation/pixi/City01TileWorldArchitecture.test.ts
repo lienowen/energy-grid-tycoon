@@ -40,4 +40,18 @@ describe('City-01 tile-world architecture', () => {
     expect(terrainRegistrySource).toContain("'terrain_water_00'");
     expect(terrainRegistrySource).not.toContain('variationSuffix');
   });
+
+  it('renders locked land as one area-fog system above roads', () => {
+    expect(tilemapRendererSource).toContain('mergeLockedFogRectangles');
+    expect(tilemapRendererSource).toContain('drawLockedAreaFog');
+    expect(tilemapRendererSource).toContain(
+      'layers.groundDecorations.addChild(lockedFog, lockedFogEdgeGlow, lockedFogEdge)'
+    );
+    expect(tilemapRendererSource).not.toContain(
+      "if (!cell.unlocked) return THEME.palette.terrain.lockedTint"
+    );
+    expect(tilemapRendererSource).not.toContain(
+      "cell.unlocked\n          ? THEME.palette.terrain.grassFallback"
+    );
+  });
 });
