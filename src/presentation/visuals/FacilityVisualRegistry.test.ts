@@ -38,15 +38,7 @@ describe('FacilityVisualRegistry', () => {
     expect(offline.lightAssetId).toBeUndefined();
   });
 
-  it('uses approved body cuts and optional component ids for commercial City-01', () => {
-    const construction = FacilityVisualRegistry.resolve({
-      configId: 'solar_basic',
-      category: 'generation',
-      enabled: true,
-      selected: false,
-      constructionProgress: 0.5,
-      presentation: 'commercial'
-    });
+  it('routes active commercial wind, gas and storage to the layered P0 assets', () => {
     const wind = FacilityVisualRegistry.resolve({
       configId: 'wind_basic',
       category: 'generation',
@@ -72,18 +64,25 @@ describe('FacilityVisualRegistry', () => {
       presentation: 'commercial'
     });
 
-    expect(construction.bodyAssetId).toBe('commercial_facility_solar_construction');
-    expect(construction.lightAssetId).toBeUndefined();
-    expect(wind.motionAssetId).toBe('commercial_facility_wind_component_motion');
-    expect(gas.effectAssetId).toBe('commercial_facility_gas_component_effect');
-    expect(utilityStorage.bodyAssetId).toBe('commercial_facility_battery_utility_active');
-    expect(utilityStorage.lightAssetId)
-      .toBe('commercial_facility_battery_utility_component_light');
+    expect(wind.bodyAssetId).toBe('commercial_facility_wind_p0_body');
+    expect(wind.motionAssetId).toBe('commercial_facility_wind_p0_motion');
+    expect(gas.bodyAssetId).toBe('commercial_facility_gas_p0_body');
+    expect(gas.effectAssetId).toBe('commercial_facility_gas_p0_effect');
+    expect(utilityStorage.bodyAssetId).toBe('commercial_facility_battery_utility_p0_body');
+    expect(utilityStorage.lightAssetId).toBe('commercial_facility_battery_utility_p0_light');
   });
 
-  it('does not request optional component cuts while offline', () => {
-    const wind = FacilityVisualRegistry.resolve({
+  it('keeps construction and offline states on their approved static cuts', () => {
+    const construction = FacilityVisualRegistry.resolve({
       configId: 'wind_basic',
+      category: 'generation',
+      enabled: true,
+      selected: false,
+      constructionProgress: 0.5,
+      presentation: 'commercial'
+    });
+    const offline = FacilityVisualRegistry.resolve({
+      configId: 'gas_basic',
       category: 'generation',
       enabled: false,
       selected: false,
@@ -91,10 +90,10 @@ describe('FacilityVisualRegistry', () => {
       presentation: 'commercial'
     });
 
-    expect(wind.state).toBe('offline');
-    expect(wind.motionAssetId).toBeUndefined();
-    expect(wind.lightAssetId).toBeUndefined();
-    expect(wind.effectAssetId).toBeUndefined();
+    expect(construction.bodyAssetId).toBe('commercial_facility_wind_construction');
+    expect(construction.motionAssetId).toBeUndefined();
+    expect(offline.bodyAssetId).toBe('commercial_facility_gas_offline');
+    expect(offline.effectAssetId).toBeUndefined();
   });
 
   it('falls back by category for future registered content', () => {
