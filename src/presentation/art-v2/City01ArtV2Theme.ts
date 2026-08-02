@@ -1,5 +1,5 @@
 export const CITY01_ART_V2 = {
-  revision: 'city01-art-v2-foundation-1',
+  revision: 'city01-art-v2-foundation-2',
   direction: {
     camera: 'isometric-2-to-1',
     lightSource: 'upper-left',
@@ -10,76 +10,102 @@ export const CITY01_ART_V2 = {
   },
   palette: {
     ocean: {
-      deep: 0x061f2b,
-      mid: 0x073746,
-      shallow: 0x0b5967,
-      highlight: 0x83d8dc,
-      foam: 0xd8f4ec
+      deep: 0x051920,
+      mid: 0x082e38,
+      shallow: 0x0f5360,
+      highlight: 0x8acfd1,
+      foam: 0xe4f3ec
     },
     terrain: {
-      grassFallback: 0x526f57,
-      lockedFallback: 0x34453f,
-      landTint: 0xe6f0e2,
-      waterTint: 0xd4eef1,
-      lockedTint: 0x78817c,
-      diagnosticGrid: 0x94b7aa
+      grassFallback: 0x536b57,
+      lockedFallback: 0x34423d,
+      landTint: 0xe2e8dc,
+      waterTint: 0xd7ecec,
+      lockedTint: 0x737c78,
+      diagnosticGrid: 0x9ab4aa
     },
     road: {
-      shoulder: 0x9aa39c,
-      asphalt: 0x293438,
-      bridgeAsphalt: 0x30454a,
-      centerLine: 0xe7e0c8,
-      bridgeRail: 0x172d32
+      shoulder: 0x929a94,
+      asphalt: 0x273238,
+      bridgeAsphalt: 0x2d4145,
+      centerLine: 0xded6bd,
+      bridgeRail: 0x172b2e
     },
     building: {
-      residentialFootprint: 0x536b5b,
-      commercialFootprint: 0x6c6858,
-      industrialFootprint: 0x5c6160,
-      publicFootprint: 0x506d68,
-      oldTownFootprint: 0x695d50,
-      generationFootprint: 0x5a695d,
-      storageFootprint: 0x496873,
-      gridFootprint: 0x4d6668,
-      neutralTint: 0xf1f4f0,
-      coolTint: 0xe8f2f2,
-      warmTint: 0xf4eee2
+      residentialFootprint: 0x53675a,
+      commercialFootprint: 0x686456,
+      industrialFootprint: 0x595f5e,
+      publicFootprint: 0x4f6965,
+      oldTownFootprint: 0x675b4f,
+      generationFootprint: 0x57665b,
+      storageFootprint: 0x47646d,
+      gridFootprint: 0x4c6365,
+      neutralTint: 0xeff1ec,
+      coolTint: 0xe5eeee,
+      warmTint: 0xf1eadf
     },
     status: {
-      positive: 0x62d6b0,
-      information: 0x63cce4,
-      warning: 0xf0bd63,
-      danger: 0xe96f78,
-      muted: 0x728187
+      positive: 0x63d1aa,
+      information: 0x69c5da,
+      warning: 0xe8b65e,
+      danger: 0xe46f78,
+      muted: 0x748187
     },
     ui: {
-      panel: 0x0a1c24,
-      panelRaised: 0x102a34,
-      border: 0x41616a,
-      textPrimary: 0xf2f5f2,
-      textSecondary: 0xaebfbd,
-      accent: 0x68d3c0
+      canvas: 0x07141b,
+      panel: 0x0a1a22,
+      panelRaised: 0x10272f,
+      panelSoft: 0x17323a,
+      border: 0x38565e,
+      borderStrong: 0x5a7b82,
+      textPrimary: 0xf1f4f0,
+      textSecondary: 0xaebdba,
+      textMuted: 0x778b89,
+      accent: 0x69cdb8,
+      accentBright: 0x91e4d0,
+      warm: 0xe8b65e
     }
+  },
+  atmosphere: {
+    canvasBackground: 0x071e27,
+    horizonAlpha: 0.18,
+    worldVignetteAlpha: 0.22,
+    lockedFogAlpha: 0.3,
+    lockedFogEdgeAlpha: 0.46,
+    waterSheenAlpha: 0.14,
+    grainOpacity: 0.025
   },
   terrain: {
     spriteOverscanX: 2.5,
     spriteOverscanY: 1.25,
     sparseWaterHighlightModulo: 11,
-    sparseWaterHighlightAlpha: 0.16,
-    lockedSaturation: 0.58
+    sparseWaterHighlightAlpha: 0.15,
+    lockedSaturation: 0.56
   },
   road: {
     shoulderExtraWidth: 4,
-    centerLineWidth: 1.15,
-    centerLineAlpha: 0.48,
+    centerLineWidth: 1.05,
+    centerLineAlpha: 0.42,
     normalAlpha: 0.96,
     diagnosticAlpha: 0.92
   },
   grounding: {
-    outerShadowAlpha: 0.045,
-    middleShadowAlpha: 0.065,
-    contactShadowAlpha: 0.1,
-    footprintAlpha: 0.018,
-    warningFootprintAlpha: 0.05
+    outerShadowAlpha: 0.04,
+    middleShadowAlpha: 0.06,
+    contactShadowAlpha: 0.095,
+    footprintAlpha: 0.016,
+    warningFootprintAlpha: 0.048
+  },
+  ui: {
+    radiusSmall: 8,
+    radiusMedium: 12,
+    radiusLarge: 18,
+    panelBlurPx: 18,
+    panelSaturation: 1.08,
+    borderAlpha: 0.22,
+    shadowAlpha: 0.36,
+    motionFastMs: 150,
+    motionNormalMs: 220
   }
 } as const;
 
@@ -90,5 +116,6 @@ export const CITY01_ART_V2_LEGACY_POLICY = {
   legacyAssetsMayDefineColor: false,
   legacyAssetsMayDefineLighting: false,
   legacyAssetsMayDefineGrounding: false,
+  legacyAssetsMayDefineUiChrome: false,
   newHardcodedPresentationColorsAllowed: false
 } as const;
