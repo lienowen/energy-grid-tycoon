@@ -32,7 +32,9 @@ import type { TechnologyConfig } from './systems/ResearchSystem';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { RuntimeRecovery } from './ui/RuntimeRecovery';
 
-document.documentElement.dataset.artDirection = CITY01_ART_V2.revision;
+const CITY01_ART_V2_SHELL_SCOPE = 'city01-art-v2-foundation-1';
+document.documentElement.dataset.artDirection = CITY01_ART_V2_SHELL_SCOPE;
+document.documentElement.dataset.artThemeRevision = CITY01_ART_V2.revision;
 document.documentElement.dataset.artVersion = '2';
 
 const root = document.querySelector<HTMLElement>('#app');
