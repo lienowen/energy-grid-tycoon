@@ -1,15 +1,30 @@
 import { describe, expect, it } from 'vitest';
+import factorySource from './City01DistrictTextureFactory.ts?raw';
 import {
+  city01DistrictRuntimeTreatment,
   isCity01DistrictRuntimeAsset,
   softenCity01DistrictPixelAlpha
 } from './City01DistrictTextureFactory';
 
 describe('City01DistrictTextureFactory', () => {
-  it('routes every powered and blackout City-01 district through the cached treatment', () => {
-    for (const kind of ['residential', 'commercial', 'industrial', 'public', 'old_town']) {
+  it('routes the public district through modular Art V2 rendering', () => {
+    expect(city01DistrictRuntimeTreatment('commercial_district_public_night')).toBe('public-v2');
+    expect(city01DistrictRuntimeTreatment('commercial_district_public_blackout')).toBe('public-v2');
+    expect(factorySource).toContain('buildPublicDistrictV2Texture');
+    expect(factorySource).toContain('Research center');
+    expect(factorySource).toContain('Community hospital');
+    expect(factorySource).toContain('City hall');
+    expect(factorySource).toContain('Public service pavilion and plaza');
+    expect(factorySource).not.toContain('fillText(');
+  });
+
+  it('keeps the other powered and blackout districts on the softened legacy route', () => {
+    for (const kind of ['residential', 'commercial', 'industrial', 'old_town']) {
+      expect(city01DistrictRuntimeTreatment(`commercial_district_${kind}_night`)).toBe('legacy-softened');
+      expect(city01DistrictRuntimeTreatment(`commercial_district_${kind}_blackout`)).toBe('legacy-softened');
       expect(isCity01DistrictRuntimeAsset(`commercial_district_${kind}_night`)).toBe(true);
-      expect(isCity01DistrictRuntimeAsset(`commercial_district_${kind}_blackout`)).toBe(true);
     }
+    expect(city01DistrictRuntimeTreatment('commercial_facility_solar_active')).toBe('none');
     expect(isCity01DistrictRuntimeAsset('commercial_facility_solar_active')).toBe(false);
   });
 
