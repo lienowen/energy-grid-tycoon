@@ -1,6 +1,6 @@
 import city01MapData from '../../data/city01-world-v2/map.json';
 import type { WorldRenderActions, WorldRenderSurface } from '../../ui/world/WorldRenderSurface';
-import { City01IntegratedPixiWorld } from '../pixi/City01IntegratedPixiWorld';
+import { CityWorldV2Runtime } from './CityWorldV2Runtime';
 import {
   assertWorldV2MapContract,
   type WorldV2MapContract
@@ -12,10 +12,9 @@ assertWorldV2MapContract(city01Map);
 /**
  * The only product-facing City-01 world surface.
  *
- * During P0 this class deliberately adapts the proven Pixi runtime so the
- * simulation, placement and save flows remain usable while terrain, roads,
- * districts and facilities are replaced behind this boundary. No UI caller
- * should import a legacy City-01 renderer directly after this point.
+ * Terrain, roads, legal footprints and facility placement now come from one
+ * World V2 map contract. The previous integrated City-01 renderer remains in
+ * the repository only as migration reference and is not used by this entry.
  */
 export class CityWorldV2 implements WorldRenderSurface {
   private readonly runtime: WorldRenderSurface;
@@ -24,12 +23,12 @@ export class CityWorldV2 implements WorldRenderSurface {
     private readonly host: HTMLElement,
     actions: WorldRenderActions
   ) {
-    this.runtime = new City01IntegratedPixiWorld(host, actions);
+    this.runtime = new CityWorldV2Runtime(host, actions, city01Map);
   }
 
   mount(): void {
     this.host.dataset.worldArchitecture = 'world-v2';
-    this.host.dataset.worldMigrationStage = 'p0-runtime-boundary';
+    this.host.dataset.worldMigrationStage = 'p1-map-runtime';
     this.host.dataset.worldMap = city01Map.id;
     this.host.dataset.worldMapSchema = String(city01Map.schemaVersion);
     this.runtime.mount();
