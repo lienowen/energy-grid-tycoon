@@ -89,8 +89,11 @@ export interface WorldV2FacilityVisualContract {
 export interface WorldV2MapContract {
   schemaVersion: 2;
   id: string;
+  /** Authored-map coordinate represented by logical cell 0,0. */
+  origin: WorldV2Point;
   columns: number;
   rows: number;
+  /** Authored-map coordinate distance between neighboring logical cells. */
   cellSize: number;
   terrain: Array<{
     id: string;
@@ -108,11 +111,21 @@ const assertPositiveInteger = (value: number, label: string): void => {
   }
 };
 
+const assertFinitePoint = (point: WorldV2Point, label: string): void => {
+  if (!Number.isFinite(point.x) || !Number.isFinite(point.z)) {
+    throw new Error(`${label} must contain finite x and z coordinates`);
+  }
+  if (point.elevation !== undefined && !Number.isFinite(point.elevation)) {
+    throw new Error(`${label} elevation must be finite`);
+  }
+};
+
 const assertPointInsideMap = (
   point: WorldV2Point,
   map: Pick<WorldV2MapContract, 'columns' | 'rows'>,
   label: string
 ): void => {
+  assertFinitePoint(point, label);
   if (point.x < 0 || point.x > map.columns || point.z < 0 || point.z > map.rows) {
     throw new Error(`${label} is outside the World V2 map`);
   }
@@ -141,9 +154,12 @@ const assertFootprintInsideMap = (
 export const assertWorldV2MapContract = (map: WorldV2MapContract): void => {
   if (map.schemaVersion !== 2) throw new Error('World V2 map schemaVersion must be 2');
   if (!map.id.trim()) throw new Error('World V2 map id is required');
+  assertFinitePoint(map.origin, 'World V2 map origin');
   assertPositiveInteger(map.columns, 'World V2 map columns');
   assertPositiveInteger(map.rows, 'World V2 map rows');
-  if (!(map.cellSize > 0)) throw new Error('World V2 map cellSize must be positive');
+  if (!(map.cellSize > 0) || !Number.isFinite(map.cellSize)) {
+    throw new Error('World V2 map cellSize must be a finite positive number');
+  }
 
   const unique = (items: readonly { id: string }[], label: string): void => {
     const ids = new Set<string>();
