@@ -27,30 +27,20 @@ describe('City01FacilityLayerContract', () => {
     });
   });
 
-  it('maps wind, gas and storage to technology-specific optional layers', () => {
+  it('uses one authoritative generated body for each V2 facility family', () => {
     const wind = resolveCity01FacilityLayerStack(commercial('wind_basic'));
     const gas = resolveCity01FacilityLayerStack(commercial('gas_basic'));
     const battery = resolveCity01FacilityLayerStack(commercial('battery_basic', 'storage'));
 
-    expect(wind.map((layer) => layer.role)).toEqual(['body', 'motion']);
-    expect(wind[1]).toMatchObject({
-      animation: 'rotate',
-      layout: 'shared-canvas',
-      pivotX: 0.476,
-      pivotY: 0.342
-    });
-    expect(gas.map((layer) => layer.role)).toEqual(['body', 'effect']);
-    expect(gas[1]).toMatchObject({
-      animation: 'rise',
-      layout: 'trimmed-effect',
-      widthFactor: 0.58,
-      offsetXFactor: -0.16
-    });
-    expect(battery.map((layer) => layer.role)).toEqual(['body', 'light']);
-    expect(battery[1]).toMatchObject({ animation: 'pulse', layout: 'shared-canvas' });
+    expect(wind.map((layer) => layer.role)).toEqual(['body']);
+    expect(gas.map((layer) => layer.role)).toEqual(['body']);
+    expect(battery.map((layer) => layer.role)).toEqual(['body']);
+    expect(wind[0]?.assetId).toBe('commercial_facility_wind_active');
+    expect(gas[0]?.assetId).toBe('commercial_facility_gas_active');
+    expect(battery[0]?.assetId).toBe('commercial_facility_battery_active');
   });
 
-  it('makes only the body mandatory and forbids baked pads and shadows', () => {
+  it('makes only the body mandatory and leaves optional motion to procedural feedback', () => {
     const layers = resolveCity01FacilityLayerStack(commercial('solar_basic'));
     expect(layers[0]?.required).toBe(true);
     expect(layers.slice(1).every((layer) => !layer.required)).toBe(true);
