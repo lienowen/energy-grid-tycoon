@@ -7,19 +7,19 @@ import {
 } from './City01DistrictTextureFactory';
 
 describe('City01DistrictTextureFactory', () => {
-  it('routes only the visually approved public district through modular Art V2', () => {
-    expect(city01DistrictRuntimeTreatment('commercial_district_public_night')).toBe('generated-v2');
-    expect(city01DistrictRuntimeTreatment('commercial_district_public_blackout')).toBe('generated-v2');
-    expect(factorySource).toContain("city01GeneratedDistrictKind(assetId) === 'public'");
+  it('routes all five City-01 district families through modular V2 generation', () => {
+    for (const kind of ['residential', 'commercial', 'industrial', 'public', 'old_town']) {
+      expect(city01DistrictRuntimeTreatment(`commercial_district_${kind}_night`))
+        .toBe('generated-v2');
+      expect(city01DistrictRuntimeTreatment(`commercial_district_${kind}_blackout`))
+        .toBe('generated-v2');
+      expect(isCity01DistrictRuntimeAsset(`commercial_district_${kind}_night`)).toBe(true);
+    }
+    expect(factorySource).toContain('createExpandedCity01DistrictTexture');
     expect(factorySource).toContain('createCity01DistrictV2Texture');
   });
 
-  it('keeps the remaining districts on the softened legacy route until visual approval', () => {
-    for (const kind of ['residential', 'commercial', 'industrial', 'old_town']) {
-      expect(city01DistrictRuntimeTreatment(`commercial_district_${kind}_night`)).toBe('legacy-softened');
-      expect(city01DistrictRuntimeTreatment(`commercial_district_${kind}_blackout`)).toBe('legacy-softened');
-      expect(isCity01DistrictRuntimeAsset(`commercial_district_${kind}_night`)).toBe(true);
-    }
+  it('does not treat facility assets as district textures', () => {
     expect(city01DistrictRuntimeTreatment('commercial_facility_solar_active')).toBe('none');
     expect(isCity01DistrictRuntimeAsset('commercial_facility_solar_active')).toBe(false);
   });
@@ -28,7 +28,7 @@ describe('City01DistrictTextureFactory', () => {
     expect(softenCity01DistrictPixelAlpha(255, 255, 80, 140, 70, 0.5)).toBe(255);
   });
 
-  it('softens a neutral outer platform edge', () => {
+  it('retains the legacy softening fallback for unconverted future assets', () => {
     const alpha = softenCity01DistrictPixelAlpha(255, 150, 75, 78, 80, 0.72);
     expect(alpha).toBeLessThan(50);
     expect(alpha).toBeGreaterThan(0);
