@@ -5,6 +5,10 @@ import type { BuildingConfig } from '../buildings/BuildingBase';
 import type { GameViewModel } from '../core/GameManager';
 import { LevelLoader, type LevelConfig } from '../systems/LevelLoader';
 import { neutralSimulationModifiers } from '../systems/SimulationModifiers';
+import {
+  CITY01_GOLDEN_SCENE_CAMERA,
+  CITY01_GOLDEN_SCENE_FOCUS
+} from './art-v2/City01GoldenScene';
 import { CitySceneMapper } from './CitySceneMapper';
 import { toScenePoint } from './CitySceneVisuals';
 
@@ -82,14 +86,11 @@ describe('CitySceneMapper', () => {
     }
   });
 
-  it('uses a movable world camera instead of model-table framing for Dawn City', () => {
+  it('uses the product-facing Golden Scene camera for Dawn City', () => {
     const scene = CitySceneMapper.map(makeView());
-    expect(scene.camera.startZoom).toBe(1.24);
-    expect(scene.camera.startOffsetY).toBe(18);
-    expect(scene.camera.panLimitX).toBe(520);
-    expect(scene.camera.panLimitY).toBe(360);
+    expect(scene.camera).toEqual(CITY01_GOLDEN_SCENE_CAMERA);
     expect(scene.roads).toHaveLength(0);
-    expect(scene.focus).toEqual(toScenePoint({ x: 56, y: 51, elevation: 0 }));
+    expect(scene.focus).toEqual(toScenePoint(CITY01_GOLDEN_SCENE_FOCUS));
     expect(scene.camera.minZoom).toBeLessThan(scene.camera.maxZoom);
   });
 
