@@ -80,44 +80,6 @@ const commercialState = (state: FacilityVisualState): 'active' | 'offline' | 'co
   return 'active';
 };
 
-const commercialComponentId = (
-  runtimeFamily: string,
-  role: 'light' | 'motion' | 'effect'
-): string => `commercial_facility_${runtimeFamily}_component_${role}`;
-
-const p0BodyId = (
-  family: FacilityVisualFamily,
-  runtimeFamily: string,
-  state: FacilityVisualState
-): string | undefined => {
-  if (state !== 'active') return undefined;
-  if (family === 'wind') return 'commercial_facility_wind_p0_body';
-  if (family === 'gas') return 'commercial_facility_gas_p0_body';
-  if (family === 'battery') return `commercial_facility_${runtimeFamily}_p0_body`;
-  return undefined;
-};
-
-const commercialComponents = (
-  family: FacilityVisualFamily,
-  runtimeFamily: string,
-  animated: boolean
-): Pick<FacilityVisualDescriptor, 'lightAssetId' | 'motionAssetId' | 'effectAssetId'> => {
-  if (!animated) return {};
-  if (family === 'wind') {
-    return { motionAssetId: 'commercial_facility_wind_p0_motion' };
-  }
-  if (family === 'gas') {
-    return { effectAssetId: 'commercial_facility_gas_p0_effect' };
-  }
-  if (family === 'battery') {
-    return { lightAssetId: `commercial_facility_${runtimeFamily}_p0_light` };
-  }
-  if (family === 'solar') {
-    return { lightAssetId: commercialComponentId(runtimeFamily, 'light') };
-  }
-  return {};
-};
-
 export class FacilityVisualRegistry {
   static resolve(input: ResolveFacilityVisualInput): FacilityVisualDescriptor {
     const family = resolveFamily(input.configId, input.category);
@@ -128,10 +90,8 @@ export class FacilityVisualRegistry {
       return {
         family,
         state,
-        bodyAssetId: p0BodyId(family, runtimeFamily, state)
-          ?? `commercial_facility_${runtimeFamily}_${commercialState(state)}`,
-        shadowAssetId: 'commercial_facility_shadow',
-        ...commercialComponents(family, runtimeFamily, animated)
+        bodyAssetId: `commercial_facility_${runtimeFamily}_${commercialState(state)}`,
+        shadowAssetId: 'commercial_facility_shadow'
       };
     }
     return {
