@@ -9,6 +9,10 @@ import {
   isCity01FacilityRuntimeAsset
 } from './City01FacilityTextureFactory';
 import {
+  createCity01FacilityV2Texture,
+  isCity01FacilityV2Asset
+} from './City01FacilityV2Generator';
+import {
   createCity01GridRuntimeTexture,
   isCity01GridRuntimeAsset
 } from './City01GridTextureFactory';
@@ -27,6 +31,12 @@ export class PixiAssetLoader {
   load(assetId: string): Promise<Texture | undefined> {
     const existing = this.requests.get(assetId);
     if (existing) return existing;
+
+    if (isCity01FacilityV2Asset(assetId)) {
+      const generated = Promise.resolve(createCity01FacilityV2Texture(assetId));
+      this.requests.set(assetId, generated);
+      return generated;
+    }
 
     const source = AssetManager.get(assetId, '');
     if (!source || !source.startsWith('/')) {
