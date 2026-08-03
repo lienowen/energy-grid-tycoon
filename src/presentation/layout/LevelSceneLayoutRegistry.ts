@@ -1,87 +1,20 @@
+import {
+  CITY01_GOLDEN_SCENE_CAMERA,
+  CITY01_GOLDEN_SCENE_DISTRICTS,
+  CITY01_GOLDEN_SCENE_ENVIRONMENT,
+  CITY01_GOLDEN_SCENE_FOCUS,
+  CITY01_GOLDEN_SCENE_NETWORK_POINTS
+} from '../art-v2/City01GoldenScene';
 import { city01WorldGridConfig } from './City01WorldGridConfig';
 import type { LevelSceneLayout } from './LevelSceneLayout';
 
 const dawnCityLayout: LevelSceneLayout = {
   levelId: 'city-01',
   mode: 'authored',
-  focus: { x: 56, y: 51, elevation: 0 },
-  camera: {
-    startZoom: 1.24,
-    minZoom: 0.5,
-    maxZoom: 2.4,
-    startOffsetX: 0,
-    startOffsetY: 18,
-    panLimitX: 520,
-    panLimitY: 360
-  },
+  focus: CITY01_GOLDEN_SCENE_FOCUS,
+  camera: CITY01_GOLDEN_SCENE_CAMERA,
   worldGrid: city01WorldGridConfig,
-  districts: [
-    {
-      id: 'dawn-residential',
-      label: '居住区',
-      kind: 'residential',
-      x: 72,
-      y: 34,
-      width: 23,
-      depth: 15,
-      scale: 1.03,
-      buildingCount: 7,
-      priority: 1,
-      variant: 11
-    },
-    {
-      id: 'dawn-commercial',
-      label: '商业区',
-      kind: 'commercial',
-      x: 45,
-      y: 45,
-      width: 23,
-      depth: 16,
-      scale: 1.08,
-      buildingCount: 6,
-      priority: 2,
-      variant: 23
-    },
-    {
-      id: 'dawn-industrial',
-      label: '工业区',
-      kind: 'industrial',
-      x: 72,
-      y: 68,
-      width: 23,
-      depth: 16,
-      scale: 1.02,
-      buildingCount: 5,
-      priority: 3,
-      variant: 37
-    },
-    {
-      id: 'dawn-public',
-      label: '公共服务区',
-      kind: 'public',
-      x: 56,
-      y: 52,
-      width: 21,
-      depth: 14,
-      scale: 1.06,
-      buildingCount: 4,
-      priority: 0,
-      variant: 41
-    },
-    {
-      id: 'dawn-old-town',
-      label: '东部老城区',
-      kind: 'old_town',
-      x: 39,
-      y: 65,
-      width: 22,
-      depth: 16,
-      scale: 1.02,
-      buildingCount: 6,
-      priority: 5,
-      variant: 59
-    }
-  ],
+  districts: CITY01_GOLDEN_SCENE_DISTRICTS,
   plotAnchors: [
     { plotId: 'sunrise-neighborhood', x: 29, y: 27, elevation: 0.16, scale: 0.82 },
     { plotId: 'south-outskirts', x: 34, y: 33, elevation: 0.16, scale: 0.82 },
@@ -92,17 +25,9 @@ const dawnCityLayout: LevelSceneLayout = {
     { plotId: 'central-utility', x: 74, y: 78, elevation: 0.14, scale: 0.7 },
     { plotId: 'east-industry', x: 90, y: 68, elevation: 0.14, scale: 0.82 }
   ],
-  // Ordinary roads now live in worldGrid. This legacy authored-road channel is
-  // intentionally empty and may only be used by later editor diagnostics.
+  // Ordinary roads live in worldGrid. This channel remains diagnostic-only.
   roads: [],
-  environment: [
-    { id: 'dawn-west-water', kind: 'water', x: 5, y: 51, width: 25, depth: 94, density: 0.7, variant: 3 },
-    { id: 'dawn-south-coast', kind: 'coast', x: 51, y: 93, width: 100, depth: 17, density: 0.8, variant: 7 },
-    { id: 'dawn-north-ridge', kind: 'ridge', x: 61, y: 4, width: 86, depth: 17, density: 0.9, variant: 13 },
-    { id: 'dawn-north-forest', kind: 'forest', x: 36, y: 10, width: 46, depth: 16, density: 0.82, variant: 17 },
-    { id: 'dawn-east-forest', kind: 'forest', x: 99, y: 46, width: 16, depth: 72, density: 0.88, variant: 29 },
-    { id: 'dawn-central-park', kind: 'park', x: 56, y: 48, width: 24, depth: 12, density: 0.72, variant: 31 }
-  ],
+  environment: CITY01_GOLDEN_SCENE_ENVIRONMENT,
   energyNetwork: {
     nodes: [
       {
@@ -153,9 +78,7 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'main-substation',
         label: '主变电站',
         kind: 'substation',
-        x: 62,
-        y: 55,
-        elevation: 0.16,
+        ...CITY01_GOLDEN_SCENE_NETWORK_POINTS.mainSubstation,
         alwaysOperational: true,
         capacity: 1.35
       },
@@ -163,9 +86,7 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'west-distribution',
         label: '西部配电',
         kind: 'distribution',
-        x: 51,
-        y: 55,
-        elevation: 0.1,
+        ...CITY01_GOLDEN_SCENE_NETWORK_POINTS.westDistribution,
         alwaysOperational: true,
         capacity: 1.15
       },
@@ -173,9 +94,7 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'east-distribution',
         label: '东部配电',
         kind: 'distribution',
-        x: 70,
-        y: 57,
-        elevation: 0.1,
+        ...CITY01_GOLDEN_SCENE_NETWORK_POINTS.eastDistribution,
         alwaysOperational: true,
         capacity: 1.05
       },
@@ -183,9 +102,7 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'residential-load',
         label: '居住区',
         kind: 'district',
-        x: 72,
-        y: 34,
-        elevation: 0.1,
+        ...CITY01_GOLDEN_SCENE_NETWORK_POINTS.residentialLoad,
         districtId: 'dawn-residential',
         capacity: 0.9
       },
@@ -193,9 +110,7 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'commercial-load',
         label: '商业区',
         kind: 'district',
-        x: 45,
-        y: 45,
-        elevation: 0.1,
+        ...CITY01_GOLDEN_SCENE_NETWORK_POINTS.commercialLoad,
         districtId: 'dawn-commercial',
         capacity: 1.05
       },
@@ -203,9 +118,7 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'industrial-load',
         label: '工业区',
         kind: 'district',
-        x: 72,
-        y: 68,
-        elevation: 0.1,
+        ...CITY01_GOLDEN_SCENE_NETWORK_POINTS.industrialLoad,
         districtId: 'dawn-industrial',
         capacity: 1.2
       },
@@ -213,9 +126,7 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'public-load',
         label: '公共服务区',
         kind: 'district',
-        x: 56,
-        y: 52,
-        elevation: 0.1,
+        ...CITY01_GOLDEN_SCENE_NETWORK_POINTS.publicLoad,
         districtId: 'dawn-public',
         capacity: 0.85
       },
@@ -223,9 +134,7 @@ const dawnCityLayout: LevelSceneLayout = {
         id: 'old-town-load',
         label: '东部老城区',
         kind: 'district',
-        x: 39,
-        y: 65,
-        elevation: 0.1,
+        ...CITY01_GOLDEN_SCENE_NETWORK_POINTS.oldTownLoad,
         districtId: 'dawn-old-town',
         capacity: 0.8
       }
@@ -236,42 +145,70 @@ const dawnCityLayout: LevelSceneLayout = {
         from: 'solar-hub',
         to: 'main-substation',
         capacity: 0.78,
-        points: [{ x: 29, y: 27 }, { x: 41, y: 35 }, { x: 52, y: 44 }, { x: 62, y: 55 }]
+        points: [
+          { x: 29, y: 27 },
+          { x: 41, y: 35 },
+          { x: 52, y: 44 },
+          { ...CITY01_GOLDEN_SCENE_NETWORK_POINTS.mainSubstation }
+        ]
       },
       {
         id: 'reserve-to-main',
         from: 'reserve-plant',
         to: 'main-substation',
         capacity: 1.2,
-        points: [{ x: 30, y: 74 }, { x: 41, y: 68 }, { x: 52, y: 61 }, { x: 62, y: 55 }]
+        points: [
+          { x: 30, y: 74 },
+          { x: 42, y: 68 },
+          { x: 53, y: 62 },
+          { ...CITY01_GOLDEN_SCENE_NETWORK_POINTS.mainSubstation }
+        ]
       },
       {
         id: 'main-to-west',
         from: 'main-substation',
         to: 'west-distribution',
         capacity: 1.25,
-        points: [{ x: 62, y: 55 }, { x: 57, y: 55 }, { x: 51, y: 55 }]
+        points: [
+          { ...CITY01_GOLDEN_SCENE_NETWORK_POINTS.mainSubstation },
+          { x: 57, y: 57 },
+          { ...CITY01_GOLDEN_SCENE_NETWORK_POINTS.westDistribution }
+        ]
       },
       {
         id: 'west-to-east',
         from: 'west-distribution',
         to: 'east-distribution',
         capacity: 1.05,
-        points: [{ x: 51, y: 55 }, { x: 60, y: 56 }, { x: 70, y: 57 }]
+        points: [
+          { ...CITY01_GOLDEN_SCENE_NETWORK_POINTS.westDistribution },
+          { x: 61, y: 57 },
+          { ...CITY01_GOLDEN_SCENE_NETWORK_POINTS.eastDistribution }
+        ]
       },
       {
         id: 'wind-to-east',
         from: 'wind-hub',
         to: 'east-distribution',
         capacity: 0.95,
-        points: [{ x: 90, y: 56 }, { x: 83, y: 56 }, { x: 76, y: 57 }, { x: 70, y: 57 }]
+        points: [
+          { x: 90, y: 56 },
+          { x: 84, y: 56 },
+          { x: 77, y: 57 },
+          { ...CITY01_GOLDEN_SCENE_NETWORK_POINTS.eastDistribution }
+        ]
       },
       {
         id: 'storage-to-east',
         from: 'storage-hub',
         to: 'east-distribution',
         capacity: 1,
-        points: [{ x: 74, y: 78 }, { x: 73, y: 70 }, { x: 72, y: 63 }, { x: 70, y: 57 }]
+        points: [
+          { x: 74, y: 78 },
+          { x: 74, y: 70 },
+          { x: 73, y: 64 },
+          { ...CITY01_GOLDEN_SCENE_NETWORK_POINTS.eastDistribution }
+        ]
       },
       { id: 'west-to-residential', from: 'west-distribution', to: 'residential-load', capacity: 0.92 },
       { id: 'west-to-commercial', from: 'west-distribution', to: 'commercial-load', capacity: 1 },
