@@ -1,44 +1,19 @@
-import { AdaptiveImmersiveWorld } from '../../presentation/pixi/AdaptiveImmersiveWorld';
-import { PixiGameWorld } from '../../presentation/pixi/PixiGameWorld';
-import { HologramSandbox as LegacyHologramSandbox } from './LegacyHologramSandbox';
+import { CityWorldV2 } from '../../presentation/world-v2/CityWorldV2';
 import type { WorldRenderActions, WorldRenderSurface } from './WorldRenderSurface';
 
 export type HologramSandboxActions = WorldRenderActions;
-export type WorldRendererMode = 'legacy' | 'pixi' | 'immersive';
+export type WorldRendererMode = 'world-v2';
 
-const STORAGE_KEY = 'energy-grid-tycoon.renderer';
-
-const resolveMode = (): WorldRendererMode => {
-  const query = new URLSearchParams(window.location.search).get('renderer');
-  if (query === 'immersive' || query === 'pixi' || query === 'legacy') {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, query);
-    } catch {
-      // Query selection still works when storage is unavailable.
-    }
-    return query;
-  }
-
-  try {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored === 'legacy') return 'legacy';
-    if (stored === 'pixi' || stored === 'immersive') return 'immersive';
-  } catch {
-    // Use the immersive renderer when storage is unavailable.
-  }
-  return 'immersive';
-};
-
+/**
+ * Product runtime now has one world-rendering path. Legacy renderers remain in
+ * the repository only as migration references until World V2 replaces their
+ * terrain, district and facility implementations.
+ */
 export class HologramSandbox implements WorldRenderSurface {
   private readonly renderer: WorldRenderSurface;
 
   constructor(container: HTMLElement, actions: WorldRenderActions) {
-    const mode = resolveMode();
-    this.renderer = mode === 'legacy'
-      ? new LegacyHologramSandbox(container, actions)
-      : mode === 'pixi'
-        ? new PixiGameWorld(container, actions)
-        : new AdaptiveImmersiveWorld(container, actions);
+    this.renderer = new CityWorldV2(container, actions);
   }
 
   mount(): void {
