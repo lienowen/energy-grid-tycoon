@@ -1,0 +1,352 @@
+{
+  "schemaVersion": 2,
+  "id": "city-01-world-v2",
+  "columns": 48,
+  "rows": 42,
+  "cellSize": 1,
+  "terrain": [
+    {
+      "id": "city-land",
+      "kind": "grass",
+      "footprint": {
+        "origin": { "x": 8, "z": 0, "elevation": 0 },
+        "columns": 40,
+        "rows": 34,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "west-water",
+      "kind": "water",
+      "footprint": {
+        "origin": { "x": 0, "z": 0, "elevation": -0.2 },
+        "columns": 8,
+        "rows": 42,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "south-water",
+      "kind": "water",
+      "footprint": {
+        "origin": { "x": 8, "z": 34, "elevation": -0.2 },
+        "columns": 40,
+        "rows": 8,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "west-coast",
+      "kind": "coast",
+      "footprint": {
+        "origin": { "x": 8, "z": 0, "elevation": 0 },
+        "columns": 3,
+        "rows": 34,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "south-coast",
+      "kind": "coast",
+      "footprint": {
+        "origin": { "x": 11, "z": 31, "elevation": 0 },
+        "columns": 37,
+        "rows": 3,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "central-green-belt",
+      "kind": "park",
+      "footprint": {
+        "origin": { "x": 22, "z": 16, "elevation": 0.02 },
+        "columns": 7,
+        "rows": 5,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "north-forest",
+      "kind": "forest",
+      "footprint": {
+        "origin": { "x": 11, "z": 0, "elevation": 0.06 },
+        "columns": 17,
+        "rows": 5,
+        "rotation": 0
+      }
+    },
+    {
+      "id": "industrial-ground",
+      "kind": "industrial_ground",
+      "footprint": {
+        "origin": { "x": 31, "z": 23, "elevation": 0.01 },
+        "columns": 13,
+        "rows": 8,
+        "rotation": 0
+      }
+    }
+  ],
+  "roads": [
+    {
+      "id": "regional-east-west",
+      "kind": "arterial",
+      "laneWidth": 4,
+      "points": [
+        { "x": 8, "z": 19 },
+        { "x": 18, "z": 19 },
+        { "x": 28, "z": 18 },
+        { "x": 38, "z": 18 },
+        { "x": 47, "z": 18 }
+      ]
+    },
+    {
+      "id": "north-south-spine",
+      "kind": "arterial",
+      "laneWidth": 4,
+      "points": [
+        { "x": 27, "z": 0 },
+        { "x": 27, "z": 9 },
+        { "x": 28, "z": 18 },
+        { "x": 29, "z": 27 },
+        { "x": 29, "z": 33 }
+      ]
+    },
+    {
+      "id": "commercial-loop",
+      "kind": "collector",
+      "laneWidth": 2,
+      "points": [
+        { "x": 18, "z": 19 },
+        { "x": 18, "z": 13 },
+        { "x": 23, "z": 10 },
+        { "x": 27, "z": 11 }
+      ]
+    },
+    {
+      "id": "residential-branch",
+      "kind": "local",
+      "laneWidth": 2,
+      "points": [
+        { "x": 27, "z": 11 },
+        { "x": 34, "z": 8 },
+        { "x": 40, "z": 9 }
+      ]
+    },
+    {
+      "id": "old-town-branch",
+      "kind": "local",
+      "laneWidth": 2,
+      "points": [
+        { "x": 18, "z": 19 },
+        { "x": 15, "z": 24 },
+        { "x": 17, "z": 28 }
+      ]
+    },
+    {
+      "id": "industrial-branch",
+      "kind": "collector",
+      "laneWidth": 2,
+      "points": [
+        { "x": 29, "z": 23 },
+        { "x": 35, "z": 25 },
+        { "x": 43, "z": 25 }
+      ]
+    },
+    {
+      "id": "western-energy-road",
+      "kind": "service",
+      "laneWidth": 2,
+      "points": [
+        { "x": 15, "z": 24 },
+        { "x": 12, "z": 27 },
+        { "x": 12, "z": 31 }
+      ]
+    },
+    {
+      "id": "eastern-energy-road",
+      "kind": "service",
+      "laneWidth": 2,
+      "points": [
+        { "x": 38, "z": 18 },
+        { "x": 42, "z": 20 },
+        { "x": 44, "z": 23 }
+      ]
+    },
+    {
+      "id": "harbor-bridge",
+      "kind": "bridge",
+      "laneWidth": 4,
+      "points": [
+        { "x": 0, "z": 19, "elevation": 0.12 },
+        { "x": 4, "z": 19, "elevation": 0.12 },
+        { "x": 8, "z": 19, "elevation": 0.08 }
+      ]
+    }
+  ],
+  "plots": [
+    {
+      "id": "residential-north-01",
+      "zone": "residential",
+      "footprint": {
+        "origin": { "x": 31, "z": 4, "elevation": 0.04 },
+        "columns": 5,
+        "rows": 4,
+        "rotation": 0
+      },
+      "roadEntrance": { "edge": "south", "offset": 0.55, "roadId": "residential-branch" },
+      "allowedFacilityIds": ["solar_basic", "battery_basic"]
+    },
+    {
+      "id": "residential-east-02",
+      "zone": "residential",
+      "footprint": {
+        "origin": { "x": 37, "z": 10, "elevation": 0.04 },
+        "columns": 5,
+        "rows": 4,
+        "rotation": 0
+      },
+      "roadEntrance": { "edge": "north", "offset": 0.45, "roadId": "residential-branch" },
+      "allowedFacilityIds": ["solar_basic", "battery_basic"]
+    },
+    {
+      "id": "commercial-west-01",
+      "zone": "commercial",
+      "footprint": {
+        "origin": { "x": 17, "z": 8, "elevation": 0.03 },
+        "columns": 5,
+        "rows": 4,
+        "rotation": 0
+      },
+      "roadEntrance": { "edge": "east", "offset": 0.5, "roadId": "commercial-loop" },
+      "allowedFacilityIds": ["solar_basic", "battery_basic"]
+    },
+    {
+      "id": "commercial-core-02",
+      "zone": "commercial",
+      "footprint": {
+        "origin": { "x": 21, "z": 12, "elevation": 0.03 },
+        "columns": 5,
+        "rows": 4,
+        "rotation": 0
+      },
+      "roadEntrance": { "edge": "north", "offset": 0.5, "roadId": "commercial-loop" },
+      "allowedFacilityIds": ["solar_basic", "battery_basic"]
+    },
+    {
+      "id": "public-core-01",
+      "zone": "public",
+      "footprint": {
+        "origin": { "x": 24, "z": 20, "elevation": 0.04 },
+        "columns": 4,
+        "rows": 4,
+        "rotation": 0
+      },
+      "roadEntrance": { "edge": "north", "offset": 0.5, "roadId": "regional-east-west" },
+      "allowedFacilityIds": ["battery_basic"]
+    },
+    {
+      "id": "old-town-west-01",
+      "zone": "old_town",
+      "footprint": {
+        "origin": { "x": 13, "z": 22, "elevation": 0.03 },
+        "columns": 5,
+        "rows": 4,
+        "rotation": 0
+      },
+      "roadEntrance": { "edge": "east", "offset": 0.55, "roadId": "old-town-branch" },
+      "allowedFacilityIds": ["solar_basic", "battery_basic"]
+    },
+    {
+      "id": "industrial-east-01",
+      "zone": "industrial",
+      "footprint": {
+        "origin": { "x": 33, "z": 21, "elevation": 0.03 },
+        "columns": 6,
+        "rows": 5,
+        "rotation": 0
+      },
+      "roadEntrance": { "edge": "north", "offset": 0.45, "roadId": "industrial-branch" },
+      "allowedFacilityIds": ["gas_basic", "battery_basic", "battery_utility"]
+    },
+    {
+      "id": "industrial-east-02",
+      "zone": "industrial",
+      "footprint": {
+        "origin": { "x": 38, "z": 26, "elevation": 0.03 },
+        "columns": 6,
+        "rows": 5,
+        "rotation": 0
+      },
+      "roadEntrance": { "edge": "north", "offset": 0.5, "roadId": "industrial-branch" },
+      "allowedFacilityIds": ["gas_basic", "battery_basic", "battery_utility"]
+    },
+    {
+      "id": "utility-west-01",
+      "zone": "utility",
+      "footprint": {
+        "origin": { "x": 10, "z": 27, "elevation": 0.05 },
+        "columns": 5,
+        "rows": 5,
+        "rotation": 0
+      },
+      "roadEntrance": { "edge": "east", "offset": 0.5, "roadId": "western-energy-road" },
+      "allowedFacilityIds": ["gas_basic", "battery_utility", "nuclear_advanced"]
+    },
+    {
+      "id": "coastal-south-01",
+      "zone": "coastal",
+      "footprint": {
+        "origin": { "x": 20, "z": 30, "elevation": 0.02 },
+        "columns": 5,
+        "rows": 3,
+        "rotation": 0
+      },
+      "roadEntrance": { "edge": "north", "offset": 0.5, "roadId": "north-south-spine" },
+      "allowedFacilityIds": ["wind_basic", "wind_offshore"]
+    },
+    {
+      "id": "outskirts-east-01",
+      "zone": "outskirts",
+      "footprint": {
+        "origin": { "x": 43, "z": 20, "elevation": 0.04 },
+        "columns": 4,
+        "rows": 5,
+        "rotation": 0
+      },
+      "roadEntrance": { "edge": "west", "offset": 0.5, "roadId": "eastern-energy-road" },
+      "allowedFacilityIds": ["solar_basic", "wind_basic", "gas_basic", "nuclear_advanced"]
+    }
+  ],
+  "districts": [
+    {
+      "id": "dawn-residential-v2",
+      "zone": "residential",
+      "plots": ["residential-north-01", "residential-east-02"],
+      "stableSeed": 1101
+    },
+    {
+      "id": "dawn-commercial-v2",
+      "zone": "commercial",
+      "plots": ["commercial-west-01", "commercial-core-02"],
+      "stableSeed": 2301
+    },
+    {
+      "id": "dawn-public-v2",
+      "zone": "public",
+      "plots": ["public-core-01"],
+      "stableSeed": 4101
+    },
+    {
+      "id": "dawn-old-town-v2",
+      "zone": "old_town",
+      "plots": ["old-town-west-01"],
+      "stableSeed": 5901
+    },
+    {
+      "id": "dawn-industrial-v2",
+      "zone": "industrial",
+      "plots": ["industrial-east-01", "industrial-east-02"],
+      "stableSeed": 3701
+    }
+  ]
+}
