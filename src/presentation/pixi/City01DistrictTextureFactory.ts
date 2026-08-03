@@ -1,5 +1,9 @@
 import { CanvasSource, Texture } from 'pixi.js';
 import {
+  createExpandedCity01DistrictTexture,
+  expandedCity01DistrictKind
+} from './City01DistrictV2ExpansionGenerator';
+import {
   city01GeneratedDistrictKind,
   createCity01DistrictV2Texture
 } from './City01DistrictV2Generator';
@@ -19,10 +23,13 @@ const requests = new Map<string, Promise<Texture | undefined>>();
 const clampByte = (value: number): number =>
   Math.max(0, Math.min(255, Math.round(value)));
 
+const isGeneratedDistrict = (assetId: string): boolean =>
+  Boolean(city01GeneratedDistrictKind(assetId) || expandedCity01DistrictKind(assetId));
+
 export const city01DistrictRuntimeTreatment = (
   assetId: string
 ): City01DistrictRuntimeTreatment => {
-  if (city01GeneratedDistrictKind(assetId) === 'public') return 'generated-v2';
+  if (isGeneratedDistrict(assetId)) return 'generated-v2';
   if (districtAssetPrefixes.some((prefix) => assetId.startsWith(prefix))) return 'legacy-softened';
   return 'none';
 };
@@ -45,9 +52,6 @@ export const softenCity01DistrictPixelAlpha = (
   const saturation = maximum > 0 ? ((maximum - minimum) / maximum) * 255 : 0;
   let alpha = (originalAlpha * blurredMaskAlpha) / 255;
 
-  // Legacy district PNGs contain a dark raised underside. Removing only that
-  // near the bottom edge makes them sit on the shared Tile World until their
-  // Art V2 modular replacement is ready.
   if (
     yRatio > 0.79
     && maximum < 105
@@ -134,6 +138,10 @@ const buildLegacyDistrictTexture = async (source: string): Promise<Texture | und
   return textureFromCanvas(outputCanvas);
 };
 
+const createGeneratedDistrictTexture = (assetId: string): Texture | undefined =>
+  createCity01DistrictV2Texture(assetId)
+  ?? createExpandedCity01DistrictTexture(assetId);
+
 export const createCity01DistrictRuntimeTexture = (
   assetId: string,
   source: string
@@ -146,7 +154,7 @@ export const createCity01DistrictRuntimeTexture = (
   if (existing) return existing;
 
   const request = treatment === 'generated-v2'
-    ? Promise.resolve(createCity01DistrictV2Texture(assetId))
+    ? Promise.resolve(createGeneratedDistrictTexture(assetId))
     : buildLegacyDistrictTexture(source);
   requests.set(cacheKey, request);
   return request;
