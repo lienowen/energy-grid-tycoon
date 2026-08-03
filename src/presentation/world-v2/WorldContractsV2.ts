@@ -108,6 +108,32 @@ const assertPositiveInteger = (value: number, label: string): void => {
   }
 };
 
+const assertPointInsideMap = (
+  point: WorldV2Point,
+  map: Pick<WorldV2MapContract, 'columns' | 'rows'>,
+  label: string
+): void => {
+  if (point.x < 0 || point.x > map.columns || point.z < 0 || point.z > map.rows) {
+    throw new Error(`${label} is outside the World V2 map`);
+  }
+};
+
+const assertFootprintInsideMap = (
+  footprint: WorldV2Footprint,
+  map: Pick<WorldV2MapContract, 'columns' | 'rows'>,
+  label: string
+): void => {
+  assertPositiveInteger(footprint.columns, `${label} columns`);
+  assertPositiveInteger(footprint.rows, `${label} rows`);
+  assertPointInsideMap(footprint.origin, map, `${label} origin`);
+  if (
+    footprint.origin.x + footprint.columns > map.columns
+    || footprint.origin.z + footprint.rows > map.rows
+  ) {
+    throw new Error(`${label} exceeds the World V2 map bounds`);
+  }
+};
+
 /**
  * Fails fast when authored World V2 data would create ambiguous placement or
  * rendering behavior. More geometric checks will be added with the map editor.
@@ -133,20 +159,47 @@ export const assertWorldV2MapContract = (map: WorldV2MapContract): void => {
   unique(map.plots, 'plot');
   unique(map.districts, 'district');
 
+  for (const terrain of map.terrain) {
+    assertFootprintInsideMap(terrain.footprint, map, `Terrain ${terrain.id} footprint`);
+  }
+
+  const roadIds = new Set(map.roads.map((road) => road.id));
+  for (const road of map.roads) {
+    if (road.points.length < 2) throw new Error(`Road ${road.id} requires at least two points`);
+    for (const [index, point] of road.points.entries()) {
+      assertPointInsideMap(point, map, `Road ${road.id} point ${index}`);
+    }
+  }
+
   const plotIds = new Set(map.plots.map((plot) => plot.id));
+  const assignedPlotIds = new Set<string>();
   for (const district of map.districts) {
+    if (!Number.isInteger(district.stableSeed)) {
+      throw new Error(`District ${district.id} stableSeed must be an integer`);
+    }
     for (const plotId of district.plots) {
       if (!plotIds.has(plotId)) {
         throw new Error(`District ${district.id} references unknown plot ${plotId}`);
       }
+      if (assignedPlotIds.has(plotId)) {
+        throw new Error(`Plot ${plotId} is assigned to multiple districts`);
+      }
+      assignedPlotIds.add(plotId);
     }
   }
 
   for (const plot of map.plots) {
-    assertPositiveInteger(plot.footprint.columns, `Plot ${plot.id} footprint columns`);
-    assertPositiveInteger(plot.footprint.rows, `Plot ${plot.id} footprint rows`);
+    assertFootprintInsideMap(plot.footprint, map, `Plot ${plot.id} footprint`);
+    if (plot.allowedFacilityIds.length === 0) {
+      throw new Error(`Plot ${plot.id} must allow at least one facility`);
+    }
     if (plot.roadEntrance.offset < 0 || plot.roadEntrance.offset > 1) {
       throw new Error(`Plot ${plot.id} road entrance offset must be between 0 and 1`);
+    }
+    if (plot.roadEntrance.roadId && !roadIds.has(plot.roadEntrance.roadId)) {
+      throw new Error(
+        `Plot ${plot.id} references unknown road ${plot.roadEntrance.roadId}`
+      );
     }
   }
 };
