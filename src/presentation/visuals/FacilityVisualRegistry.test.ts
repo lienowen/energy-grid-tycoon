@@ -38,7 +38,7 @@ describe('FacilityVisualRegistry', () => {
     expect(offline.lightAssetId).toBeUndefined();
   });
 
-  it('routes active commercial wind, gas and storage to the layered P0 assets', () => {
+  it('routes all commercial facility states to the unified V2 family assets', () => {
     const wind = FacilityVisualRegistry.resolve({
       configId: 'wind_basic',
       category: 'generation',
@@ -64,15 +64,15 @@ describe('FacilityVisualRegistry', () => {
       presentation: 'commercial'
     });
 
-    expect(wind.bodyAssetId).toBe('commercial_facility_wind_p0_body');
-    expect(wind.motionAssetId).toBe('commercial_facility_wind_p0_motion');
-    expect(gas.bodyAssetId).toBe('commercial_facility_gas_p0_body');
-    expect(gas.effectAssetId).toBe('commercial_facility_gas_p0_effect');
-    expect(utilityStorage.bodyAssetId).toBe('commercial_facility_battery_utility_p0_body');
-    expect(utilityStorage.lightAssetId).toBe('commercial_facility_battery_utility_p0_light');
+    expect(wind.bodyAssetId).toBe('commercial_facility_wind_active');
+    expect(wind.motionAssetId).toBeUndefined();
+    expect(gas.bodyAssetId).toBe('commercial_facility_gas_active');
+    expect(gas.effectAssetId).toBeUndefined();
+    expect(utilityStorage.bodyAssetId).toBe('commercial_facility_battery_utility_active');
+    expect(utilityStorage.lightAssetId).toBeUndefined();
   });
 
-  it('keeps construction and offline states on their approved static cuts', () => {
+  it('keeps construction and offline states on the same V2 state contract', () => {
     const construction = FacilityVisualRegistry.resolve({
       configId: 'wind_basic',
       category: 'generation',
