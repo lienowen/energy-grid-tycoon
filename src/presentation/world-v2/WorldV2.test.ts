@@ -6,6 +6,17 @@ import {
 } from './WorldContractsV2';
 import { WorldProjectionV2 } from './WorldProjectionV2';
 
+const city01GameplayPlotIds = [
+  'sunrise-neighborhood',
+  'north-outskirts',
+  'east-coast',
+  'west-industry',
+  'south-neighborhood',
+  'central-utility',
+  'east-industry',
+  'south-outskirts'
+].sort();
+
 describe('WorldProjectionV2', () => {
   it('round-trips a point on the same elevation plane', () => {
     const projection = new WorldProjectionV2();
@@ -30,6 +41,17 @@ describe('City-01 World V2 map', () => {
   it('passes the authored map contract', () => {
     const map = city01MapData as WorldV2MapContract;
     expect(() => assertWorldV2MapContract(map)).not.toThrow();
+  });
+
+  it('uses the same plot identities as the City-01 gameplay model', () => {
+    const map = city01MapData as WorldV2MapContract;
+    expect(map.plots.map((plot) => plot.id).sort()).toEqual(city01GameplayPlotIds);
+  });
+
+  it('defines an authored coordinate origin and real map scale', () => {
+    const map = city01MapData as WorldV2MapContract;
+    expect(map.origin).toEqual({ x: -40, z: -34, elevation: 0 });
+    expect(map.cellSize).toBe(4);
   });
 
   it('rejects plots that reference a missing road', () => {
