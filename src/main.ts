@@ -41,11 +41,13 @@ const root = document.querySelector<HTMLElement>('#app');
 if (!root) throw new Error('Application root #app was not found');
 
 let controller: AppController | undefined;
+let battleApp: { destroy(): void } | undefined;
 let fatalReported = false;
 
 const reportFatal = (error: unknown): void => {
   if (fatalReported) return;
   fatalReported = true;
+  battleApp?.destroy();
   const saved = controller?.emergencySave() ?? false;
   RuntimeRecovery.render(root, error, saved);
 };
@@ -64,6 +66,7 @@ window.addEventListener('unhandledrejection', (event) => {
   event.preventDefault();
   reportFatal(event.reason);
 });
+window.addEventListener('pagehide', () => battleApp?.destroy());
 
 const registerServiceWorker = async (): Promise<void> => {
   if (!import.meta.env.PROD || !('serviceWorker' in navigator)) return;
@@ -75,6 +78,14 @@ const registerServiceWorker = async (): Promise<void> => {
 };
 
 const bootstrap = async (): Promise<void> => {
+  const requestedMode = new URLSearchParams(window.location.search).get('mode');
+  if (requestedMode !== 'tycoon') {
+    const { BattleApp } = await import('./battle/BattleApp');
+    battleApp = new BattleApp(root);
+    battleApp.start();
+    return;
+  }
+
   LoadingScreen.render(root, '正在加载曙光新城', '准备地形、能源设施和城市运行状态。');
   AssetManager.load(globalAssetCatalog);
 
