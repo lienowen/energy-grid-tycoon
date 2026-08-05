@@ -78,6 +78,8 @@ const registerServiceWorker = async (): Promise<void> => {
 };
 
 const bootstrap = async (): Promise<void> => {
+  AssetManager.load(globalAssetCatalog);
+
   const requestedMode = new URLSearchParams(window.location.search).get('mode');
   if (requestedMode !== 'tycoon') {
     const { BattleApp } = await import('./battle/BattleApp');
@@ -87,7 +89,6 @@ const bootstrap = async (): Promise<void> => {
   }
 
   LoadingScreen.render(root, '正在加载曙光新城', '准备地形、能源设施和城市运行状态。');
-  AssetManager.load(globalAssetCatalog);
 
   const levels = levelData as unknown as LevelConfig[];
   const buildings = buildingData as unknown as BuildingConfig[];

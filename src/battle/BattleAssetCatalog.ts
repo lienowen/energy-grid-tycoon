@@ -1,13 +1,7 @@
+import { AssetManager } from '../resources/AssetManager';
 import type { PowerNodeConfig } from './types';
 
-const BATTERY_STORAGE_URL = '/assets/battle/battery_storage.png';
-const ELECTRIC_BEAST_LARGE_URL = '/assets/battle/electric_beast_large.png';
-const ELECTRIC_BEAST_SMALL_URL = '/assets/battle/electric_beast_small.png';
-const HOSPITAL_URL = '/assets/battle/hospital.png';
-const INDUSTRIAL_ZONE_URL = '/assets/battle/industrial_zone.png';
-const POWER_NODE_OVERLOAD_URL = '/assets/battle/power_node_overload.png';
-const RESIDENTIAL_URL = '/assets/battle/residential.png';
-const SHOPPING_MALL_URL = '/assets/battle/shopping_mall.png';
+const assetUrl = (id: string): string => AssetManager.get(id, '');
 
 export interface BattleSpriteSpec {
   url: string;
@@ -20,7 +14,7 @@ export interface BattleSpriteSpec {
 
 const FACILITY_SPRITES: Partial<Record<PowerNodeConfig['kind'], BattleSpriteSpec>> = {
   hospital: {
-    url: HOSPITAL_URL,
+    url: assetUrl('battle_hospital'),
     width: 19,
     height: 12.7,
     baselineOffset: 1.25,
@@ -28,7 +22,7 @@ const FACILITY_SPRITES: Partial<Record<PowerNodeConfig['kind'], BattleSpriteSpec
     cardY: -11.4
   },
   residential: {
-    url: RESIDENTIAL_URL,
+    url: assetUrl('battle_residential'),
     width: 20,
     height: 13.3,
     baselineOffset: 1.25,
@@ -36,7 +30,7 @@ const FACILITY_SPRITES: Partial<Record<PowerNodeConfig['kind'], BattleSpriteSpec
     cardY: -11.8
   },
   commercial: {
-    url: SHOPPING_MALL_URL,
+    url: assetUrl('battle_shopping_mall'),
     width: 18,
     height: 12,
     baselineOffset: 1.2,
@@ -44,7 +38,7 @@ const FACILITY_SPRITES: Partial<Record<PowerNodeConfig['kind'], BattleSpriteSpec
     cardY: -10.7
   },
   battery: {
-    url: BATTERY_STORAGE_URL,
+    url: assetUrl('battle_battery_storage'),
     width: 18.5,
     height: 12.3,
     baselineOffset: 1.2,
@@ -52,7 +46,7 @@ const FACILITY_SPRITES: Partial<Record<PowerNodeConfig['kind'], BattleSpriteSpec
     cardY: -11
   },
   industrial: {
-    url: INDUSTRIAL_ZONE_URL,
+    url: assetUrl('battle_industrial_zone'),
     width: 19,
     height: 12.7,
     baselineOffset: 1.25,
@@ -69,22 +63,22 @@ export interface MonsterSpriteSpec {
 }
 
 const MONSTER_SPRITES: Record<string, MonsterSpriteSpec> = {
-  crawler: { url: ELECTRIC_BEAST_SMALL_URL, width: 8.2, height: 5.5, hpY: -5.25 },
-  brute: { url: ELECTRIC_BEAST_LARGE_URL, width: 10.5, height: 7, hpY: -6.7 },
-  boss: { url: ELECTRIC_BEAST_LARGE_URL, width: 15.5, height: 10.3, hpY: -10 }
+  crawler: { url: assetUrl('battle_electric_beast_small'), width: 8.2, height: 5.5, hpY: -5.25 },
+  brute: { url: assetUrl('battle_electric_beast_large'), width: 10.5, height: 7, hpY: -6.7 },
+  boss: { url: assetUrl('battle_electric_beast_large'), width: 15.5, height: 10.3, hpY: -10 }
 };
 
 export const facilitySpriteFor = (kind: PowerNodeConfig['kind']): BattleSpriteSpec | undefined => FACILITY_SPRITES[kind];
 export const monsterSpriteFor = (archetypeId: string): MonsterSpriteSpec | undefined => MONSTER_SPRITES[archetypeId];
-export const overloadNodeSpriteUrl = POWER_NODE_OVERLOAD_URL;
+export const overloadNodeSpriteUrl = assetUrl('battle_power_node_overload');
 
 export const BATTLE_ASSET_URLS = [
-  BATTERY_STORAGE_URL,
-  ELECTRIC_BEAST_LARGE_URL,
-  ELECTRIC_BEAST_SMALL_URL,
-  HOSPITAL_URL,
-  INDUSTRIAL_ZONE_URL,
-  POWER_NODE_OVERLOAD_URL,
-  RESIDENTIAL_URL,
-  SHOPPING_MALL_URL
-] as const;
+  assetUrl('battle_battery_storage'),
+  assetUrl('battle_electric_beast_large'),
+  assetUrl('battle_electric_beast_small'),
+  assetUrl('battle_hospital'),
+  assetUrl('battle_industrial_zone'),
+  assetUrl('battle_power_node_overload'),
+  assetUrl('battle_residential'),
+  assetUrl('battle_shopping_mall')
+].filter((url): url is string => Boolean(url));

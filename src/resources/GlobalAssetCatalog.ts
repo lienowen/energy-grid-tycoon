@@ -12,6 +12,7 @@ import {
 import { city01UnifiedSupportCatalog } from './City01UnifiedSupportCatalog';
 import { city01UnifiedGridCatalog } from './City01UnifiedGridCatalog';
 import { city01FacilityP0Catalog } from './City01FacilityP0Catalog';
+import { city01BattleAssetCatalog } from './City01BattleAssetCatalog';
 import type { AssetCatalog, AssetEntry } from './AssetManager';
 
 const legacyCatalog = legacyCatalogData as unknown as AssetCatalog;
@@ -73,7 +74,8 @@ export const globalAssetCatalog: AssetCatalog = {
     city01UnifiedFacilityCatalog.schemaVersion,
     city01UnifiedSupportCatalog.schemaVersion,
     city01UnifiedGridCatalog.schemaVersion,
-    city01FacilityP0Catalog.schemaVersion
+    city01FacilityP0Catalog.schemaVersion,
+    city01BattleAssetCatalog.schemaVersion
   ),
   budgetBytes: (legacyCatalog.budgetBytes ?? 0)
     + (v5Catalog.budgetBytes ?? 100_000_000)
@@ -84,7 +86,8 @@ export const globalAssetCatalog: AssetCatalog = {
     + (city01UnifiedFacilityCatalog.budgetBytes ?? 12_000_000)
     + (city01UnifiedSupportCatalog.budgetBytes ?? 5_000_000)
     + (city01UnifiedGridCatalog.budgetBytes ?? 3_000_000)
-    + (city01FacilityP0Catalog.budgetBytes ?? 14_000_000),
+    + (city01FacilityP0Catalog.budgetBytes ?? 14_000_000)
+    + (city01BattleAssetCatalog.budgetBytes ?? 30_000_000),
   entries: mergeEntries(
     legacyCatalog,
     v5Catalog,
@@ -95,6 +98,7 @@ export const globalAssetCatalog: AssetCatalog = {
     city01UnifiedFacilityCatalog,
     city01UnifiedSupportCatalog,
     city01UnifiedGridCatalog,
-    city01FacilityP0Catalog
+    city01FacilityP0Catalog,
+    city01BattleAssetCatalog
   )
 };
