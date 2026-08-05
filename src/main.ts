@@ -41,7 +41,7 @@ const root = document.querySelector<HTMLElement>('#app');
 if (!root) throw new Error('Application root #app was not found');
 
 let controller: AppController | undefined;
-let battleApp: { destroy(): void } | undefined;
+let battleApp: { start(): void; destroy(): void } | undefined;
 let fatalReported = false;
 
 const reportFatal = (error: unknown): void => {

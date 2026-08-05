@@ -1,20 +1,19 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from 'pixi.js';
 
-export type DistrictVisualState = "offline" | "online" | "danger";
+export type DistrictVisualState = 'offline' | 'online' | 'danger';
 
 export class DistrictRenderer extends PIXI.Container {
-
   private body: PIXI.Graphics;
   private glow: PIXI.Graphics;
-  private state: DistrictVisualState = "offline";
+  private state: DistrictVisualState = 'offline';
   private pulse = 0;
 
   constructor(
-    public id: string,
-    public name: string,
-    public x: number,
-    public y: number,
-    public size = 60
+    public readonly id: string,
+    public readonly name: string,
+    x: number,
+    y: number,
+    public readonly size = 60
   ) {
     super();
 
@@ -28,13 +27,13 @@ export class DistrictRenderer extends PIXI.Container {
     this.draw();
   }
 
-  setState(state: DistrictVisualState) {
+  setState(state: DistrictVisualState): void {
     this.state = state;
     this.draw();
   }
 
-  update(delta: number) {
-    if (this.state === "danger") {
+  update(delta: number): void {
+    if (this.state === 'danger') {
       this.pulse += delta * 0.01;
       this.alpha = 0.75 + Math.sin(this.pulse) * 0.25;
     } else {
@@ -42,17 +41,17 @@ export class DistrictRenderer extends PIXI.Container {
     }
   }
 
-  private draw() {
+  private draw(): void {
     this.body.clear();
     this.glow.clear();
 
     let color = 0x333333;
 
-    if (this.state === "online") {
+    if (this.state === 'online') {
       color = 0x00d9ff;
     }
 
-    if (this.state === "danger") {
+    if (this.state === 'danger') {
       color = 0xff355d;
     }
 
