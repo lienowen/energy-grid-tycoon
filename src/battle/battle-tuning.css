@@ -51,6 +51,45 @@
   opacity: 0.72;
 }
 
+/* Boss must read as a different threat tier even when several brutes are still alive. */
+.battle-monster--boss .battle-monster__sprite {
+  transform: scale(1.38) !important;
+  filter:
+    brightness(1.08)
+    drop-shadow(0 1.7px 1.8px rgba(0, 0, 0, 0.98))
+    drop-shadow(0 0 1.9px rgba(255, 48, 32, 1))
+    drop-shadow(0 0 3.2px rgba(255, 156, 49, 0.56)) !important;
+  animation: battle-boss-breathe 0.7s ease-in-out infinite alternate !important;
+}
+
+.battle-monster--boss .battle-monster__danger {
+  fill: rgba(255, 43, 25, 0.17) !important;
+  stroke: rgba(255, 157, 54, 0.98) !important;
+  stroke-width: 0.36 !important;
+  stroke-dasharray: 1.05 0.42 !important;
+  opacity: 1 !important;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: battle-boss-threat-ring 0.72s ease-in-out infinite alternate !important;
+}
+
+.battle-monster--boss .battle-monster__hp-bg,
+.battle-monster--boss .battle-monster__hp {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scaleX(1.22);
+}
+
+@keyframes battle-boss-breathe {
+  from { transform: scale(1.33); }
+  to { transform: translateY(-0.16px) scale(1.43); }
+}
+
+@keyframes battle-boss-threat-ring {
+  from { transform: scale(0.9); opacity: 0.62; }
+  to { transform: scale(1.12); opacity: 1; }
+}
+
 @media (max-width: 760px) {
   .battle-facility-sprite--generator {
     transform: translate(0.45px, -0.55px) scale(0.96) !important;
@@ -58,5 +97,14 @@
 
   .battle-node-wrap--underpowered:not(.battle-node-wrap--hospital-blackout) .battle-node-halo {
     opacity: 0.16 !important;
+  }
+
+  .battle-monster--boss .battle-monster__sprite {
+    transform: scale(1.24) !important;
+  }
+
+  @keyframes battle-boss-breathe {
+    from { transform: scale(1.2); }
+    to { transform: translateY(-0.12px) scale(1.29); }
   }
 }
