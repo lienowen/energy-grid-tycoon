@@ -13,6 +13,7 @@ import './ui/game-shell.css';
 import './ui/gameplay-polish.css';
 import './ui/city01-safe-area.css';
 import './ui/city01-art-v2.css';
+import './battle/battle-pack.css';
 import buildingData from './data/buildings.json';
 import eventData from './data/events.json';
 import levelData from './data/levels.json';
