@@ -58,7 +58,7 @@ jobs:
 
       - name: Capture city and grid views
         env:
-          APP_URL: http://127.0.0.1:4173/?mode=tycoon&renderer=immersive
+          APP_URL: http://127.0.0.1:4173/?renderer=immersive
           SCREENSHOT_DIR: artifacts/commercial-slice
         run: |
           mkdir -p "$SCREENSHOT_DIR"
