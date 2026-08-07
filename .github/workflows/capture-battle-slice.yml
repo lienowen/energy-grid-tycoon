@@ -1,0 +1,70 @@
+name: Capture grid defense battle slice
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - scripts/capture-battle-slice.mjs
+      - .github/workflows/capture-battle-slice.yml
+      - public/assets/energy_grid_asset_pack/**
+      - src/battle/**
+      - src/resources/City01GridDefenseAssetCatalog.ts
+      - src/resources/GlobalAssetCatalog.ts
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install and build
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+
+      - name: Start production preview
+        run: |
+          nohup npm run preview -- --host 127.0.0.1 --port 4173 > /tmp/battle-preview.log 2>&1 &
+          for attempt in $(seq 1 80); do
+            if curl --fail --silent http://127.0.0.1:4173/ > /dev/null; then
+              exit 0
+            fi
+            sleep 0.25
+          done
+          cat /tmp/battle-preview.log
+          exit 1
+
+      - name: Capture battle states
+        env:
+          APP_URL: http://127.0.0.1:4173/
+          SCREENSHOT_DIR: artifacts/battle-slice
+        run: |
+          mkdir -p "$SCREENSHOT_DIR"
+          CHROME_PATH="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          if [ -z "$CHROME_PATH" ]; then
+            echo "No Chrome executable found"
+            exit 1
+          fi
+          export CHROME_PATH
+          node scripts/capture-battle-slice.mjs
+
+      - name: Upload battle screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: grid-defense-battle-slice-${{ github.sha }}
+          path: artifacts/battle-slice
+          if-no-files-found: warn
+          retention-days: 14
