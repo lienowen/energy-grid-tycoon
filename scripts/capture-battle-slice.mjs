@@ -189,9 +189,11 @@ try {
   await sleep(500);
   await capture('04-mobile-wave-two');
 
-  // Return to desktop and wait for the boss spawn (wave 3 at 65s + 8s delay).
+  // Return to desktop and wait until the boss is actually rendered, not merely scheduled.
   await setViewport(1440, 1080, false);
   await sleep(44500);
+  await waitForSelector('.battle-monster--boss', 30000);
+  await sleep(500);
   await capture('05-boss-incoming');
 
   const diagnostics = await evaluate(`({
