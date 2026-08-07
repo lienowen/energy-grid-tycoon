@@ -1,0 +1,2 @@
+Transparency cleanup pass prepared from the original City-01 grid defense concept sheet.
+Preserves existing asset canvas dimensions while removing dark sheet backgrounds and stray labels.
