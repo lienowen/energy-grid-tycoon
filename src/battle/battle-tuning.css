@@ -1,0 +1,62 @@
+/* First-level hierarchy pass based on automated battle screenshots. */
+
+/* Non-critical districts should read as dimmed, not as giant emergency targets. */
+.battle-node-wrap--underpowered:not(.battle-node-wrap--hospital-blackout) .battle-node-halo {
+  opacity: 0.24 !important;
+  transform: scale(0.52) !important;
+  stroke: rgba(255, 111, 73, 0.42) !important;
+}
+
+.battle-node-wrap--underpowered:not(.battle-node-wrap--hospital-blackout) .battle-node {
+  opacity: 0.46 !important;
+  transform: scale(0.54) !important;
+  filter: drop-shadow(0 0 0.45px rgba(255, 91, 58, 0.5)) !important;
+}
+
+/* The hospital is the loss condition, so its outage alarm remains unmistakable. */
+.battle-node-wrap--hospital-blackout .battle-node-halo {
+  opacity: 0.96 !important;
+  transform: scale(0.92) !important;
+  stroke: rgba(255, 76, 54, 0.96) !important;
+  animation: battle-hospital-node-alarm 0.58s ease-in-out infinite alternate;
+}
+
+.battle-node-wrap--hospital-blackout .battle-node {
+  opacity: 1 !important;
+  transform: scale(0.82) !important;
+  filter: drop-shadow(0 0 1.2px rgba(255, 58, 43, 0.96)) !important;
+}
+
+@keyframes battle-hospital-node-alarm {
+  from { opacity: 0.48; transform: scale(0.76); }
+  to { opacity: 1; transform: scale(0.98); }
+}
+
+/* Keep the lower-left plant readable above the bottom controls without moving its graph node. */
+.battle-facility-sprite--generator {
+  transform: translate(0.7px, -0.9px) scale(1.02) !important;
+}
+
+.battle-node-wrap--selected .battle-facility-sprite--generator,
+.battle-node-wrap--generator:hover .battle-facility-sprite--generator {
+  transform: translate(0.7px, -1.05px) scale(1.07) !important;
+}
+
+/* Rift glow should not compete with an active overload hit. */
+.battle-facility-sprite--rift {
+  opacity: 0.86;
+}
+
+.battle-edge-target:has(.battle-line--overload) + .battle-node-wrap--rift .battle-facility-sprite--rift {
+  opacity: 0.72;
+}
+
+@media (max-width: 760px) {
+  .battle-facility-sprite--generator {
+    transform: translate(0.45px, -0.55px) scale(0.96) !important;
+  }
+
+  .battle-node-wrap--underpowered:not(.battle-node-wrap--hospital-blackout) .battle-node-halo {
+    opacity: 0.16 !important;
+  }
+}
