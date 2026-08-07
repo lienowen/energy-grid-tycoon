@@ -1,7 +1,9 @@
+import { BATTLE_ASSET_URLS, facilitySpriteFor, monsterSpriteFor, overloadNodeSpriteUrl } from './BattleAssetCatalog';
 import { BattleEngine } from './BattleEngine';
 import { CITY01_SIEGE_LEVEL } from './levels/city01Siege';
 import type { BattleSnapshot, EdgeRuntimeState, MonsterRuntimeState, NodeRuntimeState, PowerNodeConfig } from './types';
 import './battle.css';
+import './battle-assets.css';
 
 const level = CITY01_SIEGE_LEVEL;
 const nodeById = new Map(level.nodes.map((node) => [node.id, node] as const));
@@ -38,6 +40,20 @@ const nodeClass = (node: NodeRuntimeState, config: PowerNodeConfig): string => {
   const classes = ['battle-node', `battle-node--${config.kind}`];
   if (node.operatingState === 'offline') classes.push('battle-node--offline');
   if (node.powerPercent < 98 && (config.demandMw ?? 0) > 0) classes.push('battle-node--underpowered');
+  return classes.join(' ');
+};
+
+const nodeWrapClass = (
+  node: NodeRuntimeState,
+  config: PowerNodeConfig,
+  hasSprite: boolean,
+  selected: boolean
+): string => {
+  const classes = ['battle-node-wrap'];
+  if (hasSprite) classes.push('battle-node-wrap--has-sprite');
+  if (selected) classes.push('battle-node-wrap--selected');
+  if (node.operatingState === 'offline') classes.push('battle-node-wrap--offline');
+  if (node.powerPercent < 98 && (config.demandMw ?? 0) > 0) classes.push('battle-node-wrap--underpowered');
   return classes.join(' ');
 };
 
@@ -82,6 +98,7 @@ export class BattleApp {
     document.title = `${level.name} · Energy Grid Tycoon`;
     this.root.className = 'battle-root';
     this.root.addEventListener('click', this.handleClick);
+    this.preloadAssets();
     this.engine.start();
     this.render(this.engine.snapshot());
     this.lastFrameAt = performance.now();
@@ -92,6 +109,14 @@ export class BattleApp {
     cancelAnimationFrame(this.frameId);
     this.root.removeEventListener('click', this.handleClick);
     this.root.replaceChildren();
+  }
+
+  private preloadAssets(): void {
+    for (const url of BATTLE_ASSET_URLS) {
+      const image = new Image();
+      image.decoding = 'async';
+      image.src = url;
+    }
   }
 
   private readonly loop = (now: number): void => {
@@ -161,9 +186,15 @@ export class BattleApp {
       const from = nodeById.get(edge.from);
       const to = nodeById.get(edge.to);
       if (!runtime || !from || !to) return '';
+      const midpointX = (from.x + to.x) / 2;
+      const midpointY = (from.y + to.y) / 2;
+      const overloadMarker = runtime.loadState === 'overload'
+        ? `<image class="battle-overload-node" href="${escapeHtml(overloadNodeSpriteUrl)}" x="${midpointX - 3.5}" y="${midpointY - 2.35}" width="7" height="4.7" preserveAspectRatio="xMidYMid meet" />`
+        : '';
       return `<g data-edge-id="${edge.id}" class="battle-edge-target">
         <line class="battle-line-shadow" x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" />
         <line class="${lineClass(runtime)}" x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" />
+        ${overloadMarker}
         <line class="battle-line-hit${edge.id === this.selectedEdgeId ? ' battle-line-hit--selected' : ''}" x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" />
       </g>`;
     }).join('');
@@ -171,17 +202,28 @@ export class BattleApp {
     const nodeMarkup = level.nodes.map((config) => {
       const runtime = nodes.get(config.id);
       if (!runtime) return '';
+      const sprite = facilitySpriteFor(config.kind);
       const showCard = config.kind !== 'junction' && !config.id.startsWith('spawn-');
       const demand = config.demandMw ?? 0;
       const status = runtime.operatingState === 'offline'
         ? '已关闭'
         : demand > 0 ? `供电 ${round(runtime.powerPercent)}%`
           : config.kind === 'generator' ? '运行中' : config.kind === 'battery' ? `储能 ${round(batteryPercent)}%` : '已接通';
-      return `<g class="battle-node-wrap${config.id === this.selectedNodeId ? ' battle-node-wrap--selected' : ''}" data-node-id="${config.id}" transform="translate(${config.x} ${config.y})">
-        <circle class="battle-node-halo" r="3.4" />
-        <circle class="${nodeClass(runtime, config)}" r="2.05" />
-        <text class="battle-node-icon" text-anchor="middle" y="0.72">${escapeHtml(iconFor(config.kind))}</text>
-        ${showCard ? `<g class="facility-card" transform="translate(3.1 -5.5)">
+      const spriteMarkup = sprite
+        ? `<rect class="battle-facility-hitbox" x="${-sprite.width / 2}" y="${-sprite.height + sprite.baselineOffset}" width="${sprite.width}" height="${sprite.height}" rx="1.2" />
+          <image class="battle-facility-sprite battle-facility-sprite--${config.kind}" href="${escapeHtml(sprite.url)}" x="${-sprite.width / 2}" y="${-sprite.height + sprite.baselineOffset}" width="${sprite.width}" height="${sprite.height}" preserveAspectRatio="xMidYMax meet" />`
+        : '';
+      const cardTransform = sprite
+        ? `translate(${sprite.cardX} ${sprite.cardY})`
+        : 'translate(3.1 -5.5)';
+      const haloRadius = sprite ? 2.45 : 3.4;
+      const markerRadius = sprite ? 1.35 : 2.05;
+      return `<g class="${nodeWrapClass(runtime, config, Boolean(sprite), config.id === this.selectedNodeId)}" data-node-id="${config.id}" transform="translate(${config.x} ${config.y})">
+        ${spriteMarkup}
+        <circle class="battle-node-halo" r="${haloRadius}" />
+        <circle class="${nodeClass(runtime, config)}" r="${markerRadius}" />
+        <text class="battle-node-icon" text-anchor="middle" y="${sprite ? 0.5 : 0.72}">${escapeHtml(iconFor(config.kind))}</text>
+        ${showCard ? `<g class="facility-card" transform="${cardTransform}">
           <rect width="12.2" height="7.4" rx="1" />
           <text class="facility-card__title" x="1" y="2">${escapeHtml(config.label)}</text>
           <text class="facility-card__value" x="1" y="4.2">${demand > 0 ? `${demand} MW` : config.kind === 'generator' ? `${config.supplyMw ?? 0} MW` : `${round(snapshot.batteryEnergyMwh)} MWh`}</text>
@@ -193,9 +235,22 @@ export class BattleApp {
     const monsterMarkup = snapshot.monsters.filter((monster) => monster.alive).map((monster) => {
       const position = monsterPosition(monster);
       const archetype = monsterById.get(monster.archetypeId);
+      const sprite = monsterSpriteFor(monster.archetypeId);
+      const hpRatio = clampPercent(monster.hp / Math.max(1, monster.maxHp) * 100) / 100;
+      const dangerRadius = 3.4 * ((archetype?.radius ?? 8) / 8);
+      const bossClass = monster.archetypeId === 'boss' ? ' battle-monster--boss' : '';
+      if (sprite) {
+        const hpWidth = 6 * hpRatio;
+        return `<g class="battle-monster${bossClass}" transform="translate(${position.x} ${position.y})">
+          <circle class="battle-monster__danger" r="${dangerRadius}" />
+          <image class="battle-monster__sprite" href="${escapeHtml(sprite.url)}" x="${-sprite.width / 2}" y="${-sprite.height + 1.15}" width="${sprite.width}" height="${sprite.height}" preserveAspectRatio="xMidYMax meet" />
+          <rect class="battle-monster__hp-bg" x="-3" y="${sprite.hpY}" width="6" height=".42" rx=".2" />
+          <rect class="battle-monster__hp" x="-3" y="${sprite.hpY}" width="${hpWidth}" height=".42" rx=".2" />
+        </g>`;
+      }
       const scale = (archetype?.radius ?? 8) / 8;
-      const hpWidth = 5 * clampPercent(monster.hp / Math.max(1, monster.maxHp) * 100) / 100;
-      return `<g class="battle-monster" transform="translate(${position.x} ${position.y}) scale(${scale})">
+      const hpWidth = 5 * hpRatio;
+      return `<g class="battle-monster${bossClass}" transform="translate(${position.x} ${position.y}) scale(${scale})">
         <circle class="battle-monster__danger" r="3.4" />
         <path class="battle-monster__body" d="M-1.8 .7 L-2.5 -.6 L-1.2 -1.9 L0 -1.35 L1.2 -1.9 L2.5 -.6 L1.8 .7 L.9 1.8 L0 1.25 L-.9 1.8 Z" />
         <circle class="battle-monster__eye" cx="-.65" cy="-.25" r=".22" />

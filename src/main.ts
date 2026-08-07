@@ -41,7 +41,7 @@ const root = document.querySelector<HTMLElement>('#app');
 if (!root) throw new Error('Application root #app was not found');
 
 let controller: AppController | undefined;
-let battleApp: { destroy(): void } | undefined;
+let battleApp: { start(): void; destroy(): void } | undefined;
 let fatalReported = false;
 
 const reportFatal = (error: unknown): void => {
@@ -78,6 +78,8 @@ const registerServiceWorker = async (): Promise<void> => {
 };
 
 const bootstrap = async (): Promise<void> => {
+  AssetManager.load(globalAssetCatalog);
+
   const requestedMode = new URLSearchParams(window.location.search).get('mode');
   if (requestedMode !== 'tycoon') {
     const { BattleApp } = await import('./battle/BattleApp');
@@ -87,7 +89,6 @@ const bootstrap = async (): Promise<void> => {
   }
 
   LoadingScreen.render(root, '正在加载曙光新城', '准备地形、能源设施和城市运行状态。');
-  AssetManager.load(globalAssetCatalog);
 
   const levels = levelData as unknown as LevelConfig[];
   const buildings = buildingData as unknown as BuildingConfig[];
