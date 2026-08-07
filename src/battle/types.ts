@@ -114,6 +114,7 @@ export interface MonsterRuntimeState {
   path: PowerNodeId[];
   reachedTarget: boolean;
   alive: boolean;
+  defeatedAtSeconds?: number;
 }
 
 export interface BattleSnapshot {
