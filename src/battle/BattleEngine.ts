@@ -24,6 +24,7 @@ interface ScheduledSpawn {
 }
 
 const clamp = (value: number, min: number, max: number): number => Math.max(min, Math.min(max, value));
+const MONSTER_DEATH_PRESENTATION_SECONDS = 0.9;
 
 export class BattleEngine {
   private readonly nodeById: Map<PowerNodeId, PowerNodeConfig>;
@@ -172,6 +173,13 @@ export class BattleEngine {
     if (runtime.operatingState !== 'online') return { ok: false, message: '断开的线路不能过载。' };
     if (runtime.overloadRemainingSeconds > 0) return { ok: false, message: '该线路正在过载。' };
 
+    const targetMonsters = [...this.monsters.values()].filter((monster) => (
+      monster.alive && monster.currentEdgeId === edgeId
+    ));
+    if (targetMonsters.length === 0) {
+      return { ok: false, message: '当前线路没有噬电兽，等怪物进入线路后再过载。' };
+    }
+
     const batteries = this.level.nodes.filter((node) => (node.batteryCapacityMwh ?? 0) > 0);
     const availableEnergy = batteries.reduce((sum, node) => (
       sum + (this.nodeRuntimeById.get(node.id)?.batteryEnergyMwh ?? 0)
@@ -191,7 +199,7 @@ export class BattleEngine {
 
     runtime.overloadRemainingSeconds = this.level.overloadDurationSeconds;
     runtime.loadState = 'overload';
-    this.message = '线路强制过载：电击路径上的噬电兽！';
+    this.message = `线路强制过载：命中 ${targetMonsters.length} 只噬电兽！`;
     return { ok: true, message: this.message };
   }
 
@@ -262,11 +270,13 @@ export class BattleEngine {
       for (const monster of this.monsters.values()) {
         if (!monster.alive || monster.currentEdgeId !== runtime.id) continue;
         const archetype = this.monsterById.get(monster.archetypeId);
-        monster.hp = Math.max(0, monster.hp - this.level.overloadDamagePerSecond * (archetype?.overloadDamageMultiplier ?? 1) * deltaSeconds);
+        monster.hp = Math.max(
+          0,
+          monster.hp - this.level.overloadDamagePerSecond * (archetype?.overloadDamageMultiplier ?? 1) * deltaSeconds
+        );
         if (monster.hp <= 0) {
           monster.alive = false;
-          monster.currentEdgeId = undefined;
-          monster.nextNodeId = undefined;
+          monster.defeatedAtSeconds = this.elapsedSeconds;
           this.message = `${archetype?.label ?? '噬电兽'}被过载电流消灭。`;
         }
       }
@@ -408,7 +418,12 @@ export class BattleEngine {
 
     const allSpawned = this.scheduledSpawns.every((spawn) => spawn.consumed);
     const livingMonsters = [...this.monsters.values()].some((monster) => monster.alive);
-    if (allSpawned && !livingMonsters) {
+    const deathPresentationRunning = [...this.monsters.values()].some((monster) => (
+      !monster.alive
+      && monster.defeatedAtSeconds !== undefined
+      && this.elapsedSeconds - monster.defeatedAtSeconds < MONSTER_DEATH_PRESENTATION_SECONDS
+    ));
+    if (allSpawned && !livingMonsters && !deathPresentationRunning) {
       this.status = 'victory';
       this.message = '所有噬电兽已清除，城市供电恢复稳定！';
     }
