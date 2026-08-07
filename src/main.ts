@@ -83,6 +83,8 @@ const bootstrap = async (): Promise<void> => {
 
   const requestedMode = new URLSearchParams(window.location.search).get('mode');
   if (requestedMode !== 'tycoon') {
+    const { prepareGridDefenseAssets } = await import('./battle/BattleAssetPreprocessor');
+    await prepareGridDefenseAssets();
     const { BattleApp } = await import('./battle/BattleApp');
     battleApp = new BattleApp(root);
     battleApp.start();
