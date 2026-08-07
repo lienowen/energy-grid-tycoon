@@ -8,6 +8,7 @@ on:
       - scripts/capture-battle-slice.mjs
       - .github/workflows/capture-battle-slice.yml
       - public/assets/energy_grid_asset_pack/**
+      - src/main.ts
       - src/battle/**
       - src/resources/City01GridDefenseAssetCatalog.ts
       - src/resources/GlobalAssetCatalog.ts
