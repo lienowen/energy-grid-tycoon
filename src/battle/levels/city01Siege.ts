@@ -22,7 +22,7 @@ export const CITY01_SIEGE_LEVEL: BattleLevelConfig = {
     { id: 'substation', label: '地铁站', kind: 'substation', x: 39, y: 62, demandMw: 45, priority: 50 },
     {
       id: 'battery', label: '储能站', kind: 'battery', x: 48, y: 75,
-      batteryCapacityMwh: 80, batteryInitialMwh: 32,
+      batteryCapacityMwh: 80, batteryInitialMwh: 48,
       batteryMaxDischargeMw: 70, batteryMaxChargeMw: 40,
       lockedOnline: true
     },
@@ -53,7 +53,7 @@ export const CITY01_SIEGE_LEVEL: BattleLevelConfig = {
   monsters: [
     { id: 'crawler', label: '噬电幼兽', maxHp: 90, speed: 9, drainMw: 8, overloadDamageMultiplier: 1.15, radius: 8 },
     { id: 'brute', label: '装甲噬电兽', maxHp: 190, speed: 6, drainMw: 14, overloadDamageMultiplier: 0.8, radius: 11 },
-    { id: 'boss', label: '大型噬电兽', maxHp: 520, speed: 4.2, drainMw: 28, overloadDamageMultiplier: 0.65, radius: 16 }
+    { id: 'boss', label: '大型噬电兽', maxHp: 520, speed: 4.2, drainMw: 28, overloadDamageMultiplier: 0.78, radius: 16 }
   ],
   waves: [
     {
