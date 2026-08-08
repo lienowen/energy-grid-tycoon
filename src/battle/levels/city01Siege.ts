@@ -5,7 +5,7 @@ export const CITY01_SIEGE_LEVEL: BattleLevelConfig = {
   name: '噬电兽围城',
   subtitle: '用电力做武器，把怪物引入陷阱，守护医院。',
   overloadDurationSeconds: 3,
-  overloadDamagePerSecond: 48,
+  overloadDamagePerSecond: 60,
   overloadEnergyCostMwh: 5,
   overloadCooldownSeconds: 8,
   overloadHeatGainPercent: 60,
