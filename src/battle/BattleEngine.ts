@@ -214,6 +214,21 @@ export class BattleEngine {
       remainingCost -= consumed;
     }
 
+    let impactKills = 0;
+    const impactDamage = Math.max(0, this.level.overloadImpactDamage ?? 0);
+    if (impactDamage > 0) {
+      for (const monster of targetMonsters) {
+        const archetype = this.monsterById.get(monster.archetypeId);
+        const damage = impactDamage * (archetype?.overloadDamageMultiplier ?? 1);
+        monster.hp = Math.max(0, monster.hp - damage);
+        if (monster.hp <= 0 && monster.alive) {
+          monster.alive = false;
+          monster.defeatedAtSeconds = this.elapsedSeconds;
+          impactKills += 1;
+        }
+      }
+    }
+
     runtime.overloadRemainingSeconds = this.level.overloadDurationSeconds;
     runtime.overloadCooldownRemainingSeconds = this.level.overloadCooldownSeconds;
     runtime.heatPercent = clamp(runtime.heatPercent + this.level.overloadHeatGainPercent, 0, 150);
@@ -221,7 +236,8 @@ export class BattleEngine {
     const heatWarning = runtime.heatPercent >= 100
       ? ' 线路已进入熔断危险！'
       : runtime.heatPercent >= 75 ? ' 线路温度过高。' : '';
-    this.message = `线路强制过载：命中 ${targetMonsters.length} 只噬电兽！${heatWarning}`;
+    const killText = impactKills > 0 ? `，瞬间击杀 ${impactKills} 只` : '';
+    this.message = `线路强制过载：冲击命中 ${targetMonsters.length} 只噬电兽${killText}！${heatWarning}`;
     return { ok: true, message: this.message };
   }
 
