@@ -50,6 +50,7 @@ const lineClass = (edge: EdgeRuntimeState): string => {
 };
 
 const edgeStatusText = (edge: EdgeRuntimeState): string => {
+  if (edge.bossLockRemainingSeconds > 0) return `兽王锁定 ${Math.ceil(edge.bossLockRemainingSeconds)}s`;
   if (edge.operatingState === 'broken') return `损坏 · 修复 ${Math.ceil(edge.repairRemainingSeconds)}s`;
   if (edge.operatingState === 'offline') return '断开';
   if (edge.overloadRemainingSeconds > 0) return `过载 ${edge.overloadRemainingSeconds.toFixed(1)}s`;
@@ -222,10 +223,18 @@ export class BattleApp {
       const overloadMarker = runtime.loadState === 'overload' && overloadNodeSpriteUrl
         ? `<image class="battle-overload-node" href="${escapeHtml(overloadNodeSpriteUrl)}" x="${midpointX - 3.5}" y="${midpointY - 2.35}" width="7" height="4.7" preserveAspectRatio="xMidYMid meet" />`
         : '';
-      return `<g data-edge-id="${edge.id}" class="battle-edge-target">
+      const bossLockMarker = runtime.bossLockRemainingSeconds > 0
+        ? `<g class="battle-boss-lock" transform="translate(${midpointX} ${midpointY - 1.1})">
+            <circle r="2.2" />
+            <text class="battle-boss-lock__icon" text-anchor="middle" y=".35">锁</text>
+            <text class="battle-boss-lock__time" text-anchor="middle" y="2.9">${Math.ceil(runtime.bossLockRemainingSeconds)}s</text>
+          </g>`
+        : '';
+      const lockedClass = runtime.bossLockRemainingSeconds > 0 ? ' battle-edge-target--boss-locked' : '';
+      return `<g data-edge-id="${edge.id}" class="battle-edge-target${lockedClass}">
         <line class="battle-line-shadow" x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" />
         <line class="${lineClass(runtime)}" x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" />
-        ${overlayMarkup}${overloadMarker}
+        ${overlayMarkup}${overloadMarker}${bossLockMarker}
         <line class="battle-line-hit${edge.id === this.selectedEdgeId ? ' battle-line-hit--selected' : ''}" x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" />
       </g>`;
     }).join('');
@@ -271,12 +280,15 @@ export class BattleApp {
       const archetype = monsterById.get(monster.archetypeId);
       const currentEdge = monster.currentEdgeId ? edges.get(monster.currentEdgeId) : undefined;
       const beingOverloaded = monster.alive && currentEdge?.loadState === 'overload';
+      const bossCasting = monster.archetypeId === 'boss'
+        && monster.abilityActiveUntilSeconds !== undefined
+        && monster.abilityActiveUntilSeconds > snapshot.elapsedSeconds;
       let visualState: MonsterVisualState = 'walk';
       if (!monster.alive) visualState = 'death';
       else if (beingOverloaded && monster.archetypeId === 'crawler') visualState = 'stunned';
       else if (beingOverloaded && monster.archetypeId === 'brute') visualState = 'break-armor';
       else if (beingOverloaded) visualState = 'hit';
-      else if (monster.archetypeId === 'boss' && monster.reachedTarget) visualState = 'roar';
+      else if (bossCasting || (monster.archetypeId === 'boss' && monster.reachedTarget)) visualState = 'roar';
       const sprite = monsterSpriteFor(monster.archetypeId, visualState);
       const hpRatio = clampPercent(monster.hp / Math.max(1, monster.maxHp) * 100) / 100;
       const dangerRadius = 3.4 * ((archetype?.radius ?? 8) / 8);
@@ -317,6 +329,16 @@ export class BattleApp {
       : selectedEdgeRuntime
         ? `${round(selectedEdgeRuntime.loadPercent)}% 负载 · 温度 ${round(selectedEdgeRuntime.heatPercent)}% · ${edgeStatusText(selectedEdgeRuntime)}`
         : '点击建筑或电力线路进行操作';
+    const switchActionHint = selectedEdgeRuntime
+      ? selectedEdgeRuntime.bossLockRemainingSeconds > 0
+        ? `兽王锁定 ${Math.ceil(selectedEdgeRuntime.bossLockRemainingSeconds)}s`
+        : selectedEdgeRuntime.operatingState === 'broken'
+          ? `线路损坏 · ${Math.ceil(selectedEdgeRuntime.repairRemainingSeconds)}s 修复`
+          : '改变行进路径'
+      : '先选中可切换线路';
+    const switchActionClass = selectedEdgeRuntime && (
+      selectedEdgeRuntime.bossLockRemainingSeconds > 0 || selectedEdgeRuntime.operatingState === 'broken'
+    ) ? ' battle-action--locked' : '';
     const overloadActionHint = selectedEdgeRuntime
       ? selectedEdgeRuntime.operatingState === 'broken'
         ? `线路损坏 · ${Math.ceil(selectedEdgeRuntime.repairRemainingSeconds)}s 修复`
@@ -371,7 +393,7 @@ export class BattleApp {
       <section class="battle-selection"><strong>${selectedNode ? escapeHtml(selectedNode.label) : this.selectedEdgeId ? '已选择线路' : '战术控制'}</strong><span>${selectionText}</span></section>
       <nav class="battle-actions">
         <button data-action="toggle-zone" class="yellow">${assetImg(BATTLE_UI_ASSETS.closeZone, 'battle-action-icon')}<strong>开关区域</strong><span>吸引或切断怪物</span></button>
-        <button data-action="switch-route">${assetImg(BATTLE_UI_ASSETS.switchRoute, 'battle-action-icon')}<strong>切换线路</strong><span>改变行进路径</span></button>
+        <button data-action="switch-route" class="${switchActionClass.trim()}">${assetImg(BATTLE_UI_ASSETS.switchRoute, 'battle-action-icon')}<strong>切换线路</strong><span>${escapeHtml(switchActionHint)}</span></button>
         <button data-action="overload" class="red${overloadActionClass}">${assetImg(BATTLE_UI_ASSETS.forceOverload, 'battle-action-icon')}<strong>强制过载</strong><span>${escapeHtml(overloadActionHint)}</span></button>
         <button data-action="tycoon" class="muted"><b>⌂</b><strong>旧版城市</strong><span>返回经营模式</span></button>
       </nav>
