@@ -26,7 +26,10 @@ const runtimeForEdges = (edges: readonly PowerEdgeConfig[]): Map<string, EdgeRun
     loadMw: 0,
     loadPercent: 0,
     loadState: 'normal' as const,
-    overloadRemainingSeconds: 0
+    overloadRemainingSeconds: 0,
+    overloadCooldownRemainingSeconds: 0,
+    heatPercent: 0,
+    repairRemainingSeconds: 0
   }])
 );
 
