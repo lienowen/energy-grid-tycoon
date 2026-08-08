@@ -52,7 +52,7 @@ export const CITY01_SIEGE_LEVEL: BattleLevelConfig = {
     { id: 'spawn-east-edge', from: 'spawn-east', to: 'east-junction', capacityMw: 120 }
   ],
   monsters: [
-    { id: 'crawler', label: '噬电幼兽', maxHp: 85, speed: 9, drainMw: 8, overloadDamageMultiplier: 1.15, radius: 8 },
+    { id: 'crawler', label: '噬电幼兽', maxHp: 68, speed: 9, drainMw: 8, overloadDamageMultiplier: 1.25, radius: 8 },
     { id: 'brute', label: '装甲噬电兽', maxHp: 165, speed: 6, drainMw: 14, overloadDamageMultiplier: 1, radius: 11 },
     { id: 'boss', label: '大型噬电兽', maxHp: 520, speed: 4.2, drainMw: 28, overloadDamageMultiplier: 0.55, radius: 16 }
   ],
