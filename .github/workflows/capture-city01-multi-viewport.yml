@@ -1,24 +1,6 @@
-name: Capture City01 multi viewport
+name: Capture legacy Tycoon multi viewport
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - scripts/capture-city01-multi-viewport.mjs
-      - .github/workflows/capture-city01-multi-viewport.yml
-      - src/main.ts
-      - src/core/**
-      - src/data/**
-      - src/presentation/**
-      - src/ui/**
-      - src/systems/**
-      - src/buildings/**
-      - src/rules/**
-      - src/resources/**
-      - public/assets/**
-      - '!src/battle/**'
-      - '!src/resources/City01GridDefenseAssetCatalog.ts'
-      - '!public/assets/energy_grid_asset_pack/**'
   workflow_dispatch:
 
 permissions:
@@ -72,9 +54,9 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: city01-main-multi-viewport-${{ github.sha }}
+          name: legacy-tycoon-multi-viewport-${{ github.sha }}
           path: artifacts/city01-multi-viewport
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
 
       - name: Stop production preview
@@ -84,17 +66,17 @@ jobs:
             kill "$(cat /tmp/city01-preview.pid)" || true
           fi
 
-      - name: Publish screenshot status
+      - name: Publish manual screenshot status
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
           CAPTURE_STATE: ${{ job.status == 'success' && 'success' || 'failure' }}
-          CAPTURE_DESCRIPTION: ${{ job.status == 'success' && '旧版 Tycoon 桌面、手机、电网与建造选址截图通过' || '旧版 Tycoon 多端或建造选址截图失败' }}
+          CAPTURE_DESCRIPTION: ${{ job.status == 'success' && '旧版 Tycoon 手动截图通过' || '旧版 Tycoon 手动截图失败' }}
           CAPTURE_TARGET_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           jq -n \
             --arg state "$CAPTURE_STATE" \
-            --arg context "GitHub Actions / City01 screenshots" \
+            --arg context "GitHub Actions / Legacy Tycoon screenshots" \
             --arg description "$CAPTURE_DESCRIPTION" \
             --arg target_url "$CAPTURE_TARGET_URL" \
             '{state:$state,context:$context,description:$description,target_url:$target_url}' \
