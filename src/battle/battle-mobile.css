@@ -17,17 +17,33 @@
   }
 
   .battle-shell {
+    --mobile-map-top: 72px;
+    --mobile-map-height: min(88vw, 48dvh);
     position: relative;
   }
 
+  .battle-shell::after {
+    content: '';
+    position: absolute;
+    z-index: 6;
+    top: calc(var(--mobile-map-top) + var(--mobile-map-height));
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border-top: 1px solid rgba(103, 184, 214, .15);
+    background: linear-gradient(180deg, rgba(4, 15, 22, .96), rgba(1, 7, 11, .995));
+    box-shadow: 0 -16px 36px rgba(0, 0, 0, .28);
+    pointer-events: none;
+  }
+
   .battle-map {
-    top: 76px !important;
+    top: var(--mobile-map-top) !important;
     right: 0 !important;
     bottom: auto !important;
     left: 0 !important;
     width: 100vw !important;
-    height: 88vw !important;
-    max-height: 48dvh !important;
+    height: var(--mobile-map-height) !important;
+    max-height: none !important;
     min-height: 0 !important;
   }
 
@@ -39,10 +55,10 @@
   }
 
   .battle-header {
-    grid-template-columns: minmax(0, 1fr) 92px 38px !important;
-    gap: 5px !important;
-    min-height: 68px !important;
-    padding: 5px 7px !important;
+    grid-template-columns: minmax(0, 1fr) 102px 32px 36px !important;
+    gap: 4px !important;
+    min-height: 64px !important;
+    padding: 5px 6px !important;
   }
 
   .battle-brand {
@@ -51,18 +67,18 @@
 
   .battle-meter {
     min-width: 0 !important;
-    min-height: 50px !important;
+    min-height: 48px !important;
     border-radius: 9px !important;
   }
 
   .battle-meter > div {
     min-width: 0 !important;
-    gap: 4px !important;
-    padding: 4px 6px !important;
+    gap: 3px !important;
+    padding: 4px 5px !important;
   }
 
   .battle-meter b {
-    font-size: 16px !important;
+    font-size: 15px !important;
   }
 
   .battle-meter span {
@@ -72,14 +88,16 @@
 
   .battle-meter small {
     display: block !important;
-    font-size: 8px !important;
+    font-size: 7px !important;
+    white-space: nowrap !important;
   }
 
   .battle-meter strong {
     display: block !important;
     overflow: hidden !important;
-    font-size: 11px !important;
+    font-size: 10px !important;
     text-overflow: ellipsis !important;
+    white-space: nowrap !important;
   }
 
   .battle-meter em {
@@ -87,50 +105,79 @@
   }
 
   .battle-wave {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    justify-items: center !important;
+    align-content: center !important;
+    gap: 1px !important;
     min-width: 0 !important;
-    min-height: 50px !important;
-    padding: 0 5px !important;
+    min-height: 48px !important;
+    padding: 2px 5px !important;
     border-radius: 9px !important;
-    font-size: 10px !important;
+    line-height: 1.05 !important;
   }
 
   .battle-wave__icon {
-    width: 21px !important;
-    height: 20px !important;
+    display: none !important;
+  }
+
+  .battle-wave > span {
+    display: block !important;
+    min-width: 0 !important;
+    text-align: center !important;
+  }
+
+  .battle-wave > span small {
+    display: none !important;
   }
 
   .battle-wave strong {
+    display: block !important;
     font-size: 10px !important;
+    white-space: nowrap !important;
   }
 
-  .battle-wave span {
+  .battle-wave > b {
+    display: block !important;
     font-size: 12px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  .battle-sound {
+    width: 32px !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    padding: 0 !important;
+    border-radius: 9px !important;
+    font-size: 14px !important;
   }
 
   .battle-pause {
-    width: 38px !important;
-    height: 50px !important;
-    min-height: 50px !important;
+    width: 36px !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    padding: 0 !important;
     border-radius: 9px !important;
   }
 
   .battle-pause__icon {
-    width: 22px !important;
-    height: 22px !important;
+    width: 21px !important;
+    height: 21px !important;
   }
 
   .battle-objective {
-    top: 86px !important;
-    left: 7px !important;
-    width: 190px !important;
-    padding: 9px 10px !important;
+    top: 79px !important;
+    left: 6px !important;
+    width: 188px !important;
+    padding: 8px 9px !important;
     border-radius: 10px !important;
-    transform: scale(.68) !important;
+    transform: scale(.64) !important;
     transform-origin: top left !important;
   }
 
   .battle-objective h2 {
-    margin-bottom: 6px !important;
+    margin-bottom: 5px !important;
     font-size: 13px !important;
   }
 
@@ -143,43 +190,15 @@
     font-size: 10px !important;
   }
 
-  .battle-actions {
-    right: auto !important;
-    bottom: 10px !important;
-    left: 50% !important;
-    gap: 6px !important;
-    width: auto !important;
-    transform: translateX(-50%) !important;
-    transform-origin: center bottom !important;
-  }
-
-  .battle-actions button {
-    width: 112px !important;
-    min-height: 60px !important;
-    padding: 6px 7px !important;
-    border-radius: 9px !important;
-  }
-
-  .battle-action-icon {
-    width: 25px !important;
-    height: 25px !important;
-  }
-
-  .battle-actions strong {
-    font-size: 11px !important;
-  }
-
-  .battle-actions span {
-    font-size: 8px !important;
-  }
-
   .battle-selection {
-    right: 10px !important;
-    bottom: 78px !important;
-    left: 10px !important;
+    z-index: 18 !important;
+    top: calc(var(--mobile-map-top) + var(--mobile-map-height) + 10px) !important;
+    right: 8px !important;
+    bottom: auto !important;
+    left: 8px !important;
     min-width: 0 !important;
     width: auto !important;
-    padding: 6px 9px !important;
+    padding: 7px 9px !important;
     transform: none !important;
     font-size: 10px !important;
   }
@@ -189,15 +208,54 @@
   }
 
   .battle-message {
-    right: 10px !important;
-    bottom: 112px !important;
-    left: 10px !important;
+    z-index: 19 !important;
+    top: calc(var(--mobile-map-top) + var(--mobile-map-height) + 52px) !important;
+    right: 8px !important;
+    bottom: auto !important;
+    left: 8px !important;
     min-width: 0 !important;
     max-width: none !important;
     margin-left: 0 !important;
-    padding: 6px 9px !important;
+    padding: 7px 9px !important;
     transform: none !important;
     font-size: 9px !important;
+  }
+
+  .battle-actions {
+    z-index: 20 !important;
+    top: calc(var(--mobile-map-top) + var(--mobile-map-height) + 91px) !important;
+    right: 8px !important;
+    bottom: auto !important;
+    left: 8px !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+    width: auto !important;
+    transform: none !important;
+    transform-origin: center !important;
+  }
+
+  .battle-actions button {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 76px !important;
+    padding: 7px 8px !important;
+    border-radius: 10px !important;
+  }
+
+  .battle-action-icon {
+    width: 27px !important;
+    height: 27px !important;
+  }
+
+  .battle-actions strong {
+    font-size: 12px !important;
+  }
+
+  .battle-actions span {
+    margin-top: 3px !important;
+    font-size: 9px !important;
+    line-height: 1.25 !important;
   }
 
   .battle-outcome__title {
