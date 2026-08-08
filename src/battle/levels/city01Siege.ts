@@ -58,12 +58,12 @@ export const CITY01_SIEGE_LEVEL: BattleLevelConfig = {
   waves: [
     {
       id: 'wave-1', label: '侦察群', startsAtSeconds: 3,
-      spawns: [{ archetypeId: 'crawler', count: 5, intervalSeconds: 1.25, spawnNodeId: 'spawn-east', targetNodeId: 'hospital' }]
+      spawns: [{ archetypeId: 'crawler', count: 5, intervalSeconds: 0.9, spawnNodeId: 'spawn-east', targetNodeId: 'hospital' }]
     },
     {
       id: 'wave-2', label: '双向突袭', startsAtSeconds: 27,
       spawns: [
-        { archetypeId: 'crawler', count: 5, intervalSeconds: 1.5, spawnNodeId: 'spawn-north', targetNodeId: 'hospital' },
+        { archetypeId: 'crawler', count: 5, intervalSeconds: 1, spawnNodeId: 'spawn-north', targetNodeId: 'hospital' },
         { archetypeId: 'brute', count: 3, intervalSeconds: 3.2, spawnNodeId: 'spawn-east', targetNodeId: 'hospital', initialDelaySeconds: 3 }
       ]
     },
