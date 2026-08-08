@@ -201,10 +201,11 @@ try {
   await click('[data-edge-id="battery-industrial"]');
   await click('[data-action="switch-route"]');
 
-  // Capture by game state rather than wall-clock guesses.
+  // Capture by game state rather than wall-clock guesses. Hosted headless Chrome may throttle RAF,
+  // so these timeouts intentionally allow substantially more wall time than the in-game schedule.
   await waitForExpression(
     `document.querySelector('.battle-wave strong')?.textContent?.includes('第 2 / 3 波')`,
-    45000,
+    60000,
     'wave two'
   );
   await sleep(1500);
@@ -217,7 +218,7 @@ try {
   await setViewport(1440, 1080, false);
   await waitForExpression(
     `Boolean(document.querySelector('.battle-monster--boss'))`,
-    65000,
+    120000,
     'boss spawn'
   );
   await sleep(700);
@@ -225,7 +226,7 @@ try {
 
   await waitForExpression(
     `Boolean(document.querySelector('.battle-edge-target--boss-locked'))`,
-    12000,
+    30000,
     'boss route lock'
   );
   await sleep(250);
