@@ -60,12 +60,13 @@ describe('BattleEngine', () => {
     advance(engine, 3.1);
 
     expect(engine.forceOverload('spawn-east-edge').ok).toBe(true);
-    const afterFirst = engine.snapshot().batteryEnergyMwh;
+    advance(engine, durableLevel.overloadDurationSeconds + 0.1);
+    const beforeBlocked = engine.snapshot().batteryEnergyMwh;
     const blocked = engine.forceOverload('spawn-east-edge');
 
     expect(blocked.ok).toBe(false);
     expect(blocked.message).toContain('冷却');
-    expect(engine.snapshot().batteryEnergyMwh).toBe(afterFirst);
+    expect(engine.snapshot().batteryEnergyMwh).toBe(beforeBlocked);
   });
 
   it('breaks an overheated line after repeated overloads and repairs it automatically', () => {
