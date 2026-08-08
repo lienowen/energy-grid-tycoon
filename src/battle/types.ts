@@ -79,6 +79,10 @@ export interface BattleLevelConfig {
   overloadDurationSeconds: number;
   overloadDamagePerSecond: number;
   overloadEnergyCostMwh: number;
+  overloadCooldownSeconds: number;
+  overloadHeatGainPercent: number;
+  lineHeatCoolPerSecond: number;
+  lineRepairSeconds: number;
 }
 
 export interface NodeRuntimeState {
@@ -98,6 +102,9 @@ export interface EdgeRuntimeState {
   loadPercent: number;
   loadState: LineLoadState;
   overloadRemainingSeconds: number;
+  overloadCooldownRemainingSeconds: number;
+  heatPercent: number;
+  repairRemainingSeconds: number;
 }
 
 export interface MonsterRuntimeState {
