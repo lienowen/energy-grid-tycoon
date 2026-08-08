@@ -2,7 +2,20 @@
   display: none !important;
 }
 
+.battle-meter > div:first-child small {
+  font-size: 0 !important;
+}
+
+.battle-meter > div:first-child small::after {
+  content: '供电 / 发电';
+  font-size: 13px;
+}
+
 @media (max-width: 760px) {
+  .battle-meter > div:first-child small::after {
+    font-size: 7px;
+  }
+
   .battle-shell::after {
     display: none !important;
   }
