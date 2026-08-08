@@ -192,6 +192,8 @@ const capture = async (name) => {
   await writeFile(`${outputDir}/${name}.png`, Buffer.from(screenshot.data, 'base64'));
 };
 
+let mobileLayout;
+
 try {
   const loaded = cdp.waitFor('Page.loadEventFired');
   await cdp.send('Page.navigate', { url: appUrl });
@@ -228,6 +230,31 @@ try {
 
   await setViewport(390, 844, true);
   await sleep(600);
+  mobileLayout = await evaluate(`(() => {
+    const map = document.querySelector('.battle-map');
+    const actions = document.querySelector('.battle-actions');
+    const selection = document.querySelector('.battle-selection');
+    const message = document.querySelector('.battle-message');
+    const mapRect = map?.getBoundingClientRect();
+    const actionsRect = actions?.getBoundingClientRect();
+    return {
+      viewportWidth: innerWidth,
+      viewportHeight: innerHeight,
+      mapHeight: mapRect?.height ?? 0,
+      mapRatio: mapRect ? mapRect.height / innerHeight : 0,
+      mapBottom: mapRect?.bottom ?? 0,
+      actionsBottom: actionsRect?.bottom ?? 0,
+      actionBottomGap: actionsRect ? innerHeight - actionsRect.bottom : innerHeight,
+      selectionVisible: Boolean(selection),
+      messageVisible: Boolean(message)
+    };
+  })()`);
+  if ((mobileLayout?.mapRatio ?? 0) < 0.5) {
+    throw new Error(`Mobile battlefield is too short: ${Math.round((mobileLayout?.mapRatio ?? 0) * 100)}% of viewport`);
+  }
+  if ((mobileLayout?.actionBottomGap ?? 999) < -4 || (mobileLayout?.actionBottomGap ?? 999) > 140) {
+    throw new Error(`Mobile command deck leaves an invalid bottom gap: ${mobileLayout?.actionBottomGap}px`);
+  }
   await capture('04-mobile-wave-two');
 
   await setViewport(1440, 1080, false);
@@ -261,6 +288,7 @@ try {
     outcome: document.querySelector('.battle-outcome__title')?.textContent ?? '',
     viewport: { width: innerWidth, height: innerHeight }
   })`);
+  diagnostics.mobileLayout = mobileLayout;
   await writeFile(`${outputDir}/diagnostics.json`, JSON.stringify(diagnostics, null, 2));
   console.log(`Captured commercial battle slice to ${outputDir}`);
 } finally {
