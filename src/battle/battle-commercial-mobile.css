@@ -16,6 +16,10 @@
     font-size: 7px !important;
   }
 
+  .battle-line-hit {
+    stroke-width: 5.4 !important;
+  }
+
   .battle-shell::after {
     display: none !important;
   }
