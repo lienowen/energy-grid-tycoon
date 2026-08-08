@@ -16,6 +16,7 @@ import './ui/city01-art-v2.css';
 import './battle/battle-pack.css';
 import './battle/battle-mobile.css';
 import './battle/battle-tuning.css';
+import './battle/battle-commercial-mobile.css';
 import buildingData from './data/buildings.json';
 import eventData from './data/events.json';
 import levelData from './data/levels.json';
