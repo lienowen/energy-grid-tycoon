@@ -4,7 +4,7 @@ export const CITY01_SIEGE_LEVEL: BattleLevelConfig = {
   id: 'city01-electric-beast-siege',
   name: '噬电兽围城',
   subtitle: '用电力做武器，把怪物引入陷阱，守护医院。',
-  overloadDurationSeconds: 3,
+  overloadDurationSeconds: 4,
   overloadDamagePerSecond: 60,
   overloadEnergyCostMwh: 4,
   overloadCooldownSeconds: 8,
@@ -51,9 +51,9 @@ export const CITY01_SIEGE_LEVEL: BattleLevelConfig = {
     { id: 'spawn-east-edge', from: 'spawn-east', to: 'east-junction', capacityMw: 120 }
   ],
   monsters: [
-    { id: 'crawler', label: '噬电幼兽', maxHp: 90, speed: 9, drainMw: 8, overloadDamageMultiplier: 1.15, radius: 8 },
+    { id: 'crawler', label: '噬电幼兽', maxHp: 85, speed: 9, drainMw: 8, overloadDamageMultiplier: 1.15, radius: 8 },
     { id: 'brute', label: '装甲噬电兽', maxHp: 165, speed: 6, drainMw: 14, overloadDamageMultiplier: 1, radius: 11 },
-    { id: 'boss', label: '大型噬电兽', maxHp: 520, speed: 4.2, drainMw: 28, overloadDamageMultiplier: 0.78, radius: 16 }
+    { id: 'boss', label: '大型噬电兽', maxHp: 520, speed: 4.2, drainMw: 28, overloadDamageMultiplier: 0.7, radius: 16 }
   ],
   waves: [
     {
