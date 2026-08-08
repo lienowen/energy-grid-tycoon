@@ -21,4 +21,21 @@ describe('City-01 commercial tutorial balance', () => {
     expect(firstCrawler?.alive).toBe(false);
     expect(firstCrawler?.defeatedAtSeconds).toBeDefined();
   });
+
+  it('gives a first-time player enough storage margin to learn before the boss', () => {
+    const battery = CITY01_SIEGE_LEVEL.nodes.find((node) => node.kind === 'battery');
+    expect(battery?.batteryInitialMwh).toBeGreaterThanOrEqual(CITY01_SIEGE_LEVEL.overloadEnergyCostMwh * 9);
+  });
+
+  it('keeps the boss durable without turning it into a five-cast energy tax', () => {
+    const boss = CITY01_SIEGE_LEVEL.monsters.find((monster) => monster.id === 'boss');
+    if (!boss) throw new Error('Missing City-01 boss');
+
+    const damagePerFullOverload = CITY01_SIEGE_LEVEL.overloadDamagePerSecond
+      * CITY01_SIEGE_LEVEL.overloadDurationSeconds
+      * (boss.overloadDamageMultiplier ?? 1);
+    const fullOverloadsToKill = Math.ceil(boss.maxHp / damagePerFullOverload);
+
+    expect(fullOverloadsToKill).toBe(4);
+  });
 });
