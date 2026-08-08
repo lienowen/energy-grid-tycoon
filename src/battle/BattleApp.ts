@@ -49,6 +49,14 @@ const lineClass = (edge: EdgeRuntimeState): string => {
   return 'battle-line battle-line--normal';
 };
 
+const edgeStatusText = (edge: EdgeRuntimeState): string => {
+  if (edge.operatingState === 'broken') return `损坏 · 修复 ${Math.ceil(edge.repairRemainingSeconds)}s`;
+  if (edge.operatingState === 'offline') return '断开';
+  if (edge.overloadRemainingSeconds > 0) return `过载 ${edge.overloadRemainingSeconds.toFixed(1)}s`;
+  if (edge.overloadCooldownRemainingSeconds > 0) return `冷却 ${Math.ceil(edge.overloadCooldownRemainingSeconds)}s`;
+  return '可过载';
+};
+
 const nodeClass = (node: NodeRuntimeState, config: PowerNodeConfig): string => {
   const classes = ['battle-node', `battle-node--${config.kind}`];
   if (node.operatingState === 'offline') classes.push('battle-node--offline');
@@ -307,8 +315,22 @@ export class BattleApp {
     const selectionText = selectedNodeRuntime
       ? `${selectedNodeRuntime.operatingState === 'online' ? '在线' : '关闭'} · ${round(selectedNodeRuntime.powerPercent)}%`
       : selectedEdgeRuntime
-        ? `${round(selectedEdgeRuntime.loadPercent)}% 负载 · ${selectedEdgeRuntime.operatingState === 'online' ? '接通' : '断开'}`
+        ? `${round(selectedEdgeRuntime.loadPercent)}% 负载 · 温度 ${round(selectedEdgeRuntime.heatPercent)}% · ${edgeStatusText(selectedEdgeRuntime)}`
         : '点击建筑或电力线路进行操作';
+    const overloadActionHint = selectedEdgeRuntime
+      ? selectedEdgeRuntime.operatingState === 'broken'
+        ? `线路损坏 · ${Math.ceil(selectedEdgeRuntime.repairRemainingSeconds)}s 修复`
+        : selectedEdgeRuntime.overloadRemainingSeconds > 0
+          ? `放电中 · ${selectedEdgeRuntime.overloadRemainingSeconds.toFixed(1)}s`
+          : selectedEdgeRuntime.overloadCooldownRemainingSeconds > 0
+            ? `冷却 ${Math.ceil(selectedEdgeRuntime.overloadCooldownRemainingSeconds)}s · 温度 ${round(selectedEdgeRuntime.heatPercent)}%`
+            : `消耗 ${level.overloadEnergyCostMwh} MWh · 温度 ${round(selectedEdgeRuntime.heatPercent)}%`
+      : `消耗 ${level.overloadEnergyCostMwh} MWh · 先选中线路`;
+    const overloadActionClass = selectedEdgeRuntime && (
+      selectedEdgeRuntime.operatingState === 'broken'
+      || selectedEdgeRuntime.overloadRemainingSeconds > 0
+      || selectedEdgeRuntime.overloadCooldownRemainingSeconds > 0
+    ) ? ' battle-action--cooldown' : '';
     const outcomeAsset = snapshot.status === 'victory' ? BATTLE_UI_ASSETS.victory : BATTLE_UI_ASSETS.defeat;
     const outcome = snapshot.status === 'victory' || snapshot.status === 'defeat'
       ? `<div class="battle-outcome battle-outcome--${snapshot.status}">
@@ -350,7 +372,7 @@ export class BattleApp {
       <nav class="battle-actions">
         <button data-action="toggle-zone" class="yellow">${assetImg(BATTLE_UI_ASSETS.closeZone, 'battle-action-icon')}<strong>开关区域</strong><span>吸引或切断怪物</span></button>
         <button data-action="switch-route">${assetImg(BATTLE_UI_ASSETS.switchRoute, 'battle-action-icon')}<strong>切换线路</strong><span>改变行进路径</span></button>
-        <button data-action="overload" class="red">${assetImg(BATTLE_UI_ASSETS.forceOverload, 'battle-action-icon')}<strong>强制过载</strong><span>消耗 5 MWh 电击怪物</span></button>
+        <button data-action="overload" class="red${overloadActionClass}">${assetImg(BATTLE_UI_ASSETS.forceOverload, 'battle-action-icon')}<strong>强制过载</strong><span>${escapeHtml(overloadActionHint)}</span></button>
         <button data-action="tycoon" class="muted"><b>⌂</b><strong>旧版城市</strong><span>返回经营模式</span></button>
       </nav>
       <section class="battle-message">${escapeHtml(this.notice || snapshot.message)}</section>
