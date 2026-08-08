@@ -12,44 +12,59 @@ const outputDir = process.env.SCREENSHOT_DIR ?? 'artifacts/battle-slice';
 const appUrl = process.env.APP_URL ?? 'http://127.0.0.1:4173/';
 const debuggingPort = Number(process.env.CHROME_DEBUG_PORT ?? 9333);
 const profileDir = path.join(os.tmpdir(), `energy-grid-battle-chrome-${process.pid}`);
+const endpoint = `http://127.0.0.1:${debuggingPort}`;
 
 await mkdir(outputDir, { recursive: true });
-await rm(profileDir, { recursive: true, force: true });
 
-const chrome = spawn(chromePath, [
+const chromeArgs = [
   '--headless=new',
   '--disable-gpu',
   '--disable-dev-shm-usage',
   '--hide-scrollbars',
   '--no-sandbox',
+  '--no-first-run',
+  '--no-default-browser-check',
   '--disable-background-timer-throttling',
   '--disable-renderer-backgrounding',
+  '--remote-debugging-address=127.0.0.1',
   `--remote-debugging-port=${debuggingPort}`,
   '--window-size=1440,1080',
   '--force-device-scale-factor=1',
   `--user-data-dir=${profileDir}`,
   'about:blank'
-], { stdio: ['ignore', 'pipe', 'pipe'] });
+];
 
-let chromeErrors = '';
-chrome.stderr.on('data', (chunk) => { chromeErrors += chunk.toString(); });
-
-const endpoint = `http://127.0.0.1:${debuggingPort}`;
+let chrome;
 let pageInfo;
-for (let attempt = 0; attempt < 120; attempt += 1) {
-  try {
-    const response = await fetch(`${endpoint}/json/list`);
-    const pages = await response.json();
-    pageInfo = pages.find((item) => item.type === 'page');
-    if (pageInfo?.webSocketDebuggerUrl) break;
-  } catch {
-    // Chrome is still starting.
+let chromeErrors = '';
+for (let launchAttempt = 1; launchAttempt <= 3 && !pageInfo; launchAttempt += 1) {
+  await rm(profileDir, { recursive: true, force: true });
+  chromeErrors = '';
+  chrome = spawn(chromePath, chromeArgs, { stdio: ['ignore', 'pipe', 'pipe'] });
+  chrome.stderr.on('data', (chunk) => { chromeErrors += chunk.toString(); });
+
+  for (let attempt = 0; attempt < 160; attempt += 1) {
+    if (chrome.exitCode !== null) break;
+    try {
+      const response = await fetch(`${endpoint}/json/list`);
+      const pages = await response.json();
+      pageInfo = pages.find((item) => item.type === 'page');
+      if (pageInfo?.webSocketDebuggerUrl) break;
+    } catch {
+      // Chrome is still starting.
+    }
+    await sleep(125);
   }
-  await sleep(125);
+
+  if (!pageInfo?.webSocketDebuggerUrl) {
+    chrome.kill('SIGKILL');
+    await sleep(600);
+    console.warn(`Chrome DevTools start attempt ${launchAttempt} failed; retrying.`);
+  }
 }
+
 if (!pageInfo?.webSocketDebuggerUrl) {
-  chrome.kill('SIGKILL');
-  throw new Error(`Chrome DevTools endpoint did not start. ${chromeErrors}`);
+  throw new Error(`Chrome DevTools endpoint did not start after 3 attempts. ${chromeErrors}`);
 }
 
 class CdpClient {
@@ -250,7 +265,7 @@ try {
   console.log(`Captured commercial battle slice to ${outputDir}`);
 } finally {
   cdp.close();
-  chrome.kill('SIGTERM');
+  chrome?.kill('SIGTERM');
   await sleep(250);
   await rm(profileDir, { recursive: true, force: true });
 }
