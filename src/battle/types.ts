@@ -78,6 +78,7 @@ export interface BattleLevelConfig {
   waves: WaveConfig[];
   overloadDurationSeconds: number;
   overloadDamagePerSecond: number;
+  overloadImpactDamage?: number;
   overloadEnergyCostMwh: number;
   overloadCooldownSeconds: number;
   overloadHeatGainPercent: number;
