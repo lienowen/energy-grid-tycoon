@@ -19,6 +19,9 @@ export class BattleAudio {
   private master?: GainNode;
   private compressor?: DynamicsCompressorNode;
   private ambient?: AmbientVoice;
+  private battleObserver?: MutationObserver;
+  private observedLiveMonsters = 0;
+  private observedDeathSignatures = new Set<string>();
   private muted = false;
   private battleActive = false;
 
@@ -36,6 +39,7 @@ export class BattleAudio {
     this.battleActive = active;
     if (!active) {
       this.stopAmbient();
+      this.stopBattleDomObserver();
       return;
     }
     if (!this.muted) {
@@ -55,6 +59,7 @@ export class BattleAudio {
     if (this.context.state === 'suspended') void this.context.resume();
     this.battleActive = true;
     this.startAmbient();
+    this.startBattleDomObserver();
   }
 
   play(event: BattleSoundEvent): void {
@@ -66,6 +71,7 @@ export class BattleAudio {
     if (event === 'victory' || event === 'defeat') {
       this.battleActive = false;
       this.stopAmbient();
+      this.stopBattleDomObserver();
     }
 
     const now = ctx.currentTime;
@@ -113,6 +119,7 @@ export class BattleAudio {
   }
 
   destroy(): void {
+    this.stopBattleDomObserver();
     this.stopAmbient();
     if (this.context) void this.context.close();
     this.context = undefined;
@@ -222,6 +229,46 @@ export class BattleAudio {
       }
     }
     this.ambient = undefined;
+  }
+
+  private startBattleDomObserver(): void {
+    if (this.battleObserver || typeof MutationObserver === 'undefined' || typeof document === 'undefined') return;
+    const root = document.querySelector('.battle-root') ?? document.body;
+    if (!root) return;
+
+    this.captureBattleDomState(false);
+    this.battleObserver = new MutationObserver(() => this.captureBattleDomState(true));
+    this.battleObserver.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+  }
+
+  private stopBattleDomObserver(): void {
+    this.battleObserver?.disconnect();
+    this.battleObserver = undefined;
+    this.observedLiveMonsters = 0;
+    this.observedDeathSignatures.clear();
+  }
+
+  private captureBattleDomState(emitSounds: boolean): void {
+    if (typeof document === 'undefined') return;
+    const monsters = [...document.querySelectorAll<SVGGElement>('.battle-monster')];
+    const liveMonsters = monsters.filter((monster) => !monster.classList.contains('battle-monster--death'));
+    const deathSignatures = new Set(
+      monsters
+        .filter((monster) => monster.classList.contains('battle-monster--death'))
+        .map((monster) => {
+          const sprite = monster.querySelector<SVGImageElement>('.battle-monster__sprite');
+          const href = sprite?.getAttribute('href') ?? '';
+          return `${monster.getAttribute('transform') ?? ''}|${href}`;
+        })
+    );
+
+    if (emitSounds && this.battleActive) {
+      if (liveMonsters.length > this.observedLiveMonsters) this.play('spawn');
+      if ([...deathSignatures].some((signature) => !this.observedDeathSignatures.has(signature))) this.play('kill');
+    }
+
+    this.observedLiveMonsters = liveMonsters.length;
+    this.observedDeathSignatures = deathSignatures;
   }
 
   private warningPulse(startsAt: number): void {
