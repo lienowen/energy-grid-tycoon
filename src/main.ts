@@ -1,45 +1,15 @@
 import './styles.css';
-import './asset-presentation.css';
-import './mayor-game.css';
-import './player-city.css';
-import './ui/hologram-sandbox.css';
-import './ui/pixi-world.css';
-import './ui/release-polish.css';
-import './ui/dawn-city-experience.css';
-import './ui/city-recovery-feedback.css';
-import './ui/immersive-world.css';
-import './ui/product-first-reset.css';
-import './ui/game-shell.css';
-import './ui/gameplay-polish.css';
-import './ui/city01-safe-area.css';
-import './ui/city01-art-v2.css';
 import './battle/battle-pack.css';
 import './battle/battle-mobile.css';
 import './battle/battle-tuning.css';
 import './battle/battle-commercial-mobile.css';
-import buildingData from './data/buildings.json';
-import eventData from './data/events.json';
-import levelData from './data/levels.json';
-import policyData from './data/policies.json';
-import technologyData from './data/technologies.json';
 import type { BuildingConfig } from './buildings/BuildingBase';
-import { AppController } from './core/AppController';
-import { GameConfigValidator } from './core/GameConfigValidator';
-import { HologramConfigValidator } from './core/HologramConfigValidator';
-import { CITY01_ART_V2 } from './presentation/art-v2/City01ArtV2Theme';
-import { AssetManager } from './resources/AssetManager';
-import { globalAssetCatalog } from './resources/GlobalAssetCatalog';
+import type { AppController } from './core/AppController';
 import type { EventConfig } from './systems/EventSystem';
 import type { LevelConfig } from './systems/LevelLoader';
 import type { PolicyConfig } from './systems/PolicySystem';
 import type { TechnologyConfig } from './systems/ResearchSystem';
-import { CITY01_ART_V2_SHELL } from './ui/City01ArtV2ShellContract';
-import { LoadingScreen } from './ui/LoadingScreen';
 import { RuntimeRecovery } from './ui/RuntimeRecovery';
-
-document.documentElement.dataset.artDirection = CITY01_ART_V2_SHELL.scope;
-document.documentElement.dataset.artThemeRevision = CITY01_ART_V2.revision;
-document.documentElement.dataset.artVersion = CITY01_ART_V2_SHELL.majorVersion;
 
 const root = document.querySelector<HTMLElement>('#app');
 if (!root) throw new Error('Application root #app was not found');
@@ -81,19 +51,82 @@ const registerServiceWorker = async (): Promise<void> => {
   }
 };
 
-const bootstrap = async (): Promise<void> => {
+const loadTycoonPresentationCss = async (): Promise<void> => {
+  await Promise.all([
+    import('./asset-presentation.css'),
+    import('./mayor-game.css'),
+    import('./player-city.css'),
+    import('./ui/hologram-sandbox.css'),
+    import('./ui/pixi-world.css'),
+    import('./ui/release-polish.css'),
+    import('./ui/dawn-city-experience.css'),
+    import('./ui/city-recovery-feedback.css'),
+    import('./ui/immersive-world.css'),
+    import('./ui/product-first-reset.css'),
+    import('./ui/game-shell.css'),
+    import('./ui/gameplay-polish.css'),
+    import('./ui/city01-safe-area.css'),
+    import('./ui/city01-art-v2.css')
+  ]);
+};
+
+const bootstrapBattle = async (): Promise<void> => {
+  const [
+    { AssetManager },
+    { city01GridDefenseAssetCatalog },
+    { prepareGridDefenseAssets },
+    { BattleApp }
+  ] = await Promise.all([
+    import('./resources/AssetManager'),
+    import('./resources/City01GridDefenseAssetCatalog'),
+    import('./battle/BattleAssetPreprocessor'),
+    import('./battle/BattleApp')
+  ]);
+
+  AssetManager.load(city01GridDefenseAssetCatalog);
+  await prepareGridDefenseAssets();
+  battleApp = new BattleApp(root);
+  battleApp.start();
+};
+
+const bootstrapTycoon = async (): Promise<void> => {
+  await loadTycoonPresentationCss();
+
+  const [
+    { default: buildingData },
+    { default: eventData },
+    { default: levelData },
+    { default: policyData },
+    { default: technologyData },
+    { AppController: AppControllerRuntime },
+    { GameConfigValidator },
+    { HologramConfigValidator },
+    { CITY01_ART_V2 },
+    { AssetManager },
+    { globalAssetCatalog },
+    { CITY01_ART_V2_SHELL },
+    { LoadingScreen }
+  ] = await Promise.all([
+    import('./data/buildings.json'),
+    import('./data/events.json'),
+    import('./data/levels.json'),
+    import('./data/policies.json'),
+    import('./data/technologies.json'),
+    import('./core/AppController'),
+    import('./core/GameConfigValidator'),
+    import('./core/HologramConfigValidator'),
+    import('./presentation/art-v2/City01ArtV2Theme'),
+    import('./resources/AssetManager'),
+    import('./resources/GlobalAssetCatalog'),
+    import('./ui/City01ArtV2ShellContract'),
+    import('./ui/LoadingScreen')
+  ]);
+
+  document.documentElement.dataset.artDirection = CITY01_ART_V2_SHELL.scope;
+  document.documentElement.dataset.artThemeRevision = CITY01_ART_V2.revision;
+  document.documentElement.dataset.artVersion = CITY01_ART_V2_SHELL.majorVersion;
+
   AssetManager.load(globalAssetCatalog);
-
-  const requestedMode = new URLSearchParams(window.location.search).get('mode');
-  if (requestedMode !== 'tycoon') {
-    const { prepareGridDefenseAssets } = await import('./battle/BattleAssetPreprocessor');
-    await prepareGridDefenseAssets();
-    const { BattleApp } = await import('./battle/BattleApp');
-    battleApp = new BattleApp(root);
-    battleApp.start();
-    return;
-  }
-
   LoadingScreen.render(root, '正在加载曙光新城', '准备地形、能源设施和城市运行状态。');
 
   const levels = levelData as unknown as LevelConfig[];
@@ -118,13 +151,22 @@ const bootstrap = async (): Promise<void> => {
   const gridPattern = AssetManager.get('ui_grid_pattern', '');
   if (gridPattern) document.documentElement.style.setProperty('--ui-grid-pattern', `url("${gridPattern}")`);
 
-  controller = new AppController(root, levels, buildings, events, technologies, policies);
+  controller = new AppControllerRuntime(root, levels, buildings, events, technologies, policies);
   controller.start();
   void registerServiceWorker();
 
   void AssetManager.preloadGroup('level').then((report) => {
     if (report.failed.length > 0) console.warn('Level assets failed to preload:', report.failed);
   });
+};
+
+const bootstrap = async (): Promise<void> => {
+  const requestedMode = new URLSearchParams(window.location.search).get('mode');
+  if (requestedMode === 'tycoon') {
+    await bootstrapTycoon();
+    return;
+  }
+  await bootstrapBattle();
 };
 
 void bootstrap().catch(reportFatal);
