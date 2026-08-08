@@ -6,7 +6,7 @@ export const CITY01_SIEGE_LEVEL: BattleLevelConfig = {
   subtitle: '用电力做武器，把怪物引入陷阱，守护医院。',
   overloadDurationSeconds: 3,
   overloadDamagePerSecond: 60,
-  overloadEnergyCostMwh: 5,
+  overloadEnergyCostMwh: 4,
   overloadCooldownSeconds: 8,
   overloadHeatGainPercent: 60,
   lineHeatCoolPerSecond: 5,
@@ -22,7 +22,7 @@ export const CITY01_SIEGE_LEVEL: BattleLevelConfig = {
     { id: 'substation', label: '地铁站', kind: 'substation', x: 39, y: 62, demandMw: 45, priority: 50 },
     {
       id: 'battery', label: '储能站', kind: 'battery', x: 48, y: 75,
-      batteryCapacityMwh: 80, batteryInitialMwh: 48,
+      batteryCapacityMwh: 80, batteryInitialMwh: 60,
       batteryMaxDischargeMw: 70, batteryMaxChargeMw: 40,
       lockedOnline: true
     },
@@ -52,25 +52,25 @@ export const CITY01_SIEGE_LEVEL: BattleLevelConfig = {
   ],
   monsters: [
     { id: 'crawler', label: '噬电幼兽', maxHp: 90, speed: 9, drainMw: 8, overloadDamageMultiplier: 1.15, radius: 8 },
-    { id: 'brute', label: '装甲噬电兽', maxHp: 190, speed: 6, drainMw: 14, overloadDamageMultiplier: 0.8, radius: 11 },
+    { id: 'brute', label: '装甲噬电兽', maxHp: 165, speed: 6, drainMw: 14, overloadDamageMultiplier: 1, radius: 11 },
     { id: 'boss', label: '大型噬电兽', maxHp: 520, speed: 4.2, drainMw: 28, overloadDamageMultiplier: 0.78, radius: 16 }
   ],
   waves: [
     {
       id: 'wave-1', label: '侦察群', startsAtSeconds: 3,
-      spawns: [{ archetypeId: 'crawler', count: 5, intervalSeconds: 1.6, spawnNodeId: 'spawn-east', targetNodeId: 'hospital' }]
+      spawns: [{ archetypeId: 'crawler', count: 5, intervalSeconds: 1.25, spawnNodeId: 'spawn-east', targetNodeId: 'hospital' }]
     },
     {
       id: 'wave-2', label: '双向突袭', startsAtSeconds: 27,
       spawns: [
-        { archetypeId: 'crawler', count: 5, intervalSeconds: 2.1, spawnNodeId: 'spawn-north', targetNodeId: 'hospital' },
-        { archetypeId: 'brute', count: 3, intervalSeconds: 4.5, spawnNodeId: 'spawn-east', targetNodeId: 'hospital', initialDelaySeconds: 3 }
+        { archetypeId: 'crawler', count: 5, intervalSeconds: 1.5, spawnNodeId: 'spawn-north', targetNodeId: 'hospital' },
+        { archetypeId: 'brute', count: 3, intervalSeconds: 3.2, spawnNodeId: 'spawn-east', targetNodeId: 'hospital', initialDelaySeconds: 3 }
       ]
     },
     {
       id: 'wave-3', label: '兽王压境', startsAtSeconds: 65,
       spawns: [
-        { archetypeId: 'brute', count: 4, intervalSeconds: 4, spawnNodeId: 'spawn-north', targetNodeId: 'hospital' },
+        { archetypeId: 'brute', count: 3, intervalSeconds: 3, spawnNodeId: 'spawn-north', targetNodeId: 'hospital' },
         { archetypeId: 'boss', count: 1, intervalSeconds: 1, spawnNodeId: 'spawn-east', targetNodeId: 'hospital', initialDelaySeconds: 8 }
       ]
     }
