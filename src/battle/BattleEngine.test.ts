@@ -121,6 +121,46 @@ describe('BattleEngine', () => {
     expect(defeated?.nextNodeId).toBe('east-junction');
   });
 
+  it('lets the boss temporarily lock a switchable route on its current path', () => {
+    const bossLevel = {
+      ...CITY01_SIEGE_LEVEL,
+      bossAbilityDelaySeconds: 0.2,
+      bossAbilityCooldownSeconds: 99,
+      bossRouteLockSeconds: 2,
+      monsters: CITY01_SIEGE_LEVEL.monsters.map((monster) => (
+        monster.id === 'boss' ? { ...monster, speed: 0 } : { ...monster }
+      )),
+      waves: [{
+        id: 'boss-test',
+        label: 'Boss Test',
+        startsAtSeconds: 0,
+        spawns: [{
+          archetypeId: 'boss',
+          count: 1,
+          intervalSeconds: 1,
+          spawnNodeId: 'spawn-east',
+          targetNodeId: 'hospital'
+        }]
+      }]
+    };
+    const engine = new BattleEngine(bossLevel);
+    engine.start();
+    advance(engine, 0.4);
+
+    const locked = engine.snapshot().edges.find((edge) => edge.bossLockRemainingSeconds > 0);
+    expect(locked).toBeDefined();
+    expect(locked?.id).toBe('battery-industrial');
+    expect(engine.snapshot().monsters[0]?.abilityActiveUntilSeconds).toBeGreaterThan(engine.snapshot().elapsedSeconds);
+
+    const blockedSwitch = engine.switchRoute(locked!.id);
+    expect(blockedSwitch.ok).toBe(false);
+    expect(blockedSwitch.message).toContain('兽王');
+
+    advance(engine, bossLevel.bossRouteLockSeconds + 0.2);
+    expect(engine.snapshot().edges.find((edge) => edge.id === locked!.id)?.bossLockRemainingSeconds).toBe(0);
+    expect(engine.switchRoute(locked!.id).ok).toBe(true);
+  });
+
   it('eventually loses when monsters drain the hospital', () => {
     const engine = new BattleEngine(CITY01_SIEGE_LEVEL);
     engine.start();
