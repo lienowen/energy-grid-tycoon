@@ -1,9 +1,9 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
 
-const baseUrl = process.env.CITY01_CAPTURE_URL ?? 'http://127.0.0.1:4173';
+const baseUrl = process.env.CITY01_CAPTURE_URL ?? 'http://127.0.0.1:4173/?mode=tycoon';
 const outputDir = process.env.CITY01_CAPTURE_DIR ?? 'artifacts/city01-multi-viewport';
-const captureRevision = 'city01-golden-scene-1';
+const captureRevision = 'city01-golden-scene-2';
 
 const cases = [
   { id: 'desktop-city', width: 1440, height: 1080, mode: 'game' },
@@ -37,6 +37,27 @@ const clickVisible = async (page, selector) => page.evaluate((targetSelector) =>
   return true;
 }, selector);
 
+const cityCanvas = (page) => page
+  .locator('[data-world-renderer="city01-integrated"] canvas, canvas.city01-integrated-canvas')
+  .first();
+
+const recoverEndedCity = async (page) => {
+  const restart = page.getByRole('button', { name: /重新开始/ }).first();
+  const visible = await restart.isVisible({ timeout: 350 }).catch(() => false);
+  if (!visible) return false;
+  await restart.click();
+  await page.waitForTimeout(120);
+  return true;
+};
+
+const pauseCityImmediately = async (page) => {
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    if (await clickVisible(page, '[data-speed="0"]')) return true;
+    await page.waitForTimeout(50);
+  }
+  return false;
+};
+
 const enterCity = async (page) => {
   await page.addInitScript(() => {
     localStorage.clear();
@@ -44,23 +65,50 @@ const enterCity = async (page) => {
   });
   await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
 
-  const canvas = page.locator('canvas.city01-integrated-canvas');
-  const mountedDirectly = await canvas
-    .waitFor({ state: 'visible', timeout: 8000 })
+  const canvas = cityCanvas(page);
+  let mountedDirectly = await canvas
+    .waitFor({ state: 'visible', timeout: 5000 })
     .then(() => true)
     .catch(() => false);
 
   if (!mountedDirectly) {
+    const recovered = await recoverEndedCity(page);
+    if (recovered) {
+      mountedDirectly = await canvas
+        .waitFor({ state: 'visible', timeout: 5000 })
+        .then(() => true)
+        .catch(() => false);
+    }
+  }
+
+  if (!mountedDirectly) {
     const startButton = page.locator('[data-start="city-01"]');
-    await startButton.waitFor({ state: 'visible', timeout: 15000 });
+    const startVisible = await startButton
+      .waitFor({ state: 'visible', timeout: 5000 })
+      .then(() => true)
+      .catch(() => false);
+    if (!startVisible) {
+      throw new Error('City-01 renderer did not mount and no City-01 start control is available');
+    }
     await startButton.click();
     await canvas.waitFor({ state: 'visible', timeout: 30000 });
   }
 
-  await page.waitForTimeout(350);
-  const paused = await clickVisible(page, '[data-speed="0"]');
+  // Do not let a headless capture spend several simulated hours waiting on stale selectors.
+  let paused = await pauseCityImmediately(page);
+  if (!paused && await recoverEndedCity(page)) {
+    await canvas.waitFor({ state: 'visible', timeout: 10000 });
+    paused = await pauseCityImmediately(page);
+  }
   if (!paused) throw new Error('Unable to pause the city before capture');
-  await page.waitForTimeout(160);
+  await page.waitForTimeout(220);
+
+  // A very slow runner can still cross an end-state threshold during startup. Recover once, then freeze immediately.
+  if (await recoverEndedCity(page)) {
+    await canvas.waitFor({ state: 'visible', timeout: 10000 });
+    if (!await pauseCityImmediately(page)) throw new Error('Unable to pause the restarted city before capture');
+    await page.waitForTimeout(180);
+  }
 };
 
 const enterPlacement = async (page) => {
@@ -139,8 +187,8 @@ const inspectConstructionSave = async (page) => page.evaluate(() => {
 });
 
 const inspectPage = async (page, captureCase) => page.evaluate(({ expectedMode, expectedPlacement }) => {
-  const canvas = document.querySelector('canvas.city01-integrated-canvas');
   const host = document.querySelector('[data-world-renderer="city01-integrated"]');
+  const canvas = host?.querySelector('canvas') ?? document.querySelector('canvas.city01-integrated-canvas');
   const documentElement = document.documentElement;
   const body = document.body;
   const placementGuide = document.querySelector('.egt-hint-mini.placing')
