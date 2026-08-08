@@ -44,7 +44,58 @@ describe('BattleEngine', () => {
     expect(result.ok).toBe(true);
     expect(after.batteryEnergyMwh).toBeLessThan(before);
     expect(after.edges.find((edge) => edge.id === 'spawn-east-edge')?.loadState).toBe('overload');
+    expect(after.edges.find((edge) => edge.id === 'spawn-east-edge')?.heatPercent).toBe(60);
     expect(result.message).toContain('命中 1 只');
+  });
+
+  it('blocks overload spam during cooldown without spending more storage', () => {
+    const durableLevel = {
+      ...CITY01_SIEGE_LEVEL,
+      monsters: CITY01_SIEGE_LEVEL.monsters.map((monster) => (
+        monster.id === 'crawler' ? { ...monster, maxHp: 10_000, speed: 0 } : { ...monster }
+      ))
+    };
+    const engine = new BattleEngine(durableLevel);
+    engine.start();
+    advance(engine, 3.1);
+
+    expect(engine.forceOverload('spawn-east-edge').ok).toBe(true);
+    const afterFirst = engine.snapshot().batteryEnergyMwh;
+    const blocked = engine.forceOverload('spawn-east-edge');
+
+    expect(blocked.ok).toBe(false);
+    expect(blocked.message).toContain('冷却');
+    expect(engine.snapshot().batteryEnergyMwh).toBe(afterFirst);
+  });
+
+  it('breaks an overheated line after repeated overloads and repairs it automatically', () => {
+    const durableLevel = {
+      ...CITY01_SIEGE_LEVEL,
+      monsters: CITY01_SIEGE_LEVEL.monsters.map((monster) => (
+        monster.id === 'crawler' ? { ...monster, maxHp: 10_000, speed: 0 } : { ...monster }
+      ))
+    };
+    const engine = new BattleEngine(durableLevel);
+    engine.start();
+    advance(engine, 3.1);
+
+    expect(engine.forceOverload('spawn-east-edge').ok).toBe(true);
+    advance(engine, durableLevel.overloadCooldownSeconds + 0.1);
+    expect(engine.forceOverload('spawn-east-edge').ok).toBe(true);
+    advance(engine, durableLevel.overloadCooldownSeconds + 0.1);
+    expect(engine.forceOverload('spawn-east-edge').ok).toBe(true);
+    advance(engine, durableLevel.overloadDurationSeconds + 0.2);
+
+    const broken = engine.snapshot().edges.find((edge) => edge.id === 'spawn-east-edge');
+    expect(broken?.operatingState).toBe('broken');
+    expect(broken?.loadState).toBe('broken');
+    expect(broken?.repairRemainingSeconds).toBeGreaterThan(0);
+
+    advance(engine, durableLevel.lineRepairSeconds + 0.2);
+    const repaired = engine.snapshot().edges.find((edge) => edge.id === 'spawn-east-edge');
+    expect(repaired?.operatingState).toBe('online');
+    expect(repaired?.repairRemainingSeconds).toBe(0);
+    expect(repaired?.heatPercent).toBeLessThanOrEqual(35);
   });
 
   it('keeps a defeated monster on its edge long enough for the death presentation', () => {
