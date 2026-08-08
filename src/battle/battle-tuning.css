@@ -90,6 +90,21 @@
   to { transform: scale(1.12); opacity: 1; }
 }
 
+/* Repeated overloads are powerful but risky: make recovery state visible in the action bar. */
+.battle-actions button.battle-action--cooldown {
+  border-color: rgba(255, 169, 70, 0.34);
+  background: rgba(31, 21, 13, 0.82);
+  box-shadow: inset 0 0 20px rgba(255, 120, 45, 0.06), 0 8px 35px rgba(0, 0, 0, 0.26);
+}
+
+.battle-actions button.battle-action--cooldown .battle-action-icon {
+  filter: saturate(0.58) brightness(0.82);
+}
+
+.battle-actions button.battle-action--cooldown span {
+  color: #f1ad62;
+}
+
 @media (max-width: 760px) {
   .battle-facility-sprite--generator {
     transform: translate(0.45px, -0.55px) scale(0.96) !important;
