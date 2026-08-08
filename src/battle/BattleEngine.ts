@@ -25,6 +25,7 @@ interface ScheduledSpawn {
 
 const clamp = (value: number, min: number, max: number): number => Math.max(min, Math.min(max, value));
 const MONSTER_DEATH_PRESENTATION_SECONDS = 0.9;
+const BOSS_ROAR_PRESENTATION_SECONDS = 1.2;
 
 export class BattleEngine {
   private readonly nodeById: Map<PowerNodeId, PowerNodeConfig>;
@@ -65,7 +66,8 @@ export class BattleEngine {
         overloadRemainingSeconds: 0,
         overloadCooldownRemainingSeconds: 0,
         heatPercent: 0,
-        repairRemainingSeconds: 0
+        repairRemainingSeconds: 0,
+        bossLockRemainingSeconds: 0
       });
     }
 
@@ -123,8 +125,10 @@ export class BattleEngine {
 
     this.elapsedSeconds += delta;
     this.spawnDueMonsters();
+    this.updateBossRouteLocks(delta);
     this.updateOverloads(delta);
     this.updateMonsters(delta);
+    this.updateBossAbilities(delta);
     this.recalculatePower(delta);
     this.updateCriticalState(delta);
     this.updateOutcome();
@@ -157,6 +161,9 @@ export class BattleEngine {
     const config = this.edgeById.get(edgeId);
     const runtime = this.edgeRuntimeById.get(edgeId);
     if (!config || !runtime) return { ok: false, message: '没有找到该线路。' };
+    if (runtime.bossLockRemainingSeconds > 0) {
+      return { ok: false, message: `兽王干扰中，该线路还被锁定 ${Math.ceil(runtime.bossLockRemainingSeconds)} 秒。` };
+    }
     if (config.switchable === false || runtime.operatingState === 'broken') {
       return { ok: false, message: runtime.operatingState === 'broken' ? '线路已损坏，等待自动修复。' : '该线路不能切换。' };
     }
@@ -272,10 +279,72 @@ export class BattleEngine {
         progress: 0,
         path: this.pathFor(scheduled.spawn.spawnNodeId, scheduled.spawn.targetNodeId),
         reachedTarget: false,
-        alive: true
+        alive: true,
+        abilityCooldownRemainingSeconds: archetype.id === 'boss' ? this.level.bossAbilityDelaySeconds : undefined
       });
       this.message = `${archetype.label}进入电网！`;
     }
+  }
+
+  private updateBossRouteLocks(deltaSeconds: number): void {
+    for (const runtime of this.edgeRuntimeById.values()) {
+      runtime.bossLockRemainingSeconds = Math.max(0, runtime.bossLockRemainingSeconds - deltaSeconds);
+    }
+  }
+
+  private updateBossAbilities(deltaSeconds: number): void {
+    for (const monster of this.monsters.values()) {
+      if (!monster.alive || monster.reachedTarget || monster.archetypeId !== 'boss') continue;
+      monster.abilityCooldownRemainingSeconds = Math.max(
+        0,
+        (monster.abilityCooldownRemainingSeconds ?? this.level.bossAbilityDelaySeconds) - deltaSeconds
+      );
+      if (monster.abilityCooldownRemainingSeconds > 0) continue;
+
+      const targetEdge = this.bossLockTarget(monster);
+      if (!targetEdge) {
+        monster.abilityCooldownRemainingSeconds = 1;
+        continue;
+      }
+      const runtime = this.edgeRuntimeById.get(targetEdge.id);
+      if (!runtime) continue;
+
+      runtime.bossLockRemainingSeconds = this.level.bossRouteLockSeconds;
+      monster.abilityCooldownRemainingSeconds = this.level.bossAbilityCooldownSeconds;
+      monster.abilityActiveUntilSeconds = this.elapsedSeconds + BOSS_ROAR_PRESENTATION_SECONDS;
+      this.message = `兽王怒吼！${this.edgeLabel(targetEdge)}被锁定 ${Math.ceil(this.level.bossRouteLockSeconds)} 秒。`;
+    }
+  }
+
+  private bossLockTarget(monster: MonsterRuntimeState): PowerEdgeConfig | undefined {
+    for (let index = 0; index < monster.path.length - 1; index += 1) {
+      const from = monster.path[index];
+      const to = monster.path[index + 1];
+      if (!from || !to) continue;
+      const edge = edgeBetween(this.level.edges, from, to);
+      const runtime = edge ? this.edgeRuntimeById.get(edge.id) : undefined;
+      if (edge?.switchable === true && runtime && runtime.operatingState !== 'broken' && runtime.bossLockRemainingSeconds <= 0) {
+        return edge;
+      }
+    }
+
+    return this.level.edges
+      .filter((edge) => {
+        const runtime = this.edgeRuntimeById.get(edge.id);
+        return edge.switchable === true
+          && runtime?.operatingState !== 'broken'
+          && (runtime?.bossLockRemainingSeconds ?? 0) <= 0;
+      })
+      .sort((a, b) => {
+        const loadDelta = (this.edgeRuntimeById.get(b.id)?.loadPercent ?? 0) - (this.edgeRuntimeById.get(a.id)?.loadPercent ?? 0);
+        return Math.abs(loadDelta) > 0.001 ? loadDelta : a.id.localeCompare(b.id);
+      })[0];
+  }
+
+  private edgeLabel(edge: PowerEdgeConfig): string {
+    const from = this.nodeById.get(edge.from)?.label ?? edge.from;
+    const to = this.nodeById.get(edge.to)?.label ?? edge.to;
+    return `${from}→${to}`;
   }
 
   private updateOverloads(deltaSeconds: number): void {
