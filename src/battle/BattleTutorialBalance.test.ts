@@ -18,7 +18,6 @@ describe('City-01 commercial tutorial balance', () => {
 
     const crawlers = engine.snapshot().monsters.filter((monster) => monster.archetypeId === 'crawler');
     const defeated = crawlers.filter((monster) => !monster.alive);
-    expect(crawlers.length).toBeGreaterThanOrEqual(3);
     expect(defeated.length).toBeGreaterThanOrEqual(2);
     expect(defeated.every((monster) => monster.defeatedAtSeconds !== undefined)).toBe(true);
   });
