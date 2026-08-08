@@ -7,6 +7,22 @@ const advance = (engine: BattleEngine, seconds: number): void => {
 };
 
 describe('City-01 commercial tutorial balance', () => {
+  it('applies a visible impact hit in the same frame the player forces an overload', () => {
+    const engine = new BattleEngine(CITY01_SIEGE_LEVEL);
+    engine.start();
+    advance(engine, 3.1);
+
+    const before = engine.snapshot().monsters.find((monster) => monster.currentEdgeId === 'spawn-east-edge');
+    expect(before).toBeDefined();
+    if (!before) return;
+
+    expect(engine.forceOverload('spawn-east-edge').ok).toBe(true);
+    const after = engine.snapshot().monsters.find((monster) => monster.id === before.id);
+    expect(after).toBeDefined();
+    expect(after?.hp).toBeLessThan(before.hp);
+    expect(before.hp - (after?.hp ?? before.hp)).toBeGreaterThanOrEqual(50);
+  });
+
   it('lets the guided first overload visibly eliminate multiple crawlers', () => {
     const engine = new BattleEngine(CITY01_SIEGE_LEVEL);
     engine.start();
@@ -37,9 +53,9 @@ describe('City-01 commercial tutorial balance', () => {
     const boss = CITY01_SIEGE_LEVEL.monsters.find((monster) => monster.id === 'boss');
     if (!boss) throw new Error('Missing City-01 boss');
 
-    const damagePerFullOverload = CITY01_SIEGE_LEVEL.overloadDamagePerSecond
-      * CITY01_SIEGE_LEVEL.overloadDurationSeconds
-      * (boss.overloadDamageMultiplier ?? 1);
+    const baseDamagePerFullOverload = (CITY01_SIEGE_LEVEL.overloadImpactDamage ?? 0)
+      + CITY01_SIEGE_LEVEL.overloadDamagePerSecond * CITY01_SIEGE_LEVEL.overloadDurationSeconds;
+    const damagePerFullOverload = baseDamagePerFullOverload * (boss.overloadDamageMultiplier ?? 1);
     const fullOverloadsToKill = Math.ceil(boss.maxHp / damagePerFullOverload);
 
     expect(fullOverloadsToKill).toBe(4);
