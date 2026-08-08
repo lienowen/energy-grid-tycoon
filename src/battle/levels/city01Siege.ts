@@ -7,6 +7,10 @@ export const CITY01_SIEGE_LEVEL: BattleLevelConfig = {
   overloadDurationSeconds: 3,
   overloadDamagePerSecond: 48,
   overloadEnergyCostMwh: 5,
+  overloadCooldownSeconds: 8,
+  overloadHeatGainPercent: 60,
+  lineHeatCoolPerSecond: 5,
+  lineRepairSeconds: 10,
   nodes: [
     { id: 'plant', label: '发电站', kind: 'generator', x: 11, y: 73, supplyMw: 180, lockedOnline: true },
     { id: 'west-junction', label: '西侧节点', kind: 'junction', x: 28, y: 55 },
