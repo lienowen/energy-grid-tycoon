@@ -1,4 +1,5 @@
 import './styles.css';
+import './ui/release-polish.css';
 import './battle/battle-pack.css';
 import './battle/battle-mobile.css';
 import './battle/battle-tuning.css';
@@ -58,7 +59,6 @@ const loadTycoonPresentationCss = async (): Promise<void> => {
     import('./player-city.css'),
     import('./ui/hologram-sandbox.css'),
     import('./ui/pixi-world.css'),
-    import('./ui/release-polish.css'),
     import('./ui/dawn-city-experience.css'),
     import('./ui/city-recovery-feedback.css'),
     import('./ui/immersive-world.css'),
