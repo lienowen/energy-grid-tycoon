@@ -53,7 +53,8 @@ export class BattleAudio {
       this.createOutputBus();
     }
     if (this.context.state === 'suspended') void this.context.resume();
-    if (this.battleActive) this.startAmbient();
+    this.battleActive = true;
+    this.startAmbient();
   }
 
   play(event: BattleSoundEvent): void {
@@ -61,6 +62,11 @@ export class BattleAudio {
     this.unlock();
     const ctx = this.context;
     if (!ctx) return;
+
+    if (event === 'victory' || event === 'defeat') {
+      this.battleActive = false;
+      this.stopAmbient();
+    }
 
     const now = ctx.currentTime;
     if (event === 'ui') {
