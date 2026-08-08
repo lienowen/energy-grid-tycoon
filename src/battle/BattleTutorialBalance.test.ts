@@ -7,19 +7,20 @@ const advance = (engine: BattleEngine, seconds: number): void => {
 };
 
 describe('City-01 commercial tutorial balance', () => {
-  it('lets the guided first overload visibly eliminate the first crawler', () => {
+  it('lets the guided first overload visibly eliminate multiple crawlers', () => {
     const engine = new BattleEngine(CITY01_SIEGE_LEVEL);
     engine.start();
 
     expect(engine.switchRoute('battery-industrial').ok).toBe(true);
     advance(engine, 3.1);
     expect(engine.forceOverload('spawn-east-edge').ok).toBe(true);
-    advance(engine, 1.6);
+    advance(engine, 3.1);
 
-    const firstCrawler = engine.snapshot().monsters.find((monster) => monster.archetypeId === 'crawler');
-    expect(firstCrawler).toBeDefined();
-    expect(firstCrawler?.alive).toBe(false);
-    expect(firstCrawler?.defeatedAtSeconds).toBeDefined();
+    const crawlers = engine.snapshot().monsters.filter((monster) => monster.archetypeId === 'crawler');
+    const defeated = crawlers.filter((monster) => !monster.alive);
+    expect(crawlers.length).toBeGreaterThanOrEqual(3);
+    expect(defeated.length).toBeGreaterThanOrEqual(2);
+    expect(defeated.every((monster) => monster.defeatedAtSeconds !== undefined)).toBe(true);
   });
 
   it('gives a first-time player enough storage margin to learn before the boss', () => {
