@@ -1,0 +1,65 @@
+@media (max-width: 760px) {
+  .battle-header {
+    grid-template-columns: minmax(0, 1fr) 102px 32px 36px !important;
+    gap: 4px !important;
+  }
+
+  .battle-wave {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    justify-items: center !important;
+    align-content: center !important;
+    gap: 1px !important;
+    min-width: 0 !important;
+    padding: 2px 5px !important;
+  }
+
+  .battle-wave__icon { display: none !important; }
+  .battle-wave > span { display: block !important; min-width: 0 !important; text-align: center !important; }
+  .battle-wave > span small { display: none !important; }
+  .battle-wave strong { display: block !important; font-size: 10px !important; white-space: nowrap !important; }
+  .battle-wave > b { display: block !important; font-size: 12px !important; white-space: nowrap !important; }
+
+  .battle-actions {
+    top: calc(var(--mobile-map-top) + var(--mobile-map-height) + 91px) !important;
+    right: 8px !important;
+    bottom: auto !important;
+    left: 8px !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+    width: auto !important;
+    transform: none !important;
+  }
+
+  .battle-actions button {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 76px !important;
+    padding: 7px 8px !important;
+  }
+
+  .battle-selection {
+    top: calc(var(--mobile-map-top) + var(--mobile-map-height) + 10px) !important;
+    bottom: auto !important;
+  }
+
+  .battle-message {
+    top: calc(var(--mobile-map-top) + var(--mobile-map-height) + 52px) !important;
+    bottom: auto !important;
+  }
+
+  .battle-tutorial {
+    top: 78px !important;
+    right: 5px !important;
+    width: 220px !important;
+    transform: scale(.76) !important;
+  }
+
+  .battle-boss-hud {
+    top: 76px !important;
+    right: 5px !important;
+    width: 215px !important;
+    transform: scale(.76) !important;
+  }
+}
