@@ -160,9 +160,10 @@ export class BattleEngine {
     runtime.operatingState = runtime.operatingState === 'online' ? 'offline' : 'online';
     runtime.overloadRemainingSeconds = 0;
     this.recalculatePathsAtNodes();
+    this.recalculatePower(0);
     this.message = runtime.operatingState === 'online'
-      ? '线路已接通。'
-      : '线路已断开，怪物路线正在重新计算。';
+      ? '线路已接通，供电潮流和怪物路线已更新。'
+      : '线路已断开，供电潮流和怪物路线正在重新计算。';
     return { ok: true, message: this.message };
   }
 
@@ -334,7 +335,9 @@ export class BattleEngine {
 
     const allocation = allocatePower({
       nodes: this.level.nodes,
+      edges: this.level.edges,
       runtimeByNodeId: this.nodeRuntimeById,
+      edgeRuntimeById: this.edgeRuntimeById,
       deltaSeconds,
       monsterDrainByNodeId
     });
@@ -357,14 +360,14 @@ export class BattleEngine {
       runtime.requestedMw = runtime.operatingState === 'online' ? baseDemand + monsterDrain : 0;
       runtime.allocatedMw = allocation.allocationByNodeId.get(node.id) ?? 0;
       runtime.powerPercent = baseDemand > 0
-        ? clamp(runtime.allocatedMw / (baseDemand + monsterDrain) * 100, 0, 100)
+        ? clamp(runtime.allocatedMw / Math.max(1, baseDemand + monsterDrain) * 100, 0, 100)
         : 100;
     }
 
-    this.updateEdgeLoads(monsterDrainByNodeId);
+    this.updateEdgeLoads(allocation.flowByEdgeId);
   }
 
-  private updateEdgeLoads(monsterDrainByNodeId: ReadonlyMap<PowerNodeId, number>): void {
+  private updateEdgeLoads(flowByEdgeId: ReadonlyMap<PowerEdgeId, number>): void {
     for (const edge of this.level.edges) {
       const runtime = this.edgeRuntimeById.get(edge.id);
       if (!runtime) continue;
@@ -381,11 +384,8 @@ export class BattleEngine {
         continue;
       }
 
-      const fromLoad = this.nodeRuntimeById.get(edge.from)?.allocatedMw ?? 0;
-      const toLoad = this.nodeRuntimeById.get(edge.to)?.allocatedMw ?? 0;
-      const monsterLoad = (monsterDrainByNodeId.get(edge.from) ?? 0) + (monsterDrainByNodeId.get(edge.to) ?? 0);
-      runtime.loadMw = Math.min(edge.capacityMw * 1.3, (fromLoad + toLoad) * 0.42 + monsterLoad);
-      runtime.loadPercent = runtime.loadMw / edge.capacityMw * 100;
+      runtime.loadMw = Math.max(0, flowByEdgeId.get(edge.id) ?? 0);
+      runtime.loadPercent = edge.capacityMw > 0 ? runtime.loadMw / edge.capacityMw * 100 : 0;
       if (runtime.overloadRemainingSeconds > 0) runtime.loadState = 'overload';
       else if (runtime.loadPercent >= 80) runtime.loadState = 'high';
       else runtime.loadState = 'normal';
