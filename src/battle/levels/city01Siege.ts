@@ -6,6 +6,7 @@ export const CITY01_SIEGE_LEVEL: BattleLevelConfig = {
   subtitle: '用电力做武器，把怪物引入陷阱，守护医院。',
   overloadDurationSeconds: 4,
   overloadDamagePerSecond: 60,
+  overloadImpactDamage: 55,
   overloadEnergyCostMwh: 4,
   overloadCooldownSeconds: 8,
   overloadHeatGainPercent: 60,
@@ -53,7 +54,7 @@ export const CITY01_SIEGE_LEVEL: BattleLevelConfig = {
   monsters: [
     { id: 'crawler', label: '噬电幼兽', maxHp: 85, speed: 9, drainMw: 8, overloadDamageMultiplier: 1.15, radius: 8 },
     { id: 'brute', label: '装甲噬电兽', maxHp: 165, speed: 6, drainMw: 14, overloadDamageMultiplier: 1, radius: 11 },
-    { id: 'boss', label: '大型噬电兽', maxHp: 520, speed: 4.2, drainMw: 28, overloadDamageMultiplier: 0.7, radius: 16 }
+    { id: 'boss', label: '大型噬电兽', maxHp: 520, speed: 4.2, drainMw: 28, overloadDamageMultiplier: 0.55, radius: 16 }
   ],
   waves: [
     {
