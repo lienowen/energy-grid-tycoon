@@ -83,6 +83,9 @@ export interface BattleLevelConfig {
   overloadHeatGainPercent: number;
   lineHeatCoolPerSecond: number;
   lineRepairSeconds: number;
+  bossAbilityDelaySeconds: number;
+  bossAbilityCooldownSeconds: number;
+  bossRouteLockSeconds: number;
 }
 
 export interface NodeRuntimeState {
@@ -105,6 +108,7 @@ export interface EdgeRuntimeState {
   overloadCooldownRemainingSeconds: number;
   heatPercent: number;
   repairRemainingSeconds: number;
+  bossLockRemainingSeconds: number;
 }
 
 export interface MonsterRuntimeState {
@@ -122,6 +126,8 @@ export interface MonsterRuntimeState {
   reachedTarget: boolean;
   alive: boolean;
   defeatedAtSeconds?: number;
+  abilityCooldownRemainingSeconds?: number;
+  abilityActiveUntilSeconds?: number;
 }
 
 export interface BattleSnapshot {
