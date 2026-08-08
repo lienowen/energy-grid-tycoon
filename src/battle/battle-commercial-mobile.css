@@ -1,4 +1,12 @@
 @media (max-width: 760px) {
+  .battle-shell::after {
+    display: none !important;
+  }
+
+  .battle-map {
+    z-index: 7 !important;
+  }
+
   .battle-header {
     grid-template-columns: minmax(0, 1fr) 102px 32px 36px !important;
     gap: 4px !important;
