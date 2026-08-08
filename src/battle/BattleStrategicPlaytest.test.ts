@@ -80,6 +80,25 @@ describe('City-01 strategic commercial playtest', () => {
     }
 
     const final = engine.snapshot();
+    const reached = final.monsters.filter((monster) => monster.reachedTarget && monster.alive);
+    const alive = final.monsters.filter((monster) => monster.alive);
+    const metrics = {
+      status: final.status,
+      elapsedSeconds: Number(final.elapsedSeconds.toFixed(1)),
+      peakOutage: Number(peakOutage.toFixed(1)),
+      batteryEnergyMwh: Number(final.batteryEnergyMwh.toFixed(1)),
+      overloads,
+      bossSeen,
+      reachedTarget: reached.map((monster) => ({ type: monster.archetypeId, hp: Math.round(monster.hp) })),
+      alive: alive.map((monster) => ({
+        type: monster.archetypeId,
+        hp: Math.round(monster.hp),
+        reachedTarget: monster.reachedTarget,
+        edge: monster.currentEdgeId ?? null
+      }))
+    };
+    console.info('CITY01_STRATEGIC_PLAYTEST', JSON.stringify(metrics));
+
     expect(bossSeen).toBe(true);
     expect(final.status).toBe('victory');
     expect(final.elapsedSeconds).toBeLessThan(150);
