@@ -73,18 +73,19 @@ const loadTycoonPresentationCss = async (): Promise<void> => {
 const bootstrapBattle = async (): Promise<void> => {
   const [
     { AssetManager },
-    { city01GridDefenseAssetCatalog },
-    { prepareGridDefenseAssets },
-    { BattleApp }
+    { city01GridDefenseAssetCatalog }
   ] = await Promise.all([
     import('./resources/AssetManager'),
-    import('./resources/City01GridDefenseAssetCatalog'),
-    import('./battle/BattleAssetPreprocessor'),
-    import('./battle/BattleApp')
+    import('./resources/City01GridDefenseAssetCatalog')
   ]);
 
+  // BattleAssetCatalog resolves some URLs during module initialization, so the battle catalog must exist first.
   AssetManager.load(city01GridDefenseAssetCatalog);
+
+  const { prepareGridDefenseAssets } = await import('./battle/BattleAssetPreprocessor');
   await prepareGridDefenseAssets();
+
+  const { BattleApp } = await import('./battle/BattleApp');
   battleApp = new BattleApp(root);
   battleApp.start();
 };
