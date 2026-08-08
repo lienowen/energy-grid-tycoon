@@ -22,6 +22,12 @@ describe('City-01 commercial tutorial balance', () => {
     expect(defeated.every((monster) => monster.defeatedAtSeconds !== undefined)).toBe(true);
   });
 
+  it('keeps first-wave spacing inside the overload window so the group-hit lesson is physically possible', () => {
+    const firstSpawn = CITY01_SIEGE_LEVEL.waves[0]?.spawns[0];
+    expect(firstSpawn).toBeDefined();
+    expect(firstSpawn?.intervalSeconds).toBeLessThan(CITY01_SIEGE_LEVEL.overloadDurationSeconds);
+  });
+
   it('gives a first-time player enough storage margin to learn before the boss', () => {
     const battery = CITY01_SIEGE_LEVEL.nodes.find((node) => node.kind === 'battery');
     expect(battery?.batteryInitialMwh).toBeGreaterThanOrEqual(CITY01_SIEGE_LEVEL.overloadEnergyCostMwh * 9);
