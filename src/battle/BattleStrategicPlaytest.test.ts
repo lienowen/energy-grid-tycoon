@@ -1,0 +1,89 @@
+import { describe, expect, it } from 'vitest';
+import { BattleEngine } from './BattleEngine';
+import { CITY01_SIEGE_LEVEL } from './levels/city01Siege';
+import type { BattleSnapshot, MonsterRuntimeState } from './types';
+
+const remainingPathHops = (monster: MonsterRuntimeState): number => {
+  const index = monster.path.indexOf(monster.currentNodeId);
+  if (index < 0) return monster.path.length;
+  return Math.max(0, monster.path.length - index - 1);
+};
+
+const chooseOverloadEdge = (snapshot: BattleSnapshot): string | undefined => {
+  const edgeState = new Map(snapshot.edges.map((edge) => [edge.id, edge] as const));
+  const groups = new Map<string, MonsterRuntimeState[]>();
+
+  for (const monster of snapshot.monsters) {
+    if (!monster.alive || !monster.currentEdgeId) continue;
+    const group = groups.get(monster.currentEdgeId) ?? [];
+    group.push(monster);
+    groups.set(monster.currentEdgeId, group);
+  }
+
+  const candidates = [...groups.entries()].filter(([edgeId]) => {
+    const edge = edgeState.get(edgeId);
+    return edge
+      && edge.operatingState === 'online'
+      && edge.overloadRemainingSeconds <= 0
+      && edge.overloadCooldownRemainingSeconds <= 0;
+  });
+
+  candidates.sort(([, a], [, b]) => {
+    const score = (group: MonsterRuntimeState[]): number => group.reduce((total, monster) => {
+      const bossBonus = monster.archetypeId === 'boss' ? 120 : 0;
+      const bruteBonus = monster.archetypeId === 'brute' ? 18 : 0;
+      const dangerBonus = remainingPathHops(monster) <= 2 ? 22 : 0;
+      const woundedBonus = monster.hp < monster.maxHp * 0.78 ? 12 : 0;
+      return total + 20 + bossBonus + bruteBonus + dangerBonus + woundedBonus;
+    }, 0);
+    return score(b) - score(a);
+  });
+
+  for (const [edgeId, group] of candidates) {
+    const hasBoss = group.some((monster) => monster.archetypeId === 'boss');
+    const hasWoundedBrute = group.some((monster) => monster.archetypeId === 'brute' && monster.hp < monster.maxHp);
+    const imminent = group.some((monster) => remainingPathHops(monster) <= 2);
+    if (group.length >= 2 || hasBoss || hasWoundedBrute || imminent) return edgeId;
+  }
+
+  return undefined;
+};
+
+describe('City-01 strategic commercial playtest', () => {
+  it('can be cleared by the reroute, group, overload strategy taught in the tutorial', () => {
+    const engine = new BattleEngine(CITY01_SIEGE_LEVEL);
+    engine.start();
+    expect(engine.switchRoute('battery-industrial').ok).toBe(true);
+
+    let restoredTutorialRoute = false;
+    let overloads = 0;
+    let peakOutage = 0;
+    let bossSeen = false;
+
+    for (let elapsed = 0; elapsed < 155 && engine.snapshot().status === 'running'; elapsed += 0.1) {
+      engine.tick(0.1);
+      let snapshot = engine.snapshot();
+      peakOutage = Math.max(peakOutage, snapshot.criticalOutageSeconds);
+      bossSeen ||= snapshot.monsters.some((monster) => monster.alive && monster.archetypeId === 'boss');
+
+      if (!restoredTutorialRoute && snapshot.elapsedSeconds >= 6.4) {
+        expect(engine.switchRoute('battery-industrial').ok).toBe(true);
+        restoredTutorialRoute = true;
+        snapshot = engine.snapshot();
+      }
+
+      if (snapshot.batteryEnergyMwh < CITY01_SIEGE_LEVEL.overloadEnergyCostMwh) continue;
+      const edgeId = chooseOverloadEdge(snapshot);
+      if (!edgeId) continue;
+      const result = engine.forceOverload(edgeId);
+      if (result.ok) overloads += 1;
+    }
+
+    const final = engine.snapshot();
+    expect(bossSeen).toBe(true);
+    expect(final.status).toBe('victory');
+    expect(final.elapsedSeconds).toBeLessThan(150);
+    expect(peakOutage).toBeLessThan(45);
+    expect(overloads).toBeLessThanOrEqual(9);
+  });
+});
