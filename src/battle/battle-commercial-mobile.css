@@ -11,6 +11,46 @@
   font-size: 13px !important;
 }
 
+/* Gameplay hierarchy: the unit itself should read before its warning ring. */
+.battle-monster:not(.battle-monster--boss) .battle-monster__danger {
+  opacity: .1 !important;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(.72) !important;
+  stroke-width: .12 !important;
+}
+
+.battle-monster--boss .battle-monster__sprite {
+  animation: commercial-boss-breathe .78s ease-in-out infinite alternate !important;
+}
+
+.battle-monster--boss .battle-monster__danger {
+  fill: rgba(255, 43, 25, .1) !important;
+  stroke: rgba(255, 137, 48, .82) !important;
+  stroke-width: .24 !important;
+  opacity: .72 !important;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: commercial-boss-ring .78s ease-in-out infinite alternate !important;
+}
+
+.battle-monster--boss .battle-monster__hp-bg,
+.battle-monster--boss .battle-monster__hp {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scaleX(1.08) !important;
+}
+
+@keyframes commercial-boss-breathe {
+  from { transform: scale(1.05); }
+  to { transform: translateY(-.12px) scale(1.11); }
+}
+
+@keyframes commercial-boss-ring {
+  from { transform: scale(.68); opacity: .46; }
+  to { transform: scale(.78); opacity: .72; }
+}
+
 @media (max-width: 760px) {
   .battle-meter > div:first-child small::after {
     font-size: 7px !important;
