@@ -171,18 +171,25 @@ try {
   await cdp.send('Page.navigate', { url: appUrl });
   await loaded;
   await waitForSelector('.battle-shell');
-  await sleep(1200);
-  await capture('01-battle-opening');
+  await waitForSelector('[data-action="start-battle"]');
+  await sleep(700);
+  await capture('00-mission-briefing');
 
-  // First crawler enters spawn-east-edge at ~3s. Capture the actual overload interaction.
-  await sleep(2050);
+  await click('[data-action="start-battle"]');
+  await sleep(500);
+  await capture('01-first-wave-tutorial');
+
+  // Follow the intended first-minute commercial tutorial: reroute first, then overload the incoming crawler.
+  await click('[data-edge-id="battery-industrial"]');
+  await click('[data-action="switch-route"]');
+  await sleep(2700);
   await click('[data-edge-id="spawn-east-edge"]');
   await click('[data-action="overload"]');
   await sleep(180);
   await capture('02-overload-hit');
 
   // Mid-battle: second wave, multiple routes and monster types visible.
-  await sleep(25000);
+  await sleep(24000);
   await capture('03-wave-two');
 
   await setViewport(390, 844, true);
@@ -203,10 +210,12 @@ try {
     bossCount: document.querySelectorAll('.battle-monster--boss').length,
     overloadedLines: document.querySelectorAll('.battle-line--overload').length,
     blackoutFacilities: document.querySelectorAll('[class*="blackout"]').length,
+    tutorialVisible: Boolean(document.querySelector('.battle-tutorial')),
+    bossHudVisible: Boolean(document.querySelector('.battle-boss-hud')),
     viewport: { width: innerWidth, height: innerHeight }
   })`);
   await writeFile(`${outputDir}/diagnostics.json`, JSON.stringify(diagnostics, null, 2));
-  console.log(`Captured battle slice to ${outputDir}`);
+  console.log(`Captured commercial battle slice to ${outputDir}`);
 } finally {
   cdp.close();
   chrome.kill('SIGTERM');
