@@ -93,22 +93,22 @@ const monsterSprite = (
 
 export const monsterSpriteFor = (archetypeId: string, state: MonsterVisualState = 'walk'): MonsterSpriteSpec | undefined => {
   if (archetypeId === 'crawler') {
-    if (state === 'death') return monsterSprite('griddef_monsters_small_death', 7.4, 5.2, -5.1, state);
-    if (state === 'stunned') return monsterSprite('griddef_monsters_small_electro_stun', 8.4, 5.9, -5.8, state);
-    if (state === 'hit') return monsterSprite('griddef_monsters_small_hit', 7.2, 5.4, -5.3, state);
-    return monsterSprite('griddef_monsters_small_walk', 7.2, 5.4, -5.3, 'walk');
+    if (state === 'death') return monsterSprite('griddef_monsters_small_death', 5.8, 4.1, -4.2, state);
+    if (state === 'stunned') return monsterSprite('griddef_monsters_small_electro_stun', 6.2, 4.5, -4.6, state);
+    if (state === 'hit') return monsterSprite('griddef_monsters_small_hit', 5.6, 4.2, -4.3, state);
+    return monsterSprite('griddef_monsters_small_walk', 5.6, 4.2, -4.3, 'walk');
   }
   if (archetypeId === 'brute') {
-    if (state === 'death') return monsterSprite('griddef_monsters_armored_death', 9.6, 6.8, -6.6, state);
-    if (state === 'break-armor' || state === 'stunned') return monsterSprite('griddef_monsters_armored_break_armor', 9.2, 7.5, -7.3, 'break-armor');
-    if (state === 'hit') return monsterSprite('griddef_monsters_armored_hit', 9.2, 7.5, -7.3, state);
-    return monsterSprite('griddef_monsters_armored_walk', 9.2, 7.5, -7.3, 'walk');
+    if (state === 'death') return monsterSprite('griddef_monsters_armored_death', 7.5, 5.4, -5.5, state);
+    if (state === 'break-armor' || state === 'stunned') return monsterSprite('griddef_monsters_armored_break_armor', 7.1, 5.8, -5.9, 'break-armor');
+    if (state === 'hit') return monsterSprite('griddef_monsters_armored_hit', 7.1, 5.8, -5.9, state);
+    return monsterSprite('griddef_monsters_armored_walk', 7.1, 5.8, -5.9, 'walk');
   }
   if (archetypeId === 'boss') {
-    if (state === 'death') return monsterSprite('griddef_monsters_boss_death', 14.6, 9, -8.7, state);
-    if (state === 'roar') return monsterSprite('griddef_monsters_boss_roar', 13.4, 10.9, -10.6, state);
-    if (state === 'hit' || state === 'stunned' || state === 'break-armor') return monsterSprite('griddef_monsters_boss_hit', 13.4, 10.4, -10.1, 'hit');
-    return monsterSprite('griddef_monsters_boss_walk', 13.4, 10.4, -10.1, 'walk');
+    if (state === 'death') return monsterSprite('griddef_monsters_boss_death', 10.5, 6.7, -6.9, state);
+    if (state === 'roar') return monsterSprite('griddef_monsters_boss_roar', 10.2, 8.0, -8.2, state);
+    if (state === 'hit' || state === 'stunned' || state === 'break-armor') return monsterSprite('griddef_monsters_boss_hit', 10.2, 7.7, -7.9, 'hit');
+    return monsterSprite('griddef_monsters_boss_walk', 10.2, 7.7, -7.9, 'walk');
   }
   return undefined;
 };
