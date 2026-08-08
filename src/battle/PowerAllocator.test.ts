@@ -29,7 +29,8 @@ const runtimeForEdges = (edges: readonly PowerEdgeConfig[]): Map<string, EdgeRun
     overloadRemainingSeconds: 0,
     overloadCooldownRemainingSeconds: 0,
     heatPercent: 0,
-    repairRemainingSeconds: 0
+    repairRemainingSeconds: 0,
+    bossLockRemainingSeconds: 0
   }])
 );
 
