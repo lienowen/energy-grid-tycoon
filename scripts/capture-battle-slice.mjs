@@ -145,6 +145,17 @@ const waitForSelector = async (selector, timeoutMs = 20000) => {
   throw new Error(`Timed out waiting for selector: ${selector}`);
 };
 
+const waitForExpression = async (expression, timeoutMs = 30000, label = expression) => {
+  const started = Date.now();
+  while (Date.now() - started < timeoutMs) {
+    if (await evaluate(`Boolean(${expression})`)) return;
+    const defeated = await evaluate(`Boolean(document.querySelector('.battle-outcome--defeat'))`);
+    if (defeated) throw new Error(`Battle ended in defeat while waiting for ${label}`);
+    await sleep(200);
+  }
+  throw new Error(`Timed out waiting for ${label}`);
+};
+
 const click = async (selector) => {
   const clicked = await evaluate(`(() => {
     const el = document.querySelector(${JSON.stringify(selector)});
@@ -179,39 +190,59 @@ try {
   await sleep(500);
   await capture('01-first-wave-tutorial');
 
-  // Follow the intended first-minute commercial tutorial: reroute first, then overload the incoming crawler.
+  // Follow the intended first-minute tutorial: reroute, hit the incoming crawler, then restore the route.
   await click('[data-edge-id="battery-industrial"]');
   await click('[data-action="switch-route"]');
   await sleep(2700);
   await click('[data-edge-id="spawn-east-edge"]');
   await click('[data-action="overload"]');
-  await sleep(180);
+  await sleep(350);
   await capture('02-overload-hit');
+  await click('[data-edge-id="battery-industrial"]');
+  await click('[data-action="switch-route"]');
 
-  // Mid-battle: second wave, multiple routes and monster types visible.
-  await sleep(24000);
+  // Capture by game state rather than wall-clock guesses.
+  await waitForExpression(
+    `document.querySelector('.battle-wave strong')?.textContent?.includes('第 2 / 3 波')`,
+    45000,
+    'wave two'
+  );
+  await sleep(1500);
   await capture('03-wave-two');
 
   await setViewport(390, 844, true);
-  await sleep(500);
+  await sleep(600);
   await capture('04-mobile-wave-two');
 
-  // Return to desktop and wait until the boss is actually rendered, not merely scheduled.
   await setViewport(1440, 1080, false);
-  await sleep(44500);
-  await waitForSelector('.battle-monster--boss', 30000);
-  await sleep(500);
+  await waitForExpression(
+    `Boolean(document.querySelector('.battle-monster--boss'))`,
+    65000,
+    'boss spawn'
+  );
+  await sleep(700);
   await capture('05-boss-incoming');
+
+  await waitForExpression(
+    `Boolean(document.querySelector('.battle-edge-target--boss-locked'))`,
+    12000,
+    'boss route lock'
+  );
+  await sleep(250);
+  await capture('06-boss-route-lock');
 
   const diagnostics = await evaluate(`({
     title: document.title,
     gameMode: document.documentElement.dataset.gameMode ?? '',
+    waveText: document.querySelector('.battle-wave')?.textContent ?? '',
     monsterCount: document.querySelectorAll('.battle-monster').length,
     bossCount: document.querySelectorAll('.battle-monster--boss').length,
     overloadedLines: document.querySelectorAll('.battle-line--overload').length,
+    bossLockedLines: document.querySelectorAll('.battle-edge-target--boss-locked').length,
     blackoutFacilities: document.querySelectorAll('[class*="blackout"]').length,
     tutorialVisible: Boolean(document.querySelector('.battle-tutorial')),
     bossHudVisible: Boolean(document.querySelector('.battle-boss-hud')),
+    outcome: document.querySelector('.battle-outcome__title')?.textContent ?? '',
     viewport: { width: innerWidth, height: innerHeight }
   })`);
   await writeFile(`${outputDir}/diagnostics.json`, JSON.stringify(diagnostics, null, 2));
