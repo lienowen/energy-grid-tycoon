@@ -9,9 +9,17 @@ import {
   overloadNodeSpriteUrl,
   type MonsterVisualState
 } from './BattleAssetCatalog';
+import { BattleAudio } from './BattleAudio';
+import { gradeBattle } from './BattleCommercial';
 import { BattleEngine } from './BattleEngine';
 import { CITY01_SIEGE_LEVEL } from './levels/city01Siege';
-import type { BattleSnapshot, EdgeRuntimeState, MonsterRuntimeState, NodeRuntimeState, PowerNodeConfig } from './types';
+import type {
+  BattleSnapshot,
+  EdgeRuntimeState,
+  MonsterRuntimeState,
+  NodeRuntimeState,
+  PowerNodeConfig
+} from './types';
 import './battle.css';
 import './battle-assets.css';
 
@@ -19,6 +27,7 @@ const level = CITY01_SIEGE_LEVEL;
 const nodeById = new Map(level.nodes.map((node) => [node.id, node] as const));
 const edgeById = new Map(level.edges.map((edge) => [edge.id, edge] as const));
 const monsterById = new Map(level.monsters.map((monster) => [monster.id, monster] as const));
+const TUTORIAL_ROUTE_EDGE_ID = 'battery-industrial';
 
 const escapeHtml = (value: string): string => value
   .replaceAll('&', '&amp;')
@@ -108,12 +117,23 @@ const cityBlocks = (): string => Array.from({ length: 88 }, (_, index) => {
 
 export class BattleApp {
   private readonly engine = new BattleEngine(level);
+  private readonly audio = new BattleAudio();
   private frameId = 0;
   private lastFrameAt = 0;
   private lastRenderAt = 0;
   private selectedNodeId?: string;
   private selectedEdgeId?: string;
   private notice = '';
+  private tutorialStep = 0;
+  private tutorialSkipped = false;
+  private peakCriticalOutageSeconds = 0;
+  private readonly brokenLineIds = new Set<string>();
+  private routeSwitches = 0;
+  private overloads = 0;
+  private lastStatus: BattleSnapshot['status'] = 'ready';
+  private lastLockedEdgeIds = new Set<string>();
+  private hospitalWarningActive = false;
+  private bossIncomingWarned = false;
 
   constructor(private readonly root: HTMLElement) {}
 
@@ -123,7 +143,6 @@ export class BattleApp {
     this.root.className = 'battle-root';
     this.root.addEventListener('click', this.handleClick);
     this.preloadAssets();
-    this.engine.start();
     this.render(this.engine.snapshot());
     this.lastFrameAt = performance.now();
     this.frameId = requestAnimationFrame(this.loop);
@@ -131,6 +150,7 @@ export class BattleApp {
 
   destroy(): void {
     cancelAnimationFrame(this.frameId);
+    this.audio.destroy();
     this.root.removeEventListener('click', this.handleClick);
     this.root.replaceChildren();
   }
@@ -161,10 +181,12 @@ export class BattleApp {
     if (!target) return;
 
     if (target.dataset.nodeId) {
+      this.audio.play('ui');
       this.selectedNodeId = target.dataset.nodeId;
       this.selectedEdgeId = undefined;
       this.notice = `已选择：${nodeById.get(this.selectedNodeId)?.label ?? this.selectedNodeId}`;
     } else if (target.dataset.edgeId) {
+      this.audio.play('ui');
       this.selectedEdgeId = target.dataset.edgeId;
       this.selectedNodeId = undefined;
       const edge = edgeById.get(this.selectedEdgeId);
@@ -173,18 +195,54 @@ export class BattleApp {
         : '已选择线路';
     } else {
       const action = target.dataset.action;
-      if (action === 'toggle-zone') {
-        this.notice = this.selectedNodeId ? this.engine.toggleZone(this.selectedNodeId).message : '先点击一个可关闭区域。';
+      if (action === 'start-battle') {
+        this.audio.unlock();
+        this.audio.play('ui');
+        this.engine.start();
+        this.notice = '先切换一条支路，让第一波进入你准备好的陷阱。';
+      } else if (action === 'skip-tutorial') {
+        this.audio.play('ui');
+        this.tutorialSkipped = true;
+        this.notice = '引导已跳过。守住医院，利用线路改道和过载消灭怪物。';
+      } else if (action === 'toggle-zone') {
+        const result = this.selectedNodeId
+          ? this.engine.toggleZone(this.selectedNodeId)
+          : { ok: false, message: '先点击一个可关闭区域。' };
+        this.notice = result.message;
+        if (result.ok) this.audio.play('switch');
       } else if (action === 'switch-route') {
-        this.notice = this.selectedEdgeId ? this.engine.switchRoute(this.selectedEdgeId).message : '先点击一条线路。';
+        const result = this.selectedEdgeId
+          ? this.engine.switchRoute(this.selectedEdgeId)
+          : { ok: false, message: '先点击一条线路。' };
+        this.notice = result.message;
+        if (result.ok) {
+          this.routeSwitches += 1;
+          this.audio.play('switch');
+          if (!this.tutorialSkipped && this.tutorialStep === 0) this.tutorialStep = 1;
+        }
       } else if (action === 'overload') {
-        this.notice = this.selectedEdgeId ? this.engine.forceOverload(this.selectedEdgeId).message : '先点击怪物正在经过的线路。';
+        const result = this.selectedEdgeId
+          ? this.engine.forceOverload(this.selectedEdgeId)
+          : { ok: false, message: '先点击怪物正在经过的线路。' };
+        this.notice = result.message;
+        if (result.ok) {
+          this.overloads += 1;
+          this.audio.play('overload');
+          if (!this.tutorialSkipped && this.tutorialStep >= 2) this.tutorialStep = 4;
+        }
       } else if (action === 'pause') {
+        this.audio.play('ui');
         this.engine.pause();
       } else if (action === 'restart') {
+        this.audio.play('ui');
         this.selectedNodeId = undefined;
         this.selectedEdgeId = undefined;
+        this.notice = '';
+        this.tutorialSkipped = true;
+        this.resetPerformance();
         this.engine.restart();
+      } else if (action === 'mute') {
+        this.audio.toggleMuted();
       } else if (action === 'tycoon') {
         const url = new URL(window.location.href);
         url.searchParams.set('mode', 'tycoon');
@@ -195,16 +253,143 @@ export class BattleApp {
     this.render(this.engine.snapshot());
   };
 
+  private resetPerformance(): void {
+    this.peakCriticalOutageSeconds = 0;
+    this.brokenLineIds.clear();
+    this.routeSwitches = 0;
+    this.overloads = 0;
+    this.lastLockedEdgeIds.clear();
+    this.hospitalWarningActive = false;
+    this.bossIncomingWarned = false;
+    this.lastStatus = 'running';
+  }
+
+  private updateCommercialState(snapshot: BattleSnapshot): void {
+    this.peakCriticalOutageSeconds = Math.max(this.peakCriticalOutageSeconds, snapshot.criticalOutageSeconds);
+    for (const edge of snapshot.edges) {
+      if (edge.operatingState === 'broken') this.brokenLineIds.add(edge.id);
+    }
+
+    if (!this.tutorialSkipped) {
+      if (this.tutorialStep === 1 && snapshot.monsters.some((monster) => monster.alive)) {
+        this.tutorialStep = 2;
+      }
+      if (
+        this.tutorialStep === 2
+        && this.selectedEdgeId
+        && snapshot.monsters.some((monster) => monster.alive && monster.currentEdgeId === this.selectedEdgeId)
+      ) {
+        this.tutorialStep = 3;
+      }
+    }
+
+    const lockedNow = new Set(
+      snapshot.edges.filter((edge) => edge.bossLockRemainingSeconds > 0).map((edge) => edge.id)
+    );
+    if ([...lockedNow].some((edgeId) => !this.lastLockedEdgeIds.has(edgeId))) this.audio.play('boss');
+    this.lastLockedEdgeIds = lockedNow;
+
+    const hospitalDanger = snapshot.criticalOutageSeconds > 0;
+    if (hospitalDanger && !this.hospitalWarningActive) this.audio.play('warning');
+    this.hospitalWarningActive = hospitalDanger;
+
+    if (
+      !this.bossIncomingWarned
+      && snapshot.currentWaveIndex === 2
+      && snapshot.nextWaveInSeconds > 0
+      && snapshot.nextWaveInSeconds <= 8
+    ) {
+      this.bossIncomingWarned = true;
+      this.audio.play('warning');
+    }
+
+    if (snapshot.status !== this.lastStatus) {
+      if (snapshot.status === 'victory') this.audio.play('victory');
+      if (snapshot.status === 'defeat') this.audio.play('defeat');
+      this.lastStatus = snapshot.status;
+    }
+  }
+
+  private tutorialTargetEdge(snapshot: BattleSnapshot): string | undefined {
+    if (this.tutorialSkipped) return undefined;
+    if (this.tutorialStep === 0) return TUTORIAL_ROUTE_EDGE_ID;
+    if (this.tutorialStep === 2) {
+      return snapshot.monsters.find((monster) => monster.alive && monster.currentEdgeId)?.currentEdgeId;
+    }
+    return undefined;
+  }
+
+  private tutorialMarkup(snapshot: BattleSnapshot): string {
+    if (this.tutorialSkipped || snapshot.status !== 'running') return '';
+    const copy = [
+      ['1 / 4 · 改变路线', '点击地图上闪烁的推荐线路，再点「切换线路」。先把默认路线改成你的陷阱。'],
+      ['2 / 4 · 看怪改道', '第一只噬电兽正在进入电网。观察它沿你刚刚改变的路线前进。'],
+      ['3 / 4 · 选中怪群', '点击怪物脚下的线路。过载只会伤害当前在线路上的怪物。'],
+      ['4 / 4 · 强制过载', '怪物进入线路后点「强制过载」。尽量等多只怪聚在一起再放电。']
+    ] as const;
+    if (this.tutorialStep >= 4) {
+      return snapshot.elapsedSeconds < 22
+        ? '<aside class="battle-tutorial battle-tutorial--complete"><b>✓ 战术链已掌握</b><span>改路 → 聚怪 → 过载。接下来自己守住医院。</span></aside>'
+        : '';
+    }
+    const step = copy[this.tutorialStep] ?? copy[0];
+    return `<aside class="battle-tutorial">
+      <div><small>新手引导</small><b>${escapeHtml(step[0])}</b><p>${escapeHtml(step[1])}</p></div>
+      <button data-action="skip-tutorial">跳过</button>
+    </aside>`;
+  }
+
+  private waveAlertMarkup(snapshot: BattleSnapshot): string {
+    if (snapshot.status !== 'running') return '';
+    if (snapshot.currentWaveIndex === 0 || (snapshot.currentWaveIndex === 1 && snapshot.elapsedSeconds < 5.5)) {
+      return `<div class="battle-wave-alert">${assetImg(BATTLE_UI_ASSETS.waveStart, 'battle-wave-alert__icon')}<span><small>WAVE 01</small><b>侦察群进入城市电网</b></span></div>`;
+    }
+    if (snapshot.currentWaveIndex === 1 && snapshot.nextWaveInSeconds > 0 && snapshot.nextWaveInSeconds <= 4) {
+      return `<div class="battle-wave-alert battle-wave-alert--warning">${assetImg(BATTLE_UI_ASSETS.waveStart, 'battle-wave-alert__icon')}<span><small>WAVE 02</small><b>双向突袭 · ${Math.ceil(snapshot.nextWaveInSeconds)} 秒</b></span></div>`;
+    }
+    if (snapshot.currentWaveIndex === 2 && snapshot.nextWaveInSeconds > 0 && snapshot.nextWaveInSeconds <= 8) {
+      return `<div class="battle-wave-alert battle-wave-alert--boss">${assetImg(BATTLE_UI_ASSETS.bossIncoming, 'battle-wave-alert__icon')}<span><small>BOSS WARNING</small><b>兽王压境 · ${Math.ceil(snapshot.nextWaveInSeconds)} 秒</b></span></div>`;
+    }
+    return '';
+  }
+
+  private briefingMarkup(snapshot: BattleSnapshot): string {
+    if (snapshot.status !== 'ready') return '';
+    return `<section class="battle-briefing">
+      <div class="battle-briefing__card">
+        <div class="battle-briefing__eyebrow">CITY-01 · 首场防卫战</div>
+        <h2>噬电兽围城</h2>
+        <p>${escapeHtml(level.subtitle)}</p>
+        <div class="battle-briefing__mission"><b>任务目标</b><span>医院累计断电不能超过 ${round(snapshot.criticalOutageLimitSeconds)} 秒。</span></div>
+        <div class="battle-briefing__loop">
+          <span><b>01</b>切线路<small>改变怪物路线</small></span>
+          <i>→</i>
+          <span><b>02</b>聚怪<small>把怪引到同一段线</small></span>
+          <i>→</i>
+          <span><b>03</b>过载<small>消耗储能群体电击</small></span>
+        </div>
+        <div class="battle-briefing__rules"><span>⚡ 每次过载消耗 ${level.overloadEnergyCostMwh} MWh</span><span>♨ 连续过载会升温熔断</span><span>☠ Boss 会锁死线路开关</span></div>
+        <button data-action="start-battle">开始防守</button>
+      </div>
+    </section>`;
+  }
+
   private render(snapshot: BattleSnapshot): void {
+    this.updateCommercialState(snapshot);
     const nodes = new Map(snapshot.nodes.map((node) => [node.id, node] as const));
     const edges = new Map(snapshot.edges.map((edge) => [edge.id, edge] as const));
     const selectedNode = this.selectedNodeId ? nodeById.get(this.selectedNodeId) : undefined;
     const selectedNodeRuntime = this.selectedNodeId ? nodes.get(this.selectedNodeId) : undefined;
+    const selectedEdgeConfig = this.selectedEdgeId ? edgeById.get(this.selectedEdgeId) : undefined;
     const selectedEdgeRuntime = this.selectedEdgeId ? edges.get(this.selectedEdgeId) : undefined;
+    const selectedEdgeHasMonster = Boolean(this.selectedEdgeId && snapshot.monsters.some((monster) => (
+      monster.alive && monster.currentEdgeId === this.selectedEdgeId
+    )));
     const batteryPercent = snapshot.batteryCapacityMwh > 0
       ? snapshot.batteryEnergyMwh / snapshot.batteryCapacityMwh * 100
       : 0;
     const batteryDischarging = snapshot.totalDemandMw > snapshot.totalSupplyMw && snapshot.batteryEnergyMwh > 0;
+    const tutorialTargetEdgeId = this.tutorialTargetEdge(snapshot);
 
     const edgeMarkup = level.edges.map((edge) => {
       const runtime = edges.get(edge.id);
@@ -231,7 +416,8 @@ export class BattleApp {
           </g>`
         : '';
       const lockedClass = runtime.bossLockRemainingSeconds > 0 ? ' battle-edge-target--boss-locked' : '';
-      return `<g data-edge-id="${edge.id}" class="battle-edge-target${lockedClass}">
+      const tutorialClass = tutorialTargetEdgeId === edge.id ? ' battle-edge-target--tutorial' : '';
+      return `<g data-edge-id="${edge.id}" class="battle-edge-target${lockedClass}${tutorialClass}">
         <line class="battle-line-shadow" x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" />
         <line class="${lineClass(runtime)}" x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" />
         ${overlayMarkup}${overloadMarker}${bossLockMarker}
@@ -253,9 +439,7 @@ export class BattleApp {
         ? `<rect class="battle-facility-hitbox" x="${-sprite.width / 2}" y="${-sprite.height + sprite.baselineOffset}" width="${sprite.width}" height="${sprite.height}" rx="1.2" />
           <image class="battle-facility-sprite${sprite.variant ? ` battle-facility-sprite--${sprite.variant}` : ''}" href="${escapeHtml(sprite.url)}" x="${-sprite.width / 2}" y="${-sprite.height + sprite.baselineOffset}" width="${sprite.width}" height="${sprite.height}" preserveAspectRatio="xMidYMax meet" />`
         : '';
-      const cardTransform = sprite
-        ? `translate(${sprite.cardX} ${sprite.cardY})`
-        : 'translate(3.1 -5.5)';
+      const cardTransform = sprite ? `translate(${sprite.cardX} ${sprite.cardY})` : 'translate(3.1 -5.5)';
       const haloRadius = sprite ? 2.45 : 3.4;
       const markerRadius = sprite ? 1.35 : 2.05;
       return `<g class="${nodeWrapClass(runtime, config, Boolean(sprite?.url), config.id === this.selectedNodeId, sprite?.variant)}" data-node-id="${config.id}" transform="translate(${config.x} ${config.y})">
@@ -329,16 +513,27 @@ export class BattleApp {
       : selectedEdgeRuntime
         ? `${round(selectedEdgeRuntime.loadPercent)}% 负载 · 温度 ${round(selectedEdgeRuntime.heatPercent)}% · ${edgeStatusText(selectedEdgeRuntime)}`
         : '点击建筑或电力线路进行操作';
+
+    const switchDisabled = !selectedEdgeRuntime
+      || selectedEdgeConfig?.switchable !== true
+      || selectedEdgeRuntime.bossLockRemainingSeconds > 0
+      || selectedEdgeRuntime.operatingState === 'broken';
     const switchActionHint = selectedEdgeRuntime
       ? selectedEdgeRuntime.bossLockRemainingSeconds > 0
         ? `兽王锁定 ${Math.ceil(selectedEdgeRuntime.bossLockRemainingSeconds)}s`
         : selectedEdgeRuntime.operatingState === 'broken'
           ? `线路损坏 · ${Math.ceil(selectedEdgeRuntime.repairRemainingSeconds)}s 修复`
-          : '改变行进路径'
+          : selectedEdgeConfig?.switchable !== true ? '固定线路 · 无法切换' : '改变怪物行进路径'
       : '先选中可切换线路';
     const switchActionClass = selectedEdgeRuntime && (
       selectedEdgeRuntime.bossLockRemainingSeconds > 0 || selectedEdgeRuntime.operatingState === 'broken'
     ) ? ' battle-action--locked' : '';
+
+    const overloadDisabled = !selectedEdgeRuntime
+      || !selectedEdgeHasMonster
+      || selectedEdgeRuntime.operatingState !== 'online'
+      || selectedEdgeRuntime.overloadRemainingSeconds > 0
+      || selectedEdgeRuntime.overloadCooldownRemainingSeconds > 0;
     const overloadActionHint = selectedEdgeRuntime
       ? selectedEdgeRuntime.operatingState === 'broken'
         ? `线路损坏 · ${Math.ceil(selectedEdgeRuntime.repairRemainingSeconds)}s 修复`
@@ -346,23 +541,64 @@ export class BattleApp {
           ? `放电中 · ${selectedEdgeRuntime.overloadRemainingSeconds.toFixed(1)}s`
           : selectedEdgeRuntime.overloadCooldownRemainingSeconds > 0
             ? `冷却 ${Math.ceil(selectedEdgeRuntime.overloadCooldownRemainingSeconds)}s · 温度 ${round(selectedEdgeRuntime.heatPercent)}%`
-            : `消耗 ${level.overloadEnergyCostMwh} MWh · 温度 ${round(selectedEdgeRuntime.heatPercent)}%`
+            : !selectedEdgeHasMonster
+              ? `等怪进入 · 温度 ${round(selectedEdgeRuntime.heatPercent)}%`
+              : `消耗 ${level.overloadEnergyCostMwh} MWh · 命中当前线路怪物`
       : `消耗 ${level.overloadEnergyCostMwh} MWh · 先选中线路`;
     const overloadActionClass = selectedEdgeRuntime && (
       selectedEdgeRuntime.operatingState === 'broken'
       || selectedEdgeRuntime.overloadRemainingSeconds > 0
       || selectedEdgeRuntime.overloadCooldownRemainingSeconds > 0
     ) ? ' battle-action--cooldown' : '';
+    const toggleDisabled = !selectedNode || selectedNode.lockedOnline || selectedNode.kind === 'hospital' || selectedNode.kind === 'junction';
+
+    const boss = snapshot.monsters.find((monster) => monster.alive && monster.archetypeId === 'boss');
+    const bossHpPercent = boss ? clampPercent(boss.hp / Math.max(1, boss.maxHp) * 100) : 0;
+    const bossHud = boss
+      ? `<aside class="battle-boss-hud">
+          <div><small>大型噬电兽</small><strong>BOSS</strong><span>电网锁定 ${Math.ceil(boss.abilityCooldownRemainingSeconds ?? 0)}s</span></div>
+          <div class="battle-boss-hud__bar"><i style="width:${bossHpPercent}%"></i></div>
+          <b>${round(boss.hp)} / ${round(boss.maxHp)} HP</b>
+        </aside>`
+      : '';
+
+    const grade = gradeBattle(snapshot, {
+      peakCriticalOutageSeconds: this.peakCriticalOutageSeconds,
+      lineBreaks: this.brokenLineIds.size,
+      routeSwitches: this.routeSwitches,
+      overloads: this.overloads
+    });
+    const stars = snapshot.status === 'victory'
+      ? `<div class="battle-grade__stars" aria-label="${grade.stars} 星">${[1, 2, 3].map((star) => `<span class="${star <= grade.stars ? 'is-active' : ''}">★</span>`).join('')}</div>`
+      : '';
     const outcomeAsset = snapshot.status === 'victory' ? BATTLE_UI_ASSETS.victory : BATTLE_UI_ASSETS.defeat;
     const outcome = snapshot.status === 'victory' || snapshot.status === 'defeat'
       ? `<div class="battle-outcome battle-outcome--${snapshot.status}">
-          ${assetImg(outcomeAsset, 'battle-outcome__art')}
-          <div class="battle-outcome__title">${snapshot.status === 'victory' ? '城市守住了！' : '防线失守'}</div>
-          <div>${escapeHtml(snapshot.message)}</div>
-          <button data-action="restart">${assetImg(BATTLE_UI_ASSETS.restart, 'battle-outcome__restart-icon')}重新挑战</button>
+          <div class="battle-outcome__panel">
+            ${assetImg(outcomeAsset, 'battle-outcome__art')}
+            <div class="battle-outcome__title">${snapshot.status === 'victory' ? '城市守住了！' : '防线失守'}</div>
+            ${stars}
+            ${snapshot.status === 'victory' ? `<div class="battle-grade__score">${grade.score}<small>/ 100</small></div>` : ''}
+            <p class="battle-outcome__reason">${escapeHtml(snapshot.message)}</p>
+            <div class="battle-grade__stats">
+              <span><small>医院最大断电</small><b>${round(this.peakCriticalOutageSeconds)}s</b></span>
+              <span><small>剩余储能</small><b>${round(snapshot.batteryEnergyMwh)} MWh</b></span>
+              <span><small>线路熔断</small><b>${this.brokenLineIds.size}</b></span>
+              <span><small>改道 / 过载</small><b>${this.routeSwitches} / ${this.overloads}</b></span>
+              <span><small>用时</small><b>${formatClock(snapshot.elapsedSeconds)}</b></span>
+            </div>
+            <div class="battle-grade__tip"><b>${snapshot.status === 'victory' ? '下一星怎么拿' : '下次怎么守'}</b><span>${escapeHtml(grade.recommendation)}</span></div>
+            <button data-action="restart">${assetImg(BATTLE_UI_ASSETS.restart, 'battle-outcome__restart-icon')}重新挑战</button>
+          </div>
         </div>`
       : '';
+
     const hospitalInDanger = snapshot.criticalOutageSeconds > 0;
+    const currentWave = snapshot.currentWaveIndex > 0 ? level.waves[snapshot.currentWaveIndex - 1] : level.waves[0];
+    const pauseOverlay = snapshot.status === 'paused'
+      ? `<div class="battle-pause-overlay"><div><b>战斗暂停</b><span>电网状态已冻结</span><button data-action="pause">继续防守</button></div></div>`
+      : '';
+    const tutorialOverloadClass = !this.tutorialSkipped && this.tutorialStep === 3 ? ' battle-action--tutorial' : '';
 
     this.root.innerHTML = `<main class="battle-shell">
       <header class="battle-header">
@@ -371,8 +607,9 @@ export class BattleApp {
           <div><b>⚡</b><span><small>当前供电</small><strong>${round(snapshot.totalAllocatedMw)} / ${round(snapshot.totalSupplyMw)} MW</strong></span></div>
           <div><b class="green">▣</b><span><small>储能</small><strong>${round(batteryPercent)}%</strong><em>${round(snapshot.batteryEnergyMwh)} / ${round(snapshot.batteryCapacityMwh)} MWh</em></span></div>
         </section>
-        <section class="battle-wave">${assetImg(BATTLE_UI_ASSETS.nextWave, 'battle-wave__icon')}<strong>第 ${Math.max(1, snapshot.currentWaveIndex)} / ${snapshot.totalWaves} 波</strong><span>${formatClock(snapshot.nextWaveInSeconds > 0 ? snapshot.nextWaveInSeconds : snapshot.elapsedSeconds)}</span></section>
-        <button class="battle-pause" data-action="pause">${snapshot.status === 'paused' ? '▶' : assetImg(BATTLE_UI_ASSETS.pause, 'battle-pause__icon')}</button>
+        <section class="battle-wave">${assetImg(BATTLE_UI_ASSETS.nextWave, 'battle-wave__icon')}<span><small>${escapeHtml(currentWave?.label ?? '准备')}</small><strong>第 ${Math.max(1, snapshot.currentWaveIndex)} / ${snapshot.totalWaves} 波</strong></span><b>${formatClock(snapshot.nextWaveInSeconds > 0 ? snapshot.nextWaveInSeconds : snapshot.elapsedSeconds)}</b></section>
+        <button class="battle-sound" data-action="mute" aria-label="${this.audio.isMuted ? '开启声音' : '关闭声音'}">${this.audio.isMuted ? '🔇' : '🔊'}</button>
+        <button class="battle-pause" data-action="pause" aria-label="暂停">${snapshot.status === 'paused' ? '▶' : assetImg(BATTLE_UI_ASSETS.pause, 'battle-pause__icon')}</button>
       </header>
 
       <aside class="battle-objective${hospitalInDanger ? ' battle-objective--danger' : ''}">
@@ -380,8 +617,12 @@ export class BattleApp {
         <p>医院断电时间不能超过 ${round(snapshot.criticalOutageLimitSeconds)} 秒</p>
         <div class="objective-progress"><i style="width:${clampPercent(snapshot.criticalOutageSeconds / Math.max(1, snapshot.criticalOutageLimitSeconds) * 100)}%"></i></div>
         <strong>断电时间：${round(snapshot.criticalOutageSeconds)} / ${round(snapshot.criticalOutageLimitSeconds)} 秒</strong>
-        <div class="objective-hint">关闭非关键区域改变怪物路线，再对经过线路强制过载。</div>
+        <div class="objective-hint">关闭支路改道，把怪聚在同一线路，再用储能强制过载。</div>
       </aside>
+
+      ${bossHud}
+      ${this.waveAlertMarkup(snapshot)}
+      ${this.tutorialMarkup(snapshot)}
 
       <section class="battle-map"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice">
         <defs><radialGradient id="mapGlow"><stop offset="0" stop-color="#12384a" stop-opacity=".45"/><stop offset="1" stop-color="#02070c" stop-opacity="0"/></radialGradient></defs>
@@ -392,12 +633,14 @@ export class BattleApp {
 
       <section class="battle-selection"><strong>${selectedNode ? escapeHtml(selectedNode.label) : this.selectedEdgeId ? '已选择线路' : '战术控制'}</strong><span>${selectionText}</span></section>
       <nav class="battle-actions">
-        <button data-action="toggle-zone" class="yellow">${assetImg(BATTLE_UI_ASSETS.closeZone, 'battle-action-icon')}<strong>开关区域</strong><span>吸引或切断怪物</span></button>
-        <button data-action="switch-route" class="${switchActionClass.trim()}">${assetImg(BATTLE_UI_ASSETS.switchRoute, 'battle-action-icon')}<strong>切换线路</strong><span>${escapeHtml(switchActionHint)}</span></button>
-        <button data-action="overload" class="red${overloadActionClass}">${assetImg(BATTLE_UI_ASSETS.forceOverload, 'battle-action-icon')}<strong>强制过载</strong><span>${escapeHtml(overloadActionHint)}</span></button>
+        <button data-action="toggle-zone" class="yellow" ${toggleDisabled ? 'disabled' : ''}>${assetImg(BATTLE_UI_ASSETS.closeZone, 'battle-action-icon')}<strong>开关区域</strong><span>${selectedNode ? '关闭负荷、改变供电压力' : '先选中建筑区域'}</span></button>
+        <button data-action="switch-route" class="${switchActionClass.trim()}" ${switchDisabled ? 'disabled' : ''}>${assetImg(BATTLE_UI_ASSETS.switchRoute, 'battle-action-icon')}<strong>切换线路</strong><span>${escapeHtml(switchActionHint)}</span></button>
+        <button data-action="overload" class="red${overloadActionClass}${tutorialOverloadClass}" ${overloadDisabled ? 'disabled' : ''}>${assetImg(BATTLE_UI_ASSETS.forceOverload, 'battle-action-icon')}<strong>强制过载</strong><span>${escapeHtml(overloadActionHint)}</span></button>
         <button data-action="tycoon" class="muted"><b>⌂</b><strong>旧版城市</strong><span>返回经营模式</span></button>
       </nav>
       <section class="battle-message">${escapeHtml(this.notice || snapshot.message)}</section>
+      ${this.briefingMarkup(snapshot)}
+      ${pauseOverlay}
       ${outcome}
     </main>`;
   }
