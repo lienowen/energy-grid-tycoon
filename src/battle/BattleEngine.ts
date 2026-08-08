@@ -62,7 +62,10 @@ export class BattleEngine {
         loadMw: 0,
         loadPercent: 0,
         loadState: 'normal',
-        overloadRemainingSeconds: 0
+        overloadRemainingSeconds: 0,
+        overloadCooldownRemainingSeconds: 0,
+        heatPercent: 0,
+        repairRemainingSeconds: 0
       });
     }
 
@@ -155,7 +158,7 @@ export class BattleEngine {
     const runtime = this.edgeRuntimeById.get(edgeId);
     if (!config || !runtime) return { ok: false, message: '没有找到该线路。' };
     if (config.switchable === false || runtime.operatingState === 'broken') {
-      return { ok: false, message: '该线路不能切换。' };
+      return { ok: false, message: runtime.operatingState === 'broken' ? '线路已损坏，等待自动修复。' : '该线路不能切换。' };
     }
     runtime.operatingState = runtime.operatingState === 'online' ? 'offline' : 'online';
     runtime.overloadRemainingSeconds = 0;
@@ -171,8 +174,14 @@ export class BattleEngine {
     const config = this.edgeById.get(edgeId);
     const runtime = this.edgeRuntimeById.get(edgeId);
     if (!config || !runtime) return { ok: false, message: '没有找到该线路。' };
+    if (runtime.operatingState === 'broken') {
+      return { ok: false, message: `线路损坏，${Math.ceil(runtime.repairRemainingSeconds)} 秒后修复。` };
+    }
     if (runtime.operatingState !== 'online') return { ok: false, message: '断开的线路不能过载。' };
     if (runtime.overloadRemainingSeconds > 0) return { ok: false, message: '该线路正在过载。' };
+    if (runtime.overloadCooldownRemainingSeconds > 0) {
+      return { ok: false, message: `线路冷却中，还需 ${Math.ceil(runtime.overloadCooldownRemainingSeconds)} 秒。` };
+    }
 
     const targetMonsters = [...this.monsters.values()].filter((monster) => (
       monster.alive && monster.currentEdgeId === edgeId
@@ -199,8 +208,13 @@ export class BattleEngine {
     }
 
     runtime.overloadRemainingSeconds = this.level.overloadDurationSeconds;
+    runtime.overloadCooldownRemainingSeconds = this.level.overloadCooldownSeconds;
+    runtime.heatPercent = clamp(runtime.heatPercent + this.level.overloadHeatGainPercent, 0, 150);
     runtime.loadState = 'overload';
-    this.message = `线路强制过载：命中 ${targetMonsters.length} 只噬电兽！`;
+    const heatWarning = runtime.heatPercent >= 100
+      ? ' 线路已进入熔断危险！'
+      : runtime.heatPercent >= 75 ? ' 线路温度过高。' : '';
+    this.message = `线路强制过载：命中 ${targetMonsters.length} 只噬电兽！${heatWarning}`;
     return { ok: true, message: this.message };
   }
 
@@ -265,8 +279,32 @@ export class BattleEngine {
   }
 
   private updateOverloads(deltaSeconds: number): void {
+    let networkChanged = false;
+
     for (const runtime of this.edgeRuntimeById.values()) {
-      if (runtime.overloadRemainingSeconds <= 0) continue;
+      runtime.overloadCooldownRemainingSeconds = Math.max(
+        0,
+        runtime.overloadCooldownRemainingSeconds - deltaSeconds
+      );
+
+      if (runtime.operatingState === 'broken') {
+        runtime.repairRemainingSeconds = Math.max(0, runtime.repairRemainingSeconds - deltaSeconds);
+        runtime.heatPercent = Math.max(0, runtime.heatPercent - this.level.lineHeatCoolPerSecond * deltaSeconds);
+        if (runtime.repairRemainingSeconds <= 0) {
+          runtime.operatingState = 'online';
+          runtime.loadState = 'normal';
+          runtime.heatPercent = Math.min(runtime.heatPercent, 35);
+          networkChanged = true;
+          this.message = '受损线路已自动修复并重新接入电网。';
+        }
+        continue;
+      }
+
+      if (runtime.overloadRemainingSeconds <= 0) {
+        runtime.heatPercent = Math.max(0, runtime.heatPercent - this.level.lineHeatCoolPerSecond * deltaSeconds);
+        continue;
+      }
+
       runtime.overloadRemainingSeconds = Math.max(0, runtime.overloadRemainingSeconds - deltaSeconds);
       for (const monster of this.monsters.values()) {
         if (!monster.alive || monster.currentEdgeId !== runtime.id) continue;
@@ -281,7 +319,19 @@ export class BattleEngine {
           this.message = `${archetype?.label ?? '噬电兽'}被过载电流消灭。`;
         }
       }
+
+      if (runtime.overloadRemainingSeconds <= 0 && runtime.heatPercent >= 100) {
+        runtime.operatingState = 'broken';
+        runtime.loadState = 'broken';
+        runtime.loadMw = 0;
+        runtime.loadPercent = 0;
+        runtime.repairRemainingSeconds = this.level.lineRepairSeconds;
+        networkChanged = true;
+        this.message = `线路过热熔断！${Math.ceil(this.level.lineRepairSeconds)} 秒后自动修复。`;
+      }
     }
+
+    if (networkChanged) this.recalculatePathsAtNodes();
   }
 
   private updateMonsters(deltaSeconds: number): void {
@@ -387,7 +437,7 @@ export class BattleEngine {
       runtime.loadMw = Math.max(0, flowByEdgeId.get(edge.id) ?? 0);
       runtime.loadPercent = edge.capacityMw > 0 ? runtime.loadMw / edge.capacityMw * 100 : 0;
       if (runtime.overloadRemainingSeconds > 0) runtime.loadState = 'overload';
-      else if (runtime.loadPercent >= 80) runtime.loadState = 'high';
+      else if (runtime.heatPercent >= 75 || runtime.loadPercent >= 80) runtime.loadState = 'high';
       else runtime.loadState = 'normal';
     }
   }
