@@ -13,7 +13,8 @@ const runtime = (): Map<string, EdgeRuntimeState> => new Map(
     overloadRemainingSeconds: 0,
     overloadCooldownRemainingSeconds: 0,
     heatPercent: 0,
-    repairRemainingSeconds: 0
+    repairRemainingSeconds: 0,
+    bossLockRemainingSeconds: 0
   }])
 );
 
