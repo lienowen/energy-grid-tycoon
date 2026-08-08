@@ -7,13 +7,13 @@
 }
 
 .battle-meter > div:first-child small::after {
-  content: '供电 / 发电';
-  font-size: 13px;
+  content: '供电 / 发电' !important;
+  font-size: 13px !important;
 }
 
 @media (max-width: 760px) {
   .battle-meter > div:first-child small::after {
-    font-size: 7px;
+    font-size: 7px !important;
   }
 
   .battle-shell::after {
