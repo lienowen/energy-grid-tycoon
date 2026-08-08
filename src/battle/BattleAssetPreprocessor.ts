@@ -13,6 +13,8 @@ interface TrimRule {
 
 const DEFAULT_BACKGROUND = [28, 30, 33] as const;
 const GRID_DEFENSE_PREFIX = 'griddef_';
+const CONNECTED_BACKGROUND_DISTANCE = 52;
+const EDGE_FEATHER_DISTANCE = 92;
 
 const TRIM_RULES: Readonly<Record<string, TrimRule>> = {
   griddef_monsters_small_walk: { top: 0.13, anchor: 'bottom' },
@@ -50,6 +52,7 @@ const loadImage = (src: string): Promise<HTMLImageElement> => new Promise((resol
 });
 
 const clampByte = (value: number): number => Math.max(0, Math.min(255, Math.round(value)));
+const clamp01 = (value: number): number => Math.max(0, Math.min(1, value));
 
 const sourceRect = (image: HTMLImageElement, rule: TrimRule): [number, number, number, number] => {
   const left = Math.round(image.naturalWidth * (rule.left ?? 0));
@@ -86,22 +89,99 @@ const estimateBackground = (data: Uint8ClampedArray, width: number, height: numb
   return [sortedChannel(0), sortedChannel(1), sortedChannel(2)];
 };
 
-const cleanPixels = (context: CanvasRenderingContext2D, width: number, height: number): void => {
-  const imageData = context.getImageData(0, 0, width, height);
-  const data = imageData.data;
-  const [br, bg, bb] = estimateBackground(data, width, height);
+const colorDistanceAt = (
+  data: Uint8ClampedArray,
+  pixelIndex: number,
+  background: readonly [number, number, number]
+): number => {
+  const offset = pixelIndex * 4;
+  const dr = (data[offset] ?? 0) - background[0];
+  const dg = (data[offset + 1] ?? 0) - background[1];
+  const db = (data[offset + 2] ?? 0) - background[2];
+  return Math.sqrt(dr * dr + dg * dg + db * db);
+};
 
-  for (let index = 0; index < data.length; index += 4) {
-    const originalAlpha = data[index + 3] ?? 0;
-    if (originalAlpha === 0) continue;
-    const dr = (data[index] ?? 0) - br;
-    const dg = (data[index + 1] ?? 0) - bg;
-    const db = (data[index + 2] ?? 0) - bb;
-    const distance = Math.sqrt(dr * dr + dg * dg + db * db);
-    const matte = Math.max(0, Math.min(1, (distance - 6.5) / 25));
-    data[index + 3] = clampByte(originalAlpha * matte);
+const hasAlphaAt = (data: Uint8ClampedArray, pixelIndex: number): boolean => (data[pixelIndex * 4 + 3] ?? 0) > 0;
+
+export const removeConnectedBackground = (
+  data: Uint8ClampedArray,
+  width: number,
+  height: number
+): void => {
+  if (width <= 0 || height <= 0 || data.length < width * height * 4) return;
+
+  const background = estimateBackground(data, width, height);
+  const pixelCount = width * height;
+  const connected = new Uint8Array(pixelCount);
+  const queue = new Int32Array(pixelCount);
+  let readIndex = 0;
+  let writeIndex = 0;
+
+  const enqueue = (pixelIndex: number): void => {
+    if (pixelIndex < 0 || pixelIndex >= pixelCount || connected[pixelIndex] === 1) return;
+    if (!hasAlphaAt(data, pixelIndex)) {
+      connected[pixelIndex] = 1;
+      queue[writeIndex++] = pixelIndex;
+      return;
+    }
+    if (colorDistanceAt(data, pixelIndex, background) > CONNECTED_BACKGROUND_DISTANCE) return;
+    connected[pixelIndex] = 1;
+    queue[writeIndex++] = pixelIndex;
+  };
+
+  for (let x = 0; x < width; x += 1) {
+    enqueue(x);
+    enqueue((height - 1) * width + x);
+  }
+  for (let y = 1; y < height - 1; y += 1) {
+    enqueue(y * width);
+    enqueue(y * width + width - 1);
   }
 
+  while (readIndex < writeIndex) {
+    const pixelIndex = queue[readIndex++] ?? 0;
+    const x = pixelIndex % width;
+    const y = Math.floor(pixelIndex / width);
+    if (x > 0) enqueue(pixelIndex - 1);
+    if (x + 1 < width) enqueue(pixelIndex + 1);
+    if (y > 0) enqueue(pixelIndex - width);
+    if (y + 1 < height) enqueue(pixelIndex + width);
+  }
+
+  for (let pixelIndex = 0; pixelIndex < pixelCount; pixelIndex += 1) {
+    if (connected[pixelIndex] === 1) data[pixelIndex * 4 + 3] = 0;
+  }
+
+  const touchesRemovedBackground = (pixelIndex: number): boolean => {
+    const x = pixelIndex % width;
+    const y = Math.floor(pixelIndex / width);
+    for (let dy = -1; dy <= 1; dy += 1) {
+      for (let dx = -1; dx <= 1; dx += 1) {
+        if (dx === 0 && dy === 0) continue;
+        const nx = x + dx;
+        const ny = y + dy;
+        if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue;
+        if (connected[ny * width + nx] === 1) return true;
+      }
+    }
+    return false;
+  };
+
+  for (let pixelIndex = 0; pixelIndex < pixelCount; pixelIndex += 1) {
+    const alphaOffset = pixelIndex * 4 + 3;
+    const originalAlpha = data[alphaOffset] ?? 0;
+    if (originalAlpha === 0 || !touchesRemovedBackground(pixelIndex)) continue;
+    const distance = colorDistanceAt(data, pixelIndex, background);
+    if (distance >= EDGE_FEATHER_DISTANCE) continue;
+    const feather = clamp01((distance - CONNECTED_BACKGROUND_DISTANCE * 0.55) /
+      (EDGE_FEATHER_DISTANCE - CONNECTED_BACKGROUND_DISTANCE * 0.55));
+    data[alphaOffset] = clampByte(originalAlpha * feather);
+  }
+};
+
+const cleanPixels = (context: CanvasRenderingContext2D, width: number, height: number): void => {
+  const imageData = context.getImageData(0, 0, width, height);
+  removeConnectedBackground(imageData.data, width, height);
   context.putImageData(imageData, 0, 0);
 };
 
