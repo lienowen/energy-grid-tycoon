@@ -9,6 +9,9 @@ const remainingPathHops = (monster: MonsterRuntimeState): number => {
   return Math.max(0, monster.path.length - index - 1);
 };
 
+const monstersOnEdge = (snapshot: BattleSnapshot, edgeId: string): MonsterRuntimeState[] =>
+  snapshot.monsters.filter((monster) => monster.alive && monster.currentEdgeId === edgeId);
+
 const chooseOverloadEdge = (snapshot: BattleSnapshot): string | undefined => {
   const edgeState = new Map(snapshot.edges.map((edge) => [edge.id, edge] as const));
   const groups = new Map<string, MonsterRuntimeState[]>();
@@ -59,6 +62,7 @@ describe('City-01 strategic commercial playtest', () => {
     let overloads = 0;
     let peakOutage = 0;
     let bossSeen = false;
+    const castLog: Array<Record<string, unknown>> = [];
 
     for (let elapsed = 0; elapsed < 155 && engine.snapshot().status === 'running'; elapsed += 0.1) {
       engine.tick(0.1);
@@ -75,8 +79,23 @@ describe('City-01 strategic commercial playtest', () => {
       if (snapshot.batteryEnergyMwh < CITY01_SIEGE_LEVEL.overloadEnergyCostMwh) continue;
       const edgeId = chooseOverloadEdge(snapshot);
       if (!edgeId) continue;
+
+      const targets = monstersOnEdge(snapshot, edgeId).map((monster) => ({
+        type: monster.archetypeId,
+        hp: Math.round(monster.hp),
+        hops: remainingPathHops(monster)
+      }));
+      const batteryBefore = snapshot.batteryEnergyMwh;
       const result = engine.forceOverload(edgeId);
-      if (result.ok) overloads += 1;
+      if (!result.ok) continue;
+
+      overloads += 1;
+      castLog.push({
+        t: Number(snapshot.elapsedSeconds.toFixed(1)),
+        edge: edgeId,
+        batteryBefore: Number(batteryBefore.toFixed(1)),
+        targets
+      });
     }
 
     const final = engine.snapshot();
@@ -89,6 +108,7 @@ describe('City-01 strategic commercial playtest', () => {
       batteryEnergyMwh: Number(final.batteryEnergyMwh.toFixed(1)),
       overloads,
       bossSeen,
+      castLog,
       reachedTarget: reached.map((monster) => ({ type: monster.archetypeId, hp: Math.round(monster.hp) })),
       alive: alive.map((monster) => ({
         type: monster.archetypeId,
