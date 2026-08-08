@@ -53,7 +53,7 @@ const chooseOverloadEdge = (snapshot: BattleSnapshot): string | undefined => {
 };
 
 describe('City-01 strategic commercial playtest', () => {
-  it('can be cleared by the reroute, group, overload strategy taught in the tutorial', () => {
+  it('clears with the taught strategy inside the commercial time, safety, and energy margins', () => {
     const engine = new BattleEngine(CITY01_SIEGE_LEVEL);
     engine.start();
     expect(engine.switchRoute('battery-industrial').ok).toBe(true);
@@ -121,8 +121,9 @@ describe('City-01 strategic commercial playtest', () => {
 
     expect(bossSeen).toBe(true);
     expect(final.status).toBe('victory');
-    expect(final.elapsedSeconds).toBeLessThan(150);
-    expect(peakOutage).toBeLessThan(45);
-    expect(overloads).toBeLessThanOrEqual(9);
+    expect(final.elapsedSeconds).toBeLessThan(110);
+    expect(peakOutage).toBeLessThan(15);
+    expect(overloads).toBeLessThanOrEqual(12);
+    expect(final.batteryEnergyMwh).toBeGreaterThanOrEqual(8);
   });
 });
